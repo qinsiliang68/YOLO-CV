@@ -1,12 +1,10 @@
 # YOLO-CV
 
-YOLO-CV is the parent academic research workspace for comparing, modifying, and testing multiple YOLO generations side by side.
+YOLO-CV is the parent academic research workspace for comparing and modifying the retained official YOLO branches side by side.
 
 ## Active Research Folders
 
 - `YOLOv11/`
-- `YOLOv12/`
-- `YOLOv13/`
 - `YOLOv26/`
 
 Each version folder includes:
@@ -34,8 +32,6 @@ Each version folder includes:
 ## Upstream Pinning
 
 - `YOLOv11`: `ultralytics/ultralytics` at `v8.3.0`
-- `YOLOv12`: `sunsmarterjie/yolov12` main snapshot
-- `YOLOv13`: `iMoonLab/yolov13` main snapshot
 - `YOLOv26`: `ultralytics/ultralytics` at `v8.4.0`
 
 See each version folder's `UPSTREAM.md` for pinned commit details.
