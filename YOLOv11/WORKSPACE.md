@@ -15,5 +15,5 @@ This folder has been prepared as a self-contained YOLOv11 workspace for your lat
 ## What To Edit First
 
 1. Put your dataset under `datasets/`
-2. Edit `configs/datasets/custom_detect.yaml`
-3. Adjust defaults in `configs/runtime/*.json` if needed
+2. Create your own dataset YAML under `configs/datasets/`
+3. Pass `-Data` or adjust defaults in `configs/runtime/*.json`

@@ -17,7 +17,7 @@ Each version folder includes:
 - `scripts/val.ps1`
 - `scripts/test.ps1`
 - `scripts/predict.ps1`
-- `configs/datasets/custom_detect.yaml`
+- `configs/datasets/`
 - `configs/runtime/*.json`
 - `datasets/`
 - `weights/`
@@ -28,7 +28,7 @@ Each version folder includes:
 1. Open the version folder you want to study.
 2. Run `.\scripts\setup.ps1`.
 3. Put your dataset into that version folder's `datasets/`.
-4. Edit `configs/datasets/custom_detect.yaml`.
+4. Create your own dataset YAML under `configs/datasets/`.
 5. Start with `.\scripts\train.ps1`, then use `val/test/predict` as needed.
 
 ## Upstream Pinning

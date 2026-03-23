@@ -1,7 +1,7 @@
 {
   "task": "detect",
   "model": "yolo26n.pt",
-  "data": "configs/datasets/custom_detect.yaml",
+  "data": "",
   "split": "val",
   "batch": 16,
   "imgsz": 640,

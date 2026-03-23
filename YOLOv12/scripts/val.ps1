@@ -73,6 +73,10 @@ $batchValue = if ($Batch -gt 0) { $Batch } else { $cfg.batch }
 $imgszValue = if ($Imgsz -gt 0) { $Imgsz } else { $cfg.imgsz }
 $saveJsonValue = if ($SaveJson.IsPresent) { $true } else { $cfg.save_json }
 
+if ([string]::IsNullOrWhiteSpace($dataValue)) {
+    throw "No dataset YAML configured. Create your own file under configs\datasets\ and pass -Data or update configs/runtime/val_detect.json."
+}
+
 Add-YoloArg ([ref]$args) "model" (Resolve-YoloValue $modelValue)
 Add-YoloArg ([ref]$args) "data" (Resolve-YoloValue $dataValue)
 Add-YoloArg ([ref]$args) "split" $splitValue

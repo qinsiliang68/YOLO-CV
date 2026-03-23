@@ -27,6 +27,7 @@ if (Test-Path $requirements) {
 
 Write-Host "YOLOv26 environment is ready."
 Write-Host "Next steps:"
-Write-Host "  1. Edit configs/datasets/custom_detect.yaml"
-Write-Host "  2. Put your dataset under datasets/"
-Write-Host "  3. Run scripts/train.ps1"
+Write-Host "  1. Put your dataset under datasets/"
+Write-Host "  2. Create your own data YAML under configs/datasets/"
+Write-Host "  3. Pass -Data or edit configs/runtime/*.json"
+Write-Host "  4. Run scripts/train.ps1"

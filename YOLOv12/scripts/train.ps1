@@ -71,6 +71,10 @@ $epochsValue = if ($Epochs -gt 0) { $Epochs } else { $cfg.epochs }
 $batchValue = if ($Batch -gt 0) { $Batch } else { $cfg.batch }
 $imgszValue = if ($Imgsz -gt 0) { $Imgsz } else { $cfg.imgsz }
 
+if ([string]::IsNullOrWhiteSpace($dataValue)) {
+    throw "No dataset YAML configured. Create your own file under configs\datasets\ and pass -Data or update configs/runtime/train_detect.json."
+}
+
 Add-YoloArg ([ref]$args) "model" (Resolve-YoloValue $modelValue)
 Add-YoloArg ([ref]$args) "data" (Resolve-YoloValue $dataValue)
 Add-YoloArg ([ref]$args) "epochs" $epochsValue
