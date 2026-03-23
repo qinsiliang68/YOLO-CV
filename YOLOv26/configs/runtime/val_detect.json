@@ -1,0 +1,12 @@
+{
+  "task": "detect",
+  "model": "yolo26n.pt",
+  "data": "configs/datasets/custom_detect.yaml",
+  "split": "val",
+  "batch": 16,
+  "imgsz": 640,
+  "device": "0",
+  "project": "runs/val",
+  "name": "exp",
+  "save_json": false
+}

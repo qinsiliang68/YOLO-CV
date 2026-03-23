@@ -1,0 +1,7 @@
+path: ../../datasets
+train: images/train
+val: images/val
+test: images/test
+
+names:
+  0: class0

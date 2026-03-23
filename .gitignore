@@ -1,0 +1,59 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
+
+# Training outputs
+outputs/
+logs/
+wandb/
+tensorboard/
+
+# Large assets
+data/
+checkpoints/
+*.pt
+*.onnx
+*.engine
+*.tflite
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# Local clone cache
+_upstream_git_cache/
+
+# Per-version working directories
+YOLOv11/datasets/*
+!YOLOv11/datasets/README.md
+YOLOv11/weights/*
+!YOLOv11/weights/.gitkeep
+YOLOv11/runs/*
+!YOLOv11/runs/.gitkeep
+YOLOv12/datasets/*
+!YOLOv12/datasets/README.md
+YOLOv12/weights/*
+!YOLOv12/weights/.gitkeep
+YOLOv12/runs/*
+!YOLOv12/runs/.gitkeep
+YOLOv13/datasets/*
+!YOLOv13/datasets/README.md
+YOLOv13/weights/*
+!YOLOv13/weights/.gitkeep
+YOLOv13/runs/*
+!YOLOv13/runs/.gitkeep
+YOLOv26/datasets/*
+!YOLOv26/datasets/README.md
+YOLOv26/weights/*
+!YOLOv26/weights/.gitkeep
+YOLOv26/runs/*
+!YOLOv26/runs/.gitkeep
