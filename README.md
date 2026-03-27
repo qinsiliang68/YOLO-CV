@@ -25,6 +25,7 @@ and run outputs stay local.
 - Target classification fine-tuning: `.\scripts\cls_finetune_target.ps1`
 - CAM export: `.\scripts\export_cam.ps1`
 - CAM to pseudo boxes: `.\scripts\cam_to_pseudobox.ps1`
+- Research figures: `.\scripts\plot_research_figures.ps1 -Mode sewerml`
 - Detector training: `.\YOLOv11\scripts\train.ps1`
 - Detector validation: `.\YOLOv11\scripts\val.ps1`
 - Detector test: `.\YOLOv11\scripts\test.ps1`

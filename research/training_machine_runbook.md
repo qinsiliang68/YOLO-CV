@@ -137,6 +137,28 @@ Recommended class names:
   -KeepNormal
 ```
 
+### Generate Research Figures
+
+```powershell
+.\scripts\plot_research_figures.ps1 -Mode sewerml
+.\scripts\plot_research_figures.ps1 -Mode cam-review
+.\scripts\plot_research_figures.ps1 -Mode train-metrics `
+  -ResultsCsv C:\GitHub\YOLO-CV\YOLOv11\runs\train\struct6_reviewed_baseline\results.csv `
+  -Output C:\GitHub\YOLO-CV\outputs\figures\training\struct6_reviewed_baseline.png `
+  -Title "Struct6 Reviewed Baseline"
+```
+
+Default SewerML figure output:
+
+- `outputs/figures/sewerml/01_raw_label_distribution.png`
+- `outputs/figures/sewerml/02_alignment_summary.png`
+- `outputs/figures/sewerml/03_struct6_cooccurrence.png`
+- `outputs/figures/sewerml/04_waterlevel_profile.png`
+- `outputs/figures/sewerml/05_group_share_donut.png`
+- `outputs/figures/sewerml/06_multilabel_cardinality.png`
+- `outputs/figures/sewerml/07_struct6_by_split.png`
+- `outputs/figures/sewerml/08_top_label_pairs.png`
+
 ### Train The First Structure-6 Detector
 
 ```powershell
