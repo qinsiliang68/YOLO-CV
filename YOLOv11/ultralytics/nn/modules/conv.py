@@ -23,6 +23,10 @@ __all__ = (
     "RepConv",
 )
 
+# 中文导读：
+# 1. 这里放的是网络最基础的卷积积木，parse_model() 解析 YAML 时会频繁实例化它们。
+# 2. Conv 是最常见的标准块；DWConv、GhostConv、RepConv 等是在速度/参数量上做不同折中。
+
 
 def autopad(k, p=None, d=1):  # kernel, padding, dilation
     """Pad to 'same' shape outputs."""
@@ -41,6 +45,7 @@ class Conv(nn.Module):
     def __init__(self, c1, c2, k=1, s=1, p=None, g=1, d=1, act=True):
         """Initialize Conv layer with given arguments including activation."""
         super().__init__()
+        # 这是 Ultralytics 最常用的基础卷积块：Conv2d + BN + Act。
         self.conv = nn.Conv2d(c1, c2, k, s, autopad(k, p, d), groups=g, dilation=d, bias=False)
         self.bn = nn.BatchNorm2d(c2)
         self.act = self.default_act if act is True else act if isinstance(act, nn.Module) else nn.Identity()
@@ -72,6 +77,7 @@ class Conv2(Conv):
 
     def fuse_convs(self):
         """Fuse parallel convolutions."""
+        # 训练时的 3x3 + 1x1 双分支，可在部署前折叠成一个等效卷积核。
         w = torch.zeros_like(self.conv.weight.data)
         i = [x // 2 for x in w.shape[2:]]
         w[:, :, i[0] : i[0] + 1, i[1] : i[1] + 1] = self.cv2.weight.data.clone()
@@ -199,6 +205,7 @@ class RepConv(nn.Module):
 
     def forward(self, x):
         """Forward process."""
+        # 训练时保留多分支结构帮助优化，部署时再通过 get_equivalent_kernel_bias() 合并。
         id_out = 0 if self.bn is None else self.bn(x)
         return self.act(self.conv1(x) + self.conv2(x) + id_out)
 

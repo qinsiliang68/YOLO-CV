@@ -47,6 +47,11 @@ from ultralytics.utils.checks import check_imgsz, check_imshow
 from ultralytics.utils.files import increment_path
 from ultralytics.utils.torch_utils import select_device, smart_inference_mode
 
+# 中文导读：
+# 1. BasePredictor 负责整条推理流水线：读源 -> 预处理 -> 后端推理 -> 后处理 -> 可视化/保存。
+# 2. 各任务通常只需重写 postprocess()，因为输入读取和推理调度基本通用。
+# 3. setup_model() 用 AutoBackend 统一不同推理后端，所以 .pt 和导出模型共享同一套外部接口。
+
 STREAM_WARNING = """
 WARNING ⚠️ inference results will accumulate in RAM unless `stream=True` is passed, causing potential out-of-memory
 errors for large sources or long-running streams and videos. See https://docs.ultralytics.com/modes/predict/ for help.
@@ -121,6 +126,7 @@ class BasePredictor:
         """
         not_tensor = not isinstance(im, torch.Tensor)
         if not_tensor:
+            # 输入源通常来自 OpenCV/BGR，这里统一整理成模型需要的 BCHW/RGB Tensor。
             im = np.stack(self.pre_transform(im))
             im = im[..., ::-1].transpose((0, 3, 1, 2))  # BGR to RGB, BHWC to BCHW, (n, 3, h, w)
             im = np.ascontiguousarray(im)  # contiguous
@@ -185,6 +191,7 @@ class BasePredictor:
 
     def setup_source(self, source):
         """Sets up source and inference mode."""
+        # 无论输入是图片、视频、目录、摄像头还是 tensor，最终都会被包装成统一 dataset。
         self.imgsz = check_imgsz(self.args.imgsz, stride=self.model.stride, min_dim=2)  # check image size
         self.transforms = (
             getattr(
@@ -261,6 +268,7 @@ class BasePredictor:
                     self.results = self.postprocess(preds, im, im0s)
                 self.run_callbacks("on_predict_postprocess_end")
 
+                # 到这里每张图都已经是 Results 对象，后续只是渲染、保存和日志输出。
                 # Visualize, save, write results
                 n = len(im0s)
                 for i in range(n):
@@ -300,6 +308,7 @@ class BasePredictor:
 
     def setup_model(self, model, verbose=True):
         """Initialize YOLO model with given parameters and set it to evaluation mode."""
+        # AutoBackend 会自动识别 PyTorch/ONNX/OpenVINO/TensorRT 等格式，并暴露统一 forward 接口。
         self.model = AutoBackend(
             weights=model or self.args.model,
             device=select_device(self.args.device, verbose=verbose),
@@ -333,6 +342,7 @@ class BasePredictor:
         result.save_dir = self.save_dir.__str__()  # used in other locations
         string += f"{result.verbose()}{result.speed['inference']:.1f}ms"
 
+        # Results 内部已经封装了 boxes/masks/probs 等对象，这里只负责把它们画回图像。
         # Add predictions to image
         if self.args.save or self.args.show:
             self.plotted_img = result.plot(

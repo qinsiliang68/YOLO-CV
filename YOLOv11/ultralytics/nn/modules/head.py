@@ -17,6 +17,11 @@ from .utils import bias_init_with_prob, linear_init
 
 __all__ = "Detect", "Segment", "Pose", "Classify", "OBB", "RTDETRDecoder", "v10Detect"
 
+# 中文导读：
+# 1. head 是把 neck 输出的多尺度特征图变成任务结果的最后一跳。
+# 2. Detect 负责常规检测，Segment/Pose/OBB 都是在 Detect 基础上再多分出一条任务分支。
+# 3. 读 YOLOv11 检测实现时，最关键的是看 Detect.forward()、_inference() 和后面的 loss/assigner 如何闭环。
+
 
 class Detect(nn.Module):
     """YOLOv8 Detect head for detection models."""
@@ -41,6 +46,7 @@ class Detect(nn.Module):
         self.cv2 = nn.ModuleList(
             nn.Sequential(Conv(x, c2, 3), Conv(c2, c2, 3), nn.Conv2d(c2, 4 * self.reg_max, 1)) for x in ch
         )
+        # cv2 负责回归分支，输出的是离散距离分布；cv3 负责分类分支。
         self.cv3 = nn.ModuleList(
             nn.Sequential(
                 nn.Sequential(DWConv(x, x, 3), Conv(x, c3, 1)),
@@ -61,6 +67,7 @@ class Detect(nn.Module):
             return self.forward_end2end(x)
 
         for i in range(self.nl):
+            # 每个尺度都输出 [box_distribution, class_logits]，训练阶段直接把原始特征返回给 loss 解码。
             x[i] = torch.cat((self.cv2[i](x[i]), self.cv3[i](x[i])), 1)
         if self.training:  # Training path
             return x
@@ -95,6 +102,7 @@ class Detect(nn.Module):
         """Decode predicted bounding boxes and class probabilities based on multiple-level feature maps."""
         # Inference path
         shape = x[0].shape  # BCHW
+        # 多尺度特征先展平到 anchor 维度，再拼成统一输出，后面统一解码。
         x_cat = torch.cat([xi.view(shape[0], self.no, -1) for xi in x], 2)
         if self.dynamic or self.shape != shape:
             self.anchors, self.strides = (x.transpose(0, 1) for x in make_anchors(x, self.stride, 0.5))
@@ -115,6 +123,7 @@ class Detect(nn.Module):
             norm = self.strides / (self.stride[0] * grid_size)
             dbox = self.decode_bboxes(self.dfl(box) * norm, self.anchors.unsqueeze(0) * norm[:, :2])
         else:
+            # DFL 将四边离散分布还原成连续框距离，再映射回原图尺度。
             dbox = self.decode_bboxes(self.dfl(box), self.anchors.unsqueeze(0)) * self.strides
 
         return torch.cat((dbox, cls.sigmoid()), 1)
@@ -151,6 +160,7 @@ class Detect(nn.Module):
             (torch.Tensor): Processed predictions with shape (batch_size, min(max_det, num_anchors), 6) and last
                 dimension format [x, y, w, h, max_class_prob, class_index].
         """
+        # 这个静态方法主要给 end2end 路线使用，它不做传统 NMS，而是直接截取 top-k 结果。
         batch_size, anchors, _ = preds.shape  # i.e. shape(16,8400,84)
         boxes, scores = preds.split([4, nc], dim=-1)
         index = scores.amax(dim=-1).topk(min(max_det, anchors))[1].unsqueeze(-1)

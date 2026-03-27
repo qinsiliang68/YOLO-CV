@@ -1,0 +1,7 @@
+class_name,inspected_total,direct_use,minor_edit_use,unusable,usable_rate,route_decision,cam_threshold,review_date,reviewer,notes
+CrackBreak,0,0,0,0,0.00,,0.00,,, 
+SurfaceDamage,0,0,0,0,0.00,,0.00,,, 
+Deformation,0,0,0,0,0.00,,0.00,,, 
+JointDislocation,0,0,0,0,0.00,,0.00,,, 
+Intrusion,0,0,0,0,0.00,,0.00,,, 
+Infiltration,0,0,0,0,0.00,,0.00,,, 

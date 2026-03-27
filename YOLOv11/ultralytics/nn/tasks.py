@@ -88,6 +88,11 @@ try:
 except ImportError:
     thop = None
 
+# 中文导读：
+# 1. 这个文件是“网络定义总枢纽”：既负责通用 BaseModel，也负责把 YAML 解析成真实 PyTorch 网络。
+# 2. parse_model() 是最关键的函数之一，它把 backbone/head 的声明式配置翻译成模块对象。
+# 3. DetectionModel/SegmentationModel/PoseModel 等任务类，本质上是在 BaseModel 上绑定不同 head 和 loss。
+
 
 class BaseModel(nn.Module):
     """The BaseModel class serves as a base class for all the models in the Ultralytics YOLO family."""
@@ -144,10 +149,12 @@ class BaseModel(nn.Module):
         y, dt, embeddings = [], [], []  # outputs
         for m in self.model:
             if m.f != -1:  # if not from previous layer
+                # m.f 表示本层输入来自哪一层；可能是单个索引，也可能是 Concat 这种多输入列表。
                 x = y[m.f] if isinstance(m.f, int) else [x if j == -1 else y[j] for j in m.f]  # from earlier layers
             if profile:
                 self._profile_one_layer(m, x, dt)
             x = m(x)  # run
+            # self.save 中登记的是后续还会被别层引用的中间结果，其他层输出可以直接丢掉省内存。
             y.append(x if m.i in self.save else None)  # save output
             if visualize:
                 feature_visualization(x, m.type, m.i, save_dir=visualize)
@@ -315,6 +322,7 @@ class DetectionModel(BaseModel):
         if nc and nc != self.yaml["nc"]:
             LOGGER.info(f"Overriding model.yaml nc={self.yaml['nc']} with nc={nc}")
             self.yaml["nc"] = nc  # override YAML value
+        # parse_model() 会把 YAML 里的 [from, repeats, module, args] 逐层编译成 nn.Sequential。
         self.model, self.save = parse_model(deepcopy(self.yaml), ch=ch, verbose=verbose)  # model, savelist
         self.names = {i: f"{i}" for i in range(self.yaml["nc"])}  # default names dict
         self.inplace = self.yaml.get("inplace", True)
@@ -934,6 +942,9 @@ def parse_model(d, ch, verbose=True):  # model_dict, input_channels(3)
     """Parse a YOLO model.yaml dictionary into a PyTorch model."""
     import ast
 
+    # 读这个函数时，可以把 YAML 中每一行理解成：
+    # [输入来自哪层, 重复次数, 模块名, 模块参数]
+    # parse_model() 的工作就是把“声明式结构”翻译成真的层对象，并顺便推断每层输入输出通道数。
     # Args
     max_channels = float("inf")
     nc, act, scales = (d.get(x) for x in ("nc", "activation", "scales"))
@@ -955,6 +966,7 @@ def parse_model(d, ch, verbose=True):  # model_dict, input_channels(3)
     ch = [ch]
     layers, save, c2 = [], [], ch[-1]  # layers, savelist, ch out
     for i, (f, n, m, args) in enumerate(d["backbone"] + d["head"]):  # from, number, module, args
+        # 先把字符串模块名解析成真实类，例如 "Conv" -> ultralytics.nn.modules.conv.Conv。
         m = getattr(torch.nn, m[3:]) if "nn." in m else globals()[m]  # get module
         for j, a in enumerate(args):
             if isinstance(a, str):
@@ -997,6 +1009,7 @@ def parse_model(d, ch, verbose=True):  # model_dict, input_channels(3)
             SCDown,
             C2fCIB,
         }:
+            # 这类模块的首参数通常是输出通道数，需要根据 width_multiple/max_channels 做宽度缩放。
             c1, c2 = ch[f], args[0]
             if c2 != nc:  # if c2 not equal to number of classes (i.e. for Classify() output)
                 c2 = make_divisible(min(c2, max_channels) * width, 8)
@@ -1023,6 +1036,7 @@ def parse_model(d, ch, verbose=True):  # model_dict, input_channels(3)
                 C2fCIB,
                 C2PSA,
             }:
+                # 这些模块内部自己管理重复结构，所以把 n 塞进参数后，外层不再重复包 Sequential。
                 args.insert(2, n)  # number of repeats
                 n = 1
             if m is C3k2 and scale in "mlx":  # for M/L/X sizes
@@ -1042,6 +1056,7 @@ def parse_model(d, ch, verbose=True):  # model_dict, input_channels(3)
         elif m is Concat:
             c2 = sum(ch[x] for x in f)
         elif m in {Detect, WorldDetect, Segment, Pose, OBB, ImagePoolingAttn, v10Detect}:
+            # 检测头类需要拿到多个特征层的输入通道列表，而不是单个 c1/c2。
             args.append([ch[x] for x in f])
             if m is Segment:
                 args[2] = make_divisible(min(args[2], max_channels) * width, 8)
@@ -1062,6 +1077,7 @@ def parse_model(d, ch, verbose=True):  # model_dict, input_channels(3)
         m_.i, m_.f, m_.type = i, f, t  # attach index, 'from' index, type
         if verbose:
             LOGGER.info(f"{i:>3}{str(f):>20}{n_:>3}{m.np:10.0f}  {t:<45}{str(args):<30}")  # print
+        # save 记录后续仍会被引用的层索引，供 _predict_once() 在前向时按需取回。
         save.extend(x % i for x in ([f] if isinstance(f, int) else f) if x != -1)  # append to savelist
         layers.append(m_)
         if i == 0:
@@ -1081,6 +1097,7 @@ def yaml_model_load(path):
         path = path.with_name(new_stem + path.suffix)
 
     unified_path = re.sub(r"(\d+)([nslmx])(.+)?$", r"\1\3", str(path))  # i.e. yolov8x.yaml -> yolov8.yaml
+    # 同一份基础 YAML + scale(n/s/m/l/x) 共同决定最终宽度/深度，是官方模型族复用配置的关键做法。
     yaml_file = check_yaml(unified_path, hard=False) or check_yaml(path)
     d = yaml_load(yaml_file)  # model dict
     d["scale"] = guess_model_scale(path)
@@ -1121,6 +1138,7 @@ def guess_model_task(model):
         SyntaxError: If the task of the model could not be determined.
     """
 
+    # 统一 API 能自动切换 detect/segment/pose/obb，依赖的就是这里的 task 推断。
     def cfg2task(cfg):
         """Guess from YAML dictionary."""
         m = cfg["head"][-1][-2].lower()  # output module name

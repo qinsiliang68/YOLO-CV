@@ -1,5 +1,5 @@
 param(
-    [string]$Config = "configs/runtime/val_detect.json",
+    [string]$Config = "configs/runtime/val_detect_struct6_reviewed.json",
     [string]$Data = "",
     [string]$Model = "",
     [string]$Device = "",
@@ -15,82 +15,34 @@ param(
 $ErrorActionPreference = "Stop"
 
 $root = Split-Path -Parent $PSScriptRoot
-$yolo = Join-Path $root ".venv\Scripts\yolo.exe"
-if (-not (Test-Path $yolo)) {
-    throw "Virtual environment not found. Run scripts/setup.ps1 first."
+$repoRoot = Split-Path -Parent $root
+$backendFile = Join-Path $repoRoot ".uv-torch-backend"
+if (-not (Test-Path $backendFile)) {
+    throw "Torch backend marker not found. Run scripts/setup.ps1 first."
 }
 
-$configPath = Join-Path $root $Config
-if (-not (Test-Path $configPath)) {
-    throw "Config file not found: $configPath"
-}
+$backend = (Get-Content $backendFile -Raw).Trim()
+$configPath = Join-Path "YOLOv11" $Config
 
-$cfg = Get-Content $configPath -Raw | ConvertFrom-Json
+$args = @(
+    "run", "--project", $repoRoot, "--frozen", "--extra", $backend,
+    "python", "scripts/run_yolo_task.py",
+    "--action", "val",
+    "--config", $configPath
+)
 
-function Resolve-YoloValue([string]$Value, [switch]$Absolute) {
-    if ([string]::IsNullOrWhiteSpace($Value)) {
-        return $null
-    }
-
-    $candidate = Join-Path $root $Value
-    if (Test-Path $candidate) {
-        return (Resolve-Path $candidate).Path
-    }
-
-    if ($Absolute) {
-        return (Join-Path $root $Value)
-    }
-
-    return $Value
-}
-
-function Add-YoloArg([ref]$ArgsRef, [string]$Key, $Value) {
-    if ($null -eq $Value) {
-        return
-    }
-
-    if ($Value -is [string] -and [string]::IsNullOrWhiteSpace($Value)) {
-        return
-    }
-
-    if ($Value -is [bool]) {
-        $ArgsRef.Value += "$Key=$($Value.ToString().ToLower())"
-        return
-    }
-
-    $ArgsRef.Value += "$Key=$Value"
-}
-
-$args = @($cfg.task, "val")
-
-$modelValue = if ($Model) { $Model } else { $cfg.model }
-$dataValue = if ($Data) { $Data } else { $cfg.data }
-$projectValue = if ($Project) { $Project } else { $cfg.project }
-$nameValue = if ($Name) { $Name } else { $cfg.name }
-$deviceValue = if ($Device) { $Device } else { $cfg.device }
-$splitValue = if ($Split) { $Split } else { $cfg.split }
-$batchValue = if ($Batch -gt 0) { $Batch } else { $cfg.batch }
-$imgszValue = if ($Imgsz -gt 0) { $Imgsz } else { $cfg.imgsz }
-$saveJsonValue = if ($SaveJson.IsPresent) { $true } else { $cfg.save_json }
-
-if ([string]::IsNullOrWhiteSpace($dataValue)) {
-    throw "No dataset YAML configured. Create your own file under configs\datasets\ and pass -Data or update configs/runtime/val_detect.json."
-}
-
-Add-YoloArg ([ref]$args) "model" (Resolve-YoloValue $modelValue)
-Add-YoloArg ([ref]$args) "data" (Resolve-YoloValue $dataValue)
-Add-YoloArg ([ref]$args) "split" $splitValue
-Add-YoloArg ([ref]$args) "batch" $batchValue
-Add-YoloArg ([ref]$args) "imgsz" $imgszValue
-Add-YoloArg ([ref]$args) "device" $deviceValue
-Add-YoloArg ([ref]$args) "project" (Resolve-YoloValue $projectValue -Absolute)
-Add-YoloArg ([ref]$args) "name" $nameValue
-Add-YoloArg ([ref]$args) "save_json" $saveJsonValue
-
+if ($Data) { $args += @("--data", $Data) }
+if ($Model) { $args += @("--model", $Model) }
+if ($Device) { $args += @("--device", $Device) }
+if ($Split) { $args += @("--split", $Split) }
+if ($Batch -gt 0) { $args += @("--batch", $Batch) }
+if ($Imgsz -gt 0) { $args += @("--imgsz", $Imgsz) }
+if ($Name) { $args += @("--name", $Name) }
+if ($Project) { $args += @("--project", $Project) }
+if ($SaveJson.IsPresent) { $args += "--save-json" }
 foreach ($item in $Extra) {
     if (-not [string]::IsNullOrWhiteSpace($item)) {
-        $args += $item
+        $args += @("--set", $item)
     }
 }
-
-& $yolo @args
+& uv @args

@@ -1,0 +1,12 @@
+{
+  "task": "detect",
+  "model": "runs/train/struct6_reviewed_baseline/weights/best.pt",
+  "data": "configs/datasets/struct6_detect_reviewed.yaml",
+  "split": "val",
+  "batch": 8,
+  "imgsz": 640,
+  "device": "0",
+  "project": "runs/val",
+  "name": "struct6_reviewed_baseline",
+  "save_json": false
+}

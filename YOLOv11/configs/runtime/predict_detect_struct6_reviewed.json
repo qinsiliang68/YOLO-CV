@@ -1,0 +1,14 @@
+{
+  "task": "detect",
+  "model": "runs/train/struct6_reviewed_baseline/weights/best.pt",
+  "source": "../data/local/inference_samples",
+  "imgsz": 640,
+  "conf": 0.25,
+  "iou": 0.7,
+  "device": "0",
+  "project": "runs/predict",
+  "name": "struct6_reviewed_baseline",
+  "save": true,
+  "save_txt": true,
+  "save_conf": true
+}

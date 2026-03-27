@@ -15,6 +15,10 @@ from ultralytics.utils import LOGGER, RANK
 from ultralytics.utils.plotting import plot_images, plot_labels, plot_results
 from ultralytics.utils.torch_utils import de_parallel, torch_distributed_zero_first
 
+# 中文导读：
+# DetectionTrainer 是把 BaseTrainer 落地到目标检测任务的那一层：
+# 它负责指定检测数据集怎么建、检测模型怎么建、验证器是谁、batch 该怎么预处理。
+
 
 class DetectionTrainer(BaseTrainer):
     """
@@ -39,6 +43,7 @@ class DetectionTrainer(BaseTrainer):
             mode (str): `train` mode or `val` mode, users are able to customize different augmentations for each mode.
             batch (int, optional): Size of batches, this is for `rect`. Defaults to None.
         """
+        # stride 会影响 letterbox/rect 等对齐行为，因此这里优先从模型末端检测头拿真实 stride。
         gs = max(int(de_parallel(self.model).stride.max() if self.model else 0), 32)
         return build_yolo_dataset(self.args, img_path, batch, self.data, mode=mode, rect=mode == "val", stride=gs)
 
@@ -58,6 +63,7 @@ class DetectionTrainer(BaseTrainer):
         """Preprocesses a batch of images by scaling and converting to float."""
         batch["img"] = batch["img"].to(self.device, non_blocking=True).float() / 255
         if self.args.multi_scale:
+            # 多尺度训练会在一个范围内随机改输入分辨率，但仍保持 stride 对齐。
             imgs = batch["img"]
             sz = (
                 random.randrange(int(self.args.imgsz * 0.5), int(self.args.imgsz * 1.5 + self.stride))
@@ -80,6 +86,7 @@ class DetectionTrainer(BaseTrainer):
         # self.args.cls *= (self.args.imgsz / 640) ** 2 * 3 / nl  # scale to image size and layers
         self.model.nc = self.data["nc"]  # attach number of classes to model
         self.model.names = self.data["names"]  # attach class names to model
+        # 把 args 挂到模型上，后面的 loss/init_criterion 会直接从 model.args 取超参数。
         self.model.args = self.args  # attach hyperparameters to model
         # TODO: self.model.class_weights = labels_to_class_weights(dataset.labels, nc).to(device) * nc
 
@@ -93,6 +100,7 @@ class DetectionTrainer(BaseTrainer):
     def get_validator(self):
         """Returns a DetectionValidator for YOLO model validation."""
         self.loss_names = "box_loss", "cls_loss", "dfl_loss"
+        # 检测训练默认回传三项损失，并把验证工作委托给 DetectionValidator。
         return yolo.detect.DetectionValidator(
             self.test_loader, save_dir=self.save_dir, args=copy(self.args), _callbacks=self.callbacks
         )

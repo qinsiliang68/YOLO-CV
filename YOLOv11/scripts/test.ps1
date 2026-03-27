@@ -1,5 +1,5 @@
 param(
-    [string]$Config = "configs/runtime/val_detect.json",
+    [string]$Config = "configs/runtime/val_detect_struct6_reviewed.json",
     [string]$Data = "",
     [string]$Model = "",
     [string]$Device = "",

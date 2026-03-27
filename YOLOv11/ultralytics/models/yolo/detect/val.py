@@ -13,6 +13,10 @@ from ultralytics.utils.checks import check_requirements
 from ultralytics.utils.metrics import ConfusionMatrix, DetMetrics, box_iou
 from ultralytics.utils.plotting import output_to_target, plot_images
 
+# 中文导读：
+# DetectionValidator 是检测任务的指标实现层：
+# 它负责 NMS、坐标还原、TP/FP 统计、混淆矩阵和 mAP 计算。
+
 
 class DetectionValidator(BaseValidator):
     """
@@ -83,6 +87,7 @@ class DetectionValidator(BaseValidator):
         self.confusion_matrix = ConfusionMatrix(nc=self.nc, conf=self.args.conf)
         self.seen = 0
         self.jdict = []
+        # stats 是计算 AP/mAP 的原始缓存，后面 get_stats() 会把这些向量拼起来统一处理。
         self.stats = dict(tp=[], conf=[], pred_cls=[], target_cls=[], target_img=[])
 
     def get_desc(self):
@@ -91,6 +96,7 @@ class DetectionValidator(BaseValidator):
 
     def postprocess(self, preds):
         """Apply Non-maximum suppression to prediction outputs."""
+        # 验证阶段和预测阶段一样，都需要先做 NMS 后才能进入指标统计。
         return ops.non_max_suppression(
             preds,
             self.args.conf,
@@ -139,13 +145,14 @@ class DetectionValidator(BaseValidator):
             stat["target_img"] = cls.unique()
             if npr == 0:
                 if nl:
+                    # 没有预测框但有 GT，说明这一张图全是漏检，也要计入统计。
                     for k in self.stats.keys():
                         self.stats[k].append(stat[k])
                     if self.args.plots:
                         self.confusion_matrix.process_batch(detections=None, gt_bboxes=bbox, gt_cls=cls)
                 continue
 
-            # Predictions
+            # Predictions: 先把预测框缩回原图坐标系，再做 TP/FP 匹配。
             if self.args.single_cls:
                 pred[:, 5] = 0
             predn = self._prepare_pred(pred, pbatch)

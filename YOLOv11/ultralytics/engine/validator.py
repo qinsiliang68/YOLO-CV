@@ -35,6 +35,11 @@ from ultralytics.utils.checks import check_imgsz
 from ultralytics.utils.ops import Profile
 from ultralytics.utils.torch_utils import de_parallel, select_device, smart_inference_mode
 
+# 中文导读：
+# 1. BaseValidator 负责“跑推理并累计指标”，结构和训练循环相似，但没有反向传播。
+# 2. 它既能在训练中被 trainer 调用，也能单独验证导出模型。
+# 3. 各任务的差异主要体现在 preprocess/postprocess/update_metrics 这些钩子。
+
 
 class BaseValidator:
     """
@@ -108,6 +113,7 @@ class BaseValidator:
         self.training = trainer is not None
         augment = self.args.augment and (not self.training)
         if self.training:
+            # 训练中验证直接复用 trainer 当前模型或 EMA，避免重复加载权重。
             self.device = trainer.device
             self.data = trainer.data
             # force FP16 val during training
@@ -119,6 +125,7 @@ class BaseValidator:
             self.args.plots &= trainer.stopper.possible_stop or (trainer.epoch == trainer.epochs - 1)
             model.eval()
         else:
+            # 独立验证时走 AutoBackend，这样 .pt 和各类导出格式都能共用同一套评估逻辑。
             callbacks.add_integration_callbacks(self)
             model = AutoBackend(
                 weights=model or self.args.model,
@@ -162,6 +169,7 @@ class BaseValidator:
             Profile(device=self.device),
             Profile(device=self.device),
         )
+        # 验证主循环仍然是：预处理 -> 前向 -> 后处理 -> 指标累计。
         bar = TQDM(self.dataloader, desc=self.get_desc(), total=len(self.dataloader))
         self.init_metrics(de_parallel(model))
         self.jdict = []  # empty before each val
@@ -229,6 +237,7 @@ class BaseValidator:
         Returns:
             (torch.Tensor): Correct tensor of shape(N,10) for 10 IoU thresholds.
         """
+        # 这个布尔矩阵是后续计算 precision/recall/AP 的核心中间产物。
         # Dx10 matrix, where D - detections, 10 - IoU thresholds
         correct = np.zeros((pred_classes.shape[0], self.iouv.shape[0])).astype(bool)
         # LxD matrix where L - labels (rows), D - detections (columns)

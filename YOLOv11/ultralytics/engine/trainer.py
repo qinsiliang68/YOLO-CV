@@ -54,6 +54,11 @@ from ultralytics.utils.torch_utils import (
     torch_distributed_zero_first,
 )
 
+# 中文导读：
+# 1. BaseTrainer 定义完整训练生命周期：准备配置 -> 建数据/模型 -> epoch/batch 循环 -> 验证 -> 存权重。
+# 2. 不同任务只需要继承它并实现 get_model/get_dataloader/get_validator 等钩子。
+# 3. 检测、分割、姿态的差异主要体现在子类和 loss/head，而不是重写整套训练框架。
+
 
 class BaseTrainer:
     """
@@ -229,6 +234,8 @@ class BaseTrainer:
 
     def _setup_train(self, world_size):
         """Builds dataloaders and optimizer on correct rank process."""
+        # 训练准备阶段的主顺序：建模 -> 冻结层/AMP/DDP -> dataloader -> optimizer/scheduler -> resume。
+        # 后面真正的 epoch/batch 循环在 _do_train() 里。
         # Model
         self.run_callbacks("on_pretrain_routine_start")
         ckpt = self.setup_model()
@@ -381,6 +388,7 @@ class BaseTrainer:
 
                 # Forward
                 with autocast(self.amp):
+                    # 对训练态，self.model(batch) 最终会走到 BaseModel.loss() 再转进具体任务 loss。
                     batch = self.preprocess_batch(batch)
                     self.loss, self.loss_items = self.model(batch)
                     if RANK != -1:
@@ -394,6 +402,7 @@ class BaseTrainer:
 
                 # Optimize - https://pytorch.org/docs/master/notes/amp_examples.html
                 if ni - last_opt_step >= self.accumulate:
+                    # 梯度累积用于模拟更大的有效 batch，不是每个 batch 都立刻 step。
                     self.optimizer_step()
                     last_opt_step = ni
 
@@ -430,6 +439,7 @@ class BaseTrainer:
             self.run_callbacks("on_train_epoch_end")
             if RANK in {-1, 0}:
                 final_epoch = epoch + 1 >= self.epochs
+                # EMA 只在主进程维护，用作验证和最终保存，通常推理更稳定。
                 self.ema.update_attr(self.model, include=["yaml", "nc", "args", "names", "stride", "class_weights"])
 
                 # Validation
@@ -516,7 +526,7 @@ class BaseTrainer:
             {
                 "epoch": self.epoch,
                 "best_fitness": self.best_fitness,
-                "model": None,  # resume and final checkpoints derive from EMA
+                "model": None,  # 不直接保存当前训练态模型，而是以下方 EMA 权重作为恢复/部署主版本。
                 "ema": deepcopy(self.ema.ema).half(),
                 "updates": self.ema.updates,
                 "optimizer": convert_optimizer_state_dict_to_fp16(deepcopy(self.optimizer.state_dict())),
@@ -556,6 +566,7 @@ class BaseTrainer:
                 "pose",
                 "obb",
             }:
+                # 这些任务共享 detection 风格的数据入口，区别主要发生在标签字段和后处理。
                 data = check_det_dataset(self.args.data)
                 if "yaml_file" in data:
                     self.args.data = data["yaml_file"]  # for validating 'yolo train data=url.zip' usage
@@ -572,6 +583,7 @@ class BaseTrainer:
         cfg, weights = self.model, None
         ckpt = None
         if str(self.model).endswith(".pt"):
+            # 从 .pt 恢复时，会先抽出 ckpt 中保存的 yaml，再由任务子类重建对应模型对象。
             weights, ckpt = attempt_load_one_weight(self.model)
             cfg = weights.yaml
         elif isinstance(self.args.pretrained, (str, Path)):

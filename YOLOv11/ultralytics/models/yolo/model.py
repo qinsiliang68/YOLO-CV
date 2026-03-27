@@ -7,6 +7,11 @@ from ultralytics.models import yolo
 from ultralytics.nn.tasks import ClassificationModel, DetectionModel, OBBModel, PoseModel, SegmentationModel, WorldModel
 from ultralytics.utils import ROOT, yaml_load
 
+# 中文导读：
+# 1. 这个文件是具体到 YOLO 家族的 task_map 注册处。
+# 2. Model 是通用门面，这里才把“detect 对应谁训练、谁验证、谁预测”真正绑定起来。
+# 3. 读清 task_map，再回头看 engine/model.py 的 _smart_load()，整个调度关系就通了。
+
 
 class YOLO(Model):
     """YOLO (You Only Look Once) object detection model."""
@@ -25,6 +30,7 @@ class YOLO(Model):
     @property
     def task_map(self):
         """Map head to model, trainer, validator, and predictor classes."""
+        # 统一 API 的关键：同一个 YOLO().train()/predict()，会按 task 查到下面这张表再分发。
         return {
             "classify": {
                 "model": ClassificationModel,

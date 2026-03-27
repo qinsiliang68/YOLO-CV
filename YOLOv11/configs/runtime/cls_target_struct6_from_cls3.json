@@ -1,0 +1,17 @@
+{
+  "task": "classify",
+  "model": "runs/cls_source/yolo11n_cls3_focus/weights/best.pt",
+  "data": "datasets/struct6_cls_target",
+  "epochs": 50,
+  "imgsz": 224,
+  "batch": 32,
+  "device": "0",
+  "workers": 4,
+  "project": "runs/cls_target",
+  "name": "struct6_target_from_cls3",
+  "pretrained": true,
+  "patience": 10,
+  "optimizer": "auto",
+  "cache": false,
+  "resume": false
+}

@@ -25,6 +25,11 @@ from ultralytics.utils import (
     yaml_load,
 )
 
+# 中文导读：
+# 1. Model 是 Ultralytics 对外暴露的统一门面，train/val/predict/export 都从这里进。
+# 2. 真正干活的并不是这个类本身，而是它按 task 动态装配出来的 model/trainer/validator/predictor。
+# 3. 读源码时可以把它看成“调度层”，负责把用户参数路由到下层执行器。
+
 
 class Model(nn.Module):
     """
@@ -248,6 +253,7 @@ class Model(nn.Module):
         cfg_dict = yaml_model_load(cfg)
         self.cfg = cfg
         self.task = task or guess_model_task(cfg_dict)
+        # _smart_load("model") 会根据 task 返回对应的具体网络类，例如 DetectionModel。
         self.model = (model or self._smart_load("model"))(cfg_dict, verbose=verbose and RANK == -1)  # build model
         self.overrides["model"] = self.cfg
         self.overrides["task"] = self.task
@@ -282,11 +288,13 @@ class Model(nn.Module):
         weights = checks.check_model_file_from_stem(weights)  # add suffix, i.e. yolov8n -> yolov8n.pt
 
         if Path(weights).suffix == ".pt":
+            # .pt 是完整 PyTorch 检查点，包含网络权重以及训练时保留下来的 task/args 信息。
             self.model, self.ckpt = attempt_load_one_weight(weights)
             self.task = self.model.args["task"]
             self.overrides = self.model.args = self._reset_ckpt_args(self.model.args)
             self.ckpt_path = self.model.pt_path
         else:
+            # 非 .pt 一般视作导出模型或纯路径输入，只记录最小必要元信息。
             weights = checks.check_file(weights)  # runs in all cases, not redundant with above call
             self.model, self.ckpt = weights, None
             self.task = task or guess_model_task(weights)
@@ -539,11 +547,13 @@ class Model(nn.Module):
             x in ARGV for x in ("predict", "track", "mode=predict", "mode=track")
         )
 
+        # 参数合并顺序决定了谁覆盖谁：越靠右优先级越高。
         custom = {"conf": 0.25, "batch": 1, "save": is_cli, "mode": "predict"}  # method defaults
         args = {**self.overrides, **custom, **kwargs}  # highest priority args on the right
         prompts = args.pop("prompts", None)  # for SAM-type models
 
         if not self.predictor:
+            # predictor 会被缓存复用，避免多次 predict() 重复构建推理后端。
             self.predictor = predictor or self._smart_load("predictor")(overrides=args, _callbacks=self.callbacks)
             self.predictor.setup_model(model=self.model, verbose=is_cli)
         else:  # only update args if predictor is already setup
@@ -794,6 +804,7 @@ class Model(nn.Module):
         if args.get("resume"):
             args["resume"] = self.ckpt_path
 
+        # 这里仅负责组装 trainer；真正的 epoch/batch 循环在 BaseTrainer._do_train()。
         self.trainer = (trainer or self._smart_load("trainer"))(overrides=args, _callbacks=self.callbacks)
         if not args.get("resume"):  # manually set model only if not resuming
             self.trainer.model = self.trainer.get_model(weights=self.model if self.ckpt else None, cfg=self.model.yaml)
@@ -1089,6 +1100,7 @@ class Model(nn.Module):
             - The task_map attribute should be properly initialized with the correct mappings for each task.
         """
         try:
+            # task_map 是统一 API 的核心分发表：同一个 train()/predict()，会因 task 不同而走向不同实现。
             return self.task_map[self.task][key]
         except Exception as e:
             name = self.__class__.__name__

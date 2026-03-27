@@ -8,6 +8,7 @@ __pycache__/
 .ruff_cache/
 .venv/
 venv/
+.uv-torch-backend
 
 # Training outputs
 outputs/
@@ -31,6 +32,7 @@ Thumbs.db
 
 # Local clone cache
 _upstream_git_cache/
+_recycle_bin/
 
 # Per-version working directories
 YOLOv11/datasets/*
@@ -39,9 +41,3 @@ YOLOv11/weights/*
 !YOLOv11/weights/.gitkeep
 YOLOv11/runs/*
 !YOLOv11/runs/.gitkeep
-YOLOv26/datasets/*
-!YOLOv26/datasets/.gitkeep
-YOLOv26/weights/*
-!YOLOv26/weights/.gitkeep
-YOLOv26/runs/*
-!YOLOv26/runs/.gitkeep

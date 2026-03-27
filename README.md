@@ -1,37 +1,33 @@
 # YOLO-CV
 
-YOLO-CV is the parent academic research workspace for comparing and modifying the retained official YOLO branches side by side.
+This repository is the training workspace for the YOLOv11 sewer-defect research line.
+Only code, configs, scripts, and notes are tracked in Git. Images, datasets, weights,
+and run outputs stay local.
 
-## Active Research Folders
+## Layout
 
-- `YOLOv11/`
-- `YOLOv26/`
+- `YOLOv11/`: local YOLOv11 source tree plus runtime configs
+- `scripts/`: root workflow entrypoints built around `uv`
+- `research/`: label alignment, pipeline specs, and training-machine notes
+- `data/`: local-only raw data and intermediate results, ignored by Git
 
-Each version folder includes:
+## Training Machine Flow
 
-- original upstream source snapshot
-- `scripts/setup.ps1`
-- `scripts/train.ps1`
-- `scripts/val.ps1`
-- `scripts/test.ps1`
-- `scripts/predict.ps1`
-- `configs/datasets/`
-- `configs/runtime/*.json`
-- `datasets/`
-- `weights/`
-- `runs/`
+1. `git pull`
+2. `.\scripts\setup.ps1 -Backend cu128`
+3. `.\scripts\check.ps1`
+4. Move datasets into the fixed local-only paths described in `research/training_machine_runbook.md`
+5. Start classification pretraining, CAM export, or detector training
 
-## Recommended Workflow
+## Main Entry Points
 
-1. Open the version folder you want to study.
-2. Run `.\scripts\setup.ps1`.
-3. Put your dataset into that version folder's `datasets/`.
-4. Create your own dataset YAML under `configs/datasets/`.
-5. Start with `.\scripts\train.ps1`, then use `val/test/predict` as needed.
+- Source classification pretraining: `.\scripts\cls_pretrain.ps1`
+- Target classification fine-tuning: `.\scripts\cls_finetune_target.ps1`
+- CAM export: `.\scripts\export_cam.ps1`
+- CAM to pseudo boxes: `.\scripts\cam_to_pseudobox.ps1`
+- Detector training: `.\YOLOv11\scripts\train.ps1`
+- Detector validation: `.\YOLOv11\scripts\val.ps1`
+- Detector test: `.\YOLOv11\scripts\test.ps1`
+- Detector predict: `.\YOLOv11\scripts\predict.ps1`
 
-## Upstream Pinning
-
-- `YOLOv11`: `ultralytics/ultralytics` at `v8.3.0`
-- `YOLOv26`: `ultralytics/ultralytics` at `v8.4.0`
-
-See each version folder's `UPSTREAM.md` for pinned commit details.
+See `research/training_machine_runbook.md` for the fixed dataset paths and recommended commands.

@@ -51,6 +51,10 @@ __all__ = (
     "SCDown",
 )
 
+# 中文导读：
+# 1. 这里是比 Conv 更高一层的结构块，例如 C2f、SPPF、DFL、Bottleneck。
+# 2. parse_model() 在解析 YAML 时，真正搭网络主要就是在这些 block 之间拼装。
+
 
 class DFL(nn.Module):
     """
@@ -62,6 +66,7 @@ class DFL(nn.Module):
     def __init__(self, c1=16):
         """Initialize a convolutional layer with a given number of input channels."""
         super().__init__()
+        # DFL 本质是在“离散分布 -> 连续距离”之间做一个固定加权求和，不参与训练。
         self.conv = nn.Conv2d(c1, 1, 1, bias=False).requires_grad_(False)
         x = torch.arange(c1, dtype=torch.float)
         self.conv.weight.data[:] = nn.Parameter(x.view(1, c1, 1, 1))
@@ -227,6 +232,7 @@ class C2f(nn.Module):
     def __init__(self, c1, c2, n=1, shortcut=False, g=1, e=0.5):
         """Initializes a CSP bottleneck with 2 convolutions and n Bottleneck blocks for faster processing."""
         super().__init__()
+        # C2f 是 YOLOv8/11 系列里非常核心的主干积木：保留 CSP 思想，但实现更轻、更快。
         self.c = int(c2 * e)  # hidden channels
         self.cv1 = Conv(c1, 2 * self.c, 1, 1)
         self.cv2 = Conv((2 + n) * self.c, c2, 1)  # optional act=FReLU(c2)
@@ -234,6 +240,7 @@ class C2f(nn.Module):
 
     def forward(self, x):
         """Forward pass through C2f layer."""
+        # 先拆分通道，再让最后一支连续经过多个 Bottleneck，最后把所有分支再拼接回来。
         y = list(self.cv1(x).chunk(2, 1))
         y.extend(m(y[-1]) for m in self.m)
         return self.cv2(torch.cat(y, 1))

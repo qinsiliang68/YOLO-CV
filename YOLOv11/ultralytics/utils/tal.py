@@ -9,6 +9,11 @@ from .ops import xywhr2xyxyxyxy
 
 TORCH_1_10 = check_version(torch.__version__, "1.10.0")
 
+# 中文导读：
+# 1. TAL = Task Aligned Assigner，是 YOLOv11 检测训练里“谁是正样本”的判定器。
+# 2. 它不只看 IoU，也把分类分数一起纳入，目的是让分类和定位目标更一致。
+# 3. loss.py 里 v8DetectionLoss 会先调用这里做匹配，再根据匹配结果计算 box/cls/dfl。
+
 
 class TaskAlignedAssigner(nn.Module):
     """
@@ -69,6 +74,7 @@ class TaskAlignedAssigner(nn.Module):
                 torch.zeros_like(pd_scores[..., 0]).to(device),
             )
 
+        # 先找候选正样本，再处理“一格匹配多个 GT”的冲突。
         mask_pos, align_metric, overlaps = self.get_pos_mask(
             pd_scores, pd_bboxes, gt_labels, gt_bboxes, anc_points, mask_gt
         )
@@ -117,6 +123,8 @@ class TaskAlignedAssigner(nn.Module):
         gt_boxes = gt_bboxes.unsqueeze(2).expand(-1, -1, na, -1)[mask_gt]
         overlaps[mask_gt] = self.iou_calculation(gt_boxes, pd_boxes)
 
+        # 分类置信度和 IoU 共同组成 alignment metric。
+        # alpha/beta 控制“更看重分类”还是“更看重定位”。
         align_metric = bbox_scores.pow(self.alpha) * overlaps.pow(self.beta)
         return align_metric, overlaps
 
@@ -183,6 +191,7 @@ class TaskAlignedAssigner(nn.Module):
                                           for positive anchor points, where num_classes is the number
                                           of object classes.
         """
+        # 根据 target_gt_idx 把每个前景 anchor 映射回它负责的 GT。
         # Assigned target labels, (b, 1)
         batch_ind = torch.arange(end=self.bs, dtype=torch.int64, device=gt_labels.device)[..., None]
         target_gt_idx = target_gt_idx + batch_ind * self.n_max_boxes  # (b, h*w)
@@ -249,6 +258,7 @@ class TaskAlignedAssigner(nn.Module):
         Note:
             b: batch size, h: height, w: width.
         """
+        # 如果一个 anchor 同时被多个 GT 选中，只保留 IoU 最大的那个，避免监督冲突。
         # Convert (b, n_max_boxes, h*w) -> (b, h*w)
         fg_mask = mask_pos.sum(-2)
         if fg_mask.max() > 1:  # one anchor is assigned to multiple gt_bboxes

@@ -1,5 +1,5 @@
 param(
-    [string]$Config = "configs/runtime/predict_detect.json",
+    [string]$Config = "configs/runtime/predict_detect_struct6_reviewed.json",
     [string]$Model = "",
     [string]$Source = "",
     [string]$Device = "",
@@ -16,81 +16,35 @@ param(
 $ErrorActionPreference = "Stop"
 
 $root = Split-Path -Parent $PSScriptRoot
-$yolo = Join-Path $root ".venv\Scripts\yolo.exe"
-if (-not (Test-Path $yolo)) {
-    throw "Virtual environment not found. Run scripts/setup.ps1 first."
+$repoRoot = Split-Path -Parent $root
+$backendFile = Join-Path $repoRoot ".uv-torch-backend"
+if (-not (Test-Path $backendFile)) {
+    throw "Torch backend marker not found. Run scripts/setup.ps1 first."
 }
 
-$configPath = Join-Path $root $Config
-if (-not (Test-Path $configPath)) {
-    throw "Config file not found: $configPath"
-}
+$backend = (Get-Content $backendFile -Raw).Trim()
+$configPath = Join-Path "YOLOv11" $Config
 
-$cfg = Get-Content $configPath -Raw | ConvertFrom-Json
+$args = @(
+    "run", "--project", $repoRoot, "--frozen", "--extra", $backend,
+    "python", "scripts/run_yolo_task.py",
+    "--action", "predict",
+    "--config", $configPath
+)
 
-function Resolve-YoloValue([string]$Value, [switch]$Absolute) {
-    if ([string]::IsNullOrWhiteSpace($Value)) {
-        return $null
-    }
-
-    $candidate = Join-Path $root $Value
-    if (Test-Path $candidate) {
-        return (Resolve-Path $candidate).Path
-    }
-
-    if ($Absolute) {
-        return (Join-Path $root $Value)
-    }
-
-    return $Value
-}
-
-function Add-YoloArg([ref]$ArgsRef, [string]$Key, $Value) {
-    if ($null -eq $Value) {
-        return
-    }
-
-    if ($Value -is [string] -and [string]::IsNullOrWhiteSpace($Value)) {
-        return
-    }
-
-    if ($Value -is [bool]) {
-        $ArgsRef.Value += "$Key=$($Value.ToString().ToLower())"
-        return
-    }
-
-    $ArgsRef.Value += "$Key=$Value"
-}
-
-$args = @($cfg.task, "predict")
-
-$modelValue = if ($Model) { $Model } else { $cfg.model }
-$sourceValue = if ($Source) { $Source } else { $cfg.source }
-$projectValue = if ($Project) { $Project } else { $cfg.project }
-$nameValue = if ($Name) { $Name } else { $cfg.name }
-$deviceValue = if ($Device) { $Device } else { $cfg.device }
-$confValue = if ($Conf -ge 0) { $Conf } else { $cfg.conf }
-$iouValue = if ($Iou -ge 0) { $Iou } else { $cfg.iou }
-$imgszValue = if ($Imgsz -gt 0) { $Imgsz } else { $cfg.imgsz }
-$saveTxtValue = if ($SaveTxt.IsPresent) { $true } else { $cfg.save_txt }
-$saveConfValue = if ($SaveConf.IsPresent) { $true } else { $cfg.save_conf }
-
-Add-YoloArg ([ref]$args) "model" (Resolve-YoloValue $modelValue)
-Add-YoloArg ([ref]$args) "source" (Resolve-YoloValue $sourceValue)
-Add-YoloArg ([ref]$args) "imgsz" $imgszValue
-Add-YoloArg ([ref]$args) "conf" $confValue
-Add-YoloArg ([ref]$args) "iou" $iouValue
-Add-YoloArg ([ref]$args) "device" $deviceValue
-Add-YoloArg ([ref]$args) "project" (Resolve-YoloValue $projectValue -Absolute)
-Add-YoloArg ([ref]$args) "name" $nameValue
-Add-YoloArg ([ref]$args) "save" $cfg.save
-Add-YoloArg ([ref]$args) "save_txt" $saveTxtValue
-Add-YoloArg ([ref]$args) "save_conf" $saveConfValue
-
+if ($Model) { $args += @("--model", $Model) }
+if ($Source) { $args += @("--source", $Source) }
+if ($Device) { $args += @("--device", $Device) }
+if ($Conf -ge 0) { $args += @("--conf", $Conf) }
+if ($Iou -ge 0) { $args += @("--iou", $Iou) }
+if ($Imgsz -gt 0) { $args += @("--imgsz", $Imgsz) }
+if ($Name) { $args += @("--name", $Name) }
+if ($Project) { $args += @("--project", $Project) }
+if ($SaveTxt.IsPresent) { $args += "--save-txt" }
+if ($SaveConf.IsPresent) { $args += "--save-conf" }
 foreach ($item in $Extra) {
     if (-not [string]::IsNullOrWhiteSpace($item)) {
-        $args += $item
+        $args += @("--set", $item)
     }
 }
-
-& $yolo @args
+& uv @args
