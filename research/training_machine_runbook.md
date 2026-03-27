@@ -23,6 +23,25 @@ Available `-Backend` values:
 2. Stores the chosen backend in `.uv-torch-backend`
 3. Creates the local-only dataset directory skeleton
 
+## 1.1 Default Hardware Profile
+
+The committed runtime defaults are tuned for a workstation with an RTX 3090 24 GB.
+
+- Source classification defaults: `imgsz=224`, `batch=128`, `workers=8`
+- Target classification defaults: `imgsz=224`, `batch=128`, `workers=8`
+- Detection defaults: `imgsz=640`, `batch=16`, `workers=8`
+
+These defaults assume the current baseline models:
+
+- `yolo11n-cls.pt` for classification
+- `yolo11n.pt` for detection
+
+If you later switch to a larger model such as `yolo11s-cls.pt` or `yolo11s.pt`, lower batch size first.
+Safe fallback points are:
+
+- classification: `batch=64`
+- detection: `batch=8`
+
 ## 2. Fixed Dataset Paths
 
 ### Source Classification Pretraining
