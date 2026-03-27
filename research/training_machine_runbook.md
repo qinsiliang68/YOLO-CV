@@ -46,10 +46,10 @@ Safe fallback points are:
 
 ### Source Classification Pretraining
 
-- `YOLOv11/datasets/sewerml_hla_cls3_focus/train/...`
-- `YOLOv11/datasets/sewerml_hla_cls3_focus/val/...`
-- `YOLOv11/datasets/sewerml_hla_cls6_focus/train/...`
-- `YOLOv11/datasets/sewerml_hla_cls6_focus/val/...`
+- `data/sewerml/annotations/...`
+- `data/sewerml/images_all/...`
+- `YOLOv11/datasets/sewerml_cls6_train3000/train/...`
+- `YOLOv11/datasets/sewerml_cls6_train3000/val/...`
 
 ### Target Classification Fine-Tuning
 
@@ -87,7 +87,6 @@ Recommended class names:
 
 ### Raw and Intermediate Local Data
 
-- `data/sewerml/raw_reference`
 - `data/foshan/images`
 - `data/foshan/labels_cls`
 - `data/foshan/cam_outputs`
@@ -106,9 +105,15 @@ Recommended class names:
 ### Source Classification Pretraining
 
 ```powershell
-.\scripts\cls_pretrain.ps1 -Config YOLOv11/configs/runtime/cls_source_cls3.json
+.\scripts\extract_sewerml_cls6_train3000.ps1 -Clean
 .\scripts\cls_pretrain.ps1 -Config YOLOv11/configs/runtime/cls_source_cls6.json
 ```
+
+`sewerml_cls6_train3000` is the compact single-label dataset with 3000 images total:
+
+- 6 classes
+- 500 images per class
+- 450 train + 50 val per class
 
 ### Target Classification Fine-Tuning
 
