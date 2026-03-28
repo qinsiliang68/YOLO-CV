@@ -1,0 +1,7 @@
+actual_label,Deformation,DepositAttachment,JointAnomaly,Normal,Roots,WallDamage
+Deformation,105,4,2,5,0,4
+DepositAttachment,16,70,13,7,3,11
+JointAnomaly,5,19,76,2,4,14
+Normal,16,8,5,77,1,13
+Roots,0,10,26,2,76,6
+WallDamage,4,26,11,1,1,77

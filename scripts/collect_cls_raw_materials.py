@@ -1044,6 +1044,16 @@ def copy_run_supporting_files(run_dir: Path, output_dir: Path) -> dict[str, str]
         copied_path = copy_if_exists(src, artifacts_dir / src.name)
         if copied_path is not None:
             copied[name] = copied_path
+
+    preview_patterns = (
+        "train_batch*.jpg",
+        "val_batch*.jpg",
+    )
+    for pattern in preview_patterns:
+        for src in sorted(run_dir.glob(pattern)):
+            copied_path = copy_if_exists(src, artifacts_dir / src.name)
+            if copied_path is not None:
+                copied[src.name] = copied_path
     return copied
 
 
