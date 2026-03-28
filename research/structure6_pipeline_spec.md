@@ -20,10 +20,9 @@ The detector task is fixed to six structural defect classes:
 
 ## Source Pretraining Datasets
 
-Use the already prepared single-label focus subsets as source-domain pretraining data:
+Use the raw SewerML library to extract one compact single-label source set as the source-domain pretraining data:
 
-- `YOLOv11/datasets/sewerml_hla_cls3_focus`
-- `YOLOv11/datasets/sewerml_hla_cls6_focus`
+- `YOLOv11/datasets/sewerml_cls6_train3000`
 
 Do not train the first version of the pipeline on raw multi-label SewerML.
 
@@ -53,7 +52,8 @@ Tracked in Git:
 
 Local-only data positions:
 
-- `data/sewerml/raw_reference`
+- `data/sewerml/annotations`
+- `data/sewerml/images_all`
 - `data/foshan/images`
 - `data/foshan/labels_cls`
 - `data/foshan/cam_outputs`
@@ -68,16 +68,15 @@ Local-only data positions:
 
 Derived training datasets that stay local:
 
-- `YOLOv11/datasets/sewerml_hla_cls3_focus`
-- `YOLOv11/datasets/sewerml_hla_cls6_focus`
+- `YOLOv11/datasets/sewerml_cls6_train3000`
 - `YOLOv11/datasets/struct6_cls_target`
 - `YOLOv11/datasets/struct6_det_pseudo`
 - `YOLOv11/datasets/struct6_det_reviewed`
 
 ## Execution Order
 
-1. Run source classification pretraining on `cls3_focus`.
-2. Run source classification pretraining on `cls6_focus`.
+1. Extract `sewerml_cls6_train3000` from the raw SewerML library.
+2. Run source classification pretraining on `sewerml_cls6_train3000`.
 3. Fine-tune on target-domain classification data.
 4. Export CAM heatmaps.
 5. Convert CAM heatmaps to pseudo boxes.

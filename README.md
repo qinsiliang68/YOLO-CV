@@ -23,6 +23,7 @@ and run outputs stay local.
 
 - One-click source -> target -> CAM -> pseudo-box pipeline: `uv run --no-sync main.py`
 - Source classification pretraining: `.\scripts\cls_pretrain.ps1`
+- Extract the only active 3000-image source set directly from raw SewerML: `.\scripts\extract_sewerml_cls6_train3000.ps1 -Clean`
 - Target classification fine-tuning: `.\scripts\cls_finetune_target.ps1`
 - CAM export: `.\scripts\export_cam.ps1`
 - CAM to pseudo boxes: `.\scripts\cam_to_pseudobox.ps1`

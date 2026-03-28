@@ -7,11 +7,10 @@ from pipeline_common import REPO_ROOT
 
 
 EXPECTED_DIRS = [
-    "data/sewerml/raw_reference",
-    "YOLOv11/datasets/sewerml_hla_cls3_focus/train",
-    "YOLOv11/datasets/sewerml_hla_cls3_focus/val",
-    "YOLOv11/datasets/sewerml_hla_cls6_focus/train",
-    "YOLOv11/datasets/sewerml_hla_cls6_focus/val",
+    "data/sewerml/annotations",
+    "data/sewerml/images_all",
+    "YOLOv11/datasets/sewerml_cls6_train3000/train",
+    "YOLOv11/datasets/sewerml_cls6_train3000/val",
     "YOLOv11/datasets/struct6_cls_target/train",
     "YOLOv11/datasets/struct6_cls_target/val",
     "YOLOv11/datasets/struct6_cls_target/test",

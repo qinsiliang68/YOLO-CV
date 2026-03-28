@@ -31,8 +31,7 @@ If you switch to a larger model, reduce batch size before changing anything else
 
 ## Local-Only Data Paths
 
-- `datasets/sewerml_hla_cls3_focus/`
-- `datasets/sewerml_hla_cls6_focus/`
+- `datasets/sewerml_cls6_train3000/`
 - `datasets/struct6_cls_target/`
 - `datasets/struct6_det_pseudo/`
 - `datasets/struct6_det_reviewed/`
