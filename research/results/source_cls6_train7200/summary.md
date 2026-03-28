@@ -13,5 +13,6 @@
 - Last epoch top-1: `68.61%`
 - Last epoch top-5: `99.03%`
 - Last epoch val loss: `1.3601`
-- Curves: `research/results/source_train7200_curves.png`
-- Normalized confusion matrix: `research/results/source_train7200_confusion_matrix_normalized.png`
+- Curves: `train_curves.png`
+- Normalized confusion matrix: `confusion_matrix_normalized.png`
+- Threshold sweep: `threshold_sweep.txt`

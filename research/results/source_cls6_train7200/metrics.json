@@ -19,7 +19,8 @@
     "last_val_loss": 1.3601
   },
   "artifacts": {
-    "curves_png": "research/results/source_train7200_curves.png",
-    "confusion_matrix_normalized_png": "research/results/source_train7200_confusion_matrix_normalized.png"
+    "curves_png": "research/results/source_cls6_train7200/train_curves.png",
+    "confusion_matrix_normalized_png": "research/results/source_cls6_train7200/confusion_matrix_normalized.png",
+    "threshold_sweep_txt": "research/results/source_cls6_train7200/threshold_sweep.txt"
   }
 }
