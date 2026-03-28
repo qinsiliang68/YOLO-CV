@@ -1,0 +1,14 @@
+{
+  "train_time_seconds": 6798.545412778854,
+  "epochs_completed": 93,
+  "best_epoch": 73,
+  "best_fitness": 0.85625,
+  "peak_gpu_mem_reserved_gb": 25.631391744,
+  "peak_gpu_mem_allocated_gb": 18.085720576,
+  "validator_speed_ms": {
+    "preprocess": 3.271233704355028,
+    "inference": 2.3191630840301514,
+    "loss": 0.0027785698572794595,
+    "postprocess": 0.0
+  }
+}
