@@ -17,7 +17,7 @@ DATA_ROOT = REPO_ROOT / "data"
 IMAGE_SUFFIXES = {".jpg", ".jpeg", ".png", ".bmp", ".webp", ".tif", ".tiff"}
 STAGE_ORDER = ("source", "target", "cam", "pseudobox")
 
-SOURCE_DATASET = YOLOV11_ROOT / "datasets" / "sewerml_hla_cls6_focus"
+SOURCE_DATASET = REPO_ROOT.parent / "sewerml_cls6_train7200"
 TARGET_DATASET = YOLOV11_ROOT / "datasets" / "struct6_cls_target"
 SOURCE_RUN_ROOT = YOLOV11_ROOT / "runs" / "cls_source"
 TARGET_RUN_ROOT = YOLOV11_ROOT / "runs" / "cls_target"
@@ -455,6 +455,23 @@ def run_source_stage(args: argparse.Namespace) -> None:
         raise
 
 
+def run_source_materials_stage(args: argparse.Namespace) -> None:
+    weights_path = source_weights_path()
+    if not weights_path.exists() and not args.dry_run:
+        raise SystemExit(f"Missing source weights for raw material export: {weights_path}")
+    command = [
+        "--config",
+        str(SOURCE_CONFIG_FILE),
+        "--weights",
+        str(weights_path),
+        "--batch",
+        "16",
+    ]
+    if args.device.strip():
+        command.extend(["--device", args.device])
+    run_python("scripts/collect_cls_raw_materials.py", command, dry_run=args.dry_run)
+
+
 def run_target_stage(args: argparse.Namespace) -> None:
     resolved_target_run_dir = target_run_dir()
     target_weights = target_weights_path()
@@ -578,6 +595,7 @@ def main() -> None:
 
     if stage_enabled(args.stop_after, "source"):
         run_source_stage(args)
+        run_source_materials_stage(args)
     if stage_enabled(args.stop_after, "target"):
         run_target_stage(args)
     if stage_enabled(args.stop_after, "cam"):

@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import json
 
+from classify_train_callbacks import register_classification_material_callbacks
 from pipeline_common import YOLOV11_ROOT, compact_dict, ensure_yolov11_importable, load_json_config, resolve_model_value, resolve_relative_path
 
 
@@ -64,6 +65,7 @@ def main() -> None:
     from ultralytics import YOLO
 
     trainer = YOLO(model, task="classify")
+    register_classification_material_callbacks(trainer)
     trainer.train(**train_kwargs)
 
 
