@@ -30,6 +30,14 @@ Thumbs.db
 .idea/
 .vscode/
 
+# LaTeX build artifacts
+essay/docs/build/*.aux
+essay/docs/build/*.lof
+essay/docs/build/*.log
+essay/docs/build/*.lot
+essay/docs/build/*.out
+essay/docs/build/*.toc
+
 # Local clone cache
 _upstream_git_cache/
 _recycle_bin/
