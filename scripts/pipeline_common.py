@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import os
 import sys
 from pathlib import Path
 from typing import Any
@@ -8,6 +9,7 @@ from typing import Any
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 YOLOV11_ROOT = REPO_ROOT / "YOLOv11"
+os.environ.setdefault("YOLO_CONFIG_DIR", str(REPO_ROOT / ".ultralytics"))
 STRUCT6_CLASSES = [
     "CrackBreak",
     "SurfaceDamage",

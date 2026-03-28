@@ -1,5 +1,5 @@
 param(
-    [ValidateSet("cpu", "cu126", "cu128")]
+    [ValidateSet("cu128")]
     [string]$Backend = "cu128",
     [string]$Python = "3.11"
 )

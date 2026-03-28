@@ -11,6 +11,16 @@ cd C:\GitHub\YOLO-CV
 .\scripts\check.ps1
 ```
 
+Default one-click pipeline entrypoint:
+
+```powershell
+uv run --no-sync main.py
+```
+
+`main.py` runs the default CLS6 source pretraining, target classification fine-tuning, CAM export,
+and pseudo-box generation pipeline. It stops early with a clear error if the target-domain inputs
+have not been placed into the expected local-only paths yet.
+
 Available `-Backend` values:
 
 - `cu128`: default choice for recent NVIDIA CUDA 12.8 compatible drivers
@@ -106,14 +116,12 @@ Recommended class names:
 ### Source Classification Pretraining
 
 ```powershell
-.\scripts\cls_pretrain.ps1 -Config YOLOv11/configs/runtime/cls_source_cls3.json
 .\scripts\cls_pretrain.ps1 -Config YOLOv11/configs/runtime/cls_source_cls6.json
 ```
 
 ### Target Classification Fine-Tuning
 
 ```powershell
-.\scripts\cls_finetune_target.ps1 -Config YOLOv11/configs/runtime/cls_target_struct6_from_cls3.json
 .\scripts\cls_finetune_target.ps1 -Config YOLOv11/configs/runtime/cls_target_struct6.json
 ```
 

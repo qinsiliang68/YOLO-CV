@@ -1,5 +1,5 @@
 param(
-    [string]$Config = "YOLOv11/configs/runtime/cls_source_cls3.json",
+    [string]$Config = "YOLOv11/configs/runtime/cls_source_cls6.json",
     [string]$Data = "",
     [string]$Model = "",
     [string]$Device = "",

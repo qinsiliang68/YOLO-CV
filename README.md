@@ -17,10 +17,11 @@ and run outputs stay local.
 2. `.\scripts\setup.ps1 -Backend cu128`
 3. `.\scripts\check.ps1`
 4. Move datasets into the fixed local-only paths described in `research/training_machine_runbook.md`
-5. Start classification pretraining, CAM export, or detector training
+5. Run `uv run --no-sync main.py`
 
 ## Main Entry Points
 
+- One-click source -> target -> CAM -> pseudo-box pipeline: `uv run --no-sync main.py`
 - Source classification pretraining: `.\scripts\cls_pretrain.ps1`
 - Target classification fine-tuning: `.\scripts\cls_finetune_target.ps1`
 - CAM export: `.\scripts\export_cam.ps1`

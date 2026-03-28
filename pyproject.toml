@@ -17,23 +17,14 @@ dependencies = [
     "py-cpuinfo",
     "pandas>=1.1.4",
     "seaborn>=0.11.0",
+    "torch",
+    "torchvision",
     "ultralytics-thop>=2.0.0",
     "albumentations>=1.4.6",
 ]
 
 [project.optional-dependencies]
-cpu = [
-    "torch",
-    "torchvision",
-]
-cu126 = [
-    "torch",
-    "torchvision",
-]
-cu128 = [
-    "torch",
-    "torchvision",
-]
+cu128 = []
 dev = [
     "pytest>=8.3.0",
 ]
@@ -41,42 +32,10 @@ dev = [
 [tool.uv]
 package = false
 default-groups = []
-conflicts = [
-    [
-        { extra = "cpu" },
-        { extra = "cu126" },
-    ],
-    [
-        { extra = "cpu" },
-        { extra = "cu128" },
-    ],
-    [
-        { extra = "cu126" },
-        { extra = "cu128" },
-    ],
-]
 
 [tool.uv.sources]
-torch = [
-    { index = "pytorch-cpu", extra = "cpu" },
-    { index = "pytorch-cu126", extra = "cu126" },
-    { index = "pytorch-cu128", extra = "cu128" },
-]
-torchvision = [
-    { index = "pytorch-cpu", extra = "cpu" },
-    { index = "pytorch-cu126", extra = "cu126" },
-    { index = "pytorch-cu128", extra = "cu128" },
-]
-
-[[tool.uv.index]]
-name = "pytorch-cpu"
-url = "https://download.pytorch.org/whl/cpu"
-explicit = true
-
-[[tool.uv.index]]
-name = "pytorch-cu126"
-url = "https://download.pytorch.org/whl/cu126"
-explicit = true
+torch = { index = "pytorch-cu128" }
+torchvision = { index = "pytorch-cu128" }
 
 [[tool.uv.index]]
 name = "pytorch-cu128"
