@@ -6,7 +6,7 @@
   "parameters": 10360902,
   "trainable_parameters": 0,
   "gflops": 39.608525,
-  "best_weights_size_mb": 20.889174,
-  "last_weights_size_mb": 20.890454,
+  "best_weights_size_mb": 20.893014,
+  "last_weights_size_mb": 20.894294,
   "fused": false
 }
