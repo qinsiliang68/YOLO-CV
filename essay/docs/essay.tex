@@ -1566,9 +1566,9 @@ SE-Net 是通道注意力的经典代表，其核心思想是通过全局信息�
 
 本文第一阶段 gate 并未引入新的图像来源，而是在源域单标签六类分类数据上进行任务重映射：将 \textrm{Normal} 保留为负类，将其余五类合并为 \textrm{Abnormal} 正类。这样的设计具有两方面优势。其一，它保证第一阶段与源域六类分类实验在同一图像来源和同一 split 上比较，从而避免由于数据源变化带来的干扰。其二，它使 gate 任务与后续 CAM 生成、target finetune 和 detector 初始化天然衔接，形成统一的 source-side learning chain。已有 hierarchical classification 研究也表明，在 sewer inspection 中先建立 defect/non-defect 或 normal/abnormal 的高层判别，再进入更细粒度识别，是一种合理且工程上可解释的任务组织方式\cite{ref:hierarchical2019,ref:cnnmethod2019}。
 
-\section{YOLO11-cls 五尺度源域分类基线扫描}
+\section{YOLO11-cls 源域分类基线扫描}
 
-为确定第一阶段最合适的源域分类容量，本文以 YOLO11-cls 系列的 \textrm{n/s/m/l/x} 五个尺度作为统一候选，在相同数据集和相同训练协议下进行六类分类基线扫描。当前五组 source baseline 结果均已完成汇总，表\ref{tab:stage1-capacity-scan-cls6}给出六类分类视图下的关键指标。需要说明的是，二分类 gate 相关实验尚未在当前版本中完整补齐，因此本节仅保留已经完成并可追溯的六类 source 分类结果，后续再补入独立的 gate 容量扫描与阈值分析结果。
+为确定第一阶段最合适的源域分类容量，本文以 YOLO11-cls 系列的五个尺度模型作为统一候选，即 \textrm{n}、\textrm{s}、\textrm{m}、\textrm{l} 和 \textrm{x}。在相同数据集和相同训练协议下，本文分别开展六类 source 分类基线扫描与二分类 gate 基线扫描。当前五组六类分类结果已经完成汇总，二分类 gate 结果则按当前稿已完成的模型纳入。表\ref{tab:stage1-capacity-scan-cls6}给出六类分类视图下的关键指标，表\ref{tab:stage1-capacity-scan-gate2}给出当前已纳入的二分类 gate 基线结果。后续新增模型将继续按同一字段补入，不改变表结构。
 
 \begin{table}[H]
     \centering
@@ -1587,13 +1587,27 @@ SE-Net 是通道注意力的经典代表，其核心思想是通过全局信息�
     \end{tabularx}
 \end{table}
 
-从表\ref{tab:stage1-capacity-scan-cls6}可以看出，\textrm{yolo11l-cls} 在六类分类视图下取得最高的准确率、宏平均 F1 和 AUPRC，说明较大的分类容量有利于提升源域表征质量。与此同时，\textrm{yolo11m-cls} 的六类分类结果也处于第一梯队，且与后续 gate 默认阈值表现形成了较好的对应关系。
+\begin{table}[H]
+    \centering
+    \caption{YOLO11-cls 二分类 gate 基线结果表}
+    \label{tab:stage1-capacity-scan-gate2}
+    \begin{tabularx}{\textwidth}{P{2.0cm}CCCCCC}
+        \toprule
+        模型 & 准确率 & 宏平均F1 & AUROC & AUPRC & 99.5\%召回锚点特异度 & 99.0\%召回锚点特异度 \\
+        \midrule
+        yolo11n-cls & 0.9208 & 0.8531 & 0.9206 & 0.9813 & 0.3167 & 0.4750 \\
+        yolo11s-cls & 0.9347 & 0.8762 & 0.9384 & 0.9854 & 0.4083 & 0.4250 \\
+        \bottomrule
+    \end{tabularx}
+\end{table}
 
-从整体结果看，\textrm{yolo11l-cls} 在六类分类视图下取得最高的准确率、宏平均 F1 和 AUPRC，说明较大的分类容量有利于提升源域表征质量；\textrm{yolo11m-cls} 的分类表现同样处于第一梯队，体现出较好的综合平衡；而 \textrm{yolo11n-cls}、\textrm{yolo11s-cls} 与 \textrm{yolo11x-cls} 的表现则相对接近。由于当前稿仅纳入已完成的六类 source 分类实验，因此这里不对二分类 gate 的最优容量作结论性判断，相关结果将在后续二分类实验完成后再补充分析。
+从表\ref{tab:stage1-capacity-scan-cls6}可以看出，\textrm{yolo11l-cls} 在六类分类视图下取得最高的准确率、宏平均 F1 和 AUPRC，说明较大的分类容量有利于提升源域表征质量；\textrm{yolo11m-cls} 的分类表现同样处于第一梯队，体现出较好的综合平衡；而 \textrm{yolo11n-cls}、\textrm{yolo11s-cls} 与 \textrm{yolo11x-cls} 的表现则相对接近。
+
+从表\ref{tab:stage1-capacity-scan-gate2}可以看出，当前稿纳入的二分类 gate baseline 已能够在高召回约束下形成可用的正常样本过滤能力，但不同模型容量对应的收益并不一致。\textrm{yolo11s-cls} 在准确率、宏平均 F1、AUROC 和 AUPRC 四项总体指标上优于 \textrm{yolo11n-cls}，且在 99.5\% 召回锚点下取得更高的特异度；相比之下，\textrm{yolo11n-cls} 在 99.0\% 召回锚点下的特异度略高于 \textrm{yolo11s-cls}。这说明第一阶段 gate 的最优容量并不与六类分类结果完全一致，后续仍需结合其余尺度的二分类结果，进一步判断最佳 gate 容量配置。
 
 \section{阈值校准与 operating point 选择}
 
-第一阶段 gate 的有效性不能只通过默认阈值下的准确率判断，更需要结合高召回约束下的过滤能力进行分析。因此，在后续二分类 gate 实验中，本文将采用 threshold sweep 的方式扫描不同阈值，并重点记录 Recall 锚点附近的特异度、精确率以及样本通过比例等指标。由于当前版本尚未纳入独立完成的二分类 gate 训练结果，本节仅保留阈值校准与 operating point 选择的实验设计说明，待相关结果补齐后再补入对应图表与定量分析。
+第一阶段 gate 的有效性不能只通过默认阈值下的准确率判断，更需要结合高召回约束下的过滤能力进行分析。因此，本文采用 threshold sweep 的方式扫描不同阈值，并重点记录 Recall 锚点附近的 Specificity、Precision 以及样本通过比例等指标。当前已完成的 \textrm{n/s} 二分类结果表明，两组模型在默认阈值下都能保持较高的异常召回率，但在高召回锚点附近的过滤收益并不相同：\textrm{yolo11s-cls} 在 Recall 不低于 99.5\% 时达到 0.4083 的 Specificity，高于 \textrm{yolo11n-cls} 的 0.3167；而在 Recall 不低于 99.0\% 时，\textrm{yolo11n-cls} 的 Specificity 为 0.4750，略高于 \textrm{yolo11s-cls} 的 0.4250。该结果说明 operating point 的选择需要与目标召回锚点同步考虑，而不能仅由默认阈值性能或六类分类精度替代判断。
 
 \section{Hard Negative Mining 策略}
 
@@ -1639,7 +1653,7 @@ SE-Net 是通道注意力的经典代表，其核心思想是通过全局信息�
 
 \section{本章小结}
 
-本章围绕第一阶段高召回预筛和弱监督标注增强，完成了任务定义、二分类 gate 组织方式、六类 source 分类容量扫描、阈值选择思路、hard negative 思路和 CAM 伪框流程的结构化说明。需要再次强调的是，本章并非本文的主创新章，而是支撑后续改进 detector 与跨域迁移落地的工程链条章节。当前正文仅保留已经完成且可追溯的六类 source 分类结果，二分类 gate 的定量实验将在后续结果上传后补充。第5章将在此基础上转入本文的核心方法设计，即改进 YOLOv11 检测方法与跨域迁移训练策略。
+本章围绕第一阶段高召回预筛和弱监督标注增强，完成了任务定义、二分类 gate 组织方式、六类 source 分类容量扫描、二分类 gate 基线结果分析、阈值选择思路、hard negative 思路和 CAM 伪框流程的结构化说明。需要再次强调的是，本章并非本文的主创新章，而是支撑后续改进 detector 与跨域迁移落地的工程链条章节。当前正文已经纳入五组六类 source 分类结果和当前已完成的二分类 gate baseline，后续新增尺度结果与第一阶段消融将继续按同一结构补充。第5章将在此基础上转入本文的核心方法设计，即改进 YOLOv11 检测方法与跨域迁移训练策略。
 
 \chapter{基于改进 YOLOv11 的管道缺陷检测与跨域迁移策略}
 
@@ -1804,7 +1818,7 @@ SE-Net 是通道注意力的经典代表，其核心思想是通过全局信息�
 
 \subsection{实验平台与训练配置}
 
-本文实验在单卡 GPU 工作站上完成，硬件平台采用 \textrm{NVIDIA GeForce RTX 3090}（24GB 显存）。实验软件环境以 \textrm{Python 3.11.15} 为基础，深度学习框架采用 \textrm{PyTorch 2.11.0+cu128}、\textrm{TorchVision 0.26.0+cu128}、\textrm{CUDA 12.8} 与 \textrm{Ultralytics 8.3.0}。对于当前已完成的第一阶段 source 实验，统一使用 \textrm{sewerml\_cls6\_train7200} 数据集，在相同输入尺寸、训练轮数和批大小设置下完成 \textrm{YOLO11-cls} 五个尺度的六类分类基线扫描，以保证不同容量模型之间的比较具有可比性。
+本文实验在单卡 GPU 工作站上完成，硬件平台采用 \textrm{NVIDIA GeForce RTX 3090}（24GB 显存）。实验软件环境以 \textrm{Python 3.11.15} 为基础，深度学习框架采用 \textrm{PyTorch 2.11.0+cu128}、\textrm{TorchVision 0.26.0+cu128}、\textrm{CUDA 12.8} 与 \textrm{Ultralytics 8.3.0}。对于当前已完成的第一阶段 source 实验，统一使用 \textrm{sewerml\_cls6\_train7200} 数据集，在相同输入尺寸、训练轮数和批大小设置下完成五个尺度的六类分类基线扫描，以保证不同容量模型之间的比较具有可比性。
 
 \begin{table}[H]
     \centering
@@ -1827,9 +1841,9 @@ SE-Net 是通道注意力的经典代表，其核心思想是通过全局信息�
     \end{tabularx}
 \end{table}
 
-\section{第一阶段源域六类分类基线与结果分析}
+\section{第一阶段六类分类与二分类 gate 基线结果分析}
 
-本节首先比较五个 YOLO11-cls 尺度在源域六类分类任务上的容量差异。结果显示，在相同源域数据与训练协议下，\textrm{l} 尺度模型在 Top1、Macro-F1、AUROC 与 AUPRC 等分类判别指标上整体领先，\textrm{m} 尺度模型则在主要指标上与 \textrm{l} 接近，形成第二梯队；\textrm{n}、\textrm{s} 与 \textrm{x} 的总体表现相对接近。由于当前版本尚未纳入独立完成的二分类 gate 实验结果，因此本节仅报告已完成的六类 source 分类基线，并将其作为后续 gate 与 detector 初始化的上游参考。
+本节首先比较五个 YOLO11-cls 尺度在源域六类分类任务上的容量差异，并进一步结合当前稿已纳入的二分类 gate 结果，分析第一阶段任务重定义后的性能变化。现阶段结果表明，六类分类视图与二分类 gate 视图并不必然对应同一最优模型：在六类分类任务上，\textrm{l} 与 \textrm{m} 构成第一梯队；而在当前已纳入的二分类 gate baseline 中，\textrm{s} 的整体二分类判别能力优于 \textrm{n}，但 \textrm{n} 在 99.0\% 召回锚点下又表现出更高的特异度。这一现象恰好说明，第一阶段的最优模型选择必须结合任务视图和 operating point 共同判断。
 
 \begin{table}[H]
     \centering
@@ -1850,6 +1864,22 @@ SE-Net 是通道注意力的经典代表，其核心思想是通过全局信息�
 
 从整体趋势看，五个尺度并没有呈现“容量越大、分类结果越好”的完全单调关系。若仅看六类分类指标，\textrm{l} 与 \textrm{m} 构成第一梯队，其中 \textrm{l} 略优于 \textrm{m}；相比之下，\textrm{n} 更像稳定的轻量基线，\textrm{s} 与 \textrm{x} 的收益则不够突出。由此可见，在当前 source 六类分类任务中，中大容量模型更有利于形成高质量缺陷表征，但是否会进一步转化为二分类 gate 或 detector 初始化收益，仍需结合后续实验继续验证。
 
+\begin{table}[H]
+    \centering
+    \caption{第一阶段二分类 gate 基线结果表}
+    \label{tab:stage1-results-gate2}
+    \begin{tabularx}{\textwidth}{P{2.0cm}CCCCCCC}
+        \toprule
+        模型 & 准确率 & 宏平均F1 & AUROC & AUPRC & 99.5\%召回锚点特异度 & 99.0\%召回锚点特异度 & 99.0\%召回锚点精确率 \\
+        \midrule
+        yolo11n-cls & 0.9208 & 0.8531 & 0.9206 & 0.9813 & 0.3167 & 0.4750 & 0.9041 \\
+        yolo11s-cls & 0.9347 & 0.8762 & 0.9384 & 0.9854 & 0.4083 & 0.4250 & 0.8961 \\
+        \bottomrule
+    \end{tabularx}
+\end{table}
+
+从表\ref{tab:stage1-results-gate2}可以看出，\textrm{yolo11s-cls} 在准确率、宏平均 F1、AUROC 与 AUPRC 上均优于 \textrm{yolo11n-cls}，说明适度增加模型容量有助于提升 gate 判别边界的稳定性。进一步观察高召回约束下的 operating point，可以发现 \textrm{yolo11s-cls} 在 99.5\% 召回锚点下取得更高的特异度，而 \textrm{yolo11n-cls} 在 99.0\% 召回锚点下则表现出更高的特异度与精确率。由此可见，第一阶段 gate 的模型选择不能仅依据默认阈值下的总体指标，还需要结合目标召回锚点考察正常样本过滤收益。随着后续其余尺度结果继续补入，第一阶段容量排序将进一步收敛为更稳定的结论。
+
 \begin{figure}[H]
     \centering
     \placeholderbox{第一阶段容量扫描对比图\\建议文件：stage1\_capacity\_bars.pdf}
@@ -1857,9 +1887,9 @@ SE-Net 是通道注意力的经典代表，其核心思想是通过全局信息�
     \label{fig:stage1-capacity-bars}
 \end{figure}
 
-\section{第一阶段二分类 gate 实验说明}
+\section{第一阶段二分类 gate 后续实验安排}
 
-围绕第一阶段 gate，本文后续将重点开展四类实验：任务重映射（六类间接 gate 与二分类 gate 对比）、校准策略、hard negative 回流策略以及损失函数设计。与第二阶段 detector 不同，第一阶段消融不追求复杂模块堆叠，而是优先回答“哪种低成本策略最有效地提升高召回约束下的正常样本过滤率”这一核心问题。由于当前版本尚未纳入独立完成的二分类 gate 训练与消融结果，本节仅保留实验设计说明，具体表格、曲线与定量分析将在后续实验结果上传后补充。
+围绕第一阶段 gate，本文后续仍将重点开展四类实验：任务重映射（六类间接 gate 与直接二分类 gate 对比）、校准策略、hard negative 回流策略以及损失函数设计。与第二阶段 detector 不同，第一阶段消融不追求复杂模块堆叠，而是优先回答“哪种低成本策略最有效地提升高召回约束下的正常样本过滤率”这一核心问题。当前正文已纳入当前已完成的二分类 gate baseline，因此后续新增实验将主要用于回答两类问题：其一，其余尺度 gate 模型是否会改变当前的容量排序；其二，在确定候选模型后，阈值校准、hard negative 回流和损失函数调整能否在既定 Recall 锚点下继续提升 Specificity 与 Precision。
 
 \section{第二阶段检测 baseline 对比实验}
 
