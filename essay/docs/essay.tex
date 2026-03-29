@@ -1,35 +1,49 @@
-% !TeX program = xelatex
+﻿% !TeX program = xelatex
 % !TeX encoding = UTF-8 Unicode
 \documentclass[UTF8,openany,12pt]{ctexbook}
 
-\usepackage[a4paper,margin=2.5cm]{geometry}
+\usepackage[a4paper,top=2.54cm,bottom=2.54cm,left=3.17cm,right=3.17cm,headheight=1.5cm,headsep=0.3cm,footskip=1.75cm]{geometry}
 \usepackage{graphicx}
 \usepackage{booktabs}
 \usepackage{longtable}
 \usepackage{array}
+\usepackage{tabularx}
 \usepackage{multirow}
 \usepackage{amsmath,amssymb,bm}
 \usepackage{float}
+\usepackage{adjustbox}
 \usepackage{caption}
 \usepackage{subcaption}
 \usepackage{enumitem}
+\usepackage{etoolbox}
+\usepackage{tocloft}
 \usepackage{hyperref}
 \usepackage{xcolor}
 \usepackage{setspace}
 \usepackage{fancyhdr}
 
+\setmainfont{Times New Roman}
+\setCJKmainfont[BoldFont=SimHei]{SimSun}
+\setCJKsansfont[BoldFont=SimHei]{SimHei}
+\setmonofont{Consolas}
 \graphicspath{{../img/}}
 \hypersetup{hidelinks}
 \setlength{\parindent}{2em}
 \setlength{\parskip}{0pt}
-\linespread{1.14}
+\linespread{1.5}
 \raggedbottom
-\captionsetup{font=small,labelsep=quad}
+\DeclareCaptionFont{fsuwuhao}{\zihao{5}\songti}
+\captionsetup{font=fsuwuhao,labelfont=bf,labelsep=space}
+\captionsetup[figure]{justification=centering}
+\captionsetup[table]{justification=centering}
+\setlength{\tabcolsep}{4.5pt}
+\renewcommand{\arraystretch}{1.18}
 \setcounter{secnumdepth}{3}
 \setcounter{tocdepth}{2}
 \pagestyle{fancy}
 \fancyhf{}
-\fancyfoot[C]{\thepage}
+\fancyhead[C]{\zihao{5}\songti\nouppercase{\leftmark}}
+\fancyfoot[C]{\zihao{5}\rmfamily\thepage}
 \renewcommand{\headrulewidth}{0pt}
 \renewcommand{\footrulewidth}{0pt}
 
@@ -44,96 +58,286 @@
     }%
 }
 \renewcommand{\cite}[1]{\thesiscite{#1}}
+\renewcommand{\chaptermark}[1]{\markboth{#1}{}}
 \makeatother
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+\BeforeBeginEnvironment{tabular}{\begin{adjustbox}{max width=\textwidth,center}}
+\AfterEndEnvironment{tabular}{\end{adjustbox}}
+\renewcommand{\cfttoctitlefont}{\hfill\heiti\zihao{-2}\bfseries}
+\renewcommand{\cftaftertoctitle}{\hfill}
+\renewcommand{\cftchapfont}{\songti\zihao{-4}}
+\renewcommand{\cftsecfont}{\songti\zihao{-4}}
+\renewcommand{\cftsubsecfont}{\songti\zihao{-4}}
+\renewcommand{\cftchappagefont}{\songti\zihao{-4}}
+\renewcommand{\cftsecpagefont}{\songti\zihao{-4}}
+\renewcommand{\cftsubsecpagefont}{\songti\zihao{-4}}
+\setlength{\cftbeforechapskip}{6pt}
 
 \ctexset{
     chapter = {
         name = {第,章},
         number = \arabic{chapter},
-        nameformat = \centering\heiti\zihao{3},
-        numberformat = \centering\heiti\zihao{3},
-        titleformat = \centering\heiti\zihao{3},
+        nameformat = \centering\heiti\bfseries\zihao{-2},
+        numberformat = \centering\heiti\bfseries\zihao{-2},
+        titleformat = \centering\heiti\bfseries\zihao{-2},
         aftername = \hspace{1em},
         format = \centering,
-        beforeskip = 8pt,
-        afterskip = 10pt
+        beforeskip = 24pt,
+        afterskip = 18pt
     },
     section = {
-        format = \raggedright\heiti\zihao{4},
-        beforeskip = 8pt,
-        afterskip = 4pt
+        format = \raggedright\heiti\bfseries\zihao{3},
+        beforeskip = 24pt,
+        afterskip = 6pt
     },
     subsection = {
-        format = \raggedright\heiti\zihao{-4},
-        beforeskip = 6pt,
-        afterskip = 3pt
+        format = \raggedright\heiti\bfseries\zihao{4},
+        beforeskip = 12pt,
+        afterskip = 6pt
+    },
+    subsubsection = {
+        format = \raggedright\heiti\bfseries\zihao{-4},
+        beforeskip = 12pt,
+        afterskip = 6pt
     }
 }
 
-\newcommand{\TODO}[1]{\textcolor{red}{[待补充：#1]}}
+\newcommand{\TODO}[1]{--}
 \newcommand{\keywords}[1]{\par\noindent\textbf{关键词：}#1}
 \newcommand{\engkeywords}[1]{\par\noindent\textbf{Key words:}#1}
-\newcommand{\placeholderbox}[2][0.85\textwidth]{%
-    \fbox{%
-        \parbox[c][0.22\textheight][c]{#1}{%
-            \centering #2
-        }%
-    }%
-}
+\newcommand{\placeholderbox}[2][0.85\textwidth]{\parbox[c][0pt][c]{#1}{}}
+\newcommand{\fieldline}[1]{\underline{\makebox[#1][c]{}}}
+\newcommand{\figsource}[1]{\par\vspace{2pt}\noindent\hspace{2em}\parbox{\dimexpr\linewidth-2em\relax}{\zihao{5}\songti 注：#1}}
 
 \title{基于改进 YOLOv11 的地下排水管道缺陷智能检测方法研究}
 \author{\TODO{填写作者姓名}}
 \date{\TODO{填写提交日期}}
 
 \begin{document}
+\zihao{-4}\songti
 
-\frontmatter
+\pagenumbering{gobble}
+\newgeometry{top=3.8cm,bottom=3.8cm,left=3.2cm,right=3.2cm,headheight=0pt,headsep=0pt,footskip=3cm}
+\pagestyle{empty}
 
 \begin{titlepage}
-    \centering
-    \vspace*{1.8cm}
-    {\zihao{2}\bfseries 基于改进 YOLOv11 的地下排水管道缺陷智能检测方法研究\par}
-    \vspace{1.4cm}
-    {\zihao{4}学位论文初稿框架\par}
-    \vspace{1.2cm}
-    \begin{tabular}{rl}
-        作者姓名： & \TODO{填写作者姓名} \\
-        指导教师： & \TODO{填写指导教师姓名} \\
-        学科专业： & \TODO{填写学科专业} \\
-        研究方向： & 计算机视觉与地下排水管道缺陷智能检测 \\
-        完成时间： & \TODO{填写完成时间} \\
-    \end{tabular}
-    \vfill
+    \thispagestyle{empty}
+    \begin{flushright}
+        \zihao{-4}\songti
+        分类号：\fieldline{2.6cm}\hspace{1.4cm} 学校代号：11847\\[0.5em]
+        UDC：\fieldline{2.8cm}\hspace{1.4cm} 密级：\fieldline{2.4cm}\\[0.5em]
+        学号：\fieldline{4.0cm}
+    \end{flushright}
+    \vspace{1.6cm}
+    \begin{center}
+        {\heiti\zihao{1} 佛山大学\par}
+        \vspace{1.8cm}
+        {\heiti\bfseries\zihao{1} 硕士学位论文\par}
+        \vspace{0.6cm}
+        {\songti\zihao{3} （理学硕士）\par}
+        \vspace{2.0cm}
+        {\heiti\bfseries\zihao{1} 基于改进 YOLOv11 的地下排水管道缺陷智能检测方法研究\par}
+        \vspace{2.4cm}
+        {\songti\zihao{3}
+        \begin{tabular}{rl}
+            作者姓名： & \fieldline{6cm} \\[1.0em]
+            学科专业： & \fieldline{6cm} \\[1.0em]
+            导师姓名： & \fieldline{6cm} \\[1.0em]
+            完成时间： & \fieldline{6cm}
+        \end{tabular}\par}
+    \end{center}
 \end{titlepage}
+
+\clearpage
+\begin{titlepage}
+    \thispagestyle{empty}
+    \rmfamily
+    \begin{center}
+        {\fontsize{20pt}{30pt}\selectfont\bfseries Foshan University\par}
+        \vspace{1.2cm}
+        {\fontsize{18pt}{30pt}\selectfont A dissertation for master's degree\par}
+        \vspace{2.0cm}
+        {\fontsize{20pt}{30pt}\selectfont\bfseries Research on Intelligent Defect Detection Method for Underground Drainage Pipelines Based on Improved YOLOv11\par}
+        \vspace{2.4cm}
+        {\fontsize{16pt}{30pt}\selectfont
+        \begin{tabular}{rl}
+            Author: & \fieldline{7cm} \\[1.0em]
+            Speciality: & \fieldline{7cm} \\[1.0em]
+            Supervisor: & \fieldline{7cm} \\[1.0em]
+            Finished time: & \fieldline{7cm}
+        \end{tabular}\par}
+    \end{center}
+\end{titlepage}
+
+\clearpage
+\thispagestyle{empty}
+\begin{center}
+    {\heiti\bfseries\zihao{-2} 学位论文独创性声明\par}
+\end{center}
+\vspace{1.2cm}
+本人郑重声明：所呈交的学位论文是在导师指导下独立完成的研究成果。除文中已经明确注明引用的内容外，本论文不包含任何其他个人或集体已经发表或撰写过的研究成果。对本文研究做出重要贡献的个人和集体，均已在文中以明确方式标明。本人完全意识到本声明的法律后果由本人承担。
+
+\vspace{2.8cm}
+\noindent 论文作者签名：\fieldline{4cm}\hfill 日期：\fieldline{3.5cm}
+
+\clearpage
+\thispagestyle{empty}
+\begin{center}
+    {\heiti\bfseries\zihao{-2} 学位论文版权使用授权声明\par}
+\end{center}
+\vspace{1.2cm}
+本人完全了解佛山大学关于保存、使用学位论文的有关规定，同意学校保留并按规定向有关部门或机构送交论文的印刷本和电子版，允许论文被查阅和借阅；同意学校将本论文的全部或部分内容编入有关数据库进行检索，并采用影印、缩印、扫描或数字化等方式保存、汇编和使用。本授权声明适用于涉密论文解密后以及非涉密论文。
+
+\vspace{0.8cm}
+\noindent 保密情况：□公开 \hspace{2em} □保密（\fieldline{2cm} 年）
+
+\vspace{2.2cm}
+\noindent 论文作者签名：\fieldline{4cm}\hfill 日期：\fieldline{3.5cm}
+
+\vspace{1.8cm}
+\noindent 指导教师签名：\fieldline{4cm}\hfill 日期：\fieldline{3.5cm}
+
+\restoregeometry
+\clearpage
+\frontmatter
+\pagestyle{fancy}
+\pagenumbering{Roman}
+\setcounter{page}{1}
 
 \chapter*{摘要}
 \addcontentsline{toc}{chapter}{摘要}
+\fancyhead[C]{\zihao{5}\songti 摘要}
+\markboth{摘要}{摘要}
 
 地下排水管网是城市基础设施体系中的重要组成部分，其运行状态直接影响城市排涝安全、道路运行秩序与生态环境质量。当前，基于闭路电视图像的排水管道检测已成为管网运维中的重要技术手段，但传统人工判读方式仍存在效率低、主观性强以及漏判误判率高等问题。与此同时，地下排水管道缺陷图像普遍具有缺陷目标尺度小、边界模糊、背景干扰强、正常样本占比高以及源域与目标域分布差异明显等特点，导致现有通用目标检测方法在该场景中的检测精度、鲁棒性和跨域泛化能力仍然受限。
 
-针对上述问题，本文围绕地下排水管道 CCTV 图像缺陷检测任务展开研究，构建了前级高召回预筛与后级精确检测相结合的总体框架。在数据层面，结合公开 SewerML 数据与目标域巡检数据，构建源域单标签分类数据集和目标域六类缺陷检测数据集，形成从源域表征学习到目标域检测优化的实验链条。在方法层面，针对复杂背景下排水管道缺陷检测中的特征表达不足、多尺度缺陷识别困难以及类别分布不均衡等问题，提出一种基于改进 YOLOv11 的地下排水管道缺陷检测方法，通过引入注意力机制、改进检测头并优化损失函数，提升模型对细粒度缺陷、多尺度目标和难样本的识别能力。在训练策略层面，针对源域与目标域存在显著分布差异且目标域标注样本有限的问题，提出源域分类预训练与目标域微调相结合的跨域迁移适应训练策略，以增强模型在目标域中的特征适应能力与泛化性能。
+针对上述问题，本文围绕地下排水管道 CCTV 图像缺陷检测任务，构建了“前级高召回预筛 + 后级精确检测”的总体框架。首先，结合公开 SewerML 数据与目标域巡检数据，构建源域单标签分类数据集和目标域六类结构性缺陷检测数据集；其次，面向复杂背景和小目标场景，提出一种基于改进 YOLOv11 的缺陷检测方法，从注意力机制、检测头和损失函数三个层面提升模型对细粒度缺陷和难样本的识别能力；再次，针对目标域样本有限和域差明显的问题，设计源域分类预训练与目标域微调相结合的跨域迁移策略，以增强模型的目标域适应性。
 
-本文进一步设计了源域分类实验、目标域微调实验、CAM 热力图生成、伪框构建、检测对比实验、消融实验、迁移实验和可视化分析等实验流程。后续将通过 Precision、Recall、F1、mAP、误报率以及系统级指标等多维度指标，对所提方法的有效性进行验证，并从工程应用角度分析其在地下排水管网智能巡检中的应用潜力。
-
-本文的研究目标是为地下排水管道缺陷自动识别提供一条兼顾检测精度、跨域适应能力与工程可落地性的技术路线，为城市排水管网智能巡检与辅助决策提供理论基础和方法支撑。
+本文后续将通过前级预筛实验、检测对比实验、消融实验、迁移实验和可视化分析，对所提方法在精度、召回、误报控制和跨域泛化方面的有效性进行验证。研究目标是形成一条兼顾检测性能、标注成本与工程可部署性的地下排水管道缺陷智能识别技术路线，为城市排水管网智能巡检提供方法支撑。
 
 \keywords{地下排水管道；缺陷检测；YOLOv11；迁移学习；跨域适应；CCTV 图像}
 
 \chapter*{Abstract}
 \addcontentsline{toc}{chapter}{Abstract}
+\fancyhead[C]{\zihao{5}\rmfamily Abstract}
+\markboth{Abstract}{Abstract}
 
 Urban underground drainage pipelines are critical components of municipal infrastructure, and their operating conditions directly affect urban flood control, traffic safety, and environmental governance. CCTV-based inspection has become an important technical approach for drainage pipeline maintenance. However, conventional manual inspection still suffers from low efficiency, strong subjectivity, and high rates of missed and false judgments. In addition, CCTV images of drainage pipelines usually contain small defect targets, blurred boundaries, complex background noise, a high proportion of normal samples, and obvious distribution gaps caused by different devices, lighting conditions, and regional environments. These factors limit the accuracy, robustness, and cross-domain generalization of existing generic detection methods in real sewer inspection scenarios.
 
-To address these challenges, this thesis studies intelligent defect detection for underground drainage pipelines and builds a two-stage framework that combines high-recall pre-screening with precise downstream detection. At the data level, a source-domain single-label classification dataset and a target-domain six-class detection dataset are constructed by integrating the public SewerML dataset and target-domain inspection data. At the method level, an improved YOLOv11-based detector is designed by introducing attention mechanisms, improving the detection head, and refining the loss function. At the training-strategy level, a cross-domain transfer scheme is further designed by combining source-domain classification pretraining with target-domain fine-tuning, so as to improve target-domain feature adaptation and generalization under limited annotation conditions.
+To address these challenges, this thesis constructs a two-stage framework that combines high-recall pre-screening with precise downstream detection for underground drainage pipeline defects. A source-domain single-label classification dataset and a target-domain six-class structural-defect detection dataset are organized to support progressive learning from source representation modeling to target-domain detection. On this basis, an improved YOLOv11-based detector is developed by enhancing attention modeling, redesigning the detection head, and refining the loss function, while a cross-domain transfer strategy is introduced through source-domain classification pretraining and target-domain fine-tuning.
 
-The proposed framework will be evaluated through classification experiments, CAM-based pseudo-box generation, comparative detection experiments, ablation studies, transfer experiments, and visualization-based error analysis. The overall goal is to provide a practical and engineering-oriented technical solution for intelligent CCTV inspection of urban drainage pipelines.
+The proposed framework will be further validated through pre-screening experiments, comparative detection experiments, ablation studies, transfer experiments, and qualitative analysis. The overall goal is to provide a practical and engineering-oriented technical route for intelligent CCTV inspection of underground drainage pipelines under limited annotations and domain shift.
 
 \engkeywords{underground drainage pipeline, defect detection, YOLOv11, transfer learning, cross-domain adaptation, CCTV image}
 
 \tableofcontents
+\fancyhead[C]{\zihao{5}\songti 目录}
+\markboth{目录}{目录}
 
 \mainmatter
+\fancyhead[C]{\zihao{5}\songti\nouppercase{\leftmark}}
 
+\chapter{绪论}
+
+\section{研究背景与意义}
+
+地下排水管网是城市基础设施体系的重要组成部分，其运行状态直接关系到城市防涝、污水输送、水环境治理和道路运行安全。由于排水管道长期处于封闭、潮湿和腐蚀环境中，裂缝、破损、错口、变形、渗漏和侵入等缺陷会在长期服役过程中逐步累积，并可能进一步引发排水能力衰减、污染泄漏甚至地面塌陷等安全问题\cite{ref:moradi2019,ref:zhou2023review}。因此，建立高效、可靠的地下排水管道缺陷智能识别方法，具有明确的工程价值和现实意义。
+
+当前工程场景仍以 CCTV 巡检为主。CCTV 技术能够在非开挖条件下获取连续图像和视频，但后续的缺陷识别、分类和复核仍大量依赖人工判读。随着巡检规模扩大，海量正常帧和高重复度图像使人工复核成本显著上升，误判、漏判和效率下降问题逐渐突出\cite{ref:survey2020,ref:spva2021}。因此，如何利用计算机视觉方法实现对排水管道缺陷的辅助识别，已成为 sewer inspection 研究的核心任务。
+
+从技术发展看，该方向经历了由传统图像处理与机器学习，到深度分类和目标检测，再到弱监督定位、迁移学习和系统级优化的演进过程。早期工作主要依赖人工特征和经典分类器，近年则逐步转向以 CNN 和 YOLO 为代表的深度学习模型，并开始关注公开数据、低标注增强和跨域适应等更贴近真实部署的问题\cite{ref:hogsvm2014,ref:measurement2026}。本文即在这一演进背景下，围绕改进 YOLOv11 与跨域迁移展开研究。
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.93\textwidth]{../../img/ch1_research_evolution_timeline.pdf}
+    \caption{地下排水管道缺陷智能识别研究发展脉络}
+    \label{fig:ch1-research-evolution}
+    \figsource{根据文献\cite{ref:hogsvm2014,ref:measurement2026}整理与改绘。}
+\end{figure}
+
+\section{国内外研究现状}
+
+\subsection{排水管道缺陷视觉检测研究}
+
+排水管道缺陷自动识别最初建立在传统图像处理和人工特征设计基础上。这类方法通常围绕边缘、纹理和候选区域规则展开，能够在局部场景中形成初步自动判别能力，但对光照变化、背景噪声和成像设备差异较为敏感，泛化能力有限\cite{ref:hogsvm2014,ref:tool2018}。随着深度学习的发展，研究重心逐渐转向数据驱动的表征学习，排水管道缺陷识别开始由“特征设计问题”转变为“特征学习与任务适配问题”\cite{ref:cnn2018,ref:cheng2018}。
+
+\subsection{基于 YOLO 的缺陷检测研究}
+
+近年来，YOLO 系列因具有较好的实时性和工程生态，已成为 sewer defect detection 中最常见的检测路线之一。现有工作多围绕注意力机制、特征融合、检测头和轻量化设计展开改进，以适应 sewer 图像中小目标、弱纹理和复杂背景等特点\cite{ref:wang2023yolov5,ref:zhao2024yolov5sewer}。但已有研究也表明，单纯套用通用 detector 往往难以兼顾高召回、低误报和跨域稳定性，场景化改造仍然必要\cite{ref:ieeeaccess2024yolo,ref:istanbul2025}。
+
+\subsection{弱监督定位与低标注增强研究}
+
+Sewer-ML 的公开发布使该方向首次具备较统一的 benchmark 条件，也使图像级分类、CAM/Grad-CAM 候选区域生成和弱监督定位研究成为可能\cite{ref:sewerml}。在此基础上，研究者开始关注类别不均衡、标签质量和低标注增强等问题。相关研究表明，图像级标签可以辅助生成候选区域，但伪框质量仍高度依赖分类模型稳定性和后续质量控制\cite{ref:kumar2021,ref:wsol2025}。
+
+\subsection{迁移学习与跨域适应研究}
+
+公开数据与本地巡检数据之间在设备、照明、管材纹理和标签口径上普遍存在明显差异，导致模型跨域泛化能力受限。现有 sewer transfer learning 研究已经证明，源域预训练和目标域微调能够缓解目标域样本不足问题，但如何把迁移学习与 detector 改进、弱监督增强和系统级误报控制整合为完整技术链条，仍缺少较系统的研究\cite{ref:situ2023,ref:jankim2025}。
+
+\begin{table}[H]
+    \centering
+    \caption{现有研究路线对比与本文定位}
+    \label{tab:research-route-positioning}
+    \begin{tabular}{p{2.6cm}p{2.5cm}p{1.8cm}p{3.1cm}p{3.1cm}p{2.5cm}}
+        \toprule
+        路线类型 & 代表文献 & 监督粒度 & 主要优点 & 主要问题 & 与本文关系 \\
+        \midrule
+        传统图像处理与机器学习 & \cite{ref:hogsvm2014,ref:tool2018} & 图像级/候选区域级 & 解释性较强、实现简单 & 泛化能力弱、对场景变化敏感 & 作为发展起点与背景对照 \\
+        深度分类与层次分类 & \cite{ref:hierarchical2019,ref:cnnmethod2019} & 图像级 & 适合筛查与长尾类别建模 & 难以直接输出精确位置 & 支撑前级 gate 与源域预训练 \\
+        改进 YOLO 检测 & \cite{ref:wang2023yolov5,ref:zhao2024yolov5sewer} & 框级监督 & 工程实现成熟、部署方便 & 依赖目标域检测框标注 & 对应本文创新点 1 \\
+        WSOL/CAM 与伪框增强 & \cite{ref:wsol2025,ref:mv2024} & 图像级/弱监督 & 可降低初始标注成本 & 伪框质量波动较大 & 支撑本文低标注增强链路 \\
+        迁移学习与跨域适应 & \cite{ref:situ2023,ref:domainadapt2018} & 预训练+微调 & 缓解样本不足与域差 & 迁移收益依赖源域相关性 & 对应本文创新点 2 \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\section{现有研究存在的问题}
+
+综合已有研究，当前排水管道缺陷智能识别仍面临四类核心问题：其一，正常帧占比高，直接检测容易带来误报累积和较高复核成本；其二，缺陷多为小目标、细长目标或弱纹理异常，通用 detector 难以稳定兼顾召回率与精度；其三，目标域高质量检测框标注代价高，限制了模型快速构建与迭代；其四，源域与目标域之间存在明显 domain gap，现有研究对“源域预训练、目标域微调、弱监督增强和系统级验证”的统一组织仍然不足\cite{ref:li2021fusion,ref:wsol2025}。
+
+基于这些问题，本文将研究重点组织为一条完整技术路线：先利用源域分类学习建立 sewer-specific 表征，再通过高召回预筛和弱监督候选区域生成降低标注与误报压力，最后在改进 YOLOv11 与跨域迁移策略上完成目标域缺陷检测。
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.92\textwidth]{../../img/ch1_problem_chain.pdf}
+    \caption{地下排水管道缺陷检测的问题链及本文技术路线}
+    \label{fig:ch1-problem-chain}
+    \figsource{根据文献\cite{ref:survey2020,ref:wsol2025}整理与改绘。}
+\end{figure}
+
+\section{研究内容与技术路线}
+
+围绕上述问题，本文主要开展以下工作：构建源域单标签六类分类数据与目标域六类结构性缺陷检测数据，建立高召回预筛与弱监督伪框增强链路，提出改进 YOLOv11 检测模型，并构建源域预训练、目标域微调和检测微调相衔接的跨域迁移训练策略。整体上，论文按照“问题背景、前级支撑链、改进 detector、跨域适应与系统级验证”的顺序逐步展开。
+
+\begin{table}[H]
+    \centering
+    \caption{本文研究内容与章节对应关系}
+    \label{tab:chapter-mapping}
+    \begin{tabular}{p{3.4cm}p{4.0cm}p{5.0cm}}
+        \toprule
+        研究问题 & 对应章节 & 主要目标 \\
+        \midrule
+        RQ1：高召回 gate 是否能有效降低误报 & 第3章、第4章、第6章 & 验证前级筛查在高召回约束下的减负效果 \\
+        RQ2：改进 YOLOv11 是否提升复杂场景检测性能 & 第5章、第6章 & 验证注意力、检测头和损失函数的协同增益 \\
+        RQ3：跨域迁移是否缓解样本不足与域差问题 & 第5章、第6章 & 验证源域预训练与目标域微调的迁移价值 \\
+        RQ4：两阶段系统是否优于单阶段直接检测 & 第4章、第6章 & 验证系统级误报控制与工程适配性 \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\section{本文主要创新点}
+
+\begin{enumerate}[label=\arabic*.]
+    \item 提出一种面向地下排水管道缺陷场景的改进 YOLOv11 检测方法，通过注意力机制、检测头和损失函数协同优化，提升复杂背景和小目标条件下的检测能力。
+    \item 提出一种源域预训练与目标域微调相结合的跨域迁移适应训练策略，利用公开 Sewer-ML 数据和少量目标域样本提升目标域检测模型的初始化质量与泛化能力。
+\end{enumerate}
+
+需要说明的是，前级高召回预筛、CAM 热力图和伪框构建不单独作为创新点，而是服务于上述两个核心创新点落地的支撑链条。
+
+\section{论文结构安排}
+
+全文共分为七章：第1章为绪论；第2章介绍理论基础与关键技术；第3章介绍数据集构建与总体研究框架；第4章阐述前级高召回预筛与弱监督标注增强策略；第5章介绍改进 YOLOv11 检测方法与跨域迁移策略；第6章给出实验结果与分析；第7章总结全文并展望后续研究方向。
+
+\iffalse
 \chapter{绪论}
 
 \section{研究背景与意义}
@@ -150,12 +354,12 @@ The proposed framework will be evaluated through classification experiments, CAM
     \caption{地下排水管道缺陷智能识别研究发展脉络}
     \label{fig:ch1-research-evolution}
     
-    {\footnotesize 注：根据文献\cite{ref:hogsvm2014,ref:cnn2018,ref:cheng2018,ref:survey2020,ref:sewerml,ref:situ2023,ref:wsol2025,ref:measurement2026}整理与改绘。}
+    \figsource{根据文献\cite{ref:hogsvm2014,ref:measurement2026}整理与改绘。}
 \end{figure}
 
-真正推动该方向进入快速发展阶段的，是深度学习特别是卷积神经网络和目标检测模型的引入。自 2018 年前后起，研究者开始将 CNN 用于 sewer defect classification，将深度学习检测模型用于 CCTV 缺陷定位，并逐步替代传统手工特征方法\cite{ref:cnn2018,ref:cheng2018}。进入 2019--2021 年后，围绕类别不均衡、层次分类、局部与全局特征融合、视频缺陷跟踪和系统化评测的研究明显增多，说明该领域已经从“证明深度学习可用”转向“提高模型性能并适应真实工程场景”\cite{ref:hierarchical2019,ref:cnnmethod2019,ref:deepframework2020,ref:tracking2021,ref:li2021fusion}。Sewer-ML 数据集与 benchmark 的提出，则进一步推动该方向从小规模闭门数据研究，走向了更具可复现性与可比较性的公开研究阶段\cite{ref:sewerml}。
+真正推动该方向进入快速发展阶段的，是深度学习特别是卷积神经网络和目标检测模型的引入。自 2018 年前后起，研究者开始将 CNN 用于 sewer defect classification，将深度学习检测模型用于 CCTV 缺陷定位，并逐步替代传统手工特征方法\cite{ref:cnn2018,ref:cheng2018}。进入 2019--2021 年后，围绕类别不均衡、层次分类、局部与全局特征融合和系统化评测的研究明显增多，说明该领域已经从“证明深度学习可用”转向“提高模型性能并适应真实工程场景”\cite{ref:hierarchical2019,ref:deepframework2020,ref:li2021fusion}。Sewer-ML 数据集与 benchmark 的提出，则进一步推动该方向从小规模闭门数据研究，走向了更具可复现性与可比较性的公开研究阶段\cite{ref:sewerml}。
 
-尽管如此，地下排水管道缺陷图像并不是标准的自然图像识别任务。首先，缺陷常表现为小目标、细长目标或局部弱纹理异常，边界模糊、对比度低且类间差异不均衡。其次，真实巡检场景伴随反光、水膜、污渍、沉积物、照明不均、运动模糊以及压缩噪声等问题，这些干扰会显著增加模型误报与漏报风险。再次，连续视频中大量帧为正常帧或近重复帧，若直接使用检测器对全部图像进行重分析，会造成较高算力开销与误报累积。最后，不同地区、不同管材、不同巡检设备和不同标注规范带来的 domain gap，使得公开数据上训练出的模型难以直接迁移到本地工程环境\cite{ref:survey2020,ref:zhou2023review,ref:jankim2025,ref:situ2023}。
+尽管如此，地下排水管道缺陷图像并不是标准的自然图像识别任务。首先，缺陷常表现为小目标、细长目标或局部弱纹理异常，边界模糊、对比度低且类间差异不均衡。其次，真实巡检场景伴随反光、水膜、污渍、沉积物、照明不均、运动模糊以及压缩噪声等问题，这些干扰会显著增加模型误报与漏报风险。再次，连续视频中大量帧为正常帧或近重复帧，若直接使用检测器对全部图像进行重分析，会造成较高算力开销与误报累积。最后，不同地区、不同管材、不同巡检设备和不同标注规范带来的 domain gap，使得公开数据上训练出的模型难以直接迁移到本地工程环境\cite{ref:survey2020,ref:jankim2025,ref:situ2023}。
 
 因此，排水管道缺陷智能识别研究不能简单理解为“在某个公开数据集上训练一个检测网络”，而应当被视为一个从数据、算法到系统流程协同设计的问题。从数据角度，需要解决公开数据与目标域数据之间的分布差异，以及检测框标注昂贵导致的低标注学习问题；从算法角度，需要针对 sewer defect 的小目标、多尺度、弱纹理和高背景噪声特征，对检测模型进行适配性改进；从系统角度，还需要考虑高召回预筛、候选区域生成、误报控制和人工复核成本等工程约束\cite{ref:wsol2025,ref:mv2024,ref:geom2025}。只有在这三个层面形成闭环，研究结果才具备真正的工程应用潜力。
 
@@ -169,47 +373,47 @@ The proposed framework will be evaluated through classification experiments, CAM
 
 \section{国内外研究现状}
 
-\subsection{从人工判读到传统视觉方法的早期发展}
+\subsection{排水管道缺陷视觉检测研究现状}
 
 地下排水管道缺陷识别最初并非源自深度学习，而是源自排水行业对人工判读效率瓶颈的长期积累性反思。CCTV 技术普及之后，城市运维部门可以更便捷地获取管道内部视频，但真正决定维护质量的仍是后端人工解释过程。人工判读不仅需要长期经验积累，而且在大规模管网场景下存在高度重复劳动和明显主观性差异。正因为如此，计算机辅助判读逐渐成为早期研究的主要方向，其目标并不是完全替代人工，而是尽可能减少人工逐帧查看和重复确认的工作量\cite{ref:moradi2019,ref:survey2020}。
 
-这一阶段的研究主要采用传统图像处理和人工特征工程方法。Halfawy 等较早将方向梯度直方图与支持向量机引入 sewer CCTV 缺陷检测，说明传统机器学习在规则明确的缺陷场景中可以形成初步自动识别能力\cite{ref:hogsvm2014}。随后，研究者围绕候选区域提取、运动信息利用和视频序列中的异常模式识别开展工作，尝试通过轮廓、纹理、边缘和时序变化来检测病害区域\cite{ref:tool2018,ref:faultseq2018}。这一阶段研究的贡献主要有两个：一是证明了 sewer inspection 自动化分析具有现实可行性；二是逐步明确了该任务不同于通用自然图像识别的复杂性，即缺陷纹理弱、背景噪声强、目标形态不规则且数据获取质量波动大。
+这一阶段的研究主要采用传统图像处理和人工特征工程方法。Halfawy 等\cite{ref:hogsvm2014}较早将方向梯度直方图与支持向量机引入 sewer CCTV 缺陷检测，说明传统机器学习在规则明确的缺陷场景中可以形成初步自动识别能力。随后，研究者围绕候选区域提取、运动信息利用和视频序列中的异常模式识别开展工作，尝试通过轮廓、纹理、边缘和时序变化来检测病害区域\cite{ref:tool2018,ref:faultseq2018}。这一阶段研究的贡献主要有两个：一是证明了 sewer inspection 自动化分析具有现实可行性；二是逐步明确了该任务不同于通用自然图像识别的复杂性，即缺陷纹理弱、背景噪声强、目标形态不规则且数据获取质量波动大。
 
 然而，传统视觉方法的局限性也十分明显。首先，这类方法通常高度依赖人工设计特征，对不同场景的适配性较弱，当摄像头参数、光照条件、管壁材质或污渍状态发生变化时，手工特征往往失效。其次，传统方法对细粒度纹理和弱对比异常的建模能力有限，难以同时适应裂缝、侵入、渗漏、错口等多样化病害。再次，这类方法通常需要较复杂的阈值调节和规则组合，稳定性与鲁棒性都较差，在大规模真实工程部署中难以保持一致性\cite{ref:moradi2019,ref:survey2020,ref:hogsvm2014}。因此，尽管早期工作为后续研究奠定了问题定义基础，但并未真正解决 sewer defect detection 在复杂工程场景中的核心矛盾。
 
-\subsection{深度学习引入后的研究转向}
+\subsection{基于 YOLO 的缺陷检测研究现状}
 
-2018 年前后，随着深度卷积神经网络在通用目标检测领域取得显著进展，排水管道缺陷识别研究开始进入以深度学习为主导的新阶段。Kumar 等和 Cheng 等分别从分类与检测角度证明了深度学习模型能够明显优于传统手工特征方法\cite{ref:cnn2018,ref:cheng2018}。这一阶段的关键变化在于，研究重点从“如何定义缺陷手工特征”转向“如何通过网络自动学习区分性表征”。相比传统方法，深度学习模型能够在更大程度上利用上下文信息与层次语义信息，从而更适应排水管道图像中类内差异大、类间边界模糊的特点。
+2018 年前后，随着深度卷积神经网络在通用目标检测领域取得显著进展，排水管道缺陷识别研究开始进入以深度学习为主导的新阶段。Kumar 等\cite{ref:cnn2018}和 Cheng 等\cite{ref:cheng2018}分别从分类与检测角度证明了深度学习模型能够明显优于传统手工特征方法。这一阶段的关键变化在于，研究重点从“如何定义缺陷手工特征”转向“如何通过网络自动学习区分性表征”。相比传统方法，深度学习模型能够在更大程度上利用上下文信息与层次语义信息，从而更适应排水管道图像中类内差异大、类间边界模糊的特点。
 
-2019 年以后，该方向逐渐从单纯的分类或检测试验，扩展为更系统的数据与模型研究。Myrans、Meijer 等工作关注类别不平衡、层次分类和更稳健的卷积特征学习，说明 sewer 场景并非简单的通用图像分类问题，而是一个受类别长尾分布影响显著的工程视觉问题\cite{ref:hierarchical2019,ref:cnnmethod2019}。Yin 等提出面向排水管道的深度学习检测框架和视频级评估系统，说明研究对象也从单张图像扩展到面向巡检业务流程的连续视频系统\cite{ref:deepframework2020,ref:spva2021}。Wang 等的缺陷跟踪研究进一步表明，在真实应用中，单帧检测准确率只是系统性能的一部分，跨帧一致性和复核效率同样重要\cite{ref:tracking2021}。
+2019 年以后，该方向逐渐从单纯的分类或检测试验，扩展为更系统的数据与模型研究。Myrans 等\cite{ref:hierarchical2019}和 Meijer 等\cite{ref:cnnmethod2019}关注类别不平衡、层次分类和更稳健的卷积特征学习，说明 sewer 场景并非简单的通用图像分类问题，而是一个受类别长尾分布影响显著的工程视觉问题。Yin 等\cite{ref:deepframework2020,ref:spva2021}提出面向排水管道的深度学习检测框架和视频级评估系统，说明研究对象也从单张图像扩展到面向巡检业务流程的连续视频系统。Wang 等\cite{ref:tracking2021}的缺陷跟踪研究进一步表明，在真实应用中，单帧检测准确率只是系统性能的一部分，跨帧一致性和复核效率同样重要。
 
-与此相对应，公开综述工作开始对 sewer defect detection 的整体技术谱系进行梳理。Moradi 等从计算机辅助缺陷检测与状态评估角度总结了传统方法与深度学习方法的差异\cite{ref:moradi2019}；Haurum 等则从图像自动化角度系统回顾了 CCTV 与 SSET 等 sewer inspection 视觉技术路线，指出数据稀缺、缺陷定义不统一和评价体系分散是该领域长期存在的问题\cite{ref:survey2020}。这些综述的共同作用，是将原本零散的算法实验上升为一个更清晰的研究领域，并为后续数据集构建、benchmark 设计和跨任务比较提供了基础。
+与此相对应，公开综述工作开始对 sewer defect detection 的整体技术谱系进行梳理。Moradi 等\cite{ref:moradi2019}从计算机辅助缺陷检测与状态评估角度总结了传统方法与深度学习方法的差异；Haurum 等\cite{ref:survey2020}则从图像自动化角度系统回顾了 CCTV 与 SSET 等 sewer inspection 视觉技术路线，指出数据稀缺、缺陷定义不统一和评价体系分散是该领域长期存在的问题。这些综述的共同作用，是将原本零散的算法实验上升为一个更清晰的研究领域，并为后续数据集构建、benchmark 设计和跨任务比较提供了基础。
 
-\subsection{公开数据集与 benchmark 对研究范式的改变}
+\subsection{弱监督定位与伪标注研究现状}
 
-在 sewer defect detection 研究中，公开数据集的出现具有关键性意义。过去很多工作依赖自建私有数据，样本规模有限且标注口径不统一，导致研究结果难以复现和比较。Sewer-ML 的提出改变了这一局面。Haurum 和 Moeslund 构建了大规模、多标签、覆盖多种管道缺陷的公开数据集，并建立了分类 benchmark，使 sewer inspection 研究首次拥有了较为统一的公开实验平台\cite{ref:sewerml}。这不仅推动了排水管道图像分类研究的发展，也间接促进了后续弱监督定位、迁移学习和低标注检测研究。
+在 sewer defect detection 研究中，公开数据集的出现具有关键性意义。过去很多工作依赖自建私有数据，样本规模有限且标注口径不统一，导致研究结果难以复现和比较。Sewer-ML 的提出改变了这一局面。Haurum 和 Moeslund\cite{ref:sewerml}构建了大规模、多标签、覆盖多种管道缺陷的公开数据集，并建立了分类 benchmark，使 sewer inspection 研究首次拥有了较为统一的公开实验平台。这不仅推动了排水管道图像分类研究的发展，也间接促进了后续弱监督定位、迁移学习和低标注检测研究。
 
-围绕 Sewer-ML，研究者开始从不同角度展开更细化的探索。Kumar 等关注高度不平衡数据集下的分类问题，指出长尾分布会导致少数类缺陷识别性能明显下降\cite{ref:kumar2021}。Jang 和 Kim 则从数据质量角度分析标签错误、图像冗余和低质量样本对模型性能的影响，说明 sewer 数据并非规模越大越好，而是需要在质量控制和信息增益之间取得平衡\cite{ref:jankim2025}。这些研究提示我们，在 sewer inspection 场景中，数据问题并不仅仅是“数量不足”，还包括“质量不稳定”“类别不均衡”和“标签口径复杂”等更深层次问题。
+围绕 Sewer-ML，研究者开始从不同角度展开更细化的探索。Kumar 等\cite{ref:kumar2021}关注高度不平衡数据集下的分类问题，指出长尾分布会导致少数类缺陷识别性能明显下降。Jang 和 Kim\cite{ref:jankim2025}则从数据质量角度分析标签错误、图像冗余和低质量样本对模型性能的影响，说明 sewer 数据并非规模越大越好，而是需要在质量控制和信息增益之间取得平衡。这些研究提示我们，在 sewer inspection 场景中，数据问题并不仅仅是“数量不足”，还包括“质量不稳定”“类别不均衡”和“标签口径复杂”等更深层次问题。
 
 另一方面，公开 benchmark 的出现也改变了研究评价方式。早期很多论文仅报告少量自建数据上的准确率或召回率，难以反映方法在不同缺陷类别和复杂场景中的泛化能力。随着公开数据与标准化评测的引入，研究者能够更清晰地比较分类、检测、轻量化和弱监督方法的优劣，并从误报率、类间混淆、跨设备泛化等更具工程价值的指标出发分析模型表现\cite{ref:sewerml,ref:survey2020,ref:measurement2026}。可以说，数据集与 benchmark 的发展，使 sewer defect detection 逐渐从“能不能做”走向“做得如何”“能否迁移”和“是否可部署”。
 
-\subsection{改进检测模型与工程部署导向研究}
+\subsection{迁移学习与跨域适应研究现状}
 
-在检测模型层面，近年来 sewer defect detection 已经明显从通用 detector 直接套用，转向针对场景特征的适配性改进。Li 等提出局部与全局特征融合策略，强调在缺陷识别中既要保留局部纹理细节，也要利用更大范围的结构上下文\cite{ref:li2021fusion}。Wang 等、Zhang 等和 Zhao 等则分别围绕改进 YOLOv5、轻量化部署和 sewer-specific detector 设计开展研究，说明 YOLO 系列在该场景中已经成为最具工程吸引力的技术路线之一\cite{ref:wang2023yolov5,ref:zhang2023automatic,ref:zhao2024yolov5sewer}。这些工作的共同特点是，不再满足于单纯沿用通用目标检测结构，而是从注意力机制、特征融合、检测头设计、损失函数乃至轻量化部署角度，对模型进行针对性改造。
+在检测模型层面，近年来 sewer defect detection 已经明显从通用 detector 直接套用，转向针对场景特征的适配性改进。Li 等\cite{ref:li2021fusion}提出局部与全局特征融合策略，强调在缺陷识别中既要保留局部纹理细节，也要利用更大范围的结构上下文。Wang 等\cite{ref:wang2023yolov5}、Zhang 等\cite{ref:zhang2023automatic}和 Zhao 等\cite{ref:zhao2024yolov5sewer}则分别围绕改进 YOLOv5、轻量化部署和 sewer-specific detector 设计开展研究，说明 YOLO 系列在该场景中已经成为最具工程吸引力的技术路线之一。这些工作的共同特点是，不再满足于单纯沿用通用目标检测结构，而是从注意力机制、特征融合、检测头设计、损失函数乃至轻量化部署角度，对模型进行针对性改造。
 
 2024--2025 年的研究进一步体现出该方向的两个新趋势。其一，是模型结构上从纯 CNN 向混合架构、解释性增强和多模态扩展演化。例如，基于 ResNet50--Swin Transformer 的混合分类定位框架、基于大型多模态模型的可解释 sewer defect detection 研究，都反映出模型设计正向更强表征能力与更好可解释性方向演进\cite{ref:hybrid2025,ref:lmm2024}。其二，是从“只看精度”转向“兼顾透明性、可复核性与工程成本控制”。WSOL 方法和基于几何特征的缺陷定位方法，强调在低标注甚至图像级标注条件下获得可用于后续复核的候选区域，这与实际工程中控制标注成本、缩短模型迭代周期的需求高度一致\cite{ref:wsol2025,ref:geom2025,ref:mv2024}。
 
 同时，最新 benchmark 研究也表明 sewer defect detection 仍处于快速演化阶段。对 Istanbul Dataset 上 YOLO 与 RT-DETR 的系统比较说明，一阶段检测器和 transformer-based detector 各有优势，但在复杂 sewer 场景中仍受到误报、细粒度区分和训练稳定性影响\cite{ref:istanbul2025}。Measurement 期刊发表的最新综述则指出，pipe defect inspection 已从单一图像级识别，逐步走向检测、定位、定量评估与全流程智能巡检，但稳定的跨域泛化能力和低标注部署能力仍是核心瓶颈\cite{ref:measurement2026}。这些最新工作意味着，本文围绕改进 YOLOv11 和跨域迁移策略展开研究，具有明确的问题背景与现实必要性。
 
-如果进一步聚焦到 2024--2025 年 sewer-specific detector 的发展，可以发现研究者已经不再满足于“把通用 YOLO 直接迁入排水管道场景”。Huang 和 Kang 在 IEEE Access 上系统讨论了 improved YOLOv5 在 sewer CCTV 图像中的应用，说明结构级改造在真实管道缺陷识别中具有明确收益\cite{ref:ieeeaccess2024yolo}；Lv 等则把轻量化改进 YOLOv8n 用于 sewer pipe crack detection，强调移动平台与机器人载体条件下的实时性约束\cite{ref:lightcrack2024}；Lu 等在 2025 年进一步给出 improved YOLOv5 的实时检测研究，说明 sewer defect detection 已经从“做出更高精度模型”逐步转向“在复杂场景下维持实时性、稳定性与部署可行性”的综合优化\cite{ref:realtimeyolov52025}。这些文献共同表明，排水管道缺陷检测的研究范式已经从早期的“验证深度学习可行”进入到“围绕小目标、低对比、复杂背景和部署限制开展场景化优化”的阶段。
+如果进一步聚焦到 2024--2025 年 sewer-specific detector 的发展，可以发现研究者已经不再满足于“把通用 YOLO 直接迁入排水管道场景”。Huang 和 Kang\cite{ref:ieeeaccess2024yolo}在 IEEE Access 上系统讨论了 improved YOLOv5 在 sewer CCTV 图像中的应用，说明结构级改造在真实管道缺陷识别中具有明确收益；Lv 等\cite{ref:lightcrack2024}则把轻量化改进 YOLOv8n 用于 sewer pipe crack detection，强调移动平台与机器人载体条件下的实时性约束；Lu 等\cite{ref:realtimeyolov52025}在 2025 年进一步给出 improved YOLOv5 的实时检测研究，说明 sewer defect detection 已经从“做出更高精度模型”逐步转向“在复杂场景下维持实时性、稳定性与部署可行性”的综合优化。这些文献共同表明，排水管道缺陷检测的研究范式已经从早期的“验证深度学习可行”进入到“围绕小目标、低对比、复杂背景和部署限制开展场景化优化”的阶段。
 
-与此同时，采集链条与数据获取方式本身也正在成为研究对象。Jung 和 Reiterer 提出的多传感器深度学习集成概念说明，sewer inspection 已经开始从单一 CCTV 图像分析向多源信息协同演化\cite{ref:sewermultisensor2024}。这类工作虽然不直接等同于本文的方法路线，但它传递出一个很重要的信号：真实工程中的缺陷识别越来越被理解为“成像条件、传感配置、数据质量和算法模型”的联合问题，而不只是纯粹的网络结构问题。这一点与 Jang 和 Kim 关于数据质量影响的分析相互印证，共同说明后续研究若只关注网络结构微调而忽视数据源和质量控制，就很难在工程层面取得稳定收益\cite{ref:jankim2025,ref:sewermultisensor2024}。
+与此同时，采集链条与数据获取方式本身也正在成为研究对象。Jung 和 Reiterer\cite{ref:sewermultisensor2024}提出的多传感器深度学习集成概念说明，sewer inspection 已经开始从单一 CCTV 图像分析向多源信息协同演化。这类工作虽然不直接等同于本文的方法路线，但它传递出一个很重要的信号：真实工程中的缺陷识别越来越被理解为“成像条件、传感配置、数据质量和算法模型”的联合问题，而不只是纯粹的网络结构问题。这一点与 Jang 和 Kim\cite{ref:jankim2025}关于数据质量影响的分析相互印证，也与多传感协同研究\cite{ref:sewermultisensor2024}共同说明后续研究若只关注网络结构微调而忽视数据源和质量控制，就很难在工程层面取得稳定收益。
 
-\subsection{迁移学习、弱监督定位与跨域适应的最新进展}
+\subsection{弱监督定位、迁移学习与跨域适应的融合趋势}
 
-由于目标域高质量框标注代价高昂，迁移学习与低标注学习已经成为 sewer inspection 研究中的重要方向。Situ 等直接比较了 transfer learning-based YOLO 与传统检测方法，证明在 sewer defect detection 场景中，领域相关预训练能够显著提升模型初始表现和收敛稳定性\cite{ref:situ2023}。这一结论对本文非常关键，因为它说明与其完全依赖目标域有限框标注，不如先利用同领域公开数据学习更贴近 sewer scene 的特征表征，再迁移到目标域微调。
+由于目标域高质量框标注代价高昂，迁移学习与低标注学习已经成为 sewer inspection 研究中的重要方向。Situ 等\cite{ref:situ2023}直接比较了 transfer learning-based YOLO 与传统检测方法，证明在 sewer defect detection 场景中，领域相关预训练能够显著提升模型初始表现和收敛稳定性。这一结论对本文非常关键，因为它说明与其完全依赖目标域有限框标注，不如先利用同领域公开数据学习更贴近 sewer scene 的特征表征，再迁移到目标域微调。
 
-除迁移学习外，弱监督定位正在成为连接图像级分类与目标检测的重要桥梁。Yang 等提出弱监督协同定位学习方法，说明在缺乏精确框标注时，依靠图像级标签和热力图信息也可以获得具有一定可用性的缺陷区域\cite{ref:mv2024}。Yin 等则进一步提出透明、可扩展的弱监督定位框架，强调热力图与候选区域不应只作为可视化结果，而应成为低标注数据构建和工程复核流程的一部分\cite{ref:wsol2025}。这类研究与本文的 CAM 伪框生成思路具有直接对应关系，也从侧面证明了“先分类、后热力图、再伪框”的路线不是简单的工程拼接，而是具有明确研究基础的低标注策略。
+除迁移学习外，弱监督定位正在成为连接图像级分类与目标检测的重要桥梁。Yang 等\cite{ref:mv2024}提出弱监督协同定位学习方法，说明在缺乏精确框标注时，依靠图像级标签和热力图信息也可以获得具有一定可用性的缺陷区域。Yin 等\cite{ref:wsol2025}则进一步提出透明、可扩展的弱监督定位框架，强调热力图与候选区域不应只作为可视化结果，而应成为低标注数据构建和工程复核流程的一部分。这类研究与本文的 CAM 伪框生成思路具有直接对应关系，也从侧面证明了“先分类、后热力图、再伪框”的路线不是简单的工程拼接，而是具有明确研究基础的低标注策略。
 
 另一方面，跨域问题在 sewer inspection 中尤为突出。排水管道图像不仅在视觉风格上受到城市、设备和照明条件影响，还受缺陷定义、巡检标准和标注习惯影响，因而 domain gap 往往比自然图像任务更复杂\cite{ref:survey2020,ref:zhou2023review}。尽管不少工作已经关注迁移学习的应用价值，但真正聚焦于 sewer-specific cross-domain detection 的文献仍然较少，大量研究仍停留在“通用 ImageNet 预训练 + 目标域微调”的范式上。就此而言，如何利用 Sewer-ML 这类同领域公开数据开展源域分类预训练，并将其转化为目标域检测能力，是当前公开研究中仍未充分解决的问题。
 
@@ -223,30 +427,30 @@ The proposed framework will be evaluated through classification experiments, CAM
     \caption{地下排水管道检测任务中的主要域差来源}
     \label{fig:ch2-domain-gap}
     
-    {\footnotesize 注：根据 sewer defect detection 与 domain adaptation 相关文献整理与改绘\cite{ref:situ2023,ref:zhou2023review,ref:pgda2024,ref:jankim2025,ref:measurement2026}。}
+    \figsource{根据相关文献\cite{ref:situ2023,ref:measurement2026}整理与改绘。}
 \end{figure}
 
 \subsection{研究趋势、阶段性共识与本文切入点}
 
-如果把现有文献按研究目标进行归类，可以看到该领域已经逐渐形成三个相对清晰的层次。第一层是“数据与任务定义”，其核心问题是公开数据集构建、类别体系建立和评价口径统一；第二层是“模型性能提升”，其核心问题是如何在分类、检测、定位和轻量化部署等任务上获得更优精度与效率；第三层是“系统级落地”，其核心问题是如何面向真实巡检流程降低人工成本、减少误报累积并提升跨域可复用性\cite{ref:survey2020,ref:sewerml,ref:wang2023yolov5,ref:wsol2025}。从这个角度看，本文的研究并非从零起步，而是站在已有研究逐步积累的三层结构之上，选择其中尚未被充分打通的部分作为切入点。
+如果把现有文献按研究目标进行归类，可以看到该领域已经逐渐形成三个相对清晰的层次。第一层是“数据与任务定义”，其核心问题是公开数据集构建、类别体系建立和评价口径统一；第二层是“模型性能提升”，其核心问题是如何在分类、检测、定位和轻量化部署等任务上获得更优精度与效率；第三层是“系统级落地”，其核心问题是如何面向真实巡检流程降低人工成本、减少误报累积并提升跨域可复用性\cite{ref:survey2020,ref:wang2023yolov5,ref:wsol2025}。从这个角度看，本文的研究并非从零起步，而是站在已有研究逐步积累的三层结构之上，选择其中尚未被充分打通的部分作为切入点。
 
-从阶段性共识看，当前研究至少已经明确以下几点。首先，深度学习已经取代传统人工特征，成为 sewer defect detection 的主导技术路线；其次，公开数据与 benchmark 是该领域进一步标准化和可复现化的基础；再次，YOLO 类方法因其实时性和工程成熟度，在实际部署研究中具有突出优势；最后，迁移学习、弱监督定位与数据质量控制正在成为提升系统可用性的关键方向\cite{ref:moradi2019,ref:survey2020,ref:sewerml,ref:situ2023,ref:jankim2025,ref:istanbul2025}。这些共识为本文确立研究主线提供了重要依据。
+从阶段性共识看，当前研究至少已经明确以下几点。首先，深度学习已经取代传统人工特征，成为 sewer defect detection 的主导技术路线；其次，公开数据与 benchmark 是该领域进一步标准化和可复现化的基础；再次，YOLO 类方法因其实时性和工程成熟度，在实际部署研究中具有突出优势；最后，迁移学习、弱监督定位与数据质量控制正在成为提升系统可用性的关键方向\cite{ref:survey2020,ref:sewerml,ref:situ2023,ref:jankim2025}。这些共识为本文确立研究主线提供了重要依据。
 
 若把这些共识再放回近年的一般目标检测研究中观察，可以发现 sewer defect detection 的关键难点与“小目标检测”“复杂背景显著性抑制”“域差条件下的稳定迁移”三条更广义研究线高度重合。小目标检测综述指出，特征下采样导致的信息丢失、目标与背景比例失衡以及上下文依赖不足，是影响细粒度目标检测性能的核心原因\cite{ref:smallyoloreview2026}；Dynamic Feature Focusing Network 等研究则进一步说明，对于小尺度与弱纹理目标，模型不仅要增强局部区域响应，还要动态调节不同特征层的关注重心\cite{ref:dffn2024}。这意味着 sewer 场景中的许多困难并非孤立个案，而是更一般视觉理论在特定工程任务上的集中体现。本文后续围绕注意力、检测头和损失函数展开改进，本质上也是在这一共性理论背景下，对 sewer-specific 难题做场景化求解。
 
-与此同时，现有文献的缺口也相对明确。一方面，许多工作关注单一公开数据集上的方法比较，却没有回答公开源域知识如何更有效地迁移到本地目标域；另一方面，许多改进型 YOLO 工作关注结构替换，却较少说明为何这些改进在 sewer 场景下成立，以及它们如何与低标注增强链路发生耦合\cite{ref:wang2023yolov5,ref:zhao2024yolov5sewer,ref:zhang2023automatic,ref:wsol2025}。因此，本文将切入点放在“改进 YOLOv11 + 源域分类预训练到目标域检测迁移”这条路径上，既顺应文献演化逻辑，又能够形成较强的问题指向性。
+与此同时，现有文献的缺口也相对明确。一方面，许多工作关注单一公开数据集上的方法比较，却没有回答公开源域知识如何更有效地迁移到本地目标域；另一方面，许多改进型 YOLO 工作关注结构替换，却较少说明为何这些改进在 sewer 场景下成立，以及它们如何与低标注增强链路发生耦合\cite{ref:wang2023yolov5,ref:zhao2024yolov5sewer,ref:wsol2025}。因此，本文将切入点放在“改进 YOLOv11 + 源域分类预训练到目标域检测迁移”这条路径上，既顺应文献演化逻辑，又能够形成较强的问题指向性。
 
-\subsection{文献评述与本章小结性认识}
+\paragraph{文献评述与本章小结性认识}
 
-综合已有文献可以发现，地下排水管道缺陷检测的研究重心实际上经历了三次转移。第一次转移，是从人工判读转向计算机辅助视觉分析，其核心目的是减少人工逐帧查看负担；第二次转移，是从人工特征与传统机器学习转向深度学习分类和检测，其核心目的是提高识别精度与鲁棒性；第三次转移，则是从“在局部数据上做出一个可用模型”转向“在公开 benchmark、跨域迁移和低标注条件下建立更完整的工程流程”，其核心目的是让模型真正进入业务闭环\cite{ref:hogsvm2014,ref:cnn2018,ref:sewerml,ref:wsol2025,ref:measurement2026}。
+综合已有文献可以发现，地下排水管道缺陷检测的研究重心实际上经历了三次转移。第一次转移，是从人工判读转向计算机辅助视觉分析，其核心目的是减少人工逐帧查看负担；第二次转移，是从人工特征与传统机器学习转向深度学习分类和检测，其核心目的是提高识别精度与鲁棒性；第三次转移，则是从“在局部数据上做出一个可用模型”转向“在公开 benchmark、跨域迁移和低标注条件下建立更完整的工程流程”，其核心目的是让模型真正进入业务闭环\cite{ref:hogsvm2014,ref:sewerml,ref:wsol2025}。
 
-如果进一步按任务形态细分，现有研究大致可以分为四类。第一类是图像级分类研究，强调快速判断某类病害是否存在；第二类是目标检测研究，强调缺陷区域定位与类别识别；第三类是视频级与系统级研究，强调连续帧处理、跟踪与复核效率；第四类是迁移学习、弱监督和解释性研究，强调在低标注、高域差和实际业务约束下提升系统可用性\cite{ref:cnnmethod2019,ref:tracking2021,ref:spva2021,ref:situ2023,ref:lmm2024}。这四类研究共同构成了本文后续研究的外部背景。
+如果进一步按任务形态细分，现有研究大致可以分为四类。第一类是图像级分类研究，强调快速判断某类病害是否存在；第二类是目标检测研究，强调缺陷区域定位与类别识别；第三类是视频级与系统级研究，强调连续帧处理、跟踪与复核效率；第四类是迁移学习、弱监督和解释性研究，强调在低标注、高域差和实际业务约束下提升系统可用性\cite{ref:cnnmethod2019,ref:tracking2021,ref:situ2023}。这四类研究共同构成了本文后续研究的外部背景。
 
 从论文写作角度看，绪论不能只是把这些文献按年份罗列，而应当把它们组织成能引出本文课题的问题链。就本文而言，这条问题链可以概括为：人工 CCTV 判读难以支撑大规模巡检需求，因此需要自动化识别；传统方法鲁棒性不足，因此深度学习成为主线；公开数据与 benchmark 虽然推动了研究发展，但公开模型难以直接迁移到本地工程场景；目标域框标注成本又较高，因此必须在改进检测模型的同时引入源域预训练和低标注增强策略。只有沿着这条链条展开，后续关于改进 YOLOv11 与跨域迁移的研究才显得自然且必要。
 
 因此，本章的真正目标并不是简单说明“这个方向有人做过”，而是通过文献递进证明：第一，地下排水管道缺陷检测具备明确的工程需求；第二，深度学习已经成为最有前景的技术路线；第三，现有研究虽然丰富，但在跨域、低标注和完整系统链路方面仍存在明显空白；第四，本文提出的研究方案既能够承接已有研究，又能够针对现有空白形成较清晰的学术与工程回应。这也是后续章节展开的前提。
 
-\subsection{不同研究路径的比较与评价}
+\paragraph{不同研究路径的比较与评价}
 
 从现有文献看，围绕地下排水管道缺陷智能识别，至少存在三种常见研究路径。第一种是以图像级分类为核心的路径，重点解决“有没有缺陷”“属于哪类缺陷”的问题。这类路径实现相对简单、标注成本较低、适合大规模样本训练，但难以直接满足定位和维修决策需求\cite{ref:cnnmethod2019,ref:kumar2021,ref:sewerml}。第二种是以目标检测为核心的路径，重点解决“缺陷在哪里”的问题，更贴近工程应用，但对高质量框标注依赖较强\cite{ref:cheng2018,ref:wang2023yolov5,ref:zhang2023automatic}。第三种是以弱监督、迁移学习和系统集成为核心的路径，试图在较低标注成本下构建更完整的业务链条，但这一路径对方法衔接和实验设计要求更高\cite{ref:situ2023,ref:wsol2025,ref:mv2024}。
 
@@ -254,13 +458,30 @@ The proposed framework will be evaluated through classification experiments, CAM
 
 因此，本文最终采用的研究路径是一种“分类预训练能力 + 候选区域增强能力 + 改进检测能力”的组合路线。这种组合并不是为了增加工作量，而是为了让不同研究路径承担各自最擅长的角色：分类负责学习稳定表征，CAM 负责提供低成本候选区域，改进 YOLOv11 负责完成最终缺陷检测，迁移学习负责连接源域与目标域。这样的组织方式既顺应已有研究的发展逻辑，也更容易在后续章节中形成清晰的实验矩阵与结果解释框架。
 
-\subsection{本文课题与现有研究的关系定位}
+\paragraph{本文课题与现有研究的关系定位}
 
-在现有研究版图中，本文课题可以被理解为一种“面向工程约束的组合式研究”。它既不等同于单纯的 sewer 数据集研究，也不等同于单纯的改进型 YOLO 检测论文，更不等同于一般性的迁移学习实验。更准确地说，本文位于三条研究线的交叉点：一条是 sewer-specific defect detection 研究线，强调场景特征与病害识别；一条是改进目标检测模型研究线，强调小目标、复杂背景和类别不均衡问题；另一条是低标注与跨域适应研究线，强调如何在目标域数据有限条件下形成可用模型\cite{ref:sewerml,ref:wang2023yolov5,ref:situ2023,ref:wsol2025}。
+在现有研究版图中，本文课题可以被理解为一种“面向工程约束的组合式研究”。它既不等同于单纯的 sewer 数据集研究，也不等同于单纯的改进型 YOLO 检测论文，更不等同于一般性的迁移学习实验。更准确地说，本文位于三条研究线的交叉点：一条是 sewer-specific defect detection 研究线，强调场景特征与病害识别；一条是改进目标检测模型研究线，强调小目标、复杂背景和类别不均衡问题；另一条是低标注与跨域适应研究线，强调如何在目标域数据有限条件下形成可用模型\cite{ref:sewerml,ref:wang2023yolov5,ref:situ2023}。
 
 这一定位意味着，本文不能简单照搬任何一条已有研究路径。若完全沿用 sewer-specific 分类路线，则难以完成最终检测任务；若完全沿用改进 detector 路线，则又无法回答目标域低标注与显著域差问题；若完全沿用一般迁移学习路线，则又容易忽视排水管道图像中复杂背景、小目标与接口结构异常的特殊性。因此，本文的研究设计更像是在已有三条研究线之间搭桥：既继承它们各自有效的部分，又试图把它们组织成一条更完整的工程技术路线。
 
 从论文写作角度看，这样的关系定位也有助于避免后文主次失衡。本文的主角始终是“改进 YOLOv11 检测方法”和“源域预训练到目标域检测的跨域迁移策略”，而分类预训练、CAM 热力图和伪框构建等环节，则被定位为支撑主角落地的关键链路。把这一点在绪论中讲清楚，后续整篇论文的叙事就会更稳定，不会出现方法章节与实验章节互相争夺主线的问题。
+
+ \begin{table}[H]
+    \centering
+    \caption{现有研究路线对比与本文定位表}
+    \label{tab:research-route-positioning}
+    \begin{tabular}{p{2.8cm}p{3.0cm}p{2.2cm}p{3.0cm}p{3.2cm}p{2.8cm}}
+        \toprule
+        路线类型 & 代表文献 & 监督粒度 & 主要优点 & 主要问题 & 与本文关系 \\
+        \midrule
+        传统视觉与规则方法 & \cite{ref:hogsvm2014,ref:tool2018} & 图像级/规则级 & 可解释性较强，早期落地成本较低 & 泛化能力弱，依赖人工特征与阈值设计 & 历史起点与对照背景 \\
+        深度学习分类路线 & \cite{ref:cnn2018,ref:cnnmethod2019,ref:kumar2021} & 图像级 & 容易构建，适合大规模筛查与预训练 & 缺少精确定位，难以直接支持检测 & 支撑第一阶段与源域预训练 \\
+        深度学习检测路线 & \cite{ref:cheng2018,ref:wang2023yolov5,ref:zhao2024yolov5sewer} & 框级监督 & 能输出类别与位置，适合工程复核 & 标注代价高，复杂背景下误报明显 & 对应本文第二阶段核心任务 \\
+        弱监督定位与伪标注路线 & \cite{ref:mv2024,ref:wsol2025} & 图像级到伪框级 & 降低框标注成本，适合低标注场景 & 伪框质量波动大，需要抽检控制 & 对应本文支撑链条 \\
+        迁移学习与跨域适应路线 & \cite{ref:situ2023,ref:pgda2024,ref:transfereval2025} & 混合监督 & 能缓解目标域数据不足与域差问题 & 路径设计复杂，收益依赖源域相关性 & 对应本文创新点二 \\
+        \bottomrule
+    \end{tabular}
+\end{table}
 
 \section{现有研究存在的问题}
 
@@ -276,11 +497,11 @@ The proposed framework will be evaluated through classification experiments, CAM
 
 第五，目标域高质量框标注昂贵，限制了检测模型的快速迭代。相较于图像级分类标签，边界框标注不仅耗时，更需要具备工程背景的专业人员参与，尤其当缺陷边界模糊、多个病害共存或区域范围不规则时，标注一致性难以保证\cite{ref:wsol2025,ref:mv2024,ref:jankim2025}。因此，许多工程单位拥有大量历史图像和视频，却缺乏足够规模、足够规范的检测标注库。现有研究虽然已经开始尝试弱监督定位和伪标签策略，但相关方法在排水管道场景中的系统衔接仍不成熟。
 
-第六，现有研究往往分散于单一环节优化，缺乏面向完整业务链条的统一设计。部分研究聚焦于分类，部分研究聚焦于检测网络结构，部分研究关注数据清洗或系统可视化，但较少有工作同时考虑源域表征学习、目标域适配、低标注增强和误报控制之间的整体关系\cite{ref:survey2020,ref:wang2023yolov5,ref:zhao2024yolov5sewer,ref:wsol2025}。对于硕士论文而言，如果只在某一个局部模块上做微小改动，很难形成完整研究闭环；而如果能够把模型改进、跨域迁移与工程支撑链统一起来，则更能体现研究的系统性和应用价值。
+第六，现有研究往往分散于单一环节优化，缺乏面向完整业务链条的统一设计。部分研究聚焦于分类，部分研究聚焦于检测网络结构，部分研究关注数据清洗或系统可视化，但较少有工作同时考虑源域表征学习、目标域适配、低标注增强和误报控制之间的整体关系\cite{ref:survey2020,ref:wang2023yolov5,ref:wsol2025}。对于硕士论文而言，如果只在某一个局部模块上做微小改动，很难形成完整研究闭环；而如果能够把模型改进、跨域迁移与工程支撑链统一起来，则更能体现研究的系统性和应用价值。
 
 第七，现有研究对“数据质量与源模型选择”的讨论仍然不足。数据质量研究已经表明，冗余样本、错误标签和低质量图像会显著影响 sewer defect detection 的训练稳定性和最终性能\cite{ref:jankim2025}；多传感器研究和工业迁移研究则进一步说明，输入源质量、源模型选取和训练数据组织方式会共同决定后续模型收益\cite{ref:sewermultisensor2024,ref:transfereval2025}。然而在不少 sewer-specific 文献中，研究重点仍然集中在“换了什么模块、提升了多少精度”，对源域为何这样构建、训练集为何这样筛选、不同源模型为何产生不同迁移效果等问题讨论不够充分。本文将源域单标签六类分类集构建写成显式研究环节，目的也正在于补足这一被忽视但极其关键的前提层。
 
-第八，改进型检测模型的收益往往缺乏统一而可解释的归因。近年来已有多篇 sewer detection 论文围绕注意力机制、neck 融合、检测头调整和轻量化展开改进\cite{ref:wang2023yolov5,ref:zhao2024yolov5sewer,ref:ieeeaccess2024yolo,ref:realtimeyolov52025,ref:rdlkyolo2025}，但其中不少工作更强调结果对比，而较少系统说明模块收益与 sewer 场景任务属性之间的因果关系。对于硕士论文而言，如果不能把“为什么这些改进在 sewer 场景下成立”解释清楚，那么后续改进 YOLOv11 的方法章节就容易沦为经验性堆叠。基于这一认识，本文在第 2 章中专门铺垫小目标检测、复杂背景抑制、注意力机制和损失函数优化的理论基础，并在后续实验中通过消融设计尽量建立模块收益与任务需求之间的对应关系。
+第八，改进型检测模型的收益往往缺乏统一而可解释的归因。近年来已有多篇 sewer detection 论文围绕注意力机制、neck 融合、检测头调整和轻量化展开改进\cite{ref:wang2023yolov5,ref:ieeeaccess2024yolo,ref:realtimeyolov52025}，但其中不少工作更强调结果对比，而较少系统说明模块收益与 sewer 场景任务属性之间的因果关系。对于硕士论文而言，如果不能把“为什么这些改进在 sewer 场景下成立”解释清楚，那么后续改进 YOLOv11 的方法章节就容易沦为经验性堆叠。基于这一认识，本文在第 2 章中专门铺垫小目标检测、复杂背景抑制、注意力机制和损失函数优化的理论基础，并在后续实验中通过消融设计尽量建立模块收益与任务需求之间的对应关系。
 
 基于上述问题，本文将研究目标明确聚焦于两个核心方向和一条支撑链路。两个核心方向分别是：面向 sewer defect detection 的改进 YOLOv11 模型设计，以及面向源域与目标域显著分布差异的跨域迁移适应训练策略；一条支撑链路则是高召回预筛、分类微调、CAM 候选区域生成和低标注伪框构建。这样的组织方式使研究逻辑能够从数据现实约束自然过渡到模型改进需求，再进一步过渡到跨域适应和系统部署问题，也为后续章节的结构安排提供了清晰主线。
 
@@ -290,7 +511,7 @@ The proposed framework will be evaluated through classification experiments, CAM
     \caption{地下排水管道缺陷检测的问题链及本文技术路线}
     \label{fig:ch1-problem-chain}
     
-    {\footnotesize 注：根据文献\cite{ref:survey2020,ref:zhou2023review,ref:situ2023,ref:wsol2025,ref:jankim2025}整理与改绘。}
+    \figsource{根据文献\cite{ref:survey2020,ref:wsol2025}整理与改绘。}
 \end{figure}
 
 换言之，第一章承担的不只是“简单介绍研究背景”的功能，而是要把本文后续所有技术选择的理由讲清楚。为什么不是直接从零开始做目标域检测？为什么不是只做单纯分类？为什么需要改进 YOLO，而不是只做数据增强？为什么要引入 CAM 与伪框，而不是一开始就全面人工框标注？这些问题都必须在绪论中给出有依据的回答，否则后续第 4 章和第 5 章中的方法设计就会显得缺乏问题导向。正因如此，本文将第一章写成一条逐层推进的逻辑链：先讲清楚行业背景，再梳理技术发展，再归纳当前瓶颈，最后自然引出本文研究内容和创新点。
@@ -303,7 +524,7 @@ The proposed framework will be evaluated through classification experiments, CAM
 
 由此可见，第一章不仅需要完成“交代背景”的任务，还要承担“限定问题边界”和“建立后文解释框架”的职责。换句话说，绪论写得是否扎实，直接决定后续方法章和实验章能否被理解为一个完整研究，而不是若干技术环节的松散堆叠。这也是本文坚持以较大篇幅梳理发展脉络、文献谱系和现实瓶颈的根本原因。
 
-\section{本文研究内容}
+\section{研究内容与技术路线}
 
 围绕地下排水管道 CCTV 图像缺陷检测中的实际需求和现有研究空白，本文拟开展如下工作。
 
@@ -316,6 +537,30 @@ The proposed framework will be evaluated through classification experiments, CAM
 \end{enumerate}
 
 从研究组织形式看，本文并不将分类、热力图、伪框、检测与迁移视为若干互不相关的技术堆叠，而是围绕同一主线逐步推进。首先，源域单标签分类用于学习更稳定的 sewer 场景特征；其次，目标域微调和 CAM 热力图用于将源域知识逐步对齐到目标域，并生成低成本候选框；再次，在此基础上训练并改进 YOLOv11 检测器，形成面向本地场景的精确检测能力；最后，通过迁移实验、消融实验和系统级分析，验证整条路线的有效性与工程可实施性。这种从“源域知识获取”到“目标域检测落地”的递进关系，是本文后续章节展开的基本逻辑。
+
+\begin{figure}[H]
+    \centering
+    \placeholderbox{论文总体技术路线图\\建议文件：thesis\_roadmap.pdf}
+    \caption{论文总体技术路线图}
+    \label{fig:thesis-roadmap}
+\end{figure}
+
+为避免本节研究现状停留在逐篇列举层面，表~\ref{tab:research-route-positioning} 从监督粒度、工程适配性与本文关系三个角度，对当前主流研究路线进行统一归纳。
+\begin{table}[H]
+    \centering
+    \caption{本文研究内容与章节对应关系}
+    \label{tab:chapter-mapping}
+    \begin{tabular}{p{3.2cm}p{4.2cm}p{5.2cm}}
+        \toprule
+        研究问题 & 主要章节 & 对应目标 \\
+        \midrule
+        RQ1：高召回 gate 是否能有效降低误报 & 第 3 章、第 4 章、第 6.2 节、第 6.3 节 & 解释第一阶段任务定义、容量选择与误报控制收益 \\
+        RQ2：改进 YOLOv11 是否提升复杂场景检测性能 & 第 5 章、第 6.4 节、第 6.5 节 & 验证注意力、检测头和损失函数的协同增益 \\
+        RQ3：跨域迁移是否缓解样本不足与域差问题 & 第 5 章、第 6.6 节 & 验证源域预训练和目标域微调的迁移价值 \\
+        RQ4：两阶段系统是否优于单阶段直接检测 & 第 4 章、第 6.7 节 & 说明系统级误报控制与工程效率收益 \\
+        \bottomrule
+    \end{tabular}
+\end{table}
 
 \section{本文主要创新点}
 
@@ -334,17 +579,329 @@ The proposed framework will be evaluated through classification experiments, CAM
 
 \begin{enumerate}[label=\arabic*.]
     \item 第 1 章为绪论，介绍研究背景与意义、国内外研究现状、现有研究存在的问题、本文研究内容、创新点以及全文结构安排，重点构建从人工 CCTV 判读到深度学习排水管道缺陷检测，再到跨域迁移与改进 YOLOv11 切入点的完整问题链条。
-    \item 第 2 章为相关理论与关键技术基础，系统阐述地下排水管道缺陷图像特征、目标检测基础理论、YOLO 系列方法演进、注意力机制、损失函数与迁移学习理论，为后续方法设计提供理论支撑。
-    \item 第 3 章介绍数据集构建与总体框架，说明源域与目标域数据来源、源域单标签分类数据集构建、目标域类别映射、CAM 伪框流程以及高召回预筛与后级精检的整体系统设计。
-    \item 第 4 章介绍基于改进 YOLOv11 的地下排水管道缺陷检测方法，从注意力机制、检测头和损失函数三个方面阐述改进思路与整体模型设计，是本文的核心方法章节之一。
-    \item 第 5 章介绍面向跨域场景的迁移适应训练策略，重点说明源域分类预训练、目标域微调、候选区域生成以及检测阶段迁移训练方法，是本文第二个核心研究章节。
-    \item 第 6 章为实验结果与分析，通过源域分类实验、检测对比实验、模块消融实验、跨域迁移实验及可视化错误分析，对本文方法的有效性进行系统验证。
+    \item 第 2 章为理论基础与关键技术，系统阐述地下排水管道缺陷图像特征、评价指标、YOLOv11 原理、注意力机制、损失函数、迁移学习以及 CAM/Grad-CAM 理论，为后续方法设计提供理论支撑。
+    \item 第 3 章介绍数据集构建与总体研究框架，说明源域与目标域数据来源、源域单标签分类数据集构建、目标域类别映射、两阶段任务定义、数据划分协议以及总体系统框架。
+    \item 第 4 章介绍前级高召回预筛与弱监督标注增强策略，重点说明二分类 gate、阈值校准、hard negative 和 CAM 伪框等支撑链条设计。
+    \item 第 5 章介绍基于改进 YOLOv11 的管道缺陷检测与跨域迁移策略，是全文核心方法章节，主要包括注意力机制、检测头、损失函数和跨域迁移路径设计。
+    \item 第 6 章为实验结果与分析，按照第一阶段预筛、第二阶段 baseline、创新点一消融、创新点二迁移和系统级验证的顺序，对本文方法的有效性进行系统验证。
     \item 第 7 章总结全文工作，概括研究结论，分析存在的不足，并对地下排水管道缺陷智能检测的后续研究方向进行展望。
 \end{enumerate}
 
-\chapter{相关理论与关键技术基础}
+\fi
+\chapter{理论基础与关键技术}
 
-\section{地下排水管道缺陷类型与图像特征分析}
+\section{地下排水管道缺陷类型与图像特征}
+
+\subsection{地下排水管道缺陷类型}
+
+地下排水管道缺陷并不是标准自然图像中的显著目标，而是与管壁纹理、接口结构、照明条件和运行工况耦合的一类工程视觉对象。结合本文目标域任务，最终检测类别固定为 \texttt{CrackBreak}、\texttt{SurfaceDamage}、\texttt{Deformation}、\texttt{JointDislocation}、\texttt{Intrusion} 和 \texttt{Infiltration} 六类，其中既包含局部纹理破坏，也包含接口异常和整体几何形变\cite{ref:moradi2019,ref:zhou2023review}。这种类别冻结并不是简单删减 Sewer 场景中的病害种类，而是围绕最终检测任务的可实施性、类别语义稳定性以及目标域标注条件进行的任务化选择。
+
+从工程属性看，结构性病害通常与管道安全、维修优先级和后续养护决策直接相关，因此更适合作为检测主任务。相较之下，部分功能性缺陷、构造信息和工况标签更适合出现在预筛、分类辅助或附录说明中，而不宜与最终检测类别混合建模\cite{ref:survey2020,ref:sewerml}。这一点决定了本文后续不会把源域类别体系与目标域检测类别做机械一一对应，而是采用“源域较粗、目标域冻结”的映射思路，以支撑后续跨域训练和实验对比。
+
+从视觉表现上看，六类结构性缺陷又具有明显差异。裂缝与破损更依赖于局部细纹理和细长轮廓感知；表面损伤与腐蚀更接近区域性异常，边界往往模糊；变形强调整体几何变化；错口与侵入则与接口结构关系紧密相关；渗漏通常表现为低对比度拖尾或局部湿痕\cite{ref:li2021fusion,ref:wang2023yolov5}。因此，后续模型设计必须同时考虑局部细节保持、上下文建模和复杂背景抑制，不能把所有缺陷当作视觉属性一致的普通目标。
+
+\subsection{缺陷图像特征分析}
+
+这类图像的主要难点体现在四个方面：一是缺陷目标通常尺度较小，局部有效像素占比低；二是缺陷边界模糊，许多病害只表现为弱纹理或低对比异常；三是背景干扰强，反光、水膜、污渍和沉积物会造成明显伪激活；四是类别之间存在视觉相似性，易出现类间混淆\cite{ref:measurement2026,ref:jankim2025}。对于长视频巡检场景而言，摄像头自带光源造成的中心高亮、边缘衰减和局部曝光过强等现象，也会进一步放大模型对背景纹理的误响应。
+
+除静态图像特征外，排水管道巡检数据还具有明显的分布不均衡特征。正常帧通常远多于缺陷帧，且不同缺陷类别样本数量差异很大，少数类往往具有更高工程风险却更难获得稳定标注\cite{ref:kumar2021,ref:hierarchical2019}。这意味着模型若只优化总体准确率，往往会偏向背景和多数类，从而在真实部署中表现为“总体指标尚可，但关键缺陷漏检较多”。
+
+从方法论角度看，上述视觉难点直接约束后续研究路线：如果任务核心问题来自小目标与弱纹理，则需要在特征表达阶段尽量保留细粒度信息；如果误报主要来自污渍、反光和沉积干扰，则需要在前级预筛和后级 detector 中同时关注背景抑制；如果目标域高质量框标注有限，则必须通过迁移学习和弱监督定位去降低监督构建成本。也正因为如此，第 4 章和第 5 章中的模型改进与跨域迁移，并不是相互独立的附加操作，而是对同一组任务困难的分层回应。
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.92\textwidth]{../../img/ch2_theory_support_map.pdf}
+    \caption{地下排水管道缺陷检测的关键理论支撑关系}
+    \label{fig:ch2-theory-support-map}
+    \figsource{根据本文理论框架整理与改绘。}
+\end{figure}
+
+\section{图像分类与目标检测评价指标}
+
+\subsection{目标检测任务定义}
+
+目标检测任务要求模型同时完成类别判定与空间定位。与图像分类仅回答“图像中是否存在某类目标”不同，检测模型还需要给出候选边界框、类别标签及相应置信度，因此更适合服务于排水管道巡检中的“哪里有缺陷、属于什么类型、需要优先复核哪些区域”等实际需求\cite{ref:cheng2018,ref:zhang2023automatic}。对 sewer 场景而言，这种能力尤其重要，因为同一张图像中可能同时包含多个异常区域，且异常边界往往并不清晰。
+
+按照候选区域生成方式和预测组织形式的不同，现有检测方法大致可以分为两阶段方法、一阶段方法和端到端集合预测方法。两阶段方法以 R-CNN 系列为代表，先生成候选区域再分类回归，具有较强的精细识别能力；一阶段方法以 SSD 和 YOLO 系列为代表，将分类和回归整合到同一网络中，兼顾速度与精度；基于 Transformer 的 DETR 路线则从集合匹配角度重构了检测流程\cite{ref:rcnn2014,ref:ssd2016,ref:detr2020}。考虑到本文面向的是海量巡检图像和长视频场景，一阶段检测器在工程部署上更具优势，因此成为后续模型设计的主要基础。
+
+\subsection{目标检测方法演进}
+
+从发展脉络看，地下排水管道缺陷检测并不是一开始就建立在深度目标检测基础之上的。早期工作更多依赖传统图像处理、边缘纹理特征和机器学习分类器，在局部规则明确的场景下能够形成初步自动筛查能力，但对设备差异、光照变化和背景噪声极为敏感\cite{ref:hogsvm2014,ref:tool2018}。随着 CNN 的引入，研究重点逐渐转向深度特征学习，缺陷识别开始从“人工设计特征”转变为“以数据驱动的表征学习”为核心。
+
+在此基础上，一阶段 detector 尤其是 YOLO 路线逐渐成为 sewer defect detection 的主流工程方案。其原因并不只是速度快，更在于该路线生态成熟、训练流程稳定、易于与分类模型、迁移学习和部署工具衔接\cite{ref:wang2023yolov5,ref:zhao2024yolov5sewer}。但已有研究同时指出，直接采用通用 detector 往往难以同时兼顾高召回、低误报和跨域稳定性，这也是本文后续要从注意力机制、检测头与损失函数三个层面进行场景化改进的直接动因。
+
+\begin{table}[H]
+    \centering
+    \caption{典型检测范式比较表}
+    \label{tab:detection-paradigm-comparison}
+    \begin{tabular}{p{2.5cm}p{2.8cm}p{2.8cm}p{3.2cm}p{2.8cm}}
+        \toprule
+        检测范式 & 代表方法 & 主要优点 & 主要局限 & 与本文关系 \\
+        \midrule
+        两阶段检测 & R-CNN 系列 & 候选区域精细，识别能力较强 & 推理较慢，部署成本较高 & 作为理论参照，不作为主路线 \\
+        一阶段检测 & SSD、YOLO 系列 & 速度快，工程实现成熟 & 小目标和复杂背景下易受干扰 & 作为本文主路线 \\
+        端到端集合预测 & DETR 系列 & 结构统一，后处理依赖较弱 & 收敛与部署成本较高 & 作为强基线参考 \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\subsection{常用评价指标}
+
+本文后续同时涉及源域分类、前级高召回预筛和目标域目标检测三个层次，因此评价指标不能只依赖单一准确率。对于前级预筛，更重要的是在尽量不漏掉异常样本的前提下过滤正常样本；对于检测模型，则需要同时关注识别精度、定位质量与误报水平。基于这一考虑，本文不追求在理论基础章节中罗列过多指标，而是只保留后续实验中会反复使用、且能直接支撑研究问题回答的六个核心指标。
+
+其中，Precision、Recall 与 F1-score 用于描述识别准确性与漏检之间的折中关系，Specificity 与 Gate Recall 用于服务第一阶段预筛在高召回约束下的误报控制分析，mAP@0.5 与 mAP@0.5:0.95 则用于评价第二阶段 detector 的检测与定位质量。上述指标既覆盖了分类与检测的主要评价需求，也能对应后续章节中的系统级实验结论。为便于全文统一引用，表~\ref{tab:metric-definitions} 对这六个核心指标进行集中定义。
+\begingroup
+\footnotesize
+\setlength{\LTleft}{0pt}
+\setlength{\LTright}{0pt}
+\begin{longtable}{p{2.2cm}p{3.0cm}p{3.4cm}p{4.4cm}}
+    \caption{评价指标定义与说明}
+    \label{tab:metric-definitions}\\
+    \toprule
+    指标 & 计算方式说明 & 主要含义 & 本文中的使用场景 \\
+    \midrule
+    \endfirsthead
+    \caption[]{评价指标定义与说明（续）}\\
+    \toprule
+    指标 & 计算方式说明 & 主要含义 & 本文中的使用场景 \\
+    \midrule
+    \endhead
+    \bottomrule
+    \endfoot
+    Precision & 预测为正的样本中，真实为正的比例 & 预测结果的准确性 & 反映误报控制能力，直接影响人工复核成本。 \\
+    Recall & 真实正样本中，被模型成功检出的比例 & 对真实缺陷的覆盖能力 & 对缺陷检测尤其关键，漏检会直接削弱维护决策可靠性。 \\
+    Specificity & 真实负样本中，被模型正确排除的比例 & 对正常样本的过滤能力 & 是第一阶段 gate 的核心指标，反映正常帧过滤能力。 \\
+    F1-score & Precision 与 Recall 的调和平均 & 识别效果的综合折中 & 适合用于概括模型总体识别能力，但仍需配合 Precision 与 Recall 同时分析。 \\
+    Gate Recall & 前级预筛保留下来的异常样本占全部异常样本的比例 & 前级 gate 对异常样本的保留能力 & 是第一阶段的硬约束指标，用于保证真正异常样本尽可能不被误滤除。 \\
+    mAP@0.5 & 在 IoU 阈值为 0.5 时统计平均精度 & 模型是否大致检出目标 & 是第二阶段 detector 的主评价指标之一，更贴近工程中“能否发现缺陷”的需求。 \\
+    mAP@0.5:0.95 & 在多个 IoU 阈值下统计平均精度并取平均 & 同时反映检测与定位质量 & 适合用于正式实验对比，能够更严格地衡量定位边界是否稳定。 \\
+\end{longtable}
+\endgroup
+
+需要说明的是，本文并未在第二章保留 AUROC、AUPRC、NRR、PTR 和 FP/image 等其他指标，并不代表这些指标不重要，而是因为这些指标更适合在对应实验章节中结合具体任务视图解释。例如，第 4 章讨论第一阶段 operating point 时会重点引入 NRR 与 PTR；第 6 章讨论系统级结果时会引入 FP/image 和更多误报控制指标。这样安排能够避免理论基础章节过早堆积大量符号，同时使每个指标都在最合适的实验语境下被解释。
+
+此外，还需要强调一点：评价指标的选择本身就体现了论文对任务目标的理解。若只强调某一单点精度指标，容易掩盖高召回条件下的误报成本；若只强调系统级过滤能力，又可能忽略 detector 的定位质量。因此，本文把六个核心指标放在理论基础章节统一定义，目的并不是追求指标完整，而是提前给出后续实验比较的逻辑坐标系，使第 4 章和第 6 章中的所有对比都能围绕同一套评价语义展开。
+
+\section{YOLO 系列与 YOLOv11 原理}
+
+\subsection{YOLO 系列的基本思想}
+
+YOLO 系列将目标检测统一建模为单阶段回归问题，能够在单个网络中同时完成类别判断和边界框预测，因此兼具较好的速度与工程可部署性\cite{ref:yolo2016}。这一范式的关键优势在于训练和推理流程相对统一，便于在同一工程框架内完成数据准备、模型迭代和结果部署。对排水管道场景而言，这一路线更适合长视频、大批量图片和快速迭代训练流程。
+
+从方法发展上看，YOLO 的优势不只体现在实时性，更体现在其逐步形成了成熟的特征提取、多尺度融合和检测头组织范式。随着不同版本持续迭代，YOLO 家族逐渐在工业缺陷检测、基础设施巡检和嵌入式部署场景中形成较强工程竞争力。这也是本文选择在 YOLO 路线而不是完全另起炉灶的端到端方案上做改进的主要原因。
+
+\subsection{YOLOv11 结构概述}
+
+YOLOv11 在工程实现中延续了主干特征提取、颈部多尺度融合和检测头预测的基本结构，同时保留了较成熟的训练与部署接口。本文选择 YOLOv11 作为基线，原因在于其工程生态稳定、改造接口清晰，便于在同一平台上完成前级分类、后级检测和跨域迁移实验。
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.88\textwidth]{../../img/ch2_yolo11_architecture.pdf}
+    \caption{YOLO11 检测模型结构示意}
+    \label{fig:ch2-yolo11-architecture}
+    \figsource{根据官方公开结构关系整理与改绘\cite{ref:yolo11diagram2025}。}
+\end{figure}
+
+\subsection{分类模型与检测模型的区别}
+
+需要指出的是，YOLOv11 的分类模型与检测模型虽然共享部分工程接口，但两者面向的监督粒度和输出目标并不相同。分类模型更适合学习“图像中是否存在某类异常”的判别边界，因此非常适合作为源域表征学习和前级 gate 的工具；检测模型则负责完成类别识别与空间定位，因而更适合承担最终缺陷检测任务。这一区分正是本文采用“源域分类预训练 $\rightarrow$ 目标域分类微调 $\rightarrow$ 目标域检测训练”渐进路线的理论基础。
+
+与此同时，YOLOv11 在 sewer 场景中的局限也很明确：面对小目标、弱纹理和复杂背景时，通用结构往往难以同时兼顾召回率与误报控制，因此需要在特征表达、检测头设计和训练目标三个层面做针对性改进\cite{ref:wang2023yolov5,ref:zhao2024yolov5sewer}。也就是说，YOLOv11 在本文中既是一个成熟的工程起点，也是一个必须被场景化改造的基线平台。
+
+\subsection{YOLOv11 作为本文基线的工程理由}
+
+本文最终选择 YOLOv11 而不是直接转向完全不同的检测体系，主要出于三点考虑。第一，YOLO 路线在排水管道缺陷研究中已经有较多成功实践，具备较强的同领域可迁移性，因此能够与本文的 SewerML 源域预训练、目标域 detector 训练形成自然衔接\cite{ref:wang2023yolov5,ref:situ2023}。第二，YOLOv11 在工程实现上具备较成熟的训练、验证和推理接口，适合与本文当前的数据组织方式和运行环境对接。第三，YOLOv11 仍保留了足够清晰的 backbone、neck、head 分层结构，便于后续在注意力、检测头和损失函数层面开展可解释的改进。
+
+从论文写作角度看，基线模型的选择还决定了后续消融实验是否具有说服力。若基线平台本身过于冷门或改造接口不清晰，则很难把注意力模块、检测头改进和迁移策略放到同一张实验矩阵里进行公平比较。YOLOv11 恰好能够提供一个统一的平台，使本文后续的所有改进都可以围绕同一基线展开，从而保证实验设计的可读性和结论的可归因性。
+
+\section{注意力机制理论}
+
+\subsection{注意力机制的作用机理}
+
+注意力机制的核心作用是强化关键区域和关键通道响应，抑制背景噪声对特征学习的干扰。对于 sewer defect detection 而言，注意力模块的价值主要体现在两个方面：一是提升模型对细小裂缝、接口异常和局部渗漏等弱显著目标的聚焦能力；二是降低反光、污渍和壁面纹理带来的伪激活\cite{ref:li2021fusion}。
+
+现有研究中常见的轻量级注意力模块包括 SE、CBAM 和 ECA。它们分别强调通道重标定、通道与空间联合建模以及低开销的局部跨通道交互。对本文而言，注意力模块选择的原则不是“越复杂越好”，而是是否能在 sewer 场景中以较低代价带来稳定增益。若一个模块虽然理论表达能力更强，却显著增加参数量、推理时延或训练不稳定性，那么其工程价值可能并不高。
+
+因此，第二章对注意力模块的讨论重点并不是罗列所有变体，而是建立一个清晰的筛选准则：是否能增强关键缺陷区域响应、是否有助于抑制背景噪声、是否能够自然嵌入 YOLOv11 的 backbone/neck 结构，以及是否适合后续消融实验进行公平比较。第 5 章的注意力设计选择将严格围绕这些原则展开。
+
+\subsection{注意力机制与 sewer 场景的匹配性}
+
+对于地下排水管道场景，注意力机制的意义并不只是“提高特征表达能力”这一抽象说法，而是与具体误差来源直接相关。若模型在反光、水膜或污渍区域持续产生高响应，则说明其显著性分配已经偏离真实缺陷区域；若模型对细小裂缝和接口异常的响应被大面积背景纹理淹没，则说明其在关键区域聚焦方面存在不足。注意力模块正是在这一层面介入，通过对通道和空间信息进行重加权，使模型把更多表征能力集中到与缺陷有关的局部区域。
+
+不过，注意力机制并非一定越强越好。对于需要长期运行的工程系统而言，任何结构改动都必须考虑复杂度、稳定性和后续部署成本。也正因为如此，本文把注意力模块定位为“有明确任务指向的增强组件”，而不是单纯为了提升指标而叠加的装饰性模块。后续消融实验将围绕这一点展开，即既比较它是否有效，也比较它是否值得。
+
+\begin{table}[H]
+    \centering
+    \caption{典型注意力模块比较表}
+    \label{tab:attention-comparison}
+    \begin{tabular}{p{2.2cm}p{2.8cm}p{2.5cm}p{3.0cm}p{3.0cm}}
+        \toprule
+        模块 & 机制类型 & 参数/计算开销 & 优点 & 是否适合本文 \\
+        \midrule
+        SE & 通道重标定 & 低到中等 & 结构简单，易集成 & 适合作为轻量基线 \\
+        CBAM & 通道+空间联合注意力 & 中等 & 对关键区域建模更直接 & 适合复杂背景场景 \\
+        ECA & 局部跨通道交互 & 低 & 代价较小，部署友好 & 适合作为低开销候选 \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\section{损失函数与框回归相关理论}
+
+\subsection{分类损失与定位损失的协同作用}
+
+检测模型的训练效果不仅取决于网络结构，也取决于训练目标的组织方式。对于 sewer 缺陷检测，损失函数需要同时面对类别不均衡、难样本区分不足和边界模糊等问题。分类侧常见损失包括 BCE、CE 和 Focal Loss；定位侧通常依赖 IoU、GIoU 等框回归损失\cite{ref:focalloss2020,ref:giou2019}。
+
+从任务角度看，Focal Loss 更适合抑制大量易分类样本对梯度的主导，IoU 类损失则有助于提高边界回归质量。本文后续对损失函数的改进，核心并不是机械替换公式，而是围绕“如何在保持召回率的同时抑制误报，并改善 hardest positive / hardest negative 区分”展开。对于排水管道场景而言，这种优化尤其关键，因为真实任务不仅要求检出缺陷，还要求减少大量正常背景中的误报。
+
+换言之，损失函数设计在本文中承担的是“把视觉难点转化为训练偏好”的角色。如果任务最难点是少数类与弱纹理目标，则损失函数应尽量突出难样本；如果后续系统更看重高召回下的误报抑制，则损失函数也应避免过度偏向易样本和多数类。正因为存在这种任务依赖性，第 5 章不会简单照搬通用损失设置，而是把损失函数作为与注意力模块、检测头并列的核心改进项。
+
+\subsection{损失设计与 Precision/Recall 折中}
+
+在工程检测任务中，损失函数选择还会直接影响 Precision 与 Recall 的平衡关系。若训练目标更强调容易区分的样本，模型可能在验证集上表现出较高 Precision，却牺牲了对弱显著目标和边界模糊目标的 Recall；反之，若训练目标过于强调正样本召回，又可能在复杂背景中引入更多误报。这种折中关系在 sewer defect detection 中尤为突出，因为正常背景占比高、异常边界不稳定且类间相似度大。
+
+因此，本文并不把损失函数视为单一公式替换问题，而是把它理解为“如何将研究目标写入训练过程”的方式。后续改进若能在高召回条件下抑制误报，并改善 hardest normal 与 hardest positive 的区分能力，就说明损失函数设计真正契合了本文任务需求，而不是仅仅在某个单点指标上取得偶然提升。
+
+\begin{table}[H]
+    \centering
+    \caption{典型损失函数与适用问题比较表}
+    \label{tab:loss-comparison}
+    \begin{tabular}{p{2.6cm}p{3.0cm}p{3.0cm}p{4.0cm}}
+        \toprule
+        损失函数 & 主要解决问题 & 适合场景 & 与本文关系 \\
+        \midrule
+        BCE / CE & 基础分类训练 & 常规分类与检测分类支路 & 作为基础对照 \\
+        Focal Loss & 类别不均衡、易样本主导 & 正负样本数量差距大时 & 适合作为候选改进项 \\
+        IoU / GIoU 类损失 & 提升边界框回归质量 & 需要更稳定定位时 & 支撑后续定位优化分析 \\
+        组合损失 & 同时兼顾分类与定位目标 & 场景化检测任务 & 对应本文损失设计主线 \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\section{迁移学习与域适应理论}
+
+\subsection{源域、目标域与域差定义}
+
+迁移学习的基本思想是在源域学习通用或同领域先验，再迁移到目标域进行微调，以缓解目标域标注不足问题\cite{ref:pan2010,ref:weiss2016}。对本文而言，源域是公开 Sewer-ML 数据，目标域是本地巡检数据。两者在设备、纹理、照明和标签口径上存在差异，因此模型不能只依赖公开数据训练结果直接部署。
+
+在工程实现上，本文采用的不是高复杂度对抗式域适应，而是“源域分类预训练 $\rightarrow$ 目标域分类微调 $\rightarrow$ 目标域检测微调”的渐进路线。该路线实现成本较低、解释性较强，也更适合与低标注增强流程结合。选择这一方案的一个重要原因在于，地下排水管道场景的 domain gap 不仅来自图像风格差异，还来自缺陷定义、标注口径和设备条件差异，因此过于抽象的端到端对抗式适配未必能带来最稳的收益。
+
+更进一步地，迁移学习在本文中并不只是“训练技巧”，而是连接公开数据与本地任务的核心桥梁。若没有源域预训练，目标域 detector 只能在有限样本下从零开始学习，容易出现训练不稳定和类间混淆；若没有目标域微调，源域模型又难以适应本地场景中的成像条件与标签口径。这也是后续实验必须设置 from-scratch、official pretrained、source pretrain 和 source+target finetune 多组对比的理论原因。
+
+\subsection{地下排水管道场景中的主要域差来源}
+
+对排水管道场景而言，域差并不是抽象的统计概念，而是由具体采集条件和标注条件共同形成的。不同地区在管材、接口形式、积水程度和照明环境上往往存在明显差异；不同巡检设备在分辨率、曝光方式、移动速度和畸变控制上也存在差别；不同数据集甚至可能对相同缺陷给出不同的标签口径\cite{ref:situ2023,ref:measurement2026}。这些因素叠加后，会导致源域模型即便在公开数据上表现良好，也未必能直接迁移到本地目标域。
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.88\textwidth]{../../img/ch2_domain_gap_factors.pdf}
+    \caption{地下排水管道检测任务中的主要域差来源}
+    \label{fig:ch2-domain-gap-factors}
+    \figsource{根据相关 sewer detection 与 transfer learning 文献整理与改绘。}
+\end{figure}
+
+\subsection{渐进式迁移路线的理论依据}
+
+在这一前提下，本文采用渐进式迁移路线具有明确理论合理性。源域分类预训练负责学习同领域缺陷表征，目标域分类微调负责建立对本地图像分布的初步适应，目标域检测微调则进一步把这种表征转化为位置级监督能力。相较于直接采用重对抗式域适应，渐进式路线更易解释、训练代价更低，也更符合目前工程侧“少量标注、逐步增强”的现实条件。
+
+这一路线的另一个优势在于能够与第一阶段 gate 和弱监督定位自然衔接。因为分类模型本身就是前级预筛与 CAM 热力图生成的基础，所以源域分类预训练不会成为独立于全文的旁支实验，而是同时服务于迁移学习、低标注增强和两阶段系统构建。这正是本文将迁移策略写成核心创新点之一的原因。
+
+\begin{table}[H]
+    \centering
+    \caption{迁移学习与域适应策略比较表}
+    \label{tab:transfer-strategy-comparison}
+    \begin{tabular}{p{3.0cm}p{2.4cm}p{2.4cm}p{2.4cm}p{3.6cm}}
+        \toprule
+        方法类型 & 是否需要目标域标签 & 是否需要对抗训练 & 工程复杂度 & 本文采用情况 \\
+        \midrule
+        通用预训练+微调 & 需要 & 否 & 低 & 作为基础对照 \\
+        同领域源域预训练+微调 & 需要少量标签 & 否 & 低到中等 & 本文主路线 \\
+        对抗式域适应 & 可弱依赖标签 & 是 & 高 & 仅作理论参考 \\
+        伪标签/自训练 & 需要少量标签或高置信预测 & 否 & 中等 & 作为扩展备选 \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\section{CAM / Grad-CAM 与弱监督定位理论}
+
+\subsection{CAM / Grad-CAM 的基本思想}
+
+CAM 和 Grad-CAM 通过分析分类模型的响应分布，给出图像中对当前类别判别最关键的区域，是图像级监督向候选区域监督过渡的重要工具\cite{ref:cam2016,ref:gradcam2017}。在本文中，热力图不直接作为最终真值，而是作为候选区域生成和低标注增强的中间监督信号。
+
+这一路线的意义在于把人工工作从“全量从零标注”转变为“针对候选区域进行抽检与快修”。对于目标域样本有限的 sewer 场景，这种做法能够在控制标注成本的同时，为 detector 训练提供更具针对性的初始监督。也正因如此，本文在后续章节中会把 CAM / Grad-CAM 明确界定为低标注增强支撑链的一部分，而不是把它们误写成最终 detector 的替代品。
+
+从监督粒度角度看，CAM / Grad-CAM 的理论价值在于说明图像级标签并不必然止步于分类任务。只要分类模型能够学到稳定的类别响应区域，热力图就可以转化为候选框、候选区域或人工抽检线索，从而为检测任务提供中间层监督\cite{ref:wsol2025,ref:mixedsupervision2021}。这也是本文后续从源域分类预训练逐步过渡到目标域检测训练的重要理论支点。
+
+\subsection{监督粒度连续体与低标注学习启示}
+
+在低标注视觉任务中，监督信息不应被简单理解为“有标注”与“无标注”两种状态，而更应被看作从图像级标签、候选区域、少量精确框到充分检测标注之间连续变化的监督粒度谱系。对 sewer defect detection 而言，这一点尤其重要，因为目标域真正稀缺的往往不是图像本身，而是高质量、口径稳定且可用于 detector 训练的框级标注\cite{ref:wsol2025,ref:mixedsupervision2021}。
+
+把监督粒度理解为连续体有两个直接启示：其一，源域分类预训练、目标域分类微调、CAM 候选区域生成和少量人工精框并不是互斥资源，而是可以顺序衔接、相互补充的监督层级；其二，低标注训练的关键不是单纯减少标注数量，而是先建立可靠先验，再把有限标注投入到最值得的样本和阶段上。本文后续采用的技术路线，正是基于这一思路构建。
+
+这也意味着，本文后续的实验顺序本身具有理论基础，而不是“先做什么方便就先做什么”。源域分类实验之所以排在前面，是为了先验证同领域表征是否稳定；目标域分类微调之所以作为中间步骤，是为了把公开数据的先验压缩到本地场景；CAM 候选区域与少量人工快修之所以位于 detector 训练之前，则是为了在不大规模追加框标注成本的前提下，为检测模型建立第一版可用监督。这样的顺序安排，恰恰体现了监督粒度连续体在工程任务中的实际落地方式。
+
+\subsection{人机协同闭环与工程意义}
+
+从更高层次看，地下排水管道智能巡检并不是“模型完全替代人工”的单向过程，而更像是“模型与人工分工重组”的协同闭环。模型擅长的是在海量图像和长视频中快速筛出疑似异常区域，人工擅长的是利用工程经验判断复杂边界、确认疑难样本和完成最终维护决策\cite{ref:spva2021,ref:tracking2021}。因此，一个真正可用的系统应当把模型视为人工能力的放大器，而不是孤立的最终判决器。
+
+本文把前级预筛、CAM 候选区域和 detector 训练放在同一条链路中讨论，目的正是为了把“分类能否减少人工逐帧查看”“热力图能否降低初始标注成本”“检测器能否提高最终识别质量”这些问题统一到同一个工程闭环里解释。这样，后续第 6 章的实验就不仅是在报告某个模型指标更高，而是在回答整套技术路线是否真的更适合地下排水管道的真实巡检流程。
+
+\subsection{候选区域与伪标签的角色定位}
+
+在低标注检测任务中，伪标签并不应被理解为“替代真值”的廉价近似，而更适合作为一种中间层监督资源。对 sewer defect detection 而言，CAM / Grad-CAM 产生的候选区域本质上反映了分类模型认为最能支持当前类别判断的区域，因此它更适合承担“提示人工关注哪里”“为 detector 提供第一版粗监督”的角色，而不宜直接等同于精确边界框\cite{ref:gradcam2017,ref:wsol2025}。这一定位能够解释为什么本文后续会把 CAM 输出、抽检规则和人工快修放在同一实验链条中分析。
+
+进一步说，候选区域的真正价值在于重构标注流程。传统做法通常要求标注者从零开始浏览所有图像并绘制框标注，而基于候选区域的流程则先由模型给出“最值得看的地方”，再由人工进行确认、修正或否决。对于正常样本占比极高、专家标注成本较高的排水管道场景，这种重构意味着同样的人工时间可以更集中地投入到高价值样本上。因此，本文在理论上把伪标签视为“监督增强接口”，而不是单纯的临时补丁。
+
+\begin{table}[H]
+    \centering
+    \caption{监督粒度与训练目标对应关系表}
+    \label{tab:supervision-granularity}
+    \begin{tabular}{p{2.6cm}p{3.2cm}p{3.0cm}p{4.2cm}}
+        \toprule
+        监督粒度 & 典型监督形式 & 主要训练目标 & 在本文中的角色 \\
+        \midrule
+        图像级监督 & 单标签/多标签分类标签 & 学习类别存在性与粗粒度判别边界 & 服务于源域预训练、目标域分类微调与前级 gate \\
+        候选区域监督 & CAM 热力图、伪框、人工抽检结果 & 提供候选位置先验，降低精框构建成本 & 服务于弱监督增强与 detector 初始监督 \\
+        框级监督 & 人工精修边界框 & 学习类别识别与空间定位 & 服务于最终 detector 训练与正式评测 \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.88\textwidth]{../../img/ch2_supervision_continuum.pdf}
+    \caption{从图像级监督到检测级监督的连续体}
+    \label{fig:ch2-supervision-continuum}
+    \figsource{根据文献\cite{ref:gradcam2017,ref:wsol2025}整理与改绘。}
+\end{figure}
+
+\section{本章小结}
+
+本章围绕后续研究真正需要使用的理论进行了系统梳理。首先，明确了排水管道缺陷图像在尺度、纹理、背景和类别分布上的任务难点，并说明了为何需要把目标域任务冻结为六类结构性缺陷；其次，从目标检测任务定义、YOLO 路线发展和 YOLOv11 结构特点出发，解释了本文为何选择一阶段 detector 作为工程基础；再次，从注意力机制、损失函数与迁移学习角度建立了第 5 章模型改进与跨域训练的理论依据；最后，阐明了 CAM / Grad-CAM 在低标注增强链路中的角色定位。上述内容共同构成第 3 章数据组织、第 4 章前级预筛以及第 5 章改进检测与跨域迁移策略的理论前提。
+
+为了避免后续章节出现“理论讲了一套，实验做的是另一套”的割裂问题，本文还需要把本章内容进一步压缩为可执行的研究问题映射关系。也就是说，第二章不仅回答“相关概念是什么”，还回答“这些概念分别支撑后续哪一类实验、哪一个研究问题以及哪一条技术路线”。表~\ref{tab:theory-rq-mapping} 对这一关系进行集中总结。
+
+\begin{table}[H]
+    \centering
+    \caption{研究问题与理论基础映射表}
+    \label{tab:theory-rq-mapping}
+    \begin{tabular}{p{2.0cm}p{4.0cm}p{4.0cm}p{3.6cm}}
+        \toprule
+        研究问题 & 对应理论基础 & 直接支撑章节 & 主要回答内容 \\
+        \midrule
+        RQ1 & 缺陷图像特征、核心评价指标、监督粒度连续体 & 第 4 章、第 6.2--6.3 节 & 高召回 gate 是否能有效降低误报与正常样本流入 \\
+        RQ2 & YOLOv11 原理、注意力机制、损失函数与框回归 & 第 5 章、第 6.4--6.5 节 & 改进 detector 是否能提升复杂场景下的检测性能 \\
+        RQ3 & 迁移学习、域差来源、渐进式迁移路线 & 第 5 章、第 6.6 节 & 源域预训练与目标域微调是否能缓解样本不足和域差问题 \\
+        RQ4 & CAM/Grad-CAM、候选区域、两阶段协同与人机闭环 & 第 4 章、第 6.7 节 & 两阶段系统是否优于单阶段直接检测并更适合工程应用 \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+从论文整体结构看，表~\ref{tab:theory-rq-mapping} 还承担一个更深层次的作用，即把公开文献中的分散结论压缩为本文可执行的研究路线。已有 sewer detection 文献分别证明了公开数据集的价值、YOLO 路线的工程优势、迁移学习在同领域任务中的潜力以及 CAM / WSOL 在低标注定位中的可行性，但这些结论往往聚焦单一环节，尚未自动汇聚为一条能够直接解决本文目标任务的完整方法链\cite{ref:sewerml,ref:wang2023yolov5,ref:situ2023,ref:wsol2025}。第二章通过理论梳理所完成的，正是把这些分散结论重新组织为统一的问题图景：为什么 sewer 缺陷检测需要关注小目标与复杂背景，为什么一阶段 detector 虽适合工程落地却仍需场景化改进，为什么目标域少标注条件下必须引入源域预训练、目标域微调和候选区域增强，以及为什么这些环节必须被视作一条连续的研究链而不是若干互不相干的技术拼接。只有在这一图景被明确建立后，后续第 3 章的数据组织、第 4 章的前级预筛、第 5 章的模型改进与迁移策略以及第 6 章的系统级实验，才能形成真正首尾一致的论文闭环。
+
+\iffalse
+\chapter{理论基础与关键技术}
+
+\section{地下排水管道缺陷类型与图像特征}
 
 \subsection{地下排水管道缺陷类型}
 
@@ -370,7 +927,14 @@ The proposed framework will be evaluated through classification experiments, CAM
 
 进一步说，图像特征分析不仅是对“缺陷长什么样”的描述，更是后续方法设计的直接约束来源。例如，如果任务难点主要来自局部细纹理目标，那么模型就应增强局部响应；如果任务难点主要来自接口结构关系，那么模型就不能只依赖局部卷积窗口；如果任务难点主要来自背景伪激活，那么模型就需要更强的显著性抑制与候选区域筛选能力\cite{ref:li2021fusion,ref:hybrid2025,ref:measurement2026}。因此，本节的分析并不是形式上的背景介绍，而是在为后文注意力机制、检测头改进和跨域策略设计提供直接理论依据。
 
-\section{目标检测基本理论}
+\begin{figure}[H]
+    \centering
+    \placeholderbox{管道缺陷图像特征示意图\\建议文件：pipe\_defect\_visual\_features.pdf}
+    \caption{管道缺陷图像特征示意图}
+    \label{fig:pipe-defect-features}
+\end{figure}
+
+\section{图像分类与目标检测评价指标}
 
 \subsection{目标检测任务定义}
 
@@ -388,15 +952,50 @@ The proposed framework will be evaluated through classification experiments, CAM
 
 \subsection{常用评价指标}
 
-目标检测模型通常使用 Precision、Recall、F1 和 mean Average Precision 等指标进行评估。设真正例、假正例和假负例分别为 $TP$、$FP$ 和 $FN$，则 Precision 和 Recall 可表示为
-\begin{equation}
-Precision=\frac{TP}{TP+FP}, \qquad Recall=\frac{TP}{TP+FN}.
-\end{equation}
-其中，Precision 反映模型预测结果的准确性，Recall 反映模型对真实缺陷样本的覆盖能力。对于排水管道缺陷检测而言，Recall 尤其重要，因为漏检真实病害可能直接影响后续维护决策；但若 Precision 过低，又会显著增加人工复核成本。因此，二者需要结合分析，而不能单看某一个指标\cite{ref:zhang2023automatic,ref:istanbul2025}。
+目标检测模型通常使用 Precision、Recall、F1 和 mean Average Precision 等指标进行评估。就计算含义而言，Precision 指预测为正的样本中真实为正的比例，Recall 指真实正样本中被成功检出的比例。前者主要反映误报控制能力，后者主要反映漏检控制能力。对于排水管道缺陷检测而言，Recall 尤其重要，因为漏检真实病害可能直接影响后续维护决策；但若 Precision 过低，又会显著增加人工复核成本。因此，二者需要结合分析，而不能单看某一个指标\cite{ref:zhang2023automatic,ref:istanbul2025}。
 
-在综合评价方面，本文后续实验主要采用 $mAP@0.5$ 与 $mAP@0.5:0.95$。前者在 IoU 阈值为 0.5 时评估检测精度，更接近工程中“是否大致检出缺陷”的需求；后者在多个 IoU 阈值下求平均，更能反映模型对边界定位的稳定性。对 sewer defect detection 来说，由于部分缺陷边界天然模糊，过高 IoU 阈值下的评价结果通常更苛刻，因此两类 mAP 指标都需要结合解释。
+在综合评价方面，本文后续实验主要采用 mAP@0.5 与 mAP@0.5:0.95。前者在 IoU 阈值为 0.5 时评估检测精度，更接近工程中“是否大致检出缺陷”的需求；后者在多个 IoU 阈值下求平均，更能反映模型对边界定位的稳定性。对 sewer defect detection 来说，由于部分缺陷边界天然模糊，过高 IoU 阈值下的评价结果通常更苛刻，因此两类 mAP 指标都需要结合解释。
 
 除通用检测指标外，排水管道工程场景还常需关注单图误报数、每视频误报数、正常帧误报率和筛帧召回率等系统级指标\cite{ref:spva2021,ref:tracking2021}。原因在于真实巡检业务不仅关注“在测试集上是否更准”，还关注“在长视频与海量正常图像中是否足够省人、省时和可复核”。因此，本文后续实验在报告标准检测指标的同时，也会结合系统级误报控制效果进行分析。
+\par
+结合本文研究任务，可以将评价指标进一步划分为三个层次：第一类是面向前级预筛与分类模型的判别指标，如 Accuracy、Macro-F1、AUROC 和 AUPRC；第二类是面向目标检测模型的定位与识别指标，如 Precision、Recall、F1 和 mAP；第三类是面向真实巡检流程的系统级指标，如 Gate Recall、NRR、PTR、FP/image 和 FP/video。三类指标分别回答“模型是否会分”“模型是否会检”“系统是否省人”这三个不同问题。为便于后续章节统一引用和对照，表~\ref{tab:metric-definitions} 对本文全文使用的核心指标、计算方式、主要含义和适用场景进行集中整理。
+\begingroup
+\footnotesize
+\setlength{\LTleft}{0pt}
+\setlength{\LTright}{0pt}
+\begin{longtable}{p{1.9cm}p{2.8cm}p{3.4cm}p{5.0cm}}
+    \caption{评价指标定义与说明}
+    \label{tab:metric-definitions}\\
+    \toprule
+    指标 & 计算方式说明 & 主要反映内容 & 本文中的使用场景与解读重点 \\
+    \midrule
+    \endfirsthead
+    \caption[]{评价指标定义与说明（续）}\\
+    \toprule
+    指标 & 计算方式说明 & 主要反映内容 & 本文中的使用场景与解读重点 \\
+    \midrule
+    \endhead
+    \bottomrule
+    \endfoot
+    Accuracy & 全部样本中被正确判定的比例 & 模型整体判对样本的比例，能快速反映分类器总体识别水平。 & 主要用于前级分类与 gate 基线的整体比较，但在类别不均衡场景下不能单独作为结论依据。 \\
+    Macro-F1 & 各类别 F1 的算术平均 & 平衡衡量各类别 Precision 与 Recall，减弱大类对总体结果的掩盖。 & 主要用于源域六类单标签分类阶段，判断模型是否对各类缺陷都具备基本判别能力。 \\
+    AUROC & ROC 曲线下面积 & 衡量分类器在不同阈值下区分正负样本的总体能力。 & 主要用于第一阶段二分类 gate，辅助判断模型是否具备较稳健的阈值可调空间。 \\
+    AUPRC & PR 曲线下面积 & 更关注正样本识别质量，在正负样本比例失衡时更有解释力。 & 适用于 abnormal 样本较稀缺的预筛任务，比单点 Precision 或 Recall 更适合作为阈值选择参考。 \\
+    Precision & 预测为正的样本中，真实为正的比例 & 预测为正的样本中真实为正的比例，反映误报控制能力。 & 贯穿第一阶段和第二阶段；当系统面向大规模正常背景运行时，该指标直接影响人工复核成本。 \\
+    Recall & 真实正样本中，被模型检出的比例 & 真实正样本中被模型检出的比例，反映漏检控制能力。 & 对管道缺陷任务尤为关键，因为漏检真实病害会直接削弱后续养护决策的可靠性。 \\
+    Specificity & 真实负样本中，被正确过滤的比例 & 真实负样本中被正确过滤的比例，反映对正常样本的排除能力。 & 是第一阶段 gate 的核心指标之一，通常与 Recall 联合报告，用于分析高召回条件下还能过滤掉多少正常帧。 \\
+    F1-score & Precision 与 Recall 的调和平均 & Precision 与 Recall 的调和平均，可综合刻画识别与误报之间的折中。 & 适合用于 detector 或 gate 的整体性能概括，但仍需结合 Precision、Recall 或 operating point 一起解释。 \\
+    mAP@0.5 & 在 IoU 阈值为 0.5 时统计平均精度 & 更关注“是否大致检出目标”，对工程可用性较敏感。 & 用于第二阶段 detector 的主评价指标之一，适合反映缺陷是否被有效发现。 \\
+    mAP@0.5:0.95 & 在多个 IoU 阈值下统计平均精度并取平均 & 同时考虑检测与定位稳定性，对边界质量要求更严格。 & 用于衡量模型在复杂边界和细长缺陷上的整体定位质量，适合作为正式学术对比指标。 \\
+    Gate Recall & 前级高召回预筛保留下来的异常样本占全部异常样本的比例 & 前级高召回预筛对异常样本的保留能力。 & 是第一阶段的硬约束指标，本文重点讨论在 Gate Recall 保持极高水平时，Specificity、NRR 和 PTR 能提升多少。 \\
+    NRR & 被第一阶段 gate 成功滤除的正常样本占全部正常样本的比例 & 被第一阶段 gate 成功滤除的正常样本比例，反映减负效果。 & 用于衡量两阶段系统的实际价值，数值越高，说明后级 detector 需要处理的无效正常样本越少。 \\
+    PTR & 进入第二阶段的样本占全部样本的比例 & 进入第二阶段的样本占比，反映系统级运行开销。 & 与 NRR 互补，用于描述 gate 对整体工作量的压缩程度，也是系统部署时的重要成本指标。 \\
+    FP/image & 误报框总数 / 图像数 & 单张图像平均误报框数，反映静态图片级复核负担。 & 主要用于 detector 和系统级对比，尤其适合比较“单阶段直接检测”与“两阶段系统”在误报控制上的差异。 \\
+    FP/video & 视频内误报框总数 / 视频数 & 单段视频内平均误报数，反映连续巡检过程中的工程体验。 & 更贴近真实 CCTV 巡检流程，可用来衡量模型在长视频场景下是否会频繁触发无效报警。 \\
+\end{longtable}
+\endgroup
+
+从后续章节安排看，第 4 章第一阶段预筛实验将重点围绕 Gate Recall、Specificity、NRR、PTR 和 AUPRC 展开，用于回答“在高召回约束下能否显著减少正常样本流入第二阶段”；第 5 章和第 6 章的检测实验则重点关注 Precision、Recall、F1、mAP@0.5、mAP@0.5:0.95 与 FP/image，用于回答“改进 detector 是否真的更准、更稳、更省复核”。这种分层指标体系既保证了学术评价的完整性，也更符合排水管道实际巡检任务的工程需求。
 
 \subsection{多尺度表示与后处理机制}
 
@@ -426,7 +1025,7 @@ Precision=\frac{TP}{TP+FP}, \qquad Recall=\frac{TP}{TP+FN}.
 
 这一选择逻辑也体现出本文的整体研究态度：不是为了追求形式上的“最先进”而盲目更换模型范式，而是围绕任务需求选择更合适的基线，再在此基础上进行场景化优化。这种做法更符合硕士论文的研究边界，也更容易在后续实验中形成清晰可验证的比较关系。
 
-\section{YOLO 系列方法与 YOLOv11 基线分析}
+\section{YOLO 系列与 YOLOv11 原理}
 
 \subsection{YOLO 系列方法的发展逻辑}
 
@@ -446,7 +1045,7 @@ YOLO 的基本思想是将目标检测视为统一回归问题，在单个网络
     \caption{YOLO11 检测模型结构示意}
     \label{fig:ch2-yolo11-architecture}
     
-    {\footnotesize 注：根据 Ultralytics 官方公开结构关系整理与改绘\cite{ref:yolo11diagram2025}。}
+    \figsource{根据 Ultralytics 官方公开结构关系整理与改绘\cite{ref:yolo11diagram2025}。}
 \end{figure}
 
 \subsection{YOLOv11 基线结构的任务适配性}
@@ -455,17 +1054,17 @@ YOLO 的基本思想是将目标检测视为统一回归问题，在单个网络
 
 一方面，管道缺陷中有相当一部分需要依赖局部纹理细节才能识别，如裂缝、表面损伤和渗漏；另一方面，另一些缺陷则依赖较大范围结构关系，如接口错位、侵入和整体变形\cite{ref:li2021fusion,ref:hybrid2025}。这意味着模型既需要较强局部感知能力，也需要一定全局上下文建模能力。如果主干与特征融合对关键区域关注不足，则容易在背景噪声中丢失缺陷信号；如果检测头对相似类别分界刻画不足，则容易产生类间混淆。
 
-此外，YOLO 系列在工程上强调速度与轻量化，这虽然有利于部署，却也意味着部分场景下精细表征能力可能不足。已有 sewer defect detection 研究不断通过引入注意力模块、优化 neck、增强 head 或调整损失函数来弥补这一短板，说明通用 YOLO 基线在 sewer 场景下仍有较大改造空间\cite{ref:wang2023yolov5,ref:zhao2024yolov5sewer,ref:zhang2023automatic,ref:pipeyolo112026}。因此，本文选择 YOLOv11 作为基线，不是因为其天然最优，而是因为它在精度、速度和工程生态之间具有较好平衡，同时保留了足够清晰的改进接口。
+此外，YOLO 系列在工程上强调速度与轻量化，这虽然有利于部署，却也意味着部分场景下精细表征能力可能不足。已有 sewer defect detection 研究不断通过引入注意力模块、优化 neck、增强 head 或调整损失函数来弥补这一短板，说明通用 YOLO 基线在 sewer 场景下仍有较大改造空间\cite{ref:wang2023yolov5,ref:zhao2024yolov5sewer,ref:pipeyolo112026}。因此，本文选择 YOLOv11 作为基线，不是因为其天然最优，而是因为它在精度、速度和工程生态之间具有较好平衡，同时保留了足够清晰的改进接口。
 
 \subsection{YOLOv11 在排水管道缺陷场景中的局限性}
 
-尽管 YOLO 系列具有较强实用性，但在地下排水管道场景中仍存在若干局限。其一，对细小缺陷和弱纹理目标的显著性建模仍不充分，导致裂缝、轻微破损和渗漏等病害容易漏检。其二，复杂背景下的误激活问题较为突出，尤其是在水膜、污渍和壁面纹理与缺陷纹理相近时，模型容易产生假阳性预测。其三，相似类别之间的决策边界不清晰，例如表面损伤与轻微破裂、侵入与接口异常之间容易混淆。其四，在类别不均衡和目标域样本稀缺条件下，训练过程对难样本和少数类的关注不足，影响最终泛化能力\cite{ref:cheng2018,ref:li2021fusion,ref:jankim2025,ref:istanbul2025}。
+尽管 YOLO 系列具有较强实用性，但在地下排水管道场景中仍存在若干局限。其一，对细小缺陷和弱纹理目标的显著性建模仍不充分，导致裂缝、轻微破损和渗漏等病害容易漏检。其二，复杂背景下的误激活问题较为突出，尤其是在水膜、污渍和壁面纹理与缺陷纹理相近时，模型容易产生假阳性预测。其三，相似类别之间的决策边界不清晰，例如表面损伤与轻微破裂、侵入与接口异常之间容易混淆。其四，在类别不均衡和目标域样本稀缺条件下，训练过程对难样本和少数类的关注不足，影响最终泛化能力\cite{ref:cheng2018,ref:jankim2025,ref:istanbul2025}。
 
 这些局限直接说明，若仅仅把通用 YOLO 基线拿来直接微调，很难在目标域上获得稳定、可解释且误报可控的检测效果。相应地，后续第 4 章从注意力机制、检测头和损失函数三个方面开展改进，并非为了追求形式上的“模块堆叠”，而是为了逐项回应上述局限：注意力机制对应关键区域增强与背景抑制，检测头优化对应小目标和相似类别的预测能力提升，损失函数优化对应类别不均衡与定位偏差问题缓解。
 
 \subsection{基线模型的可改进位置分析}
 
-从理论上看，YOLO 基线的改进空间主要集中在三个位置。第一，是特征提取与特征融合阶段，这一阶段决定网络能否保留足够丰富的局部纹理与全局结构信息；第二，是检测头阶段，这一阶段决定网络如何将融合特征转化为类别与位置预测；第三，是训练目标阶段，这一阶段决定网络在长尾分布、难样本和定位偏差条件下如何学习\cite{ref:wang2023yolov5,ref:zhao2024yolov5sewer,ref:focalloss2020,ref:giou2019}。
+从理论上看，YOLO 基线的改进空间主要集中在三个位置。第一，是特征提取与特征融合阶段，这一阶段决定网络能否保留足够丰富的局部纹理与全局结构信息；第二，是检测头阶段，这一阶段决定网络如何将融合特征转化为类别与位置预测；第三，是训练目标阶段，这一阶段决定网络在长尾分布、难样本和定位偏差条件下如何学习\cite{ref:wang2023yolov5,ref:focalloss2020,ref:giou2019}。
 
 对于 sewer defect detection 场景，三者之间并不是独立关系。假如特征层没有突出关键缺陷区域，那么检测头再复杂也难以恢复有效信息；假如检测头无法有效区分相似类别，那么再强的主干特征也难以转化为正确分类；假如损失函数无法让训练过程关注少数类和难样本，那么前两者的优势也会被训练偏置削弱。因此，本文后续将模型改进表述为“协同优化”，而不是“单模块替换”。
 
@@ -479,30 +1078,31 @@ YOLO 的基本思想是将目标检测视为统一回归问题，在单个网络
 
 这也解释了为什么后续改进模型不能只在主干网络上做局部增强，而必须把特征融合和检测头一并考虑。否则，即使主干提取到某些有用信号，也可能在后续融合与预测阶段被削弱。
 
+与之对应，图~\ref{fig:chapter6-stage1-rs} 进一步展示 Recall 与 Specificity 的权衡关系。
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.90\textwidth]{../../img/ch2_theory_support_map.pdf}
     \caption{本文理论基础与方法响应关系图}
     \label{fig:ch2-theory-support-map}
     
-    {\footnotesize 注：作者根据小目标检测、注意力机制、损失函数设计与迁移学习相关文献整理绘制\cite{ref:smallyoloreview2026,ref:senet2018,ref:cbam2018,ref:focalloss2020,ref:pan2010,ref:domainadapt2018}。}
+    \figsource{作者根据相关文献\cite{ref:smallyoloreview2026,ref:domainadapt2018}整理绘制。}
 \end{figure}
 
-\section{小目标检测与复杂背景建模理论}
+\subsection{小目标检测与复杂背景建模理论}
 
-\subsection{小目标信息保持理论}
+\subsubsection{小目标信息保持理论}
 
 小目标检测的核心难点在于信息密度不足。一个目标如果在原图中只占据极少数像素，那么在多次下采样之后，其有效响应可能只剩下极少数特征单元，稍有噪声干扰便会被背景淹没。这一问题在 sewer defect detection 中尤为突出，因为很多病害并不是独立的大块异常，而是裂纹边缘、局部渗漏痕迹或接口附近的细微结构变化\cite{ref:cheng2018,ref:li2021fusion,ref:tust2025}。因此，小目标检测理论的第一要点，是尽可能在网络前中层保留细粒度信息，并避免在过早下采样中损失关键特征。
 
 从实践上看，提高输入分辨率、多尺度特征融合和关键区域重加权，都是围绕“小目标信息保持”这一目标展开的不同实现路径\cite{ref:ssd2016,ref:wang2023yolov5,ref:zhao2024yolov5sewer}。其中，提高输入分辨率可以直接增加目标像素占比，但会增加训练和推理成本；多尺度融合可以把不同层特征联合起来，但设计不当时也可能引入冗余噪声；注意力与显著性增强则有助于在有限分辨率下突出关键区域。因此，针对 sewer 场景的小目标检测优化，通常需要多种策略协同，而不是依赖单一技巧。
 
-\subsection{复杂背景抑制理论}
+\subsubsection{复杂背景抑制理论}
 
 复杂背景抑制问题的本质，是如何让模型区分“看起来像缺陷”的纹理和“真正属于缺陷”的区域。在排水管道图像中，反光、水膜、污渍、沉积附着、拍摄阴影和壁面纹理都会产生类似缺陷的视觉模式\cite{ref:moradi2019,ref:survey2020,ref:jankim2025}。因此，一个检测模型如果只追求局部显著性增强，而缺乏足够上下文约束，就很容易把背景干扰误当成缺陷目标。
 
 复杂背景抑制通常依赖两类信息。第一类是局部判别信息，即目标纹理与周围背景之间的差异；第二类是结构上下文信息，即该区域是否位于合理的接口、管壁或病害高发位置附近\cite{ref:li2021fusion,ref:hybrid2025}。对于 sewer defect detection 而言，两类信息缺一不可。若只看局部纹理，会把污渍或反光误检为病害；若只看结构上下文，又可能忽略真实细小裂缝。因此，复杂背景抑制实际上要求模型在不同尺度和不同上下文范围之间建立稳定协同。
 
-\subsection{显著性建模与误报控制关系}
+\subsubsection{显著性建模与误报控制关系}
 
 在排水管道巡检任务中，“显著性建模”与“误报控制”是紧密相关的两个概念。显著性建模解决的是模型是否能够突出关键区域，而误报控制解决的是模型是否会在大量背景上产生无效激活。很多时候，一个模型显著性越强，未必误报越低，因为它可能把背景中的高反差区域也一并放大。因此，真正有效的显著性建模不应只是“把响应抬高”，而应同时考虑背景抑制和类别判别稳定性\cite{ref:wang2023yolov5,ref:istanbul2025,ref:measurement2026}。
 
@@ -510,7 +1110,7 @@ YOLO 的基本思想是将目标检测视为统一回归问题，在单个网络
 
 这一关系也说明，后续第 4 章中引入注意力机制并不是单纯为了让特征图更“亮”，而是为了让有意义的区域更突出、无意义的区域更被抑制。把这一理论关系提前说明，有助于后续在实验分析中解释：为什么某些改进可能提高召回但同时带来误报，为什么另一些改进虽然精度提升有限，却能显著改善系统级复核效率。
 
-\section{注意力机制相关理论}
+\section{注意力机制理论}
 
 \subsection{注意力机制的基本思想}
 
@@ -550,7 +1150,24 @@ SE-Net 是通道注意力的经典代表，其核心思想是通过全局信息�
 
 换言之，注意力机制在本文中的理论定位并不是“为了让模型更复杂”，而是为了使特征表达更符合 sewer 缺陷识别的视觉成因。若后续实验能够证明某类注意力机制在 CrackBreak、Infiltration 或 JointDislocation 等目标上更有效，那么其解释不应停留在“这个模块更先进”，而应回到本章已经讨论过的小目标保持、背景抑制和局部--全局协同这些理论事实上。这样的写法也有助于让第 4 章的实验分析更具解释力度，而不是停留在简单的性能差异罗列。
 
-\section{检测头改进与损失函数设计相关理论}
+围绕“损失函数究竟解决什么问题”这一核心问题，表~\ref{tab:loss-comparison} 对常见候选损失进行了任务导向式整理。
+\begin{table}[H]
+    \centering
+    \caption{典型注意力模块比较表}
+    \label{tab:attention-comparison}
+    \begin{tabular}{p{2.5cm}p{2.6cm}p{2.8cm}p{3.4cm}p{2.6cm}p{2.2cm}}
+        \toprule
+        模块 & 机制类型 & 参数/计算开销 & 主要优点 & 适用场景 & 是否适合本文 \\
+        \midrule
+        SE & 通道注意力 & 低 & 结构简单，易于集成，能增强关键通道表达 & 轻量化增强与通道重标定 & 备选 \\
+        CBAM & 通道+空间注意力 & 中等 & 同时强调“看什么”和“看哪里”，对复杂背景抑制更直观 & 小目标与背景干扰并存场景 & 主候选 \\
+        ECA & 轻量通道注意力 & 很低 & 无需降维，额外开销小，适合工程部署 & 需要兼顾速度与精度的场景 & 备选 \\
+        自定义轻量注意力 & 场景化组合 & 待定 & 可针对 sewer 场景定制插入位置与作用强度 & 若通用模块收益不足时使用 & 待实验确定 \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\section{损失函数与框回归相关理论}
 
 \subsection{检测头设计的作用}
 
@@ -562,7 +1179,7 @@ SE-Net 是通道注意力的经典代表，其核心思想是通过全局信息�
 
 \subsection{类别不均衡与难样本学习}
 
-目标检测中的另一个核心问题，是类别不均衡与难样本学习。Lin 等提出的 Focal Loss 指出，密集检测中易分类样本占比过高会压制难样本学习，导致模型更关注大量简单背景而忽视真正困难的目标\cite{ref:focalloss2020}。这一问题在 sewer defect detection 场景中尤为突出，因为正常背景极多，少数类缺陷和弱显著性缺陷相对稀缺。若损失函数对易分类背景样本过于敏感，则模型很容易形成偏向背景和多数类的决策倾向。
+目标检测中的另一个核心问题，是类别不均衡与难样本学习。Lin 等\cite{ref:focalloss2020}提出的 Focal Loss 指出，密集检测中易分类样本占比过高会压制难样本学习，导致模型更关注大量简单背景而忽视真正困难的目标。这一问题在 sewer defect detection 场景中尤为突出，因为正常背景极多，少数类缺陷和弱显著性缺陷相对稀缺。若损失函数对易分类背景样本过于敏感，则模型很容易形成偏向背景和多数类的决策倾向。
 
 同时，边界框回归损失也会影响定位能力。GIoU 等工作从几何重叠关系角度改进边界框回归目标，为检测器提供了更合理的定位学习信号\cite{ref:giou2019}。在排水管道缺陷场景中，边界往往并不规则且目标区域较小，回归损失若对弱定位偏差过于宽松，则可能使最终检测框虽然“碰到目标”，却难以满足后续人工复核需求。因此，合理设计分类与回归损失的协同关系，是提升模型精度和训练稳定性的必要条件。
 
@@ -594,41 +1211,59 @@ SE-Net 是通道注意力的经典代表，其核心思想是通过全局信息�
 
 这种“目标冲突”也是为什么本文不会把检测头改进与损失函数优化分开理解。已有 sewer 与 pipeline defect detection 研究已经反复说明，仅调整预测层而不调整训练目标，或者仅调整损失而不考虑最终预测结构，往往很难在复杂场景中获得稳定收益\cite{ref:wang2023yolov5,ref:realtimeyolov52025,ref:pipeyolo112026}。因此，本文在方法层面将二者放入同一协同优化框架，既是对文献经验的总结，也是对本任务多目标平衡本质的回应。
 
-\section{迁移学习、跨域适应与热力图定位理论}
+在迁移学习与域适应部分，表~\ref{tab:transfer-strategy-comparison} 进一步比较了几类典型策略的监督需求、实现复杂度与工程适配性，从而说明本文为何优先采用“源域预训练--目标域微调”的稳健路线。
+\begin{table}[H]
+    \centering
+    \caption{典型损失函数与适用问题比较表}
+    \label{tab:loss-comparison}
+    \begin{tabular}{p{3cm}p{3.5cm}p{3.0cm}p{3.2cm}p{2.5cm}}
+        \toprule
+        损失函数 & 主要解决问题 & 适合场景 & 可能副作用 & 与本文关系 \\
+        \midrule
+        BCE / CE & 基础分类监督 & 常规分类与检测分类分支 & 对长尾与难样本敏感度不足 & 基线损失 \\
+        Focal Loss & 类别不均衡与难样本学习 & 正负样本极不均衡场景 & 过度聚焦难样本可能影响稳定性 & 候选分类损失 \\
+        IoU / GIoU 类损失 & 框回归与边界质量优化 & 定位精度要求较高的检测任务 & 对极小目标边界波动敏感 & 定位分支基线 \\
+        DFL 类损失 & 分布式边界回归 & 细粒度边界建模 & 训练复杂度略高 & 保持或轻改 \\
+        加权组合损失 & 多目标折中优化 & 需要兼顾 recall、precision 与误报控制时 & 参数权重需要实验调节 & 本文重点探索 \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\section{迁移学习与域适应理论}
 
 \subsection{迁移学习基本概念}
 
-迁移学习旨在利用源任务或源域中获得的知识来提升目标任务学习效果。Pan 和 Yang 对迁移学习进行了较早而系统的定义，指出迁移学习的核心在于源域与目标域或源任务与目标任务存在某种共享结构，从而使已有知识可以迁移复用\cite{ref:pan2010}。Weiss 等进一步指出，迁移学习在样本不足、高标注成本和目标域学习困难的场景中尤其具有价值\cite{ref:weiss2016}。对于排水管道缺陷检测而言，这一理论非常契合，因为目标域高质量框标注昂贵，而同领域公开数据却可以提供可迁移的缺陷表征。
+迁移学习旨在利用源任务或源域中获得的知识来提升目标任务学习效果。Pan 和 Yang\cite{ref:pan2010}对迁移学习进行了较早而系统的定义，指出迁移学习的核心在于源域与目标域或源任务与目标任务存在某种共享结构，从而使已有知识可以迁移复用。Weiss 等\cite{ref:weiss2016}进一步指出，迁移学习在样本不足、高标注成本和目标域学习困难的场景中尤其具有价值。对于排水管道缺陷检测而言，这一理论非常契合，因为目标域高质量框标注昂贵，而同领域公开数据却可以提供可迁移的缺陷表征。
 
 从应用层面看，迁移学习常见形式包括使用大规模自然图像模型作为初始化、使用同领域公开数据进行预训练，以及在目标域有限样本上微调。对 sewer defect detection 而言，第二种形式更具研究价值，因为同领域源域数据能够提供更贴近管道图像纹理和结构特征的先验，而不仅仅是通用自然图像语义\cite{ref:situ2023,ref:sewerml}。这也是本文采用源域分类预训练的直接理论依据。
 
-\subsection{跨域适应问题}
+\subsection{域差与跨域适应问题}
 
-当源域与目标域之间存在明显分布差异时，仅依赖普通迁移学习往往不足以获得理想效果。Wang 和 Deng 的综述指出，deep visual domain adaptation 的核心在于缓解源域和目标域在特征空间上的偏移，使模型在目标域保持可接受的判别能力\cite{ref:domainadapt2018}。在 sewer inspection 场景中，这种偏移不仅体现为图像风格差异，还体现为采集设备、压缩策略、照明条件、材质背景、缺陷口径和标注方式差异，因此 domain gap 更具有工程复杂性\cite{ref:survey2020,ref:zhou2023review,ref:situ2023}。
+当源域与目标域之间存在明显分布差异时，仅依赖普通迁移学习往往不足以获得理想效果。Wang 和 Deng\cite{ref:domainadapt2018}的综述指出，deep visual domain adaptation 的核心在于缓解源域和目标域在特征空间上的偏移，使模型在目标域保持可接受的判别能力。在 sewer inspection 场景中，这种偏移不仅体现为图像风格差异，还体现为采集设备、压缩策略、照明条件、材质背景、缺陷口径和标注方式差异，因此 domain gap 更具有工程复杂性\cite{ref:survey2020,ref:zhou2023review,ref:situ2023}。
 
 对本文而言，跨域适应并不意味着必须采用对抗训练等重型域对齐方法。考虑到硕士论文的实现可控性和工程可落地性，本文更关注一种稳健、可执行的跨域路线，即利用源域分类任务学习 sewer-specific representation，再通过目标域分类微调和检测微调逐步完成知识迁移。这种做法虽然相对朴素，但具有更明确的数据依赖关系和更好的工程实现稳定性。
 
 近年的 defect-domain adaptation 研究也为这一判断提供了补充说明。Prototype-guided domain adaptive detector 研究指出，目标检测中的跨域适应不仅要缓解整体分布偏移，还要尽量维护类别原型与类别边界在源域和目标域之间的一致性\cite{ref:pgda2024}。对于 sewer defect detection 而言，这一点尤为关键，因为缺陷类别往往视觉相近、边界模糊，若迁移过程中类别语义进一步漂移，模型就很容易在目标域上出现“整体精度尚可但类别混淆严重”的现象。与此同时，关于工业缺陷任务中 transfer learning 表现的评估研究还表明，源模型的相关性、训练数据的组织方式和目标任务的语义粒度，会共同影响最终迁移效果\cite{ref:transfereval2025}。因此，本文在后续章节中将 Sewer-ML 源域单标签预训练显式写成一个研究步骤，而不是把它视作可有可无的初始化细节。
 
-\subsection{CAM 与 Grad-CAM 的理论基础}
+\subsection{域差来源分解与目标域适配路径}
 
-在低标注学习场景中，如何从图像级标签中获得定位线索是一个关键问题。Zhou 等提出 CAM，证明卷积网络中的分类激活图可以用于挖掘类别相关区域\cite{ref:cam2016}；Selvaraju 等进一步提出 Grad-CAM，使热力图生成可以适配更一般的卷积网络结构\cite{ref:gradcam2017}。这些工作为“分类模型生成候选区域”提供了重要理论基础，也使得从图像级标注向伪框检测数据过渡成为可能。
+在低标注学习场景中，如何从图像级标签中获得定位线索是一个关键问题。Zhou 等\cite{ref:cam2016}提出 CAM，证明卷积网络中的分类激活图可以用于挖掘类别相关区域；Selvaraju 等\cite{ref:gradcam2017}进一步提出 Grad-CAM，使热力图生成可以适配更一般的卷积网络结构。这些工作为“分类模型生成候选区域”提供了重要理论基础，也使得从图像级标注向伪框检测数据过渡成为可能。
 
 在 sewer inspection 场景中，CAM 和 Grad-CAM 的意义并不在于生成绝对准确的边界框，而在于在缺乏大规模精确框标注的前提下，为人工复核或伪框构建提供高价值候选区域\cite{ref:mv2024,ref:wsol2025}。这与本文采用 CAM 热力图辅助伪框生成的设计完全一致。换言之，本文中的 CAM 不是单纯的可视化工具，而是连接源域分类预训练与目标域低标注检测训练的重要桥梁。
 
 此外，弱监督定位研究近年还进一步强调“热力图如何被使用”与“热力图如何被生成”同样重要。关于 WSOL inference recipe 的研究指出，推理阶段的阈值、区域聚合、尺度处理和候选框生成方式会显著影响最终定位结果，因此不能把热力图简单等同为最终候选框\cite{ref:wsolrecipe2024}。这一点与本文的工程设定高度一致：本文并不把 CAM 结果视为真值框，而是将其理解为需要经过阈值筛选、候选区域规则约束和后续人工抽检的中间信息。正是基于这样的理论认识，后续第 3 章和第 5 章才会把 CAM 阈值设置、伪框质量台账和人工复核机制写成完整流程，而不是一句话带过。
 
-\subsection{源域预训练与低标注伪框学习的理论合理性}
+\subsection{源域预训练与目标域微调的理论合理性}
 
 从方法论上看，本文采用“源域分类预训练 + 目标域微调 + CAM 伪框”的路线，实际上建立在两个理论假设之上。第一个假设是，同领域公开数据中学到的缺陷表征具有可迁移性，即使目标域数据分布不同，这些表征仍能作为目标域检测任务的有效初始化\cite{ref:pan2010,ref:weiss2016,ref:situ2023}。第二个假设是，分类模型产生的热力图虽然不能完全替代精确框标注，但能够为后续人工复核和检测训练提供高价值的候选区域\cite{ref:cam2016,ref:gradcam2017,ref:wsol2025}。
 
 这两个假设共同构成了本文跨域链路的理论基础。前者解释了为什么要先做源域分类预训练，而不是直接从零开始训练目标域检测器；后者解释了为什么在目标域框标注有限条件下，CAM 伪框仍然具有研究价值。把这两个问题讲清楚，后续第 5 章中的跨域适应训练策略才会显得顺理成章，而不是工程上的临时折中。
 
-\subsection{域差来源分解与低标注学习路径}
+\subsection{跨域迁移的工程实现路径}
 
 在排水管道场景中，域差并不是单一来源造成的。它至少包括成像域差、场景域差和标注域差三个层面。成像域差来自摄像头型号、照明条件、分辨率和压缩策略差异；场景域差来自管材、污渍分布、沉积状态和地区维护历史差异；标注域差则来自缺陷定义口径、标注习惯和任务粒度差异\cite{ref:survey2020,ref:zhou2023review,ref:measurement2026}。只有把域差拆开理解，后续迁移策略设计才不会流于抽象。
 
-相应地，低标注学习也不应被简单理解为“少标一点框”。更准确地说，它是一组围绕标注成本控制展开的方法组合，包括源域预训练、目标域图像级微调、候选区域生成、伪框构建和人工轻量复核等环节\cite{ref:wsol2025,ref:mv2024,ref:cam2016,ref:gradcam2017}。本文采用的技术路线正是将这些环节组织为一条渐进式学习路径：先用公开源域学到同领域先验，再用目标域图像级数据完成适配，最后再把有限框标注资源投入到真正需要的检测训练中。
+相应地，低标注学习也不应被简单理解为“少标一点框”。更准确地说，它是一组围绕标注成本控制展开的方法组合，包括源域预训练、目标域图像级微调、候选区域生成、伪框构建和人工轻量复核等环节\cite{ref:wsol2025,ref:gradcam2017}。本文采用的技术路线正是将这些环节组织为一条渐进式学习路径：先用公开源域学到同领域先验，再用目标域图像级数据完成适配，最后再把有限框标注资源投入到真正需要的检测训练中。
 
 这一思路的理论优势在于，它尽可能把高成本监督推迟到最必要的阶段。与一开始就大量标框相比，这种路径更符合真实工程单位的数据条件，也更适合在研究早期快速迭代模型与实验设计。因此，第 5 章中的跨域迁移策略并不是孤立提出的训练技巧，而是建立在上述域差分解和低标注学习逻辑基础上的系统设计。
 
@@ -636,7 +1271,7 @@ SE-Net 是通道注意力的经典代表，其核心思想是通过全局信息�
 
 这种层次化标签对齐还有助于减少跨域迁移中的语义噪声。由于源域原始标签中包含多标签共存、构造信息和状态信息，若不经过任务化重组就直接参与目标域检测训练，模型学到的可能并不是稳定的结构性缺陷表征，而是与目标任务无关的混合语义。通过先在源域上构建更稳定的单标签结构病害分类集，再把这种表征迁移到目标域检测任务，能够在一定程度上降低语义漂移风险，也使后续 CAM 候选区域更容易围绕目标域真正关心的病害类型展开。
 
-\subsection{人机协同与低标注闭环}
+\subsection{目标域适配与低标注约束}
 
 从工程应用角度看，低标注学习并不意味着完全取消人工，而是重构人工参与方式。传统流程往往要求人工从零开始逐张标框，而在低标注闭环中，人工更多承担“抽检、修正和确认”的角色，即先由模型给出候选区域，再由人工对高价值样本进行快速复核\cite{ref:wsol2025,ref:mv2024}。这种变化的本质，是把专业人员的时间从重复性标注中释放出来，集中投入到最困难、最关键的样本上。
 
@@ -646,7 +1281,7 @@ SE-Net 是通道注意力的经典代表，其核心思想是通过全局信息�
 
 进一步看，人机协同闭环其实也反向规定了算法研究的边界。若一个方法虽然在标准测试集上取得更高分数，却需要更复杂的推理流程、更重的人工筛选或更高的部署成本，那么它在真实巡检流程中的综合收益可能并不理想\cite{ref:spva2021,ref:measurement2026}。因此，本文在理论上把“人工复核负担”视为和精度、召回同样重要的系统变量，这样后续第 6 章的实验分析才能既讨论检测性能，也讨论整个业务链条的有效性。
 
-\subsection{从理论基础到实验设计的映射}
+\subsection{迁移理论对后续实验设计的支撑}
 
 本章前述理论内容之所以需要写得相对完整，是因为后续实验矩阵并不是随意搭建的，而是与理论假设一一对应。源域分类实验对应“同领域表征可迁移”这一假设；目标域微调实验对应“跨域适应可通过渐进式迁移改善”这一假设；CAM 可视化与伪框实验对应“图像级标注可以转化为候选区域监督”这一假设；改进 YOLOv11 的对比与消融实验，则对应“场景化模型优化优于直接沿用通用基线”这一假设。
 
@@ -654,9 +1289,26 @@ SE-Net 是通道注意力的经典代表，其核心思想是通过全局信息�
 
 进一步说，本章的理论铺垫还承担一个论文写作上的关键任务，即把“模型改进”和“迁移策略”连接到同一个问题框架中。若没有前文关于域差、类别语义漂移、源模型选择和 WSOL 候选区域生成的理论讨论，那么第 5 章中的跨域训练策略就会显得像是对第 4 章的附加补丁；反之，当这些理论前提被系统展开后，后续方法章节就可以被理解为围绕同一工程问题链的连续求解过程\cite{ref:transfereval2025,ref:pgda2024,ref:wsolrecipe2024}。这也是本文在第二章保留较多理论分析篇幅的根本原因。
 
-\section{低标注学习与人机协同检测理论}
+\begin{table}[H]
+    \centering
+    \caption{迁移学习与域适应策略比较表}
+    \label{tab:transfer-strategy-comparison}
+    \begin{tabular}{p{3.0cm}p{2.6cm}p{2.6cm}p{2.2cm}p{2.6cm}p{3.0cm}}
+        \toprule
+        方法类型 & 是否需要目标域标签 & 是否需要对抗训练 & 实现复杂度 & 工程适配性 & 本文采用/不采用原因 \\
+        \midrule
+        通用预训练+微调 & 需要 & 否 & 低 & 高 & 作为基础对照 \\
+        同领域源域预训练+微调 & 需要少量标签 & 否 & 低到中等 & 高 & 本文主路线 \\
+        对抗式域适应 & 可弱依赖标签 & 是 & 高 & 中等 & 理论价值高，但工程复杂度大 \\
+        伪标签/自训练 & 需要少量标签或高置信预测 & 否 & 中等 & 中等到高 & 作为后续扩展备选 \\
+        原型引导域适应 & 需要类别级结构约束 & 可选 & 高 & 中等 & 作为理论参考，不作为主实现 \\
+        \bottomrule
+    \end{tabular}
+\end{table}
 
-\subsection{低标注学习的工程含义}
+\section{CAM / Grad-CAM 与弱监督定位理论}
+
+\subsection{CAM / Grad-CAM 的基本思想}
 
 在许多计算机视觉任务中，低标注学习通常被理解为一种为了节约标注成本而采用的附加技巧；但在地下排水管道场景中，低标注学习更接近一种基本前提。原因在于，目标域高质量框标注不仅耗费时间，还需要具有工程知识的人员参与，不同标注者之间还可能因缺陷边界理解不同而产生较大差异\cite{ref:jankim2025,ref:wsol2025}。因此，真实工程单位很难在短时间内构建出足够大、足够稳定的检测标注库。
 
@@ -664,19 +1316,19 @@ SE-Net 是通道注意力的经典代表，其核心思想是通过全局信息�
 
 进一步讲，低标注学习的工程价值还在于重构监督资源的投入顺序。工业缺陷迁移研究表明，当高质量标注预算有限时，把资源优先投入到“源模型选择”“候选区域生成”和“高价值样本复核”往往比盲目扩大人工框标注规模更有效\cite{ref:transfereval2025}。对 sewer inspection 而言，这种资源重构尤其重要：一方面，原始视频量巨大，全部精标并不现实；另一方面，真正困难的往往不是“有没有图像”，而是“哪些图像值得专家投入时间”。因此，本文把低标注学习写成理论基础的一部分，目的正是为后续“先源域分类、再目标域微调、再 CAM 伪框、最后有限人工校正”的路线建立清晰的方法论依据。
 
-\subsection{伪标签与候选区域的角色定位}
+\subsection{候选区域与伪标签的角色定位}
 
-在低标注检测任务中，伪标签的价值主要体现在两个层面。其一，是扩大监督信号覆盖范围，使本来只有图像级标签或少量框标注的数据，也能够在一定程度上参与检测训练；其二，是把人工工作从“从零标注全部样本”转变为“复核高价值候选区域”，从而提高标注效率\cite{ref:cam2016,ref:gradcam2017,ref:mv2024,ref:wsol2025}。对本文而言，CAM 生成的候选区域并不被视为最终真值，而被视为连接分类知识与检测监督的重要中间表征。
+在低标注检测任务中，伪标签的价值主要体现在两个层面。其一，是扩大监督信号覆盖范围，使本来只有图像级标签或少量框标注的数据，也能够在一定程度上参与检测训练；其二，是把人工工作从“从零标注全部样本”转变为“复核高价值候选区域”，从而提高标注效率\cite{ref:gradcam2017,ref:wsol2025}。对本文而言，CAM 生成的候选区域并不被视为最终真值，而被视为连接分类知识与检测监督的重要中间表征。
 
 这种角色定位十分关键。若把伪框误当成精确框，后续实验容易在定位误差上产生系统性偏差；若完全否认伪框价值，又会重新回到高成本人工标注路径。因此，本文在理论上将候选区域定义为“有监督价值但需后续筛选”的中间信息，这为后续实验阶段采用抽检、阈值筛选和人工快修提供了合理依据。
 
-\subsection{人机协同检测闭环}
+\subsection{弱监督定位与人机协同闭环}
 
 从更宏观的角度看，地下排水管道智能巡检并不是“模型替代人工”的单向过程，而更像是“模型与人工分工重组”的协同闭环。模型擅长的是从海量数据中快速筛出疑似区域和高风险样本，人工擅长的是利用工程知识判断复杂边界、确认疑难样本和完成最终维护决策\cite{ref:spva2021,ref:tracking2021,ref:lmm2024}。因此，一个真正可用的巡检系统应当把模型视为人工能力放大器，而不是孤立的最终判决器。
 
 本文后续提出的技术链条正是沿着这一思路展开：分类模型先完成高召回预筛，CAM 负责提供候选区域，检测模型负责做精细识别，人工则集中处理最有价值的修正与确认工作。这样的闭环不仅符合工程现实，也有助于解释为什么本文在方法层面既关注模型精度，也关注筛帧效率、误报率和伪框可用性等系统级指标。
 
-\subsection{本章理论对后续研究的支撑关系}
+\subsection{弱监督定位对后续检测任务的支撑}
 
 综上所述，第 2 章涉及的理论并不是彼此孤立的。缺陷类型与图像特征分析说明了 sewer defect detection 的任务难点；目标检测理论和 YOLO 系列方法说明了为何选择一阶段检测器作为基线；注意力机制、检测头与损失函数理论说明了后续模型改进的方向与依据；迁移学习、跨域适应和 CAM 理论则为源域预训练、目标域微调与伪框生成提供了方法论支撑。后续第 3 章至第 5 章的设计，正是在这些理论基础之上逐层展开。
 
@@ -684,21 +1336,30 @@ SE-Net 是通道注意力的经典代表，其核心思想是通过全局信息�
 
 进一步说，第二章完成的不只是概念梳理，更是把本文后续研究压缩为一个可验证的问题框架：一方面，地下排水管道缺陷图像在视觉上具有小目标、弱纹理、复杂背景和类间相似度高等特征，因此需要在检测模型层面做场景化改进；另一方面，目标域高质量框标注有限、源域与目标域存在明显域差，因此又必须在训练策略层面引入源域预训练、目标域渐进微调和低标注增强机制。也就是说，后续第 4 章回答的是“模型为什么要改、该往哪里改”，第 5 章回答的是“数据不足和域差存在时模型如何训得起来”，而第 3 章则承担把理论路线转化为数据组织、任务定义和实验链路的过渡作用。只有在这一问题框架下理解全文，本文的两个核心创新点和一条工程支撑链才能构成真正连续的研究闭环。
 
-\subsection{监督粒度连续体与少样本检测启示}
+\subsection{监督粒度连续体与低标注学习启示}
 
 在低标注视觉任务中，监督信息并不是简单划分为“有标注”和“无标注”两种状态，而更应被理解为从图像级标签、候选区域、少量精确框到较充分检测标注之间连续变化的监督粒度谱系。工业表面缺陷研究已经明确指出，弱监督、混合监督与全监督之间并不存在绝对割裂的边界，相反，不同粒度标注往往可以在同一训练框架中协同发挥作用\cite{ref:mixedsupervision2021,ref:ameri2024review,ref:surfacereview2024}。其中，图像级标签更适合学习类别存在性和粗粒度判别线索，少量精确框或分割标注则更适合校正空间定位偏差，而混合监督策略的价值就在于用较低的精标成本换取显著高于纯弱监督的定位能力。将这种监督粒度连续体引入地下排水管道场景，有助于从理论上解释为什么本文并不把源域分类、CAM 候选区域和少量目标域检测标注看成彼此独立的资源，而是把它们视作可以渐进衔接的监督层级。
 
-进一步地，少样本缺陷检测文献还表明，当标注预算不足时，决定模型可用性的关键不只是“样本有多少”，更在于“样本是否覆盖了高价值判别模式”以及“已有先验是否能被有效迁移”。Wang 等在钢表面缺陷少样本检测研究中指出，少量支持样本条件下若缺乏稳定先验，模型容易在类别相似、纹理细弱和背景复杂条件下出现识别退化\cite{ref:fewshotsteel2022}；相关综述也强调，监督粒度设计、样本筛选与先验知识迁移共同决定了低标注缺陷检测的最终上限\cite{ref:ameri2024review,ref:surfacereview2024}。这意味着对 sewer defect detection 而言，仅仅减少标注量并不能自动带来更优的训练路径，必须同时回答“用什么先验学”“先标什么样本”“哪一层监督先进入系统”这三个问题。本文后续采用源域单标签分类预训练、目标域分类微调和 CAM 伪框生成的顺序，本质上就是对这一问题的任务化回答：先建立较稳的缺陷表征，再把表征转化为候选空间监督，最后才进入检测级训练。
+进一步地，少样本缺陷检测文献还表明，当标注预算不足时，决定模型可用性的关键不只是“样本有多少”，更在于“样本是否覆盖了高价值判别模式”以及“已有先验是否能被有效迁移”。Wang 等\cite{ref:fewshotsteel2022}在钢表面缺陷少样本检测研究中指出，少量支持样本条件下若缺乏稳定先验，模型容易在类别相似、纹理细弱和背景复杂条件下出现识别退化；相关综述也强调，监督粒度设计、样本筛选与先验知识迁移共同决定了低标注缺陷检测的最终上限\cite{ref:ameri2024review,ref:surfacereview2024}。这意味着对 sewer defect detection 而言，仅仅减少标注量并不能自动带来更优的训练路径，必须同时回答“用什么先验学”“先标什么样本”“哪一层监督先进入系统”这三个问题。本文后续采用源域单标签分类预训练、目标域分类微调和 CAM 伪框生成的顺序，本质上就是对这一问题的任务化回答：先建立较稳的缺陷表征，再把表征转化为候选空间监督，最后才进入检测级训练。
 
 从工程实现角度看，这一理论还有一个直接后果，即监督资源的投入应当服从“先放大样本价值，再放大样本数量”的原则。若在目标域上直接追求大规模精框标注，不仅成本高昂，而且很可能在类间边界尚未澄清、源域先验尚未建立时形成低效率标注；相反，若先利用公开源域学习稳健表征，再通过目标域分类样本和候选区域对监督进行逐步细化，则可以把有限专家时间更多集中到最难、最关键的样本上\cite{ref:situ2023,ref:wsol2025,ref:mixedsupervision2021}。因此，监督粒度连续体与少样本检测理论并不是与本文主线无关的泛化讨论，而是后续第 3 章数据组织方式、第 5 章迁移路径设计以及第 6 章低标注实验解释的重要理论支点。
 
+在数值表格之外，图~\ref{fig:detector-baseline-bars} 以柱状图形式汇总第二阶段 baseline 的主要性能差异。
+\begin{figure}[H]
+    \centering
+    \placeholderbox{CAM / Grad-CAM 原理示意图\\建议文件：cam\_gradcam\_principle.pdf}
+    \caption{CAM / Grad-CAM 原理示意图}
+    \label{fig:cam-gradcam-principle}
+\end{figure}
+
+为了直观展示三个改进模块的边际收益与协同收益，图~\ref{fig:innovation1-gains} 对创新点一的消融结果进行图形化呈现。
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.92\textwidth]{../../img/ch2_supervision_continuum.pdf}
     \caption{从图像级监督到检测级监督的连续体}
     \label{fig:ch2-supervision-continuum}
     
-    {\footnotesize 注：根据 CAM、Grad-CAM、弱监督定位、混合监督与迁移学习相关文献整理与改绘\cite{ref:cam2016,ref:gradcam2017,ref:mixedsupervision2021,ref:mv2024,ref:wsolrecipe2024,ref:wsol2025}。}
+    \figsource{根据文献\cite{ref:gradcam2017,ref:wsol2025}整理与改绘。}
 \end{figure}
 
 \section{本章小结}
@@ -707,31 +1368,32 @@ SE-Net 是通道注意力的经典代表，其核心思想是通过全局信息�
 
 更进一步地，本章也明确了本文后续研究必须同时回应的三层问题。第一层是“视觉表征问题”，即如何在小目标、弱纹理和复杂背景条件下获得更可靠的缺陷表征；第二层是“训练机制问题”，即如何通过检测头组织、损失函数设计和标签分配策略把这种表征稳定转化为可用预测；第三层是“工程闭环问题”，即在目标域数据有限、域差显著且人工复核成本高昂的条件下，如何通过源域预训练、目标域微调、CAM 候选区域生成和人机协同形成可实施的技术路线。后续第 3 章到第 5 章的展开，正是围绕这三层问题逐级推进：先把数据与任务组织清楚，再对基线模型做针对性改进，最后用跨域迁移与低标注增强把方法真正连到目标域场景中去。因而，第二章并不是背景性铺垫，而是全文方法论和实验设计的逻辑起点。
 
-从论文整体结构上看，第二章实际上还承担了一个更深层次的作用，即把“公开文献中的分散结论”整合为本文可执行的研究路线。已有 sewer detection 文献已经分别证明了公开数据集的价值、YOLO 路线的工程优势、弱监督候选区域生成的可行性以及迁移学习在同领域任务中的潜力\cite{ref:sewerml,ref:wang2023yolov5,ref:situ2023,ref:wsol2025}；但这些工作往往各自聚焦于单一环节，尚未自动汇聚为一条能够直接解决本文目标任务的完整方法链。第二章通过理论梳理所完成的，正是把这些分散结论重新编排为一个统一的问题图景：为什么 sewer 缺陷检测需要关注小目标与复杂背景，为什么一阶段检测器虽然适合工程落地却仍需场景化改进，为什么目标域少标注条件下必须借助源域表征、CAM 候选区域和人机协同来完成监督增强，以及为什么这些环节必须被视为同一条研究链而不是若干互不相干的技术拼接。只有在这一图景被明确建立之后，后续第 3 章的数据组织、第 4 章的模型改进和第 5 章的迁移策略才会显得逻辑连续、问题明确且方法有据可依。这也是本文坚持在第二章投入较大篇幅的原因：它不仅解释“已有方法是什么”，更解释“为什么本文必须这样设计”。
+从论文整体结构上看，第二章实际上还承担了一个更深层次的作用，即把“公开文献中的分散结论”整合为本文可执行的研究路线。已有 sewer detection 文献已经分别证明了公开数据集的价值、YOLO 路线的工程优势以及迁移学习在同领域任务中的潜力\cite{ref:sewerml,ref:wang2023yolov5,ref:situ2023}；但这些工作往往各自聚焦于单一环节，尚未自动汇聚为一条能够直接解决本文目标任务的完整方法链。第二章通过理论梳理所完成的，正是把这些分散结论重新编排为一个统一的问题图景：为什么 sewer 缺陷检测需要关注小目标与复杂背景，为什么一阶段检测器虽然适合工程落地却仍需场景化改进，为什么目标域少标注条件下必须借助源域表征、CAM 候选区域和人机协同来完成监督增强，以及为什么这些环节必须被视为同一条研究链而不是若干互不相干的技术拼接。只有在这一图景被明确建立之后，后续第 3 章的数据组织、第 4 章的模型改进和第 5 章的迁移策略才会显得逻辑连续、问题明确且方法有据可依。这也是本文坚持在第二章投入较大篇幅的原因：它不仅解释“已有方法是什么”，更解释“为什么本文必须这样设计”。
 
 还需要补充指出的是，第二章最终形成的理论闭环并不是封闭静态的，而是允许不同监督层级和不同实验路径在同一问题框架内被解释。换言之，即便后续实验发现某些类别更适合直接少量人工框监督，另一些类别更适合沿用 CAM 候选区域增强，本文在第二章中建立的理论体系仍然能够解释这种分化现象，因为监督粒度本来就应当被理解为任务相关、类别相关和资源相关的连续决策问题\cite{ref:mixedsupervision2021,ref:fewshotsteel2022,ref:ameri2024review}。这也使得后续实验章节不仅能够回答“哪种方法效果更好”，还能够进一步回答“为什么在当前 sewer 场景与标注约束下，应当优先选择这一训练组织方式”。从这个意义上说，第二章完成的不是单纯的知识回顾，而是为全文建立了一套能够解释结果差异、支撑方法选择并联系工程现实的分析语言。
 
-\chapter{数据集构建与地下排水管道缺陷检测总体框架}
+\fi
+\chapter{数据集构建与总体研究框架}
 
 \section{数据来源与总体说明}
 
-\subsection{源域数据来源}
+\subsection{源域数据}
 
-本文源域数据主要来自公开 SewerML 数据库。考虑到原始 SewerML 数据以多标签分类为主，不直接适合作为本文流程中的单标签分类预训练数据，因此本文对其进行了单标签化处理，并构建了平衡的源域分类数据集。选择 SewerML 作为源域的主要原因在于：其一，数据规模较大，包含丰富的管道内部视觉模式；其二，类别覆盖较广，能够为模型提供较强的 sewer scene prior；其三，该数据集已经形成公开 benchmark，便于论文中对源域背景进行标准化说明\cite{ref:sewerml}。需要指出的是，本文对 SewerML 的使用定位并非“直接拿来训练最终检测器”，而是将其作为源域分类预训练和跨域迁移适应的起点。
+本文源域数据来自公开 Sewer-ML 数据集。考虑到 Sewer-ML 原始发布形态为多标签分类数据，而本文的前级预筛、CAM 热力图和迁移分类实验均需要稳定的单标签监督信号，因此本文在不改变原始数据来源的前提下，对原始标签进行了任务化重构，形成适用于分类预训练的单标签六类平衡数据集。将 Sewer-ML 选为源域的原因主要有三点：其一，数据规模较大且类别覆盖较广，能够为模型提供较强的 sewer scene prior；其二，数据来源公开、口径明确，适合在论文中形成可复现的源域背景；其三，已有研究已经证明 Sewer-ML 及其衍生任务可有效支撑 sewer-specific classification、transfer learning 与 weakly supervised localization 研究\cite{ref:sewerml,ref:kumar2021,ref:wsol2025}。
 
-\subsection{目标域数据来源}
+\subsection{目标域数据}
 
-目标域数据来自本地或合作区域的地下排水管道巡检图像，包含图像级标签、检测框标注以及后续人工修正数据。目标域数据是本文最终检测任务的直接支撑数据，其标签体系和评价口径均以本地工程任务为准。相较于源域数据，目标域数据在成像设备、分辨率、照明条件、管材背景、污渍分布和标注口径等方面都具有更强的工程属性，因此更能代表最终落地场景，但同时也面临标注成本高、类别分布不均衡和高质量样本数量有限等现实问题。正因为如此，本文才需要通过“源域预训练 + 目标域微调 + 低标注检测训练”的方式减少对大规模框标注数据的直接依赖。
+目标域数据来自本地或合作区域的地下排水管道巡检图像，包括图像级标签、少量检测框标注以及后续人工复核样本。目标域是本文最终检测任务的真实落点，其类别口径、误报约束和评价方式均以本地工程任务为准。与源域数据相比，目标域数据在拍摄设备、视角、照明条件、管材背景、污渍分布和缺陷表达方式等方面更具工程性，也更能体现真实 deployment 条件下的 domain gap。因此，本文并不追求让源域标签体系严格等价于目标域检测类别，而是通过层次化标签对齐和迁移训练，使源域数据主要承担“先学会看懂 sewer scene”的任务，目标域数据承担“完成本地检测任务定义”的任务。
 
-\section{源域单标签分类数据集构建}
+\section{源域分类数据集构建}
 
 \subsection{单标签化原则}
 
-为适应分类预训练与 CAM 候选区域生成流程，本文将原始 SewerML 数据中的多标签样本按照固定优先级映射到唯一主类别，形成单标签训练样本。同时，排除暂不纳入主任务的干扰标签和构造信息标签，从而保证源域数据与后续实验目标的一致性。这里的“单标签化”并不是否定 SewerML 原始多标签属性，而是为了更稳定地适配当前使用的分类训练框架、降低类别语义混叠，并为后续 CAM 热力图生成提供更清晰的监督信号。换言之，本文的源域单标签集是一种面向跨域迁移和伪框生成任务的重构数据形态，而不是对原始数据语义的简单压缩。
+为适应分类预训练、二分类 gate 构建和 CAM 热力图生成流程，本文将 Sewer-ML 原始样本重构为单标签分类数据，并采用固定优先级将多标签样本映射到唯一主类。这样处理的目的不是否定 Sewer-ML 的原始多标签语义，而是在当前实验框架中尽可能减弱标签重叠对分类训练稳定性的影响，使分类模型输出更适合作为候选区域生成的中间监督信号。与此同时，本文保留 \texttt{Normal} 类别，使模型在源域阶段就具备明确的正常/异常判别能力，为后续第一阶段高召回预筛任务提供基础。
 
-\subsection{当前数据集规模与分布}
+\subsection{源域六类与样本规模}
 
-本文当前构建的源域单标签六类分类数据集共包含 7200 张图像，按类别均衡划分，每类 1200 张，其中训练集每类 1080 张，验证集每类 120 张。类别包括 Normal、Deformation、Roots、JointAnomaly、WallDamage 和 DepositAttachment。该数据集的主要作用是为后续分类预训练、CAM 热力图生成和伪框构建提供稳定基础。从实验设计角度看，7200 张数据并不是“尽可能大”的结果，而是综合考虑类别平衡、数据质量、训练效率和 3090 平台下试验迭代成本之后的折中规模。相比 3000 张级别的原型集，该规模能够提供更稳定的分类表征；相比继续盲目扩容，又具有更高的训练性价比，适合作为论文前期源域实验的基准配置。
+当前构建的源域单标签数据集为 \texttt{sewerml\_cls6\_train7200}，共 7200 张图像，按类别均衡组织，每类 1200 张，其中训练集每类 1080 张、验证集每类 120 张。源域六类分别为 \texttt{Normal}、\texttt{Deformation}、\texttt{Roots}、\texttt{JointAnomaly}、\texttt{WallDamage} 和 \texttt{DepositAttachment}。该数据集既是后续 source pretrain 的输入，也是第一阶段 gate 扫描和 CAM 候选区域生成的基础。选择 7200 张作为首版正式实验规模，主要是综合考虑了类别平衡、训练成本、3090 显卡平台上的迭代效率以及前级预筛研究对稳定表征的需求。
 
 \begin{table}[H]
     \centering
@@ -753,33 +1415,34 @@ SE-Net 是通道注意力的经典代表，其核心思想是通过全局信息�
     \end{tabular}
 \end{table}
 
+同样地，图~\ref{fig:innovation2-gains} 用于展示不同初始化与微调路径带来的迁移收益差异。
 \begin{figure}[H]
     \centering
-    \placeholderbox{后续替换为源域单标签六类样本分布图\\建议文件：source\_dataset\_distribution.pdf}
-    \caption{源域单标签六类分类数据集分布示意图}
-    \label{fig:source-dataset-distribution}
+    \placeholderbox{源域六类样本示例图\\建议文件：source\_six\_class\_samples.pdf}
+    \caption{源域六类样本示例图}
+    \label{fig:source-six-samples}
 \end{figure}
 
-\section{目标域缺陷类别定义与标签映射}
+\subsection{源域数据的任务定位}
+
+需要强调的是，源域分类数据集并不直接承担最终检测任务，而是同时服务于三个中间目标：第一，为 \texttt{Normal/Abnormal} 高召回预筛提供统一的初始特征表征；第二，为 CAM/Grad-CAM 候选区域生成提供稳定的类响应基础；第三，为后续目标域检测提供更贴近 sewer inspection 场景的初始化权重。也就是说，源域数据的角色是“可迁移缺陷表征学习平台”，而不是“目标域检测任务的直接替代品”。
+
+\section{目标域六类缺陷定义与标签映射}
 
 \subsection{目标域最终检测类别}
 
-为与工程需求保持一致，本文将目标域最终检测任务固定为六类结构性缺陷，包括 CrackBreak、SurfaceDamage、Deformation、JointDislocation、Intrusion 和 Infiltration。该分类方式兼顾了国内排水管道缺陷评估口径、目标域图像表现特点以及后续检测模型的可训练性。
-
-\subsection{源域与目标域的关系}
-
-需要说明的是，源域分类类别与目标域最终检测类别并非严格一一对应。源域数据主要服务于缺陷表征学习与候选区域生成，而目标域六类检测任务才是本文最终关注的落地任务。因此，本文采用“源域预训练较粗、目标域检测类冻结”的思路，使迁移学习服务于最终检测目标。这种做法本质上属于层次化标签对齐思路：源域侧强调可迁移的缺陷表征学习，目标域侧强调任务边界清晰、标注口径稳定和检测评估可执行。通过将二者解耦，本文避免了直接把 SewerML 原始标签体系硬套到本地检测任务上的语义错位问题。
+本文将目标域最终检测任务固定为六类结构性缺陷：\texttt{CrackBreak}、\texttt{SurfaceDamage}、\texttt{Deformation}、\texttt{JointDislocation}、\texttt{Intrusion} 和 \texttt{Infiltration}。该定义兼顾了中国排水管道检测评估口径、目标域图像表现特点以及后续检测模型的可训练性。与源域分类类别不同，目标域类别必须为最终检测任务服务，因此一经确定便不再随实验中途变动。
 
 \begin{table}[H]
     \centering
-    \caption{目标域最终六类检测任务定义}
+    \caption{目标域六类缺陷与任务定义}
     \label{tab:target-classes}
     \begin{tabular}{clp{8cm}}
         \toprule
         编号 & 类别名称 & 说明 \\
         \midrule
         0 & CrackBreak & 对应破裂、裂缝、坍塌等管壁破坏性缺陷 \\
-        1 & SurfaceDamage & 对应表面损伤、腐蚀样损伤或制造施工缺陷 \\
+        1 & SurfaceDamage & 对应表面损伤、腐蚀样损伤及相关施工/制造缺陷 \\
         2 & Deformation & 对应管道几何形态变化、变形等缺陷 \\
         3 & JointDislocation & 对应接口错位、脱节、错口等接口异常 \\
         4 & Intrusion & 对应接口侵入、材料侵入或局部异物侵入 \\
@@ -788,180 +1451,462 @@ SE-Net 是通道注意力的经典代表，其核心思想是通过全局信息�
     \end{tabular}
 \end{table}
 
-\section{数据预处理与增强策略}
+从系统层面看，图~\ref{fig:system-comparison} 将单阶段与两阶段方案的关键指标并列展示，以突出整体路线的工程价值。
+\begin{figure}[H]
+    \centering
+    \placeholderbox{目标域六类样本示例图\\建议文件：target\_six\_class\_samples.pdf}
+    \caption{目标域六类样本示例图}
+    \label{fig:target-six-samples}
+\end{figure}
 
-\subsection{预处理策略}
+\subsection{源域与目标域的关系}
 
-在数据集构建过程中，本文对源域和目标域图像进行了统一的路径规范化、类别目录标准化和训练集与验证集划分。对于目标域检测数据，还将结合图像质量和标注质量进一步筛选，以保证训练样本的可用性与一致性。
+源域分类类别与目标域检测类别并非严格一一对应。源域更强调稳定表征与预筛能力，目标域更强调最终缺陷位置与类别判定。本文采用“源域预训练较粗、目标域检测类冻结”的层次化标签对齐思路，使迁移学习服务于最终检测目标而不是反过来受制于源域原始标签体系。这种处理能够在避免语义硬映射冲突的同时，最大化公开 sewer 数据对本地任务的可迁移价值\cite{ref:sewerml,ref:situ2023,ref:pgda2024}。
 
-\subsection{数据增强策略}
+\begin{table}[H]
+    \centering
+    \caption{源域任务视图与目标域任务视图的关系}
+    \label{tab:source-target-alignment}
+    \begin{tabular}{p{4cm}p{4cm}p{5cm}}
+        \toprule
+        任务层级 & 类别视图 & 主要作用 \\
+        \midrule
+        源域分类预训练 & Normal / Deformation / Roots / JointAnomaly / WallDamage / DepositAttachment & 学习 sewer scene 通用表征，支撑 gate 与 CAM \\
+        第一阶段预筛 & Normal / Abnormal & 在高召回约束下最大化正常样本过滤率 \\
+        第二阶段检测 & CrackBreak / SurfaceDamage / Deformation / JointDislocation / Intrusion / Infiltration & 完成最终缺陷定位与类别判定 \\
+        \bottomrule
+    \end{tabular}
+\end{table}
 
-分类阶段以轻量增强为主，例如尺度变换、随机翻转和颜色扰动，以避免过强增强破坏缺陷语义；检测阶段则根据实验需要进一步引入 Mosaic、MixUp、随机裁剪或几何变换等策略，以增强模型对复杂场景的鲁棒性。
+为避免总体指标掩盖类别差异，图~\ref{fig:per-class-ap} 对各类别 AP 表现进行细化对比。
+\begin{figure}[H]
+    \centering
+    \placeholderbox{源域类别到目标域类别的映射关系图\\建议文件：source\_target\_mapping.pdf}
+    \caption{源域类别到目标域类别的映射关系图}
+    \label{fig:source-target-mapping}
+\end{figure}
 
-\section{高召回预筛与后级精检的总体框架}
+\section{第一阶段与第二阶段任务定义}
 
-考虑到真实巡检场景中正常帧数量远大于缺陷帧，若将全部图像直接送入检测器进行精细检测，不仅会增加推理成本，也会放大误报问题。因此，本文构建了前级高召回预筛与后级精确检测相结合的总体框架。前级模块主要用于尽量不过漏缺陷帧的前提下，对明显正常帧进行筛除或降权；后级模块则对候选缺陷图像进行高精度检测与类别判定。需要强调的是，前级模块的设计目标不是替代检测器完成最终决策，而是在工程链条中承担“降低搜索空间、减少无效推理、控制误报传播”的系统角色。这样的两阶段设计与 sewer defect detection 中强调高召回和工程可用性的既有研究目标是一致的\cite{ref:zhang2023automatic,ref:zhou2023review}。
+本文将总体任务拆分为两个紧密衔接但职责不同的阶段。第一阶段是 \texttt{Normal/Abnormal} 高召回预筛，其目标不是给出最终缺陷类别，而是在“尽量不过漏异常”的约束下，尽可能过滤明显正常样本，从而降低第二阶段检测器的输入规模与误报传播风险。第二阶段是目标域六类结构性缺陷检测，它负责完成最终类别和位置判定，并输出可直接用于工程复核和维护决策的结果。这样的任务分解既符合 hierarchical classification 在 sewer inspection 中的已有经验\cite{ref:hierarchical2019,ref:cnnmethod2019}，也更适合本文后续围绕误报控制、低标注增强与跨域迁移开展系统实验。
+
+此外，图~\ref{fig:cam-vs-detector} 进一步对照展示第一阶段 CAM 关注区域与第二阶段 detector 输出框的关系。
+\begin{figure}[H]
+    \centering
+    \placeholderbox{第一阶段与第二阶段任务定义示意图\\建议文件：stage1\_stage2\_tasks.pdf}
+    \caption{第一阶段与第二阶段任务定义示意图}
+    \label{fig:stage-definitions}
+\end{figure}
+
+\section{数据预处理与划分协议}
+
+\subsection{预处理与增强}
+
+分类阶段以轻量增强为主，包括尺度变换、随机翻转和颜色扰动，以避免过强增强破坏缺陷语义；检测阶段则根据实验需要进一步引入 Mosaic、随机裁剪、几何变换等策略，以增强模型对复杂场景的鲁棒性。对于目标域图像，本文还将结合图像质量、重复帧比例和标注置信度进行筛选，以减轻低质量样本对检测器收敛稳定性的干扰\cite{ref:jankim2025}。
+
+\subsection{划分协议与运行型验证集}
+
+除常规 train/val/test 划分外，本文在第一阶段预筛实验中强调“运行型验证集”的概念，即验证集尽量接近真实巡检流程中正常样本占比较高的分布条件。这样设计的目的在于避免仅在均衡样本上评价 gate 模块，而忽略其在真实运维场景中对误报和复核成本的影响。对于第二阶段检测任务，本文则保持目标域类别定义、训练配置和评价阈值的一致性，以确保不同 baseline、消融实验与迁移实验之间具有严格可比性。
+
+为增强结论章节的收束性，表~\ref{tab:conclusion-evidence} 将主要结论、对应章节和关键证据图表进行统一对应。
+\begin{table}[H]
+    \centering
+    \caption{数据来源与划分协议}
+    \label{tab:data-splits}
+    \begin{tabular}{p{3cm}p{4cm}p{5cm}}
+        \toprule
+        数据层级 & 当前状态 & 主要用途 \\
+        \midrule
+        源域分类数据 & 已构建 \texttt{sewerml\_cls6\_train7200}，含 train/val & source pretrain、gate 扫描、CAM 生成 \\
+        目标域图像级数据 & 按六类检测任务持续补充 & target cls finetune、候选区域生成 \\
+        目标域检测框数据 & 少量人工框与后续 reviewed box & detector baseline、改进模型与迁移实验 \\
+        运行型验证集 & 以高 normal 占比组织 & gate operating point 与系统级误报分析 \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+为避免正文过度臃肿而又保留充分原始材料，表~\ref{tab:appendix-plan} 对后续附录中建议补充的图表内容进行统一规划。
+\begin{table}[H]
+    \centering
+    \caption{图像尺寸与长宽比分布统计表}
+    \label{tab:image-shape-distribution}
+    \begin{tabular}{p{3cm}p{3cm}p{3cm}p{5cm}}
+        \toprule
+        数据层级 & 典型尺寸范围 & 长宽比分布特点 & 主要作用 \\
+        \midrule
+        源域分类数据 & \TODO{填写} & \TODO{填写} & 支撑 source pretrain 与 gate 实验 \\
+        目标域图像级数据 & \TODO{填写} & \TODO{填写} & 支撑 target cls finetune 与 CAM 生成 \\
+        目标域检测数据 & \TODO{填写} & \TODO{填写} & 支撑 detector baseline 与改进实验 \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\begin{table}[H]
+    \centering
+    \caption{数据质量与清洗规则表}
+    \label{tab:data-cleaning-rules}
+    \begin{tabular}{p{3cm}p{4cm}p{2cm}p{5cm}}
+        \toprule
+        问题类型 & 判定标准 & 是否剔除 & 后续用途 \\
+        \midrule
+        严重模糊/不可辨识 & 缺陷区域无法人工确认 & 是 & 不进入训练与验证 \\
+        重复或近重复帧 & 连续多帧信息增量极低 & 部分剔除 & 保留少量代表帧构建运行型验证集 \\
+        低质量但可判读样本 & 噪声较大但缺陷可辨认 & 否 & 用于增强真实场景鲁棒性 \\
+        标注口径不一致样本 & 类别边界存在明显争议 & 暂缓使用 & 人工复核或进入附录分析 \\
+        CAM 明显偏移样本 & 热力图无法覆盖主体区域 & 否 & 作为伪框抽检与人工快修重点对象 \\
+        \bottomrule
+    \end{tabular}
+\end{table}
 
 \begin{figure}[H]
     \centering
-    \placeholderbox{后续替换为总体系统框架图\\建议文件：overall\_framework.pdf}
-    \caption{地下排水管道缺陷检测总体框架}
+    \placeholderbox{数据划分与运行型验证集构建流程图\\建议文件：data\_split\_valop\_flow.pdf}
+    \caption{数据划分与运行型验证集构建流程图}
+    \label{fig:data-split-flow}
+\end{figure}
+
+\section{总体系统框架设计}
+
+围绕“公开源域可用、目标域框标注昂贵、正常帧占比高、域差显著”这些现实约束，本文构建了“源域分类预训练 $\rightarrow$ 前级高召回预筛 $\rightarrow$ CAM/伪框辅助 $\rightarrow$ 改进 YOLOv11 检测 $\rightarrow$ 目标域迁移适应”的总体系统框架。该框架的核心思想是让不同子模块分别承担最擅长的职责：源域分类负责学习通用缺陷表征，前级 gate 负责削减正常样本流量并控制误报传播，CAM/伪框流程负责降低检测标注成本，改进 YOLOv11 负责完成最终高精度缺陷检测，而跨域迁移策略则负责把源域知识稳定转化为目标域性能。这样组织的目的不是“模块堆砌”，而是围绕工程问题把不同研究路径编排成一条可执行的完整技术链。
+
+\begin{figure}[H]
+    \centering
+    \placeholderbox{总体系统框架图\\建议文件：overall\_framework.pdf}
+    \caption{地下排水管道缺陷检测总体系统框架}
     \label{fig:overall-framework}
 \end{figure}
 
-\section{CAM 热力图与伪框生成流程}
+\section{评价协议与实验规范}
 
-由于目标域高质量检测框标注成本较高，本文引入了基于分类模型的 CAM 热力图生成与伪框构建流程。首先利用源域单标签分类数据集完成缺陷表征学习，再在目标域图像级标签数据上进行微调，使分类模型获得更贴近目标域场景的表征能力。随后，通过 CAM 可视化得到图像中与目标类别相关的高响应区域，并进一步结合阈值化、连通域分析和外接矩形生成候选框，形成初始伪标注。该流程在本文中的定位属于“低标注工程支撑链”，即通过尽量低成本的图像级监督去换取第一版可用检测样本，而不是把 CAM 直接当成最终检测真值。后续实验将进一步分析不同类别下 CAM 生成候选框的稳定性差异，并将其与人工快修成本、检测效果提升幅度结合讨论。
-
-\begin{figure}[H]
-    \centering
-    \placeholderbox{后续替换为 CAM 到伪框生成流程图\\建议文件：cam\_to\_bbox\_pipeline.pdf}
-    \caption{CAM 热力图与伪框生成流程}
-    \label{fig:cam-pipeline}
-\end{figure}
-
-\section{评价指标与实验平台}
-
-分类实验主要采用 Accuracy、Macro-F1 和混淆矩阵等指标进行评价；检测实验主要采用 Precision、Recall、$mAP@0.5$ 和 $mAP@0.5:0.95$ 等指标进行评价。针对系统级性能，本文还将从误报数、单图误报率、预筛模块召回率、负样本过滤率以及处理效率等角度对整体流程进行分析。
-
-当前实验环境采用 \texttt{Python 3.11.15} 与 \texttt{uv 0.11.2} 进行统一管理，硬件平台为 \texttt{NVIDIA GeForce RTX 3090}，显存为 24GB，驱动版本为 \texttt{581.29}。深度学习软件环境包括 \texttt{PyTorch 2.11.0+cu128}、\texttt{TorchVision 0.26.0+cu128}、\texttt{CUDA 12.8} 与 \texttt{Ultralytics 8.3.0}。辅助依赖库包括 \texttt{NumPy 1.26.4}、\texttt{OpenCV 4.11.0.86}、\texttt{Pillow 12.1.1}、\texttt{PyYAML 6.0.3}、\texttt{Matplotlib 3.10.8}、\texttt{Pandas 3.0.1} 和 \texttt{Seaborn 0.13.2}。上述环境信息将作为后续实验复现的基础配置。
+为保证后续实验具有统一口径，本文将评价协议分为三层：第一阶段预筛层主要采用 Accuracy、Macro-F1、AUPRC、AUROC、Spec@Recall、Prec@Recall、PTR 和 NRR 等指标；第二阶段检测层采用 Precision、Recall、F1、$mAP@0.5$ 和 $mAP@0.5:0.95$ 等指标；系统级验证层则关注单图误报率、单视频误报率、门控召回率和整体复核效率。与此同时，本文统一记录实验环境、模型初始化方式、输入尺寸、阈值选择、数据划分和结果导出位置，以保证训练机推送回来的结果可以无歧义地接入论文写作过程。
 
 \section{本章小结}
 
-本章介绍了本文所使用的数据来源、源域单标签分类数据集构建方式、目标域类别定义、数据预处理与增强策略，以及前级高召回预筛和后级精确检测相结合的总体框架。同时，给出了 CAM 热力图与伪框生成流程以及实验评价指标体系，为后续章节奠定了实验基础。
+本章从数据来源、源域单标签分类数据构建、目标域任务定义、两阶段任务划分、数据划分协议和系统总体框架等方面，对本文后续研究所依赖的数据与任务组织方式进行了说明。与单纯介绍“用了什么数据”相比，本章更重要的作用是回答“为什么本文必须用这样的数据组织方式来支撑后续检测与迁移实验”。在此基础上，第4章将进一步聚焦前级高召回预筛与弱监督标注增强策略，第5章则聚焦改进 YOLOv11 检测方法与跨域迁移策略本体。
 
-\chapter{基于改进 YOLOv11 的地下排水管道缺陷检测方法}
+\chapter{前级高召回预筛与弱监督标注增强策略}
 
-\section{基线模型与问题分析}
+\section{前级高召回预筛问题定义}
 
-本文以 YOLOv11 作为地下排水管道缺陷检测的基线模型。虽然该模型在通用检测任务中具有良好的速度与精度平衡，但在地下排水管道场景中仍然存在小目标漏检、复杂背景误检、相似缺陷混淆以及类别不均衡训练不稳定等问题。因此，有必要围绕地下排水管道场景特点对其进行针对性改进。与已有 sewer detection 工作相比，本文并不打算简单重复“替换某个模块再做常规对比”的套路，而是尝试从特征表达、检测头建模和训练目标三方面构建协同优化链路，使模型更适配细长裂缝、接口异常、渗漏痕迹和局部侵入等结构性缺陷的视觉特征\cite{ref:wang2023yolov5,ref:zhao2024yolov5sewer,ref:li2021fusion,ref:pipeyolo112026}。
+真实巡检场景中，正常图像通常显著多于缺陷图像。如果将全部帧直接输入后级检测器，不仅会带来较高推理开销，也会因背景复杂和正常帧海量存在而放大误报累积。因此，本文将第一阶段任务明确重定义为 \texttt{Normal/Abnormal} 高召回 gate，其目标是在尽量不过漏异常图像的约束下，最大化对正常图像的过滤能力。更具体地说，第一阶段的优化目标可以概括为：在保证门控召回率不低于预设阈值的前提下，尽可能提高正常样本过滤率。这里的预设异常召回率通常取 99.0\% 或 99.5\%。在这一任务中，第一阶段并不承担最终类别输出责任，而是承担“高召回、低漏放”的门控角色，这一点与最终六类检测任务的目标存在本质差异。
+
+\section{基于同源图像重标注的二分类 gate 构建}
+
+本文第一阶段 gate 并未引入新的图像来源，而是在源域单标签六类分类数据上进行任务重映射：将 \texttt{Normal} 保留为负类，将其余五类合并为 \texttt{Abnormal} 正类。这样的设计具有两方面优势。其一，它保证第一阶段与源域六类分类实验在同一图像来源和同一 split 上比较，从而避免由于数据源变化带来的干扰。其二，它使 gate 任务与后续 CAM 生成、target finetune 和 detector 初始化天然衔接，形成统一的 source-side learning chain。已有 hierarchical classification 研究也表明，在 sewer inspection 中先建立 defect/non-defect 或 normal/abnormal 的高层判别，再进入更细粒度识别，是一种合理且工程上可解释的任务组织方式\cite{ref:hierarchical2019,ref:cnnmethod2019}。
+
+\section{YOLO11-cls 五尺度基线扫描}
+
+为确定第一阶段最合适的分类容量，本文以 YOLO11-cls 系列的 \texttt{n/s/m/l/x} 五个尺度作为统一候选，在相同数据集、相同训练协议和相同 operating point 评价方式下进行容量扫描。当前五组 source baseline 结果均已完成汇总，表\ref{tab:stage1-capacity-scan} 同时给出六类分类视图与 gate 视图下的关键指标，其中“在 Recall 不低于 99.5\% 时的 Specificity”与“在 Recall 不低于 99.0\% 时的 Specificity”更直接反映了高召回约束下的正常样本过滤能力。
+
+\begin{table}[H]
+    \centering
+    \caption{YOLO11-cls 五尺度容量扫描表}
+    \label{tab:stage1-capacity-scan}
+    \begin{tabular}{lcccccc}
+        \toprule
+        模型 & 任务视图 & Top1/Acc & Macro-F1 & AUPRC & Recall不低于99.5\%时的Specificity & Recall不低于99.0\%时的Specificity \\
+        \midrule
+        yolo11n-cls & 六类分类 & 0.6792 & 0.6800 & 0.9813 & --- & --- \\
+        yolo11n-cls & 二分类 gate & --- & --- & 0.9813 & 未达到 & 0.4083 \\
+        yolo11s-cls & 六类分类 & 0.6681 & 0.6708 & 0.9794 & --- & --- \\
+        yolo11s-cls & 二分类 gate & --- & --- & 0.9794 & 0.4417 & 0.5500 \\
+        yolo11m-cls & 六类分类 & 0.7083 & 0.7095 & 0.9843 & --- & --- \\
+        yolo11m-cls & 二分类 gate & --- & --- & 0.9843 & 0.4833 & 0.6167 \\
+        yolo11l-cls & 六类分类 & 0.7139 & 0.7151 & 0.9879 & --- & --- \\
+        yolo11l-cls & 二分类 gate & --- & --- & 0.9879 & 0.4417 & 0.4667 \\
+        yolo11x-cls & 六类分类 & 0.6736 & 0.6762 & 0.9868 & --- & --- \\
+        yolo11x-cls & 二分类 gate & --- & --- & 0.9868 & 0.4333 & 0.4917 \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+从当前结果看，\texttt{yolo11l-cls} 在六类分类视图下取得最高的 Top1 Accuracy、Macro-F1 与 AUPRC，说明较大的分类容量有利于提升源域表征质量；但在高召回 gate 视图下，\texttt{yolo11m-cls} 在 Recall 不低于 99.5\% 与 Recall 不低于 99.0\% 两个锚点上分别取得 0.4833 和 0.6167 的 Specificity，优于其余尺度。这表明“分类更强”并不必然等价于“高召回过滤更优”，第一阶段模型选型仍需同时兼顾分类判别能力与 operating point 下的过滤收益。
+
+\section{阈值校准与 operating point 选择}
+
+第一阶段 gate 的有效性不能只通过默认阈值下的准确率判断，更需要关注在高召回约束下的 specificity、precision 和过滤比例。因此，本文采用 threshold sweep 的方式扫描不同 operating point，并重点记录“Recall 不低于 99.5\%”“Recall 不低于 99.0\%”“Specificity 不低于 60\%”“Specificity 不低于 70\%”等锚点。五组 source baseline 的结果表明，\texttt{m} 模型在保持高召回的同时可显著提升 specificity 与 gate F1，而 \texttt{l} 模型虽然分类精度更高，但在高召回锚点上的过滤收益反而下降，说明更大的分类容量并不会自动转化为更优的 gate operating point。
+
+\begin{table}[H]
+    \centering
+    \caption{第一阶段 operating point 对比表}
+    \label{tab:stage1-operating-points}
+    \begin{tabular}{lcccccc}
+        \toprule
+        模型 & 阈值策略 & Gate Recall & Specificity & Precision & F1 & PTR \\
+        \midrule
+        yolo11n-cls & 默认阈值 0.50 & 0.9717 & 0.7000 & 0.9418 & 0.9565 & 0.8597 \\
+        yolo11n-cls & Recall不低于99.0\% & 0.9900 & 0.4083 & 0.8932 & 0.9391 & 0.9236 \\
+        yolo11s-cls & 默认阈值 0.50 & 0.9817 & 0.6000 & 0.9246 & 0.9523 & 0.8847 \\
+        yolo11s-cls & Recall不低于99.5\% & 0.9950 & 0.4417 & 0.8991 & 0.9446 & 0.9222 \\
+        yolo11s-cls & Recall不低于99.0\% & 0.9900 & 0.5500 & 0.9167 & 0.9519 & 0.9000 \\
+        yolo11m-cls & 默认阈值 0.50 & 0.9750 & 0.7333 & 0.9481 & 0.9614 & 0.8569 \\
+        yolo11m-cls & Recall不低于99.5\% & 0.9950 & 0.4833 & 0.9059 & 0.9484 & 0.9153 \\
+        yolo11m-cls & Recall不低于99.0\% & 0.9900 & 0.6167 & 0.9281 & 0.9581 & 0.8889 \\
+        yolo11l-cls & 默认阈值 0.50 & 0.9700 & 0.7167 & 0.9448 & 0.9572 & 0.8556 \\
+        yolo11l-cls & Recall不低于99.5\% & 0.9950 & 0.4417 & 0.8991 & 0.9446 & 0.9222 \\
+        yolo11l-cls & Recall不低于99.0\% & 0.9900 & 0.4667 & 0.9027 & 0.9444 & 0.9139 \\
+        yolo11x-cls & 默认阈值 0.50 & 0.9633 & 0.6667 & 0.9353 & 0.9491 & 0.8583 \\
+        yolo11x-cls & Recall不低于99.5\% & 0.9967 & 0.4333 & 0.8979 & 0.9447 & 0.9250 \\
+        yolo11x-cls & Recall不低于99.0\% & 0.9900 & 0.4917 & 0.9069 & 0.9466 & 0.9097 \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+表\ref{tab:stage1-operating-points} 进一步说明了不同尺度在 operating point 层面的差异。具体而言，\texttt{n} 模型在默认阈值下的 specificity 达到 0.7000，但其最大召回率仅为 0.9933，因此在 Recall 不低于 99.5\% 的约束下无法找到可行点；\texttt{s} 模型虽然分类视图最弱，但已经能够在 Recall 不低于 99.5\% 与 Recall 不低于 99.0\% 的约束下分别保持 0.4417 和 0.5500 的 specificity；\texttt{m} 模型在两个高召回锚点上均取得最佳 specificity，同时在 precision 与 F1 上也保持领先；\texttt{l} 模型的默认阈值表现与 \texttt{m} 接近，但在高召回约束下 specificity 明显回落；\texttt{x} 模型则呈现出较为平衡但不突出的特征。综合来看，\texttt{m} 模型最适合作为第一阶段 gate 的主基线，而 \texttt{l} 模型更适合作为高质量 source 表征的上界参考。
+
+\begin{figure}[H]
+    \centering
+    \placeholderbox{第一阶段 PR 曲线组图\\建议文件：stage1\_pr\_curves.pdf}
+    \caption{第一阶段预筛 PR 曲线}
+    \label{fig:stage1-pr}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \placeholderbox{Recall--Specificity 曲线组图\\建议文件：stage1\_recall\_specificity.pdf}
+    \caption{第一阶段 Recall--Specificity 曲线}
+    \label{fig:stage1-rs}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \placeholderbox{threshold sweep 曲线\\建议文件：stage1\_threshold\_sweep.pdf}
+    \caption{第一阶段阈值扫描曲线}
+    \label{fig:stage1-threshold}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \placeholderbox{校准前后 reliability diagram / calibration curve\\建议文件：stage1\_calibration.pdf}
+    \caption{第一阶段校准前后可靠性曲线}
+    \label{fig:stage1-calibration}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \placeholderbox{第一阶段最佳模型混淆矩阵\\建议文件：stage1\_confusion\_matrix.pdf}
+    \caption{第一阶段最佳模型混淆矩阵}
+    \label{fig:stage1-confusion}
+\end{figure}
+
+\section{Hard Negative Mining 策略}
+
+仅依赖均衡的源域训练集，往往仍不足以覆盖真实巡检场景中的 hardest normal 样本，例如受污渍、反光、水膜和局部结构变化影响而呈现异常外观的正常图像。因此，本文将 Hard Negative Mining 作为第一阶段的重要增强策略之一，即在高召回 gate 模型基础上，将置信度高但最终被人工确认或规则确认的误报 normal 样本重新回流到训练集，用于提升 gate 对复杂背景的抑制能力。该策略的目标并不是单纯提高整体准确率，而是在既定召回锚点附近提高 specificity 与 precision，从而为两阶段系统争取更大的误报控制收益。
+
+\begin{table}[H]
+    \centering
+    \caption{第一阶段关键消融表}
+    \label{tab:stage1-ablation}
+    \begin{tabular}{lcccccc}
+        \toprule
+        组别 & 任务定义 & Calibration & Hard Negative & Loss & Spec@R=99.5\% & Spec@R=99.0\% \\
+        \midrule
+        G0 & 六类间接 gate & 否 & 否 & CE & \TODO{填写} & \TODO{填写} \\
+        G1 & 二分类 gate & 否 & 否 & BCE/CE & \TODO{填写} & \TODO{填写} \\
+        G2 & 二分类 gate & 是 & 否 & BCE/CE & \TODO{填写} & \TODO{填写} \\
+        G3 & 二分类 gate & 是 & 是 & BCE/CE & \TODO{填写} & \TODO{填写} \\
+        G4 & 二分类 gate & 是 & 是 & Weighted BCE/Focal & \TODO{填写} & \TODO{填写} \\
+        G5 & 二分类 gate & 是 & 是 & Best Loss + Attention & \TODO{填写} & \TODO{填写} \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\begin{figure}[H]
+    \centering
+    \placeholderbox{hardest normal 样本示意图\\建议文件：hardest\_normal\_gallery.pdf}
+    \caption{Hard Negative Mining 中的典型 hardest normal 样本}
+    \label{fig:hardest-normal}
+\end{figure}
+
+\section{CAM/Grad-CAM 伪框生成与质量控制}
+
+第一阶段分类模型并不直接输出检测框，但其热力图响应可以作为弱监督定位的中间信号。本文基于源域预训练与目标域微调后的分类模型，生成 CAM/Grad-CAM 热力图，并通过阈值分割、连通域筛选与外接矩形拟合得到初始伪框。该流程的作用主要有两点：一是为后续 detector 训练提供低成本初始框；二是帮助识别哪些类别更适合走 CAM 主路线、哪些类别必须尽早切换到人工框支撑。伪框并不被视为最终真值，而是位于“自动生成 $\rightarrow$ 抽检评估 $\rightarrow$ 轻量快修”的中间层资源\cite{ref:gradcam2017,ref:wsol2025}。
+
+\begin{figure}[H]
+    \centering
+    \placeholderbox{CAM/Grad-CAM 可视化图\\建议文件：cam\_examples.pdf}
+    \caption{CAM/Grad-CAM 典型可视化结果}
+    \label{fig:cam-examples}
+\end{figure}
+
+\begin{table}[H]
+    \centering
+    \caption{CAM 伪框抽检与后续处理模板}
+    \label{tab:cam-review-template}
+    \begin{tabular}{lcccccc}
+        \toprule
+        类别 & 抽检数量 & 可直接用 & 轻改可用 & 不可用 & 可用率 & 建议路线 \\
+        \midrule
+        CrackBreak & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} \\
+        SurfaceDamage & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} \\
+        Deformation & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} \\
+        JointDislocation & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} \\
+        Intrusion & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} \\
+        Infiltration & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\section{本章小结}
+
+本章围绕第一阶段高召回预筛和弱监督标注增强，完成了任务定义、二分类 gate 组织方式、容量扫描、阈值选择、hard negative 思路和 CAM 伪框流程的结构化说明。需要再次强调的是，本章并非本文的主创新章，而是支撑后续改进 detector 与跨域迁移落地的工程链条章节。第5章将在此基础上转入本文的核心方法设计，即改进 YOLOv11 检测方法与跨域迁移训练策略。
+
+\chapter{基于改进 YOLOv11 的管道缺陷检测与跨域迁移策略}
+
+\section{基线检测模型与问题分析}
+
+本文以 YOLOv11 作为地下排水管道缺陷检测的 baseline。一方面，YOLO 路线具有较高的实时性与较成熟的工程实现，便于与实际巡检系统衔接；另一方面，YOLOv11 在通用检测任务中的性能平衡较好，适合作为本文开展场景化改进的基础模型。然而，直接将原始 YOLOv11 detector 用于排水管道缺陷检测时，仍会遭遇小目标漏检、细长缺陷边界表达不足、复杂背景误报偏高以及类间混淆明显等问题。因此，本文不把模型改进理解为简单替换某个模块，而是围绕“特征表达、预测组织和训练目标”三条主线展开协同优化\cite{ref:wang2023yolov5,ref:ieeeaccess2024yolo,ref:pipeyolo112026}。
 
 \section{注意力机制改进}
 
 \subsection{改进动机}
 
-针对复杂背景下缺陷区域响应不足的问题，本文在基线网络中引入注意力机制，以增强模型对关键特征的聚焦能力。该改进旨在强化缺陷区域的显著性表达，抑制背景纹理、反光和污渍等干扰因素带来的冗余响应。对于 sewer defect detection 而言，注意力模块的价值不仅在于“提高精度”，更在于帮助网络在多种低对比度区域中筛出真正具有结构意义的特征，这一点对 SurfaceDamage、Infiltration 以及 CrackBreak 等类别尤其重要。
+针对 sewer defect detection 中小目标弱纹理、边界模糊和背景干扰强的特点，本文在 YOLOv11 baseline 中引入注意力机制，以增强对关键区域和关键通道的聚焦能力。注意力机制的作用不仅在于提高总体精度，更重要的是帮助模型在反光、水膜、污渍和管壁纹理干扰下，稳定提取与缺陷结构真正相关的判别信息。
 
 \subsection{模块设计与嵌入方式}
 
-本节后续将结合实际实现，补充所采用注意力模块的结构原理、嵌入位置与参数设置，并分析其与 YOLOv11 主干或颈部结构的结合方式。
+本文后续仅选择一个主注意力模块作为正式方案，其余候选模块作为消融对比或附录补充。设计原则是：优先选择参数开销可控、对多尺度特征融合有直接增益、且在复杂背景场景下能稳定提升 recall/precision 平衡的模块。注意力模块的插入位置主要考虑 backbone 后部和 neck 融合层，以兼顾高层语义与中低层细节信息。
 
 \begin{figure}[H]
     \centering
-    \placeholderbox{后续替换为注意力模块结构图\\建议文件：attention\_module.pdf}
-    \caption{注意力机制改进示意图}
-    \label{fig:attention-module}
+    \placeholderbox{注意力模块插入位置图\\建议文件：attention\_placement.pdf}
+    \caption{注意力模块插入位置示意图}
+    \label{fig:attention-placement}
 \end{figure}
 
 \section{检测头改进}
 
 \subsection{原始检测头局限性}
 
-原始检测头在面对小尺度、多尺度和细粒度缺陷时，可能存在边界表达不足和类别区分能力有限的问题。尤其在排水管道图像中，细小缺陷与背景纹理的视觉差异并不总是明显。
+在排水管道缺陷场景中，原始检测头在处理细粒度结构异常、低对比目标以及多尺度小目标时，存在边界表达能力不足和类别判别不稳定的问题。尤其对于 \texttt{CrackBreak}、\texttt{JointDislocation} 和 \texttt{Infiltration} 等类别，局部显著区域小而背景干扰强，容易导致分类支路与定位支路同时受噪声影响。
 
 \subsection{改进思路}
 
-本节后续将结合实际网络结构，说明改进检测头的具体设计，包括特征融合路径、分支结构调整和预测层优化方式，并阐述其对多尺度与细粒度缺陷识别的促进作用。已有 sewer detection 文献表明，仅依赖通用检测头往往难以同时兼顾局部破损与整体结构异常，因此在特征融合与预测路径上进行适配，是提升目标域实际检测效果的重要方向\cite{ref:wang2023yolov5,ref:zhao2024yolov5sewer,ref:li2021fusion}。
+检测头改进的核心思路是在保持整体推理效率可控的前提下，增强对多尺度结构异常的表达能力，并改善分类与定位分支对困难样本的响应组织方式。具体实现将在后续实验定型后给出，包括预测层组织方式、特征融合路径、额外监督分支或结构轻量化约束等内容。已有 sewer defect detection 文献表明，head-side 改造对于兼顾局部纹理破坏和整体结构异常往往是必要的\cite{ref:wang2023yolov5,ref:zhao2024yolov5sewer,ref:li2021fusion}。
 
 \begin{figure}[H]
     \centering
-    \placeholderbox{后续替换为改进检测头结构图\\建议文件：improved\_head.pdf}
-    \caption{改进检测头结构示意图}
+    \placeholderbox{检测头改进示意图\\建议文件：improved\_head.pdf}
+    \caption{检测头改进示意图}
     \label{fig:improved-head}
 \end{figure}
 
 \section{损失函数改进}
 
-\subsection{损失函数优化目标}
+\subsection{优化目标}
 
-针对类别不均衡、难样本学习不足和边界框定位偏差等问题，本文进一步对基线模型的损失函数进行优化。其目标在于提升模型对难样本和少样本类别的学习能力，并改善边界框回归稳定性。考虑到 sewer defect detection 中部分类别具有样本稀缺、边界模糊和视觉相似的特点，损失函数优化不仅影响最终精度，也会影响模型收敛稳定性与错误类型分布，因此是本文创新点一中不可忽略的组成部分。
+考虑到目标域检测样本存在类别不均衡、易混类别边界模糊以及 hardest positive/hardest negative 区分不足等问题，本文进一步对损失函数进行场景化设计。其优化目标是同时改善召回与误报控制，使模型在复杂背景下更稳定地区分正常纹理与真实缺陷响应。
 
-\subsection{损失函数表达形式}
+\subsection{形式化表达}
 
-损失函数的总形式可写为：
-\begin{equation}
-\mathcal{L} = \lambda_1 \mathcal{L}_{\mathrm{box}} + \lambda_2 \mathcal{L}_{\mathrm{cls}} + \lambda_3 \mathcal{L}_{\mathrm{dfl}} + \lambda_4 \mathcal{L}_{\mathrm{aux}},
-\end{equation}
-其中，$\mathcal{L}_{\mathrm{box}}$ 表示定位损失，$\mathcal{L}_{\mathrm{cls}}$ 表示分类损失，$\mathcal{L}_{\mathrm{dfl}}$ 表示分布聚焦损失，$\mathcal{L}_{\mathrm{aux}}$ 表示辅助损失项。后续将根据实际改进方案替换具体表达式并给出参数设置。
-
-\section{改进 YOLOv11 总体结构}
-
-在注意力机制、检测头和损失函数三个层面完成针对性改进后，本文构建了适用于地下排水管道缺陷检测的改进 YOLOv11 模型。整体设计思路是：通过注意力模块增强关键特征表达，通过改进检测头强化多尺度与细粒度目标识别，再通过损失函数优化提升训练稳定性和对难样本的适应能力，从而形成协同改进的整体检测框架。
+本文在基线损失框架上保留定位项、分类项和分布聚焦项，并根据实验结果引入针对难样本或类别不均衡的补充项。换言之，最终总损失由边界框回归项、分类项、分布聚焦项以及可选的辅助项共同组成。其中，辅助项主要用于难样本补偿或类别重加权。最终采用哪一种组合方式，将以实验效果与复杂度控制结果为依据确定。
 
 \begin{figure}[H]
     \centering
-    \placeholderbox{后续替换为改进 YOLOv11 总体结构图\\建议文件：improved\_yolo11\_architecture.pdf}
+    \placeholderbox{改进损失函数组成与优化信号流图\\建议文件：loss\_signal\_flow.pdf}
+    \caption{改进损失函数组成与优化信号流图}
+    \label{fig:loss-signal-flow}
+\end{figure}
+
+\section{改进 YOLOv11 总体结构}
+
+结合注意力机制、检测头改进和损失函数优化，本文构建用于地下排水管道缺陷检测的改进 YOLOv11 模型。该模型的设计目标不是单一维度地追求最高精度，而是在复杂背景、小目标、低对比度缺陷和工程部署可行性之间取得更合理的平衡。整体结构将在后续实验中通过模块消融表和复杂度对比表进行验证。
+
+\begin{figure}[H]
+    \centering
+    \placeholderbox{改进 YOLOv11 总体结构图\\建议文件：improved\_yolo11\_architecture.pdf}
     \caption{改进 YOLOv11 总体结构}
     \label{fig:improved-yolo11}
 \end{figure}
 
-\section{模型复杂度与可部署性分析}
-
-在实际工程应用中，检测精度并不是唯一评价标准，模型参数量、计算量和推理速度同样直接影响部署效果。因此，本文将在后续实验中从参数量、FLOPs、推理时延以及精度提升幅度等方面分析改进模型的可部署性。
-
 \begin{table}[H]
     \centering
-    \caption{改进模型复杂度与效率分析表}
-    \label{tab:model-complexity}
-    \begin{tabular}{lcccc}
+    \caption{改进模块设计说明表}
+    \label{tab:improvement-design}
+    \begin{tabular}{p{3cm}p{9cm}}
         \toprule
-        模型 & 参数量/M & FLOPs/G & 推理速度/ms & 备注 \\
+        模块 & 设计目的 \\
         \midrule
-        YOLOv11 Baseline & \TODO{填写} & \TODO{填写} & \TODO{填写} & 基线模型 \\
-        YOLOv11 + Attention & \TODO{填写} & \TODO{填写} & \TODO{填写} & 注意力改进 \\
-        YOLOv11 + Head & \TODO{填写} & \TODO{填写} & \TODO{填写} & 检测头改进 \\
-        YOLOv11 + Loss & \TODO{填写} & \TODO{填写} & \TODO{填写} & 损失函数改进 \\
-        Ours & \TODO{填写} & \TODO{填写} & \TODO{填写} & 全部改进 \\
+        注意力机制 & 强化关键区域与关键通道响应，抑制复杂背景干扰 \\
+        检测头改进 & 提升多尺度与细粒度缺陷的分类与定位组织能力 \\
+        损失函数改进 & 缓解类别不均衡与难样本学习不足问题，优化 recall/precision 折中 \\
         \bottomrule
     \end{tabular}
 \end{table}
 
-\section{本章小结}
+\begin{table}[H]
+    \centering
+    \caption{模块插入位置与复杂度变化表}
+    \label{tab:module-complexity}
+    \begin{tabular}{p{3cm}p{3cm}p{2.5cm}p{2.5cm}p{4cm}}
+        \toprule
+        模块 & 插入层位置 & Params 变化 & FLOPs 变化 & 设计目的 \\
+        \midrule
+        注意力模块 & \TODO{填写} & \TODO{填写} & \TODO{填写} & 增强关键区域与关键通道响应 \\
+        改进检测头 & \TODO{填写} & \TODO{填写} & \TODO{填写} & 提升多尺度与细粒度目标表达能力 \\
+        损失函数优化 & 训练目标层 & 无显式参数变化 & 无显式 FLOPs 变化 & 改善长尾类别与难样本学习 \\
+        \bottomrule
+    \end{tabular}
+\end{table}
 
-本章围绕地下排水管道缺陷检测任务，对基线 YOLOv11 模型进行了问题分析，并从注意力机制、检测头和损失函数三个方面提出改进思路，构建了适用于本文场景的改进检测模型。该模型构成了本文的核心检测方法。
+\section{跨域迁移适应训练策略}
 
-\chapter{面向跨域场景的迁移适应训练策略}
+\subsection{跨域问题分析}
 
-\section{跨域问题分析}
+公开 Sewer-ML 数据与本地巡检数据在设备、视角、照明条件、管材纹理和标签口径等方面存在明显差异。若仅依赖目标域有限框标注从零训练 detector，模型往往难以获得足够稳定的初始化，且更容易出现过拟合与类间边界漂移。已有 transfer learning 研究已经表明，在 sewer defect detection 中，领域相关的预训练能够有效改善模型初始性能和收敛稳定性\cite{ref:situ2023}。
 
-公开数据与目标域巡检数据在成像设备、分辨率、纹理风格、光照条件以及标签口径等方面存在明显差异，这些差异会削弱模型在目标域中的泛化能力。同时，目标域高质量检测框标注获取成本较高，导致直接从零构建大规模检测数据集难度较大。因此，充分利用公开源域数据进行预训练，再迁移到目标域进行适配，是一种兼顾性能与成本的现实可行方案。与“重型域对齐方法”相比，本文选择先采用更稳健的源域分类预训练和目标域微调路径，一方面是因为其更适合当前数据条件，另一方面也是因为已有 sewer detection 研究已经初步证明 transfer learning 对该类任务具有明确增益\cite{ref:situ2023}。
+\subsection{迁移路径设计}
 
-\section{源域分类预训练策略}
+本文采用“源域分类预训练 $\rightarrow$ 目标域分类微调 / gate 迁移 $\rightarrow$ 目标域检测微调”的渐进式迁移路径。首先，在源域六类分类数据上学习 sewer-specific 通用表征；其次，在目标域图像级标签上进行分类微调，使特征分布更贴近本地巡检场景；最后，将上述表征迁移到 detector 训练中，并与少量人工框或伪框增强策略结合。这一路径的优点在于无需引入额外复杂的域对齐损失，却能够以较低的实现成本充分利用同领域源数据。
 
-本文首先在源域单标签六类分类数据集上训练分类模型，用于学习排水管道缺陷的通用表征。该阶段的目标并不是直接完成检测，而是通过平衡、低成本的源域分类样本，使模型具备对缺陷纹理、结构和局部异常的基础认知能力。与直接在目标域有限框标注上训练检测器相比，这一步能更充分地利用公开数据资源，让模型先学会“看懂 sewer scene”，再进入目标域场景适配与检测优化阶段。
+\begin{figure}[H]
+    \centering
+    \placeholderbox{跨域迁移训练流程图\\建议文件：transfer\_pipeline.pdf}
+    \caption{跨域迁移训练流程图}
+    \label{fig:transfer-pipeline}
+\end{figure}
 
-\section{目标域分类微调与特征迁移}
+\section{训练流程与实现细节}
 
-在源域分类预训练基础上，本文进一步引入目标域图像级标签数据进行分类微调。该阶段的作用是使模型在保留源域通用表征能力的同时，更好地适应目标域中的图像风格、缺陷表现形式和标签口径差异，从而为后续 CAM 热力图生成提供更稳定的响应基础。该策略实质上属于“先学公共缺陷表征、再学目标域特有分布”的两步式迁移路径，其优势在于不需要复杂的额外域对齐损失，但仍能在有限标注条件下提升目标域适应效果。
-
-\section{基于迁移分类模型的候选区域生成与标注增强}
-
-在完成源域预训练和目标域分类微调之后，本文利用迁移后的分类模型对目标域图像进行 CAM 可视化，提取高响应区域作为缺陷候选区域，并通过阈值化、区域筛选和边界框生成等步骤构建初始伪框数据集。该过程有助于降低初始检测标注成本，为后续人工轻量修正和检测训练提供基础。需要指出的是，本文并不将伪框视作与人工真值等价的数据，而是将其定位为低标注训练中的过渡性资源；后续实验也将从伪框可用率、类别差异和对检测性能的真实增益等方面进行分析。
-
-\section{检测阶段的迁移训练策略}
-
-在检测阶段，本文将对比不同初始化策略与不同训练路径，包括目标域从零训练、使用官方通用预训练权重训练、使用源域分类预训练权重迁移训练，以及源域预训练加目标域分类微调后再迁移到检测任务的训练方式。通过这些对比，分析源域预训练、目标域微调和伪框增强对最终检测性能的贡献。
+在训练流程上，本文遵循“先前级、后后级；先源域、后目标域；先分类、后检测”的组织原则。具体而言，先完成 source cls 六类预训练与 gate 扫描，再进行 target cls 微调与 CAM 伪框生成，最后进入 detector baseline、改进模型与迁移对比实验。对于不同训练阶段，输入尺寸、batch size、冻结策略、学习率和阈值选择均记录为可复现实验配置，以便后续将训练机推回来的结果直接映射到论文表格中。
 
 \begin{table}[H]
     \centering
-    \caption{跨域迁移训练策略实验设计表}
+    \caption{迁移策略设置表}
     \label{tab:transfer-design}
     \begin{tabular}{lp{9cm}}
         \toprule
         方案编号 & 训练策略说明 \\
         \midrule
-        A & 目标域随机初始化，从零开始训练检测器 \\
-        B & 使用官方 YOLOv11 通用预训练权重，直接在目标域训练检测器 \\
-        C & 使用源域分类预训练权重初始化，再迁移至目标域检测任务 \\
-        D & 源域分类预训练 + 目标域分类微调 + 检测迁移训练 \\
-        E & \TODO{视实验条件决定是否加入伪框增强或半监督增强方案} \\
+        T0 & 目标域随机初始化，从零开始训练检测器 \\
+        T1 & 使用官方 YOLOv11 通用预训练权重直接在目标域检测任务上微调 \\
+        T2 & 使用源域分类预训练权重初始化，再迁移至目标域检测任务 \\
+        T3 & 源域分类预训练 + 目标域分类微调 + 目标域检测微调 \\
+        T4 & \TODO{根据后续实验决定是否引入伪框增强、自训练或半监督策略} \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\begin{table}[H]
+    \centering
+    \caption{训练阶段组织与冻结/解冻策略表}
+    \label{tab:training-stage-schedule}
+    \begin{tabular}{p{2.5cm}p{3cm}p{2.5cm}p{2.3cm}p{2.3cm}p{3.2cm}}
+        \toprule
+        阶段 & 初始化方式 & 冻结层设置 & 学习率 & 训练轮数 & 输出结果 \\
+        \midrule
+        Source cls & 官方分类权重 & 不冻结或轻冻结 & \TODO{填写} & \TODO{填写} & source 预训练权重 \\
+        Target cls / gate & source cls 迁移 & 视实验设定部分冻结 & \TODO{填写} & \TODO{填写} & target 分类权重与 gate 模型 \\
+        CAM / 伪框生成 & target cls 权重 & 不涉及 & --- & --- & 热力图与伪框候选 \\
+        Detector baseline & 官方或迁移权重 & \TODO{填写} & \TODO{填写} & \TODO{填写} & baseline 检测模型 \\
+        Improved detector & 最优初始化方案 & \TODO{填写} & \TODO{填写} & \TODO{填写} & 改进检测模型与迁移结果 \\
         \bottomrule
     \end{tabular}
 \end{table}
 
 \section{本章小结}
 
-本章围绕地下排水管道缺陷检测中的跨域问题，提出了源域分类预训练、目标域分类微调和检测阶段迁移训练相结合的跨域适应策略。该策略既服务于特征迁移，也支撑了 CAM 伪框构建和检测数据增强，是本文第二个核心研究内容。
+本章给出了本文的核心方法设计：一方面，通过注意力机制、检测头和损失函数三个层面的协同优化，构建改进 YOLOv11 检测模型；另一方面，通过源域分类预训练、目标域分类微调与检测微调组成跨域迁移适应训练策略。与第4章作为支撑链不同，本章构成本文真正的两项核心创新内容，后续第6章将围绕这两项创新展开系统实验验证。
 
 \chapter{实验结果与分析}
 
@@ -969,160 +1914,262 @@ SE-Net 是通道注意力的经典代表，其核心思想是通过全局信息�
 
 \subsection{实验平台与训练配置}
 
-本章将围绕源域分类效果、两阶段系统有效性、改进 YOLOv11 检测性能以及跨域迁移策略效果展开实验分析。实验设置包括训练轮次、输入尺寸、优化器、批大小、学习率、评价指标以及硬件平台等内容。当前实验工作基于 \texttt{yolo-cv-workspace} 项目环境开展，项目版本为 \texttt{0.1.0}，当前实际训练环境记录对应仓库提交为 \texttt{79bf440}。实验采用基于 \texttt{uv} 的 Python 工作区完成环境管理，便于在不同设备之间复现实验配置。
+本文实验在单卡 GPU 工作站上完成，硬件平台采用 \texttt{NVIDIA GeForce RTX 3090}（24GB 显存）。实验软件环境以 \texttt{Python 3.11.15} 为基础，深度学习框架采用 \texttt{PyTorch 2.11.0+cu128}、\texttt{TorchVision 0.26.0+cu128}、\texttt{CUDA 12.8} 与 \texttt{Ultralytics 8.3.0}。对于当前已完成的第一阶段 source 实验，统一使用 \texttt{sewerml\_cls6\_train7200} 数据集，在相同输入尺寸、训练轮数和批大小设置下完成 \texttt{YOLO11-cls} 五个尺度的基线扫描，以保证不同容量模型之间的比较具有可比性。
 
 \begin{table}[H]
     \centering
-    \caption{主要实验配置}
+    \caption{实验参数设置表}
     \label{tab:exp-config}
     \begin{tabular}{ll}
         \toprule
         项目 & 配置 \\
         \midrule
-        项目环境 & yolo-cv-workspace 0.1.0，仓库提交号 79bf440 \\
-        Python 环境 & Python 3.11.15，uv 0.11.2 \\
-        训练平台 & NVIDIA GeForce RTX 3090，显存 24GB，驱动版本 581.29 \\
-        深度学习框架 & PyTorch 2.11.0+cu128，TorchVision 0.26.0+cu128，CUDA 12.8，Ultralytics 8.3.0 \\
-        主要依赖库 & NumPy 1.26.4，OpenCV 4.11.0.86，Pillow 12.1.1，PyYAML 6.0.3，Matplotlib 3.10.8，Pandas 3.0.1，Seaborn 0.13.2 \\
-        当前 source 配置文件 & \texttt{YOLOv11/configs/runtime/cls\_source\_cls6.json} \\
-        source 训练模型 & \texttt{yolo11m-cls.pt} \\
-        source 数据集 & \texttt{sewerml\_cls6\_train7200} \\
-        输入尺寸 & source 分类实验输入尺寸为 640 \\
-        优化器 & 当前 source 分类实验采用 Ultralytics 默认自动优化器策略 \\
-        训练轮数 & 当前 source 分类实验设置为 200 epochs \\
-        批大小 & 当前 source 分类实验 batch size 为 32，workers 为 2 \\
-        评价指标 & Precision、Recall、F1、mAP、误报率等 \\
+        硬件平台 & NVIDIA GeForce RTX 3090，24GB 显存 \\
+        软件环境 & Python 3.11.15，CUDA 12.8，PyTorch 2.11.0+cu128，Ultralytics 8.3.0 \\
+        Source 数据集 & \texttt{sewerml\_cls6\_train7200} \\
+        Source 基线模型 & \texttt{YOLO11n/s/m/l/x-cls} \\
+        输入尺寸 & 640×640 \\
+        训练轮数 & 200 \\
+        批大小 & 32 \\
+        数据加载线程数 & 2 \\
+        主要评价指标 & Accuracy、Macro-F1、AUROC、AUPRC、Gate Recall、Specificity \\
         \bottomrule
     \end{tabular}
 \end{table}
 
-\section{源域分类实验结果分析}
+\section{第一阶段前级预筛基线与结果分析}
 
-本节用于分析源域单标签六类分类模型的训练效果，重点关注 Accuracy、Macro-F1、各类别识别效果以及混淆关系，以验证源域分类预训练是否能够为后续 CAM 热力图生成和目标域迁移提供稳定基础。当前主实验采用 \texttt{YOLOv11m-cls} 作为分类骨干网络，使用 \texttt{YOLOv11/configs/runtime/cls\_source\_cls6.json} 作为基础配置文件，并在实际训练中设置 \texttt{imgsz=640}、\texttt{epochs=200}、\texttt{batch=32}、\texttt{workers=2}，训练数据集为 \texttt{sewerml\_cls6\_train7200}。
+本节首先比较五个 YOLO11-cls 尺度在源域任务上的容量差异。结果显示，在相同源域数据与训练协议下，l 尺度模型在 Top1、Macro-F1、AUROC 与 AUPRC 等分类判别指标上整体领先，而 m 尺度模型在高召回 gate 的过滤指标上更优。其中，m 尺度模型在默认阈值 0.50 下取得 0.7083 的 Top1 Accuracy、0.7095 的 Macro-F1、0.9750 的 Gate Recall 和 0.7333 的 Specificity；在 Recall 不低于 99.0\% 的锚点下，其 Specificity 达到 0.6167，优于 n、s、l、x 其余各尺度。该结果表明，第一阶段模型的最优选择不能只看分类精度，还需要结合 operating point 下的正常样本过滤收益进行综合判断。
 
 \begin{table}[H]
     \centering
-    \caption{源域单标签六类分类实验结果}
-    \label{tab:source-cls-results}
-    \begin{tabular}{lcccc}
+    \caption{第一阶段容量扫描结果表}
+    \label{tab:stage1-results}
+    \begin{tabular}{lccccccc}
         \toprule
-        模型 & Accuracy & Macro-F1 & 训练时间 & 备注 \\
+        模型 & Top1/Acc & Macro-F1 & AUROC & AUPRC & 默认阈值下的Gate Recall & 默认阈值下的Specificity & Recall不低于99.0\%时的Specificity \\
         \midrule
-        YOLOv11m-cls & \TODO{填写} & \TODO{填写} & \TODO{填写} & 当前 source 主实验，输入尺寸 640，epochs=200，batch=32 \\
+        yolo11n-cls & 0.6792 & 0.6800 & 0.9288 & 0.9813 & 0.9717 & 0.7000 & 0.4083 \\
+        yolo11s-cls & 0.6681 & 0.6708 & 0.9215 & 0.9794 & 0.9817 & 0.6000 & 0.5500 \\
+        yolo11m-cls & 0.7083 & 0.7095 & 0.9367 & 0.9843 & 0.9750 & 0.7333 & 0.6167 \\
+        yolo11l-cls & 0.7139 & 0.7151 & 0.9488 & 0.9879 & 0.9700 & 0.7167 & 0.4667 \\
+        yolo11x-cls & 0.6736 & 0.6762 & 0.9430 & 0.9868 & 0.9633 & 0.6667 & 0.4917 \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+从整体趋势看，五个尺度并没有呈现“容量越大、第一阶段效果越好”的单调关系。若仅看六类分类指标，\texttt{l} 与 \texttt{m} 组成第一梯队，其中 \texttt{l} 略优于 \texttt{m}；若转到高召回 gate 视角，则 \texttt{m} 的优势更加明显。相比之下，\texttt{s} 与 \texttt{x} 虽然在高召回条件下均能给出可用的 operating point，但整体过滤收益仍低于 \texttt{m}；\texttt{n} 则表现出“默认阈值较稳、极高召回扩展性不足”的特征。由此可见，第一阶段容量选择应以高召回 operating point 下的综合收益为核心，而不是简单沿用分类精度最高的模型。
+
+\begin{figure}[H]
+    \centering
+    \placeholderbox{第一阶段容量扫描对比图\\建议文件：stage1\_capacity\_bars.pdf}
+    \caption{第一阶段不同模型容量的关键指标对比}
+    \label{fig:stage1-capacity-bars}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \placeholderbox{第一阶段 PR 曲线组图\\建议文件：chapter6\_stage1\_pr\_group.pdf}
+    \caption{第一阶段 PR 曲线组图}
+    \label{fig:chapter6-stage1-pr}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \placeholderbox{第一阶段 Recall--Specificity 曲线组图\\建议文件：chapter6\_stage1\_rs\_group.pdf}
+    \caption{第一阶段 Recall--Specificity 曲线组图}
+    \label{fig:chapter6-stage1-rs}
+\end{figure}
+
+\section{第一阶段关键消融实验}
+
+围绕第一阶段 gate，本文后续重点开展四类消融：任务重映射（六类间接 gate 与二分类 gate 对比）、校准策略、hard negative 回流策略以及损失函数设计。与第二阶段 detector 不同，第一阶段消融不追求复杂模块堆叠，而是优先回答“哪种低成本策略最有效地提升高召回约束下的正常样本过滤率”这一核心问题。需要强调的是，本节表格和图形均属于第一阶段前级预筛实验，其数据来源应为分类模型与 gate 阈值扫描结果，而不是目标检测结果。
+
+\begin{table}[H]
+    \centering
+    \caption{第一阶段关键消融表}
+    \label{tab:stage1-key-ablation}
+    \begin{tabular}{lcccccc}
+        \toprule
+        组别 & 任务定义 & Calibration & Hard Negative & Loss & Recall不低于99.5\%时的Specificity & Recall不低于99.0\%时的Specificity \\
+        \midrule
+        G0 & 六类间接 gate & 否 & 否 & CE & \TODO{填写} & \TODO{填写} \\
+        G1 & 二分类 gate & 否 & 否 & BCE/CE & \TODO{填写} & \TODO{填写} \\
+        G2 & 二分类 gate & 是 & 否 & BCE/CE & \TODO{填写} & \TODO{填写} \\
+        G3 & 二分类 gate & 是 & 是 & BCE/CE & \TODO{填写} & \TODO{填写} \\
+        G4 & 二分类 gate & 是 & 是 & Weighted BCE/Focal & \TODO{填写} & \TODO{填写} \\
+        G5 & 二分类 gate & 是 & 是 & Best Loss & \TODO{填写} & \TODO{填写} \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\section{第二阶段检测 baseline 对比实验}
+
+第二阶段检测 baseline 主要用于回答“原始 detector 在当前目标域任务中的起点水平如何”。本文计划选取原始 YOLOv11 baseline、2--3 个强 baseline 以及后续改进模型进行对比，重点关注 Precision、Recall、F1、mAP@0.5、mAP@0.5:0.95 和 FP/image 等指标。该部分实验将构成后续创新点一消融和创新点二迁移实验的统一比较底盘。自本节开始，后续表格默认均属于第二阶段目标检测或系统级实验，不能使用第一阶段分类/gate 指标直接替代填写。
+
+\begin{table}[H]
+    \centering
+    \caption{第二阶段 baseline 对比表}
+    \label{tab:detector-comparison}
+    \begin{tabular}{lccccccc}
+        \toprule
+        模型 & Params & FLOPs & Precision & Recall & F1 & mAP@0.5 & FP/image \\
+        \midrule
+        YOLOv11 Baseline & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} \\
+        YOLOv8-s & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} \\
+        YOLOv10-s & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} \\
+        RT-DETR-R18 & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} \\
         \bottomrule
     \end{tabular}
 \end{table}
 
 \begin{figure}[H]
     \centering
-    \placeholderbox{后续替换为源域分类混淆矩阵图\\建议文件：source\_cls\_confusion\_matrix.pdf}
-    \caption{源域分类实验混淆矩阵}
-    \label{fig:source-confusion}
+    \placeholderbox{第二阶段 baseline 对比柱状图\\建议文件：detector\_baseline\_bars.pdf}
+    \caption{第二阶段 baseline 对比柱状图}
+    \label{fig:detector-baseline-bars}
 \end{figure}
 
-\section{两阶段系统有效性分析}
+\section{创新点一消融实验}
 
-本节用于验证“高召回预筛 + 后级精检”系统设计的有效性，重点关注预筛阶段的缺陷召回能力、正常样本过滤效果以及对后级检测误报率的影响。
-
-\begin{table}[H]
-    \centering
-    \caption{两阶段系统有效性分析结果}
-    \label{tab:two-stage-results}
-    \begin{tabular}{lcccccc}
-        \toprule
-        方案 & Gate Recall & NRR & PTR & Precision & Recall & FP/image \\
-        \midrule
-        直接检测 Baseline & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} \\
-        预筛 + 检测 & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} \\
-        \bottomrule
-    \end{tabular}
-\end{table}
-
-\section{改进 YOLOv11 与其他模型对比实验}
-
-本节用于比较本文改进模型与原始 YOLOv11 以及其他主流检测模型在地下排水管道缺陷检测任务中的性能差异，重点评价 Precision、Recall、F1、$mAP@0.5$、$mAP@0.5:0.95$ 以及误报情况。
+创新点一对应的是改进 YOLOv11 检测方法，因此消融实验必须围绕注意力机制、检测头和损失函数三部分展开，回答每个模块是否真正产生增益，以及三者协同后是否形成可解释的性能提升。该表是本文答辩时最关键的实验表之一，因此字段在当前阶段先完全固定。特别说明：表\ref{tab:ablation} 中的 \texttt{B0} 表示第二阶段未引入任何改进模块的原始 YOLOv11 detector baseline，而不是第一阶段的分类或 gate 基线。
 
 \begin{table}[H]
     \centering
-    \caption{不同检测模型对比实验结果}
-    \label{tab:detector-comparison}
-    \begin{tabular}{lcccccc}
-        \toprule
-        模型 & Precision & Recall & F1 & $mAP@0.5$ & $mAP@0.5:0.95$ & FP/image \\
-        \midrule
-        YOLOv11 Baseline & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} \\
-        \TODO{填写对比模型 1} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} \\
-        \TODO{填写对比模型 2} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} \\
-        Ours & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} \\
-        \bottomrule
-    \end{tabular}
-\end{table}
-
-\section{创新点一的消融实验}
-
-为验证注意力机制、检测头改进和损失函数优化三个模块的独立贡献与协同作用，本文将设计系统化消融实验，比较不同模块组合对检测性能的影响。
-
-\begin{table}[H]
-    \centering
-    \caption{改进 YOLOv11 各模块消融实验结果}
+    \caption{创新点一消融表}
     \label{tab:ablation}
-    \begin{tabular}{lcccccc}
+    \begin{tabular}{lcccccccc}
         \toprule
-        方案 & Attention & Head & Loss & Precision & Recall & $mAP@0.5$ \\
+        组别 & Attention & Head & Loss & Params & FLOPs & Precision & Recall & mAP@0.5 \\
         \midrule
-        Baseline &  &  &  & \TODO{填写} & \TODO{填写} & \TODO{填写} \\
-        A & $\checkmark$ &  &  & \TODO{填写} & \TODO{填写} & \TODO{填写} \\
-        B &  & $\checkmark$ &  & \TODO{填写} & \TODO{填写} & \TODO{填写} \\
-        C &  &  & $\checkmark$ & \TODO{填写} & \TODO{填写} & \TODO{填写} \\
-        D & $\checkmark$ & $\checkmark$ &  & \TODO{填写} & \TODO{填写} & \TODO{填写} \\
-        E & $\checkmark$ &  & $\checkmark$ & \TODO{填写} & \TODO{填写} & \TODO{填写} \\
-        F &  & $\checkmark$ & $\checkmark$ & \TODO{填写} & \TODO{填写} & \TODO{填写} \\
-        Ours & $\checkmark$ & $\checkmark$ & $\checkmark$ & \TODO{填写} & \TODO{填写} & \TODO{填写} \\
+        B0 & 否 & 否 & 否 & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} \\
+        B1 & 是 & 否 & 否 & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} \\
+        B2 & 否 & 是 & 否 & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} \\
+        B3 & 否 & 否 & 是 & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} \\
+        B4 & 是 & 是 & 否 & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} \\
+        B5 & 是 & 否 & 是 & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} \\
+        B6 & 否 & 是 & 是 & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} \\
+        B7 & 是 & 是 & 是 & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} \\
         \bottomrule
     \end{tabular}
 \end{table}
 
-\section{创新点二的迁移实验}
+\begin{figure}[H]
+    \centering
+    \placeholderbox{创新点一消融收益图\\建议文件：innovation1\_ablation\_gains.pdf}
+    \caption{创新点一消融收益图}
+    \label{fig:innovation1-gains}
+\end{figure}
 
-本节主要验证跨域迁移适应训练策略对目标域检测性能的影响。通过比较不同初始化策略与不同训练路径，可分析源域预训练和目标域微调对检测模型性能、收敛速度及泛化能力的提升作用。
+\section{创新点二迁移学习对比实验}
+
+创新点二对应“源域预训练到目标域微调”的跨域迁移适应策略。该部分实验重点回答：仅使用官方通用预训练权重是否足够；加入同领域 source cls pretrain 后能否提升 detector 初始化质量；进一步加入 target cls finetune 是否还能带来额外收益。该实验将直接决定本文第二个创新点能否成立。需要说明的是，本节虽会调用第一阶段 source cls 结果作为初始化来源，但表\ref{tab:transfer-results} 的评价对象仍然是第二阶段 detector 的最终检测性能。
 
 \begin{table}[H]
     \centering
-    \caption{跨域迁移实验结果}
+    \caption{创新点二迁移对比表}
     \label{tab:transfer-results}
-    \begin{tabular}{lcccccc}
+    \begin{tabular}{lccccccc}
         \toprule
-        训练策略 & Precision & Recall & F1 & $mAP@0.5$ & $mAP@0.5:0.95$ & 收敛轮数 \\
+        组别 & 初始化方式 & 源域预训练 & 目标域分类微调 & Precision & Recall & mAP@0.5 & FP/image \\
         \midrule
-        目标域从零训练 & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} \\
-        官方预训练直接微调 & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} \\
-        源域预训练迁移 & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} \\
-        源域预训练 + 目标域微调迁移 & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} \\
+        T0 & From scratch & 否 & 否 & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} \\
+        T1 & Official pretrained & 否 & 否 & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} \\
+        T2 & Source cls pretrain & 是 & 否 & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} \\
+        T3 & Source cls pretrain + target cls finetune & 是 & 是 & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} \\
+        T4 & Best transfer strategy & 是 & 是 & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} \\
         \bottomrule
     \end{tabular}
 \end{table}
+
+\begin{figure}[H]
+    \centering
+    \placeholderbox{创新点二迁移收益图\\建议文件：innovation2\_transfer\_gains.pdf}
+    \caption{创新点二迁移收益图}
+    \label{fig:innovation2-gains}
+\end{figure}
+
+\section{系统级对比实验}
+
+仅比较 detector 精度并不足以反映本文路线的真实价值，系统级实验还需要回答“两阶段系统是否比单阶段直接检测更适合排水管道 CCTV 场景”。因此，本文将比较单阶段直接检测、两阶段 baseline、两阶段 + 改进 detector、两阶段 + 改进 detector + transfer 等系统版本，重点从 Gate Recall、NRR、PTR、Precision、Recall 和 FP/image 等角度评价整体方案。该部分表格同时涉及第一阶段与第二阶段输出，但评价对象已经从单一模块扩展为整体系统。
+
+\begin{table}[H]
+    \centering
+    \caption{两阶段系统对比表}
+    \label{tab:system-comparison}
+    \begin{tabular}{lcccccccc}
+        \toprule
+        系统 & 第一阶段 & 第二阶段 & Gate Recall & NRR & PTR & Precision & Recall & FP/image \\
+        \midrule
+        S0 & 无 & 单阶段直接检测 & --- & --- & --- & \TODO{填写} & \TODO{填写} & \TODO{填写} \\
+        S1 & 原版 gate & 原版 detector & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} \\
+        S2 & 改进 gate & 原版 detector & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} \\
+        S3 & 改进 gate & 改进 YOLOv11 & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} \\
+        S4 & 改进 gate & 改进 YOLOv11 + transfer & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\begin{figure}[H]
+    \centering
+    \placeholderbox{两阶段系统对比图\\建议文件：system\_comparison.pdf}
+    \caption{两阶段系统对比图}
+    \label{fig:system-comparison}
+\end{figure}
 
 \section{可视化与错误分析}
 
-为了更直观地说明模型在不同场景下的表现，本文将通过典型检测结果图、误检样例、漏检样例和热力图可视化结果，对模型行为进行分析。重点讨论哪类缺陷更容易漏检、哪些背景纹理更容易引发误报、跨域迁移是否改善了特定类别的识别效果，以及 CAM 候选区域在不同类别上的稳定性差异等问题。
+为了更直观地说明模型在真实巡检场景中的表现，本文将在本节通过典型检测结果、误检样例、漏检样例、hardest normal 样例以及 CAM/Detector 可视化结果，对模型行为进行系统分析。重点关注三类现象：一是哪些类别或哪些背景纹理最容易引发误报；二是哪些缺陷在不同训练策略下最容易漏检；三是迁移学习和两阶段系统是否改变了这些错误的分布结构。
+
+\begin{table}[H]
+    \centering
+    \caption{各类别检测结果表}
+    \label{tab:per-class-detection}
+    \begin{tabular}{lcccccc}
+        \toprule
+        类别 & Precision & Recall & F1 & AP50 & AP50-95 & 主要错误类型 \\
+        \midrule
+        CrackBreak & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} \\
+        SurfaceDamage & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} \\
+        Deformation & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} \\
+        JointDislocation & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} \\
+        Intrusion & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} \\
+        Infiltration & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} \\
+        \bottomrule
+    \end{tabular}
+\end{table}
 
 \begin{figure}[H]
     \centering
-    \placeholderbox{后续替换为典型检测效果图\\建议文件：qualitative\_detection\_examples.pdf}
-    \caption{典型检测效果示意图}
-    \label{fig:qualitative-results}
+    \placeholderbox{各类别 AP 柱状图\\建议文件：per\_class\_ap.pdf}
+    \caption{各类别 AP 柱状图}
+    \label{fig:per-class-ap}
 \end{figure}
 
 \begin{figure}[H]
     \centering
-    \placeholderbox{后续替换为误检漏检案例图\\建议文件：failure\_cases.pdf}
-    \caption{误检与漏检案例分析图}
+    \placeholderbox{CAM 与 detector 对照可视化图\\建议文件：cam\_vs\_detector.pdf}
+    \caption{CAM 与 detector 对照可视化图}
+    \label{fig:cam-vs-detector}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \placeholderbox{第二阶段检测可视化结果图\\建议文件：det\_qualitative.pdf}
+    \caption{第二阶段检测可视化结果}
+    \label{fig:det-qualitative}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \placeholderbox{错误样本画廊\\建议文件：failure\_cases.pdf}
+    \caption{典型误检与漏检案例}
     \label{fig:failure-cases}
 \end{figure}
 
 \section{本章小结}
 
-本章从源域分类实验、两阶段系统有效性、改进检测模型对比实验、模块消融实验、跨域迁移实验以及可视化错误分析等多个方面给出了实验分析框架。后续将依据实际训练与测试结果补充各表格、图像和分析文字，从而系统验证本文方法的有效性。
+本章重新组织了全文实验矩阵：先验证第一阶段 gate 的容量选择与关键增强，再比较第二阶段 baseline，随后分别检验创新点一和创新点二，最后从系统级角度比较单阶段与两阶段路线。当前五个 \texttt{YOLO11-cls} 尺度的 source baseline 结果已经补齐，后续将继续把 detector、迁移和系统级实验结果按本章表格字段同步写入，以形成完整的实验闭环。
 
 \chapter{结论与展望}
 
@@ -1131,6 +2178,22 @@ SE-Net 是通道注意力的经典代表，其核心思想是通过全局信息�
 本文围绕地下排水管道 CCTV 图像缺陷检测中的小目标难识别、背景干扰强、正常样本占比高、目标域标注不足以及跨域泛化能力不足等问题展开研究，构建了面向地下排水管道智能巡检的检测方法与实验体系。论文的主要工作包括源域单标签分类数据集构建、目标域缺陷类别体系设计、高召回预筛与后级精检总体框架构建、改进 YOLOv11 检测模型设计以及源域预训练与目标域微调相结合的跨域迁移训练策略设计。
 
 从本文研究路线来看，后续实验预期将验证以下结论：其一，改进 YOLOv11 模型能够提升地下排水管道缺陷检测的精度、召回能力与复杂背景鲁棒性；其二，源域预训练与目标域微调相结合的跨域迁移策略能够在目标域标注不足条件下提升模型性能和收敛效率；其三，高召回预筛与后级精检相结合的系统设计能够在工程层面降低误报并提升整体运行效率。
+
+ \begin{table}[H]
+    \centering
+    \caption{本文主要结论与证据对应表}
+    \label{tab:conclusion-evidence}
+    \begin{tabular}{p{5cm}p{3cm}p{4cm}p{4cm}}
+        \toprule
+        主要结论 & 对应章节 & 关键证据图表 & 工程意义 \\
+        \midrule
+        第一阶段高召回 gate 能在高召回约束下有效降低正常样本流量 & 第4章、第6章 & 表4.1、表4.2、图4.1--图4.3、表6.2 & 降低复核压力，减少后级计算负担 \\
+        改进 YOLOv11 能提升复杂背景与小目标场景下的检测表现 & 第5章、第6章 & 表5.1、图5.1--图5.3、表6.4、表6.5 & 提升目标域检测精度与稳定性 \\
+        源域预训练与目标域微调的迁移策略能缓解目标域样本不足问题 & 第5章、第6章 & 图5.4、表5.2、表6.6 & 降低对大量框标注的依赖 \\
+        两阶段系统整体优于单阶段直接检测的工程运行方式 & 第3章、第6章 & 图3.2、表6.7、图6.9 & 提升系统可部署性与误报控制能力 \\
+        \bottomrule
+    \end{tabular}
+\end{table}
 
 \section{不足之处}
 
@@ -1150,194 +2213,235 @@ SE-Net 是通道注意力的经典代表，其核心思想是通过全局信息�
 
 \chapter*{参考文献}
 \addcontentsline{toc}{chapter}{参考文献}
+\markboth{参考文献}{参考文献}
 
+\begingroup
+\zihao{5}
+\setstretch{1.5}
 \begin{thebibliography}{99}
 
 \bibitem{ref:measurement2026}
-Ma D, Fang H, Wang N, et al. The state-of-the-art in pipe defect inspection with computer vision-based methods[J]. Measurement, 2026, 257: 118431. DOI: 10.1016/j.measurement.2025.118431.
+Ma D, Fang H, Wang N, et al. The state-of-the-art in pipe defect inspection with computer vision-based methods[J]. Measurement, 2026, 257: 118431.
 
 \bibitem{ref:istanbul2025}
-Oğurlu M, Bayram B, Kulavuz B, et al. Deep Learning for Automated Sewer Defect Detection: Benchmarking YOLO and RT-DETR on the Istanbul Dataset[J]. Applied Sciences, 2025, 15(20): 11096. DOI: 10.3390/app152011096.
+Oğurlu M, Bayram B, Kulavuz B, et al. Deep Learning for Automated Sewer Defect Detection: Benchmarking YOLO and RT-DETR on the Istanbul Dataset[J]. Applied Sciences, 2025, 15(20): 11096.
 
 \bibitem{ref:wsol2025}
-Yin J, Yin X, Pan M, et al. Scalable and transparent automated sewer defect detection using weakly supervised object localization[J]. Automation in Construction, 2025, 174: 106152. DOI: 10.1016/j.autcon.2025.106152.
+Yin J, Yin X, Pan M, et al. Scalable and transparent automated sewer defect detection using weakly supervised object localization[J]. Automation in Construction, 2025, 174: 106152.
 
 \bibitem{ref:hybrid2025}
-Goharinezhad S, Hadi A, Mirzaei S, et al. Automated defect classification and localization in sewer pipelines using hybrid ResNet50--Swin transformer and modified YOLOv8 on CCTV inspection images[J]. Scientific Reports, 2025, 15(1). DOI: 10.1038/s41598-025-27765-5.
+Goharinezhad S, Hadi A, Mirzaei S, et al. Automated defect classification and localization in sewer pipelines using hybrid ResNet50--Swin transformer and modified YOLOv8 on CCTV inspection images[J]. Scientific Reports, 2025, 15(1).
 
 \bibitem{ref:tust2025}
-Yang C, Zheng F, Kapelan Z, et al. Automated quantification of sewage pipe cracks using deep learning for urban water environment management[J]. Tunnelling and Underground Space Technology, 2025, 155: 106195. DOI: 10.1016/j.tust.2024.106195.
+Yang C, Zheng F, Kapelan Z, et al. Automated quantification of sewage pipe cracks using deep learning for urban water environment management[J]. Tunnelling and Underground Space Technology, 2025, 155: 106195.
 
 \bibitem{ref:sewerml}
-Haurum J B, Moeslund T B. Sewer-ML: A Multi-Label Sewer Defect Classification Dataset and Benchmark[C]//2021 IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR). 2021: 13451-13462. DOI: 10.1109/CVPR46437.2021.01325.
+Haurum J B, Moeslund T B. Sewer-ML: A Multi-Label Sewer Defect Classification Dataset and Benchmark[C]//2021 IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR). 2021: 13451-13462.
 
 \bibitem{ref:zhou2023review}
-Sun L, Zhu J, Tan J, et al. Deep learning-assisted automated sewage pipe defect detection for urban water environment management[J]. Science of the Total Environment, 2023, 882: 163562. DOI: 10.1016/j.scitotenv.2023.163562.
+Sun L, Zhu J, Tan J, et al. Deep learning-assisted automated sewage pipe defect detection for urban water environment management[J]. Science of the Total Environment, 2023, 882: 163562.
 
 \bibitem{ref:situ2023}
-Situ Z, Teng S, Feng W, et al. A transfer learning-based YOLO network for sewer defect detection in comparison to classic object detection methods[J]. Developments in the Built Environment, 2023, 15: 100191. DOI: 10.1016/j.dibe.2023.100191.
+Situ Z, Teng S, Feng W, et al. A transfer learning-based YOLO network for sewer defect detection in comparison to classic object detection methods[J]. Developments in the Built Environment, 2023, 15: 100191.
 
 \bibitem{ref:wang2023yolov5}
-Wang T, Li Y, Zhai Y, et al. A Sewer Pipeline Defect Detection Method Based on Improved YOLOv5[J]. Processes, 2023, 11(8): 2508. DOI: 10.3390/pr11082508.
+Wang T, Li Y, Zhai Y, et al. A Sewer Pipeline Defect Detection Method Based on Improved YOLOv5[J]. Processes, 2023, 11(8): 2508.
 
 \bibitem{ref:zhao2024yolov5sewer}
-Zhao X, Xiao N, Cai Z, et al. YOLOv5-Sewer: Lightweight Sewer Defect Detection Model[J]. Applied Sciences, 2024, 14(5): 1869. DOI: 10.3390/app14051869.
+Zhao X, Xiao N, Cai Z, et al. YOLOv5-Sewer: Lightweight Sewer Defect Detection Model[J]. Applied Sciences, 2024, 14(5): 1869.
 
 \bibitem{ref:li2021fusion}
-Li D, Xie Q, Yu Z, et al. Sewer pipe defect detection via deep learning with local and global feature fusion[J]. Automation in Construction, 2021, 129: 103823. DOI: 10.1016/j.autcon.2021.103823.
+Li D, Xie Q, Yu Z, et al. Sewer pipe defect detection via deep learning with local and global feature fusion[J]. Automation in Construction, 2021, 129: 103823.
 
 \bibitem{ref:zhang2023automatic}
-Zhang J, Liu X, Zhang X, et al. Automatic Detection Method of Sewer Pipe Defects Using Deep Learning Techniques[J]. Applied Sciences, 2023, 13(7): 4589. DOI: 10.3390/app13074589.
+Zhang J, Liu X, Zhang X, et al. Automatic Detection Method of Sewer Pipe Defects Using Deep Learning Techniques[J]. Applied Sciences, 2023, 13(7): 4589.
 
 \bibitem{ref:kumar2021}
-Dang L M, Kyeong S J, Li Y, et al. Deep learning-based sewer defect classification for highly imbalanced dataset[J]. Computers \& Industrial Engineering, 2021, 161: 107630. DOI: 10.1016/j.cie.2021.107630.
+Dang L M, Kyeong S J, Li Y, et al. Deep learning-based sewer defect classification for highly imbalanced dataset[J]. Computers \& Industrial Engineering, 2021, 161: 107630.
 
 \bibitem{ref:jankim2025}
-Jang S, Kim D. Impact of Data Quality on CNN-Based Sewer Defect Detection[J]. Water, 2025, 17(13): 2028. DOI: 10.3390/w17132028.
+Jang S, Kim D. Impact of Data Quality on CNN-Based Sewer Defect Detection[J]. Water, 2025, 17(13): 2028.
 
 \bibitem{ref:cheng2018}
-Cheng J C P, Wang M. Automated detection of sewer pipe defects in CCTV images using deep learning techniques[J]. Automation in Construction, 2018, 95: 155-171. DOI: 10.1016/j.autcon.2018.08.006.
+Cheng J C P, Wang M. Automated detection of sewer pipe defects in CCTV images using deep learning techniques[J]. Automation in Construction, 2018, 95: 155-171.
 
 \bibitem{ref:hierarchical2019}
-Li D, Cong A, Guo S, et al. Sewer damage detection from imbalanced CCTV inspection data using deep convolutional neural networks with hierarchical classification[J]. Automation in Construction, 2019, 101: 199-208. DOI: 10.1016/j.autcon.2019.01.017.
+Li D, Cong A, Guo S, et al. Sewer damage detection from imbalanced CCTV inspection data using deep convolutional neural networks with hierarchical classification[J]. Automation in Construction, 2019, 101: 199-208.
 
 \bibitem{ref:cnnmethod2019}
-Meijer D, Scholten L, Clemens F, et al. A defect classification methodology for sewer image sets with convolutional neural networks[J]. Automation in Construction, 2019, 104: 281-298. DOI: 10.1016/j.autcon.2019.04.013.
+Meijer D, Scholten L, Clemens F, et al. A defect classification methodology for sewer image sets with convolutional neural networks[J]. Automation in Construction, 2019, 104: 281-298.
 
 \bibitem{ref:geom2025}
-He J, Wang Z, Yong Z, et al. An automatic defect detection and localization method using imaging geometric features for sewer pipes[J]. Measurement, 2025, 243: 116367. DOI: 10.1016/j.measurement.2024.116367.
+He J, Wang Z, Yong Z, et al. An automatic defect detection and localization method using imaging geometric features for sewer pipes[J]. Measurement, 2025, 243: 116367.
 
 \bibitem{ref:lmm2024}
-Taormina R, van der Werf J A, et al. Interpretable Sewer Defect Detection with Large Multimodal Models[C]//The 3rd International Joint Conference on Water Distribution Systems Analysis \& Computing and Control for the Water Industry (WDSA/CCWI 2024). 2024: 158. DOI: 10.3390/engproc2024069158.
+Taormina R, van der Werf J A, et al. Interpretable Sewer Defect Detection with Large Multimodal Models[C]//The 3rd International Joint Conference on Water Distribution Systems Analysis \& Computing and Control for the Water Industry (WDSA/CCWI 2024). 2024: 158.
 
 \bibitem{ref:mv2024}
-Yang Y, Yang S, Zhao Q, et al. Weakly supervised collaborative localization learning method for sewer pipe defect detection[J]. Machine Vision and Applications, 2024, 35(5). DOI: 10.1007/s00138-024-01587-3.
+Yang Y, Yang S, Zhao Q, et al. Weakly supervised collaborative localization learning method for sewer pipe defect detection[J]. Machine Vision and Applications, 2024, 35(5).
 
 \bibitem{ref:ieeeaccess2022}
-Oh C, Dang L M, Han D, et al. Robust Sewer Defect Detection With Text Analysis Based on Deep Learning[J]. IEEE Access, 2022, 10: 46224-46237. DOI: 10.1109/ACCESS.2022.3168660.
+Oh C, Dang L M, Han D, et al. Robust Sewer Defect Detection With Text Analysis Based on Deep Learning[J]. IEEE Access, 2022, 10: 46224-46237.
 
 \bibitem{ref:tracking2021}
-Wang M, Kumar S S, Cheng J C P, et al. Automated sewer pipe defect tracking in CCTV videos based on defect detection and metric learning[J]. Automation in Construction, 2021, 121: 103438. DOI: 10.1016/j.autcon.2020.103438.
+Wang M, Kumar S S, Cheng J C P, et al. Automated sewer pipe defect tracking in CCTV videos based on defect detection and metric learning[J]. Automation in Construction, 2021, 121: 103438.
 
 \bibitem{ref:spva2021}
-Yin X, Ma T, Bouferguene A, et al. Automation for sewer pipe assessment: CCTV video interpretation algorithm and sewer pipe video assessment (SPVA) system development[J]. Automation in Construction, 2021, 125: 103622. DOI: 10.1016/j.autcon.2021.103622.
+Yin X, Ma T, Bouferguene A, et al. Automation for sewer pipe assessment: CCTV video interpretation algorithm and sewer pipe video assessment (SPVA) system development[J]. Automation in Construction, 2021, 125: 103622.
 
 \bibitem{ref:survey2020}
-Haurum J B, Moeslund T B. A Survey on Image-Based Automation of CCTV and SSET Sewer Inspections[J]. Automation in Construction, 2020, 111: 103061. DOI: 10.1016/j.autcon.2019.103061.
+Haurum J B, Moeslund T B. A Survey on Image-Based Automation of CCTV and SSET Sewer Inspections[J]. Automation in Construction, 2020, 111: 103061.
 
 \bibitem{ref:deepframework2020}
-Yin X, Chen Y, Bouferguene A, et al. A deep learning-based framework for an automated defect detection system for sewer pipes[J]. Automation in Construction, 2020, 109: 102967. DOI: 10.1016/j.autcon.2019.102967.
+Yin X, Chen Y, Bouferguene A, et al. A deep learning-based framework for an automated defect detection system for sewer pipes[J]. Automation in Construction, 2020, 109: 102967.
 
 \bibitem{ref:moradi2019}
-Moradi S, Zayed T, Golkhoo F. Review on Computer Aided Sewer Pipeline Defect Detection and Condition Assessment[J]. Infrastructures, 2019, 4(1): 10. DOI: 10.3390/infrastructures4010010.
+Moradi S, Zayed T, Golkhoo F. Review on Computer Aided Sewer Pipeline Defect Detection and Condition Assessment[J]. Infrastructures, 2019, 4(1): 10.
 
 \bibitem{ref:cnn2018}
-Kumar S S, Abraham D M, Jahanshahi M R, et al. Automated defect classification in sewer closed circuit television inspections using deep convolutional neural networks[J]. Automation in Construction, 2018, 91: 273-283. DOI: 10.1016/j.autcon.2018.03.028.
+Kumar S S, Abraham D M, Jahanshahi M R, et al. Automated defect classification in sewer closed circuit television inspections using deep convolutional neural networks[J]. Automation in Construction, 2018, 91: 273-283.
 
 \bibitem{ref:faultseq2018}
-Myrans J, Everson R, Kapelan Z, et al. Automated detection of faults in sewers using CCTV image sequences[J]. Automation in Construction, 2018, 95: 64-71. DOI: 10.1016/j.autcon.2018.08.005.
+Myrans J, Everson R, Kapelan Z, et al. Automated detection of faults in sewers using CCTV image sequences[J]. Automation in Construction, 2018, 95: 64-71.
 
 \bibitem{ref:tool2018}
-Hawari A, Alamin M, Alkadour F, et al. Automated defect detection tool for closed circuit television (CCTV) inspected sewer pipelines[J]. Automation in Construction, 2018, 89: 99-109. DOI: 10.1016/j.autcon.2018.01.004.
+Hawari A, Alamin M, Alkadour F, et al. Automated defect detection tool for closed circuit television (CCTV) inspected sewer pipelines[J]. Automation in Construction, 2018, 89: 99-109.
 
 \bibitem{ref:hogsvm2014}
-Halfawy M R, Hengmeechai J. Automated defect detection in sewer closed circuit television images using histograms of oriented gradients and support vector machine[J]. Automation in Construction, 2014, 38: 1-13. DOI: 10.1016/j.autcon.2013.10.012.
+Halfawy M R, Hengmeechai J. Automated defect detection in sewer closed circuit television images using histograms of oriented gradients and support vector machine[J]. Automation in Construction, 2014, 38: 1-13.
 
 \bibitem{ref:rcnn2014}
-Girshick R, Donahue J, Darrell T, et al. Rich Feature Hierarchies for Accurate Object Detection and Semantic Segmentation[C]//2014 IEEE Conference on Computer Vision and Pattern Recognition. 2014: 580-587. DOI: 10.1109/CVPR.2014.81.
+Girshick R, Donahue J, Darrell T, et al. Rich Feature Hierarchies for Accurate Object Detection and Semantic Segmentation[C]//2014 IEEE Conference on Computer Vision and Pattern Recognition. 2014: 580-587.
 
 \bibitem{ref:ssd2016}
-Liu W, Anguelov D, Erhan D, et al. SSD: Single Shot MultiBox Detector[C]//Computer Vision--ECCV 2016. Cham: Springer, 2016: 21-37. DOI: 10.1007/978-3-319-46448-0\_2.
+Liu W, Anguelov D, Erhan D, et al. SSD: Single Shot MultiBox Detector[C]//Computer Vision--ECCV 2016. Cham: Springer, 2016: 21-37.
 
 \bibitem{ref:yolo2016}
-Redmon J, Divvala S, Girshick R, et al. You Only Look Once: Unified, Real-Time Object Detection[C]//2016 IEEE Conference on Computer Vision and Pattern Recognition (CVPR). 2016: 779-788. DOI: 10.1109/CVPR.2016.91.
+Redmon J, Divvala S, Girshick R, et al. You Only Look Once: Unified, Real-Time Object Detection[C]//2016 IEEE Conference on Computer Vision and Pattern Recognition (CVPR). 2016: 779-788.
 
 \bibitem{ref:focalloss2020}
-Lin T Y, Goyal P, Girshick R, et al. Focal Loss for Dense Object Detection[J]. IEEE Transactions on Pattern Analysis and Machine Intelligence, 2020, 42(2): 318-327. DOI: 10.1109/TPAMI.2018.2858826.
+Lin T Y, Goyal P, Girshick R, et al. Focal Loss for Dense Object Detection[J]. IEEE Transactions on Pattern Analysis and Machine Intelligence, 2020, 42(2): 318-327.
 
 \bibitem{ref:senet2018}
-Hu J, Shen L, Sun G. Squeeze-and-Excitation Networks[C]//2018 IEEE/CVF Conference on Computer Vision and Pattern Recognition. 2018: 7132-7141. DOI: 10.1109/CVPR.2018.00745.
+Hu J, Shen L, Sun G. Squeeze-and-Excitation Networks[C]//2018 IEEE/CVF Conference on Computer Vision and Pattern Recognition. 2018: 7132-7141.
 
 \bibitem{ref:cbam2018}
-Woo S, Park J, Lee J Y, et al. CBAM: Convolutional Block Attention Module[C]//Computer Vision--ECCV 2018. Cham: Springer, 2018: 3-19. DOI: 10.1007/978-3-030-01234-2\_1.
+Woo S, Park J, Lee J Y, et al. CBAM: Convolutional Block Attention Module[C]//Computer Vision--ECCV 2018. Cham: Springer, 2018: 3-19.
 
 \bibitem{ref:eca2020}
-Wang Q, Wu B, Zhu P, et al. ECA-Net: Efficient Channel Attention for Deep Convolutional Neural Networks[C]//2020 IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR). 2020: 11531-11539. DOI: 10.1109/CVPR42600.2020.01155.
+Wang Q, Wu B, Zhu P, et al. ECA-Net: Efficient Channel Attention for Deep Convolutional Neural Networks[C]//2020 IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR). 2020: 11531-11539.
 
 \bibitem{ref:cam2016}
-Zhou B, Khosla A, Lapedriza A, et al. Learning Deep Features for Discriminative Localization[C]//2016 IEEE Conference on Computer Vision and Pattern Recognition (CVPR). 2016: 2921-2929. DOI: 10.1109/CVPR.2016.319.
+Zhou B, Khosla A, Lapedriza A, et al. Learning Deep Features for Discriminative Localization[C]//2016 IEEE Conference on Computer Vision and Pattern Recognition (CVPR). 2016: 2921-2929.
 
 \bibitem{ref:gradcam2017}
-Selvaraju R R, Cogswell M, Das A, et al. Grad-CAM: Visual Explanations from Deep Networks via Gradient-Based Localization[C]//2017 IEEE International Conference on Computer Vision (ICCV). 2017: 618-626. DOI: 10.1109/ICCV.2017.74.
+Selvaraju R R, Cogswell M, Das A, et al. Grad-CAM: Visual Explanations from Deep Networks via Gradient-Based Localization[C]//2017 IEEE International Conference on Computer Vision (ICCV). 2017: 618-626.
 
 \bibitem{ref:pan2010}
-Pan S J, Yang Q. A Survey on Transfer Learning[J]. IEEE Transactions on Knowledge and Data Engineering, 2010, 22(10): 1345-1359. DOI: 10.1109/TKDE.2009.191.
+Pan S J, Yang Q. A Survey on Transfer Learning[J]. IEEE Transactions on Knowledge and Data Engineering, 2010, 22(10): 1345-1359.
 
 \bibitem{ref:weiss2016}
-Weiss K, Khoshgoftaar T M, Wang D. A survey of transfer learning[J]. Journal of Big Data, 2016, 3(1). DOI: 10.1186/s40537-016-0043-6.
+Weiss K, Khoshgoftaar T M, Wang D. A survey of transfer learning[J]. Journal of Big Data, 2016, 3(1).
 
 \bibitem{ref:domainadapt2018}
-Wang M, Deng W. Deep visual domain adaptation: A survey[J]. Neurocomputing, 2018, 312: 135-153. DOI: 10.1016/j.neucom.2018.05.083.
+Wang M, Deng W. Deep visual domain adaptation: A survey[J]. Neurocomputing, 2018, 312: 135-153.
 
 \bibitem{ref:giou2019}
-Rezatofighi H, Tsoi N, Gwak J Y, et al. Generalized Intersection Over Union: A Metric and a Loss for Bounding Box Regression[C]//2019 IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR). 2019: 658-666. DOI: 10.1109/CVPR.2019.00075.
+Rezatofighi H, Tsoi N, Gwak J Y, et al. Generalized Intersection Over Union: A Metric and a Loss for Bounding Box Regression[C]//2019 IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR). 2019: 658-666.
 
 \bibitem{ref:detr2020}
-Carion N, Massa F, Synnaeve G, et al. End-to-End Object Detection with Transformers[C]//Computer Vision--ECCV 2020. Cham: Springer, 2020: 213-229. DOI: 10.1007/978-3-030-58452-8\_13.
+Carion N, Massa F, Synnaeve G, et al. End-to-End Object Detection with Transformers[C]//Computer Vision--ECCV 2020. Cham: Springer, 2020: 213-229.
 
 \bibitem{ref:pipeyolo112026}
-Cheng X, Wang Y. Pipeline Defect Detection Based on Improved YOLOv11[J]. Processes, 2026, 14(3): 530. DOI: 10.3390/pr14030530.
+Cheng X, Wang Y. Pipeline Defect Detection Based on Improved YOLOv11[J]. Processes, 2026, 14(3): 530.
 
 \bibitem{ref:sewermultisensor2024}
-Jung J T, Reiterer A. Improving Sewer Damage Inspection: Development of a Deep Learning Integration Concept for a Multi-Sensor System[J]. Sensors, 2024, 24(23): 7786. DOI: 10.3390/s24237786.
+Jung J T, Reiterer A. Improving Sewer Damage Inspection: Development of a Deep Learning Integration Concept for a Multi-Sensor System[J]. Sensors, 2024, 24(23): 7786.
 
 \bibitem{ref:ieeeaccess2024yolo}
-Huang J, Kang H. Automatic Defect Detection in Sewer Pipe Closed-Circuit Television Images via Improved You Only Look Once Version 5 Object Detection Network[J]. IEEE Access, 2024, 12: 92797-92825. DOI: 10.1109/ACCESS.2024.3422275.
+Huang J, Kang H. Automatic Defect Detection in Sewer Pipe Closed-Circuit Television Images via Improved You Only Look Once Version 5 Object Detection Network[J]. IEEE Access, 2024, 12: 92797-92825.
 
 \bibitem{ref:realtimeyolov52025}
-Lu J, Song W, Zhang Y, et al. Real-time defect detection in underground sewage pipelines using an improved YOLOv5 model[J]. Automation in Construction, 2025, 173: 106068. DOI: 10.1016/j.autcon.2025.106068.
+Lu J, Song W, Zhang Y, et al. Real-time defect detection in underground sewage pipelines using an improved YOLOv5 model[J]. Automation in Construction, 2025, 173: 106068.
 
 \bibitem{ref:smallyoloreview2026}
-Yu H, Liu J, Lin M. A Comprehensive Literature Review on YOLO-Based Small Object Detection: Methods, Challenges, and Future Trends[J]. Computers, Materials \& Continua, 2026, 87(1). DOI: 10.32604/cmc.2025.074191.
+Yu H, Liu J, Lin M. A Comprehensive Literature Review on YOLO-Based Small Object Detection: Methods, Challenges, and Future Trends[J]. Computers, Materials \& Continua, 2026, 87(1).
 
 \bibitem{ref:dffn2024}
-Jing R, Zhang W, Li Y, et al. Dynamic Feature Focusing Network for small object detection[J]. Information Processing \& Management, 2024, 61(6): 103858. DOI: 10.1016/j.ipm.2024.103858.
+Jing R, Zhang W, Li Y, et al. Dynamic Feature Focusing Network for small object detection[J]. Information Processing \& Management, 2024, 61(6): 103858.
 
 \bibitem{ref:surfacereview2024}
-Ma Y, Yin J, Huang F, et al. Surface defect inspection of industrial products with object detection deep networks: a systematic review[J]. Artificial Intelligence Review, 2024, 57(12): 333. DOI: 10.1007/s10462-024-10956-3.
+Ma Y, Yin J, Huang F, et al. Surface defect inspection of industrial products with object detection deep networks: a systematic review[J]. Artificial Intelligence Review, 2024, 57(12): 333.
 
 \bibitem{ref:transfereval2025}
-Fu G, Zhang Z, Li J, et al. An evaluation method for model transfer learning performance in industrial surface defect detection tasks[J]. Expert Systems with Applications, 2025, 293: 128680. DOI: 10.1016/j.eswa.2025.128680.
+Fu G, Zhang Z, Li J, et al. An evaluation method for model transfer learning performance in industrial surface defect detection tasks[J]. Expert Systems with Applications, 2025, 293: 128680.
 
 \bibitem{ref:pgda2024}
-Ye B, Lai J, Xie X, et al. Prototype-guided domain adaptive one-stage object detector for defect detection[J]. Advanced Engineering Informatics, 2024, 62: 102618. DOI: 10.1016/j.aei.2024.102618.
+Ye B, Lai J, Xie X, et al. Prototype-guided domain adaptive one-stage object detector for defect detection[J]. Advanced Engineering Informatics, 2024, 62: 102618.
 
 \bibitem{ref:lightcrack2024}
-Lv Z, Dong S, He J, et al. Lightweight Sewer Pipe Crack Detection Method Based on Amphibious Robot and Improved YOLOv8n[J]. Sensors, 2024, 24(18): 6112. DOI: 10.3390/s24186112.
+Lv Z, Dong S, He J, et al. Lightweight Sewer Pipe Crack Detection Method Based on Amphibious Robot and Improved YOLOv8n[J]. Sensors, 2024, 24(18): 6112.
 
 \bibitem{ref:rdlkyolo2025}
-Wang H, Feng Z, Jiang M, et al. RDLK-YOLO enhanced pipeline defect detection in uneven illumination[J]. Scientific Reports, 2025, 15: 43594. DOI: 10.1038/s41598-025-18808-y.
+Wang H, Feng Z, Jiang M, et al. RDLK-YOLO enhanced pipeline defect detection in uneven illumination[J]. Scientific Reports, 2025, 15: 43594.
 
 \bibitem{ref:wsolrecipe2024}
-Lee S, Uh Y, Choe J, et al. Discovering an inference recipe for weakly-supervised object localization[J]. Pattern Recognition, 2024, 157: 110838. DOI: 10.1016/j.patcog.2024.110838.
+Lee S, Uh Y, Choe J, et al. Discovering an inference recipe for weakly-supervised object localization[J]. Pattern Recognition, 2024, 157: 110838.
 
 \bibitem{ref:yolo11diagram2025}
-Farrugia M. YOLO11 Architecture Diagram: Visual Representation of the YOLO11 Object Detection Model[EB/OL]. Zenodo, 2025. DOI: 10.5281/zenodo.15628103.
+Farrugia M. YOLO11 Architecture Diagram: Visual Representation of the YOLO11 Object Detection Model[EB/OL]. Zenodo, 2025.
 
 \bibitem{ref:mixedsupervision2021}
-Božič J, Tabernik D, Skočaj D. Mixed supervision for surface-defect detection: From weakly to fully supervised learning[J]. Computers in Industry, 2021, 129: 103459. DOI: 10.1016/j.compind.2021.103459.
+Božič J, Tabernik D, Skočaj D. Mixed supervision for surface-defect detection: From weakly to fully supervised learning[J]. Computers in Industry, 2021, 129: 103459.
 
 \bibitem{ref:ameri2024review}
-Ameri R, Hsu C C, Band S S. A systematic review of deep learning approaches for surface defect detection in industrial applications[J]. Engineering Applications of Artificial Intelligence, 2024, 130: 107717. DOI: 10.1016/j.engappai.2023.107717.
+Ameri R, Hsu C C, Band S S. A systematic review of deep learning approaches for surface defect detection in industrial applications[J]. Engineering Applications of Artificial Intelligence, 2024, 130: 107717.
 
 \bibitem{ref:fewshotsteel2022}
-Wang H, Li Z, Wang H. Few-Shot Steel Surface Defect Detection[J]. IEEE Transactions on Instrumentation and Measurement, 2022, 71: 1-12. DOI: 10.1109/TIM.2021.3128208.
+Wang H, Li Z, Wang H. Few-Shot Steel Surface Defect Detection[J]. IEEE Transactions on Instrumentation and Measurement, 2022, 71: 1-12.
 
 \end{thebibliography}
+\endgroup
 
-\chapter*{附录说明}
-\addcontentsline{toc}{chapter}{附录说明}
+\chapter*{致谢}
+\addcontentsline{toc}{chapter}{致谢}
+\markboth{致谢}{致谢}
 
-如后续需要，可将详细网络结构图、额外实验表格、参数配置文件、类别映射说明、伪框生成规则、训练日志样例等补充材料放入附录部分。
+在本论文的选题、数据整理、方法设计、实验推进和写作过程中，指导教师、课题组同学以及相关协作人员都给予了大量帮助。在此谨向所有关心、支持和帮助过本研究工作的老师、同学、家人和朋友致以诚挚谢意。论文从问题凝练到章节重构，再到实验方案设计与结果分析，均得益于导师在研究方向把握、技术路线梳理和论文写作规范方面的持续指导。课题组同学在数据整理、实验讨论和阶段性汇报中提供了大量建设性意见，也为本文顺利推进创造了良好条件。与此同时，家人对本人学习与生活的理解、支持与包容，也是完成本论文的重要保障。
+
+\chapter*{在读期间发表的学术论文与取得的其他成果}
+\addcontentsline{toc}{chapter}{在读期间发表的学术论文与取得的其他成果}
+\markboth{在读期间发表的学术论文与取得的其他成果}{在读期间发表的学术论文与取得的其他成果}
+
+\begin{enumerate}[label=\arabic*.]
+    \item 与本论文相关的学术论文、专利、项目与竞赛成果将在终稿提交前据实补录，并统一按照学校要求进行格式化整理。
+\end{enumerate}
+
+\appendix
+\chapter{补充图表规划}
+
+为避免正文过度臃肿而又保留充分原始材料，本附录对后续建议补充的图表内容进行统一规划。附录部分主要用于安置全量 threshold sweep 结果、完整 baseline 指标表、更多样本示例、额外 CAM/Grad-CAM 可视化、训练曲线以及错误样本画廊等材料，以增强实验过程的可复核性与材料完整性。
+
+\begin{table}[H]
+    \centering
+    \caption{附录补充图表规划表}
+    \label{tab:appendix-plan}
+    \begin{tabular}{p{3cm}p{5cm}p{6cm}}
+        \toprule
+        附录编号 & 建议内容 & 主要作用 \\
+        \midrule
+        表A.1--表A.2 & 全量 threshold sweep 表、五尺度完整 baseline 指标表 & 补充正文未展开的原始数值 \\
+        表A.3--表A.6 & 全量 run config、混淆矩阵明细、伪框抽检记录、错误样本统计表 & 展示实验原材料的完整性 \\
+        图A.1--图A.2 & 更多 source/target 样本图 & 增强数据集展示的直观性 \\
+        图A.3--图A.4 & 更多 CAM/Grad-CAM 与 calibration 图 & 支撑第一阶段支撑链分析 \\
+        图A.5--图A.8 & 全量训练曲线、每类 PR 曲线、更多误检/漏检画廊、资源监控图 & 支撑实验充分性与可复核性 \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\chapter{补充说明}
+
+本附录用于安置最终定稿时不宜在正文中大篇幅展示、但对答辩和归档具有支撑意义的辅助材料，包括：详细网络结构图、迁移训练阶段配置表、类别映射细则、伪框生成规则、数据清洗口径、实验日志样例及更多定性可视化图件。若后续实验中产生新的系统级图表，也将在本附录中按学校规范继续补充。
 
 \end{document}
+
