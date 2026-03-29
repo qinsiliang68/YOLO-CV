@@ -11,6 +11,19 @@ and run outputs stay local.
 - `research/`: label alignment, pipeline specs, and training-machine notes
 - `data/`: local-only raw data and intermediate results, ignored by Git
 
+## Branch Workflow
+
+This repository now uses two branches:
+
+- `main`: curated code, thesis files, and selected experiment materials
+- `exp-dropoff`: raw experiment handoff branch for the training machine
+
+The training machine should only push experiment outputs to `exp-dropoff`.
+The local working machine pulls from `exp-dropoff`, keeps only the useful files,
+updates the thesis, and pushes the curated state to `main`.
+
+See `research/experiment_handoff_workflow.md`.
+
 ## Training Machine Flow
 
 1. `git pull`
