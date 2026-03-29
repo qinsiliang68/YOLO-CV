@@ -1,0 +1,26 @@
+{
+  "collection_runtime": {
+    "predict_seconds": 12.864198,
+    "predict_images_per_second": 55.969289,
+    "embed_seconds": 12.480045,
+    "embed_images_per_second": 57.692102
+  },
+  "train_runtime_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\cls_source\\yolo11x_cls6_train7200\\training_runtime.json",
+  "train_runtime": {
+    "train_time_seconds": 6125.355341672897,
+    "epochs_completed": 55,
+    "best_epoch": 35,
+    "best_fitness": 0.83611,
+    "peak_gpu_mem_reserved_gb": 13.954449408,
+    "peak_gpu_mem_allocated_gb": 9.416255488,
+    "validator_speed_ms": {
+      "preprocess": 2.7970833910836115,
+      "inference": 4.147005743450589,
+      "loss": 0.0,
+      "postprocess": 0.0014901161193847656
+    }
+  },
+  "epoch_metrics_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\research\\materials\\yolo11x_cls6_train7200\\epoch_metrics.csv",
+  "val_images": 720,
+  "embeddings_exported": true
+}

@@ -4,7 +4,7 @@
   "data": "../../sewerml_cls6_train7200",
   "epochs": 200,
   "imgsz": 640,
-  "batch": 24,
+  "batch": 16,
   "device": "0",
   "workers": 2,
   "project": "runs/cls_source",

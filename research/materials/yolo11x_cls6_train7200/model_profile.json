@@ -1,0 +1,12 @@
+{
+  "weights_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\cls_source\\yolo11x_cls6_train7200\\weights\\best.pt",
+  "last_weights_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\cls_source\\yolo11x_cls6_train7200\\weights\\last.pt",
+  "model_name": "yolo11x-cls.yaml",
+  "layers": 309,
+  "parameters": 28363750,
+  "trainable_parameters": 0,
+  "gflops": 110.993203,
+  "best_weights_size_mb": 57.01644,
+  "last_weights_size_mb": 57.017784,
+  "fused": false
+}
