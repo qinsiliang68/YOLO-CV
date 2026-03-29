@@ -29,6 +29,7 @@ checkpoints/
 Thumbs.db
 .idea/
 .vscode/
+gcm-diagnose.log
 
 # LaTeX build artifacts
 essay/docs/build/*.aux
