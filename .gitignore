@@ -44,6 +44,7 @@ essay/reference/
 _upstream_git_cache/
 _recycle_bin/
 .ultralytics/
+$out/
 
 # Per-version working directories
 YOLOv11/datasets/*

@@ -1,105 +1,8 @@
 ﻿% !TeX program = xelatex
 % !TeX encoding = UTF-8 Unicode
 \documentclass[UTF8,openany,12pt]{ctexbook}
-
-\usepackage[a4paper,top=2.54cm,bottom=2.54cm,left=3.17cm,right=3.17cm,headheight=1.5cm,headsep=0.3cm,footskip=1.75cm]{geometry}
-\usepackage{graphicx}
-\usepackage{booktabs}
-\usepackage{longtable}
-\usepackage{array}
-\usepackage{tabularx}
-\usepackage{multirow}
-\usepackage{amsmath,amssymb,bm}
-\usepackage{float}
-\usepackage{adjustbox}
-\usepackage{caption}
-\usepackage{subcaption}
-\usepackage{enumitem}
-\usepackage{tocloft}
-\usepackage{hyperref}
-\usepackage{xcolor}
-\usepackage{setspace}
-
-\graphicspath{{../img/}}
-\hypersetup{hidelinks}
-\setlength{\parindent}{2em}
-\setlength{\parskip}{0pt}
-\linespread{1.35}
-\raggedbottom
-\DeclareCaptionFont{fsuwuhao}{\zihao{5}\songti}
-\captionsetup{font=fsuwuhao,labelfont=normalfont,labelsep=space}
-\captionsetup[figure]{justification=centering}
-\captionsetup[table]{justification=centering,singlelinecheck=false}
-\setlength{\tabcolsep}{3.2pt}
-\renewcommand{\arraystretch}{1.20}
-\setcounter{secnumdepth}{3}
-\setcounter{tocdepth}{2}
-\pagestyle{plain}
-
-\makeatletter
-\newcommand{\thesiscite}[1]{%
-    \textsuperscript{%
-        \@for\@citekey:=#1\do{%
-            \@ifundefined{b@\@citekey}
-                {\mbox{[?]}}%
-                {\mbox{[\csname b@\@citekey\endcsname]}}%
-        }%
-    }%
-}
-\renewcommand{\cite}[1]{\thesiscite{#1}}
-\makeatother
-\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
-\newcolumntype{C}{>{\centering\arraybackslash}X}
-\newcolumntype{P}[1]{>{\raggedright\arraybackslash}p{#1}}
-\AtBeginEnvironment{table}{\zihao{5}\songti}
-\AtBeginEnvironment{longtable}{\zihao{5}\songti}
-\setlength{\LTleft}{0pt}
-\setlength{\LTright}{0pt}
-\renewcommand{\cfttoctitlefont}{\hfill\heiti\zihao{-2}}
-\renewcommand{\cftaftertoctitle}{\hfill}
-\renewcommand{\cftchapfont}{\songti\zihao{-4}}
-\renewcommand{\cftsecfont}{\songti\zihao{-4}}
-\renewcommand{\cftsubsecfont}{\songti\zihao{-4}}
-\renewcommand{\cftchappagefont}{\songti\zihao{-4}}
-\renewcommand{\cftsecpagefont}{\songti\zihao{-4}}
-\renewcommand{\cftsubsecpagefont}{\songti\zihao{-4}}
-\setlength{\cftbeforechapskip}{6pt}
-
-\ctexset{
-    chapter = {
-        name = {第,章},
-        number = \arabic{chapter},
-        nameformat = \centering\heiti\zihao{-2},
-        numberformat = \centering\heiti\zihao{-2},
-        titleformat = \centering\heiti\zihao{-2},
-        aftername = \hspace{1em},
-        format = \centering,
-        beforeskip = 24pt,
-        afterskip = 18pt
-    },
-    section = {
-        format = \raggedright\heiti\zihao{3},
-        beforeskip = 24pt,
-        afterskip = 6pt
-    },
-    subsection = {
-        format = \raggedright\heiti\zihao{4},
-        beforeskip = 12pt,
-        afterskip = 6pt
-    },
-    subsubsection = {
-        format = \raggedright\heiti\zihao{-4},
-        beforeskip = 12pt,
-        afterskip = 6pt
-    }
-}
-
-\newcommand{\TODO}[1]{--}
+\IfFileExists{thesis_format.tex}{\input{thesis_format.tex}}{\input{essay/docs/thesis_format.tex}}
 \newcommand{\keywords}[1]{\par\noindent{\heiti 关键词：}#1}
-\newcommand{\engkeywords}[1]{\par\noindent{\bfseries Key words:}#1}
-\newcommand{\placeholderbox}[2][0.85\textwidth]{\parbox[c][0pt][c]{#1}{}}
-\newcommand{\fieldline}[1]{\underline{\makebox[#1][c]{}}}
-\newcommand{\figsource}[1]{\par\vspace{2pt}\noindent\hspace{2em}\parbox{\dimexpr\linewidth-2em\relax}{\zihao{5}\songti 注：#1}}
 
 \title{基于改进 YOLOv11 的地下排水管道缺陷智能检测方法研究}
 \author{\TODO{填写作者姓名}}
@@ -234,7 +137,7 @@ The proposed framework will be further validated through pre-screening experimen
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.93\textwidth]{../../img/ch1_research_evolution_timeline.pdf}
+    \includegraphics[width=0.93\textwidth]{ch1_research_evolution_timeline.pdf}
     \caption{地下排水管道缺陷智能识别研究发展脉络}
     \label{fig:ch1-research-evolution}
     \figsource{根据文献\cite{ref:hogsvm2014,ref:measurement2026}整理与改绘。}
@@ -262,9 +165,9 @@ Haurum 和 Moeslund\cite{ref:sewerml}发布 Sewer-ML 数据集后，排水管道
     \centering
     \caption{现有研究路线对比与本文定位}
     \label{tab:research-route-positioning}
-    \begin{tabularx}{\textwidth}{P{2.1cm}P{2.0cm}P{1.5cm}YYP{1.9cm}}
+    \begin{tabularx}{\textwidth}{@{}L{1.7cm}L{2.0cm}N{1.4cm}YYY@{}}
         \toprule
-        路线类型 & 代表文献 & 监督粒度 & 主要优点 & 主要问题 & 与本文关系 \\
+        \txhead{路线类型} & \txhead{代表文献} & \txhead{监督粒度} & \txhead{主要优点} & \txhead{主要问题} & \txhead{与本文关系} \\
         \midrule
         传统图像处理与机器学习 & \cite{ref:hogsvm2014,ref:tool2018} & 图像级/候选区域级 & 解释性较强、实现简单 & 泛化能力弱、对场景变化敏感 & 作为发展起点与背景对照 \\
         深度分类与层次分类 & \cite{ref:hierarchical2019,ref:cnnmethod2019} & 图像级 & 适合筛查与长尾类别建模 & 难以直接输出精确位置 & 支撑前级 gate 与源域预训练 \\
@@ -283,7 +186,7 @@ Haurum 和 Moeslund\cite{ref:sewerml}发布 Sewer-ML 数据集后，排水管道
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.92\textwidth]{../../img/ch1_problem_chain.pdf}
+    \includegraphics[width=0.92\textwidth]{ch1_problem_chain.pdf}
     \caption{地下排水管道缺陷检测的问题链及本文技术路线}
     \label{fig:ch1-problem-chain}
     \figsource{根据文献\cite{ref:survey2020,ref:wsol2025}整理与改绘。}
@@ -297,9 +200,9 @@ Haurum 和 Moeslund\cite{ref:sewerml}发布 Sewer-ML 数据集后，排水管道
     \centering
     \caption{本文研究内容与章节对应关系}
     \label{tab:chapter-mapping}
-    \begin{tabularx}{\textwidth}{P{2.8cm}P{3.4cm}Y}
+    \begin{tabularx}{\textwidth}{@{}L{2.7cm}L{3.0cm}Y@{}}
         \toprule
-        研究问题 & 对应章节 & 主要目标 \\
+        \txhead{研究问题} & \txhead{对应章节} & \txhead{主要目标} \\
         \midrule
         RQ1：高召回 gate 是否能有效降低误报 & 第3章、第4章、第6章 & 验证前级筛查在高召回约束下的减负效果 \\
         RQ2：改进 YOLOv11 是否提升复杂场景检测性能 & 第5章、第6章 & 验证注意力、检测头和损失函数的协同增益 \\
@@ -335,7 +238,7 @@ Haurum 和 Moeslund\cite{ref:sewerml}发布 Sewer-ML 数据集后，排水管道
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.95\textwidth]{../../img/ch1_research_evolution_timeline.pdf}
+    \includegraphics[width=0.95\textwidth]{ch1_research_evolution_timeline.pdf}
     \caption{地下排水管道缺陷智能识别研究发展脉络}
     \label{fig:ch1-research-evolution-old}
     
@@ -408,7 +311,7 @@ Haurum 和 Moeslund\cite{ref:sewerml}发布 Sewer-ML 数据集后，排水管道
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.90\textwidth]{../../img/ch2_domain_gap_factors.pdf}
+    \includegraphics[width=0.90\textwidth]{ch2_domain_gap_factors.pdf}
     \caption{地下排水管道检测任务中的主要域差来源}
     \label{fig:ch2-domain-gap}
     
@@ -492,7 +395,7 @@ Haurum 和 Moeslund\cite{ref:sewerml}发布 Sewer-ML 数据集后，排水管道
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.92\textwidth]{../../img/ch1_problem_chain.pdf}
+    \includegraphics[width=0.92\textwidth]{ch1_problem_chain.pdf}
     \caption{地下排水管道缺陷检测的问题链及本文技术路线}
     \label{fig:ch1-problem-chain-old}
     
@@ -595,7 +498,7 @@ Haurum 和 Moeslund\cite{ref:sewerml}发布 Sewer-ML 数据集后，排水管道
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.92\textwidth]{../../img/ch2_theory_support_map.pdf}
+    \includegraphics[width=0.92\textwidth]{ch2_theory_support_map.pdf}
     \caption{地下排水管道缺陷检测的关键理论支撑关系}
     \label{fig:ch2-theory-support-map}
     \figsource{根据本文理论框架整理与改绘。}
@@ -619,9 +522,9 @@ Haurum 和 Moeslund\cite{ref:sewerml}发布 Sewer-ML 数据集后，排水管道
     \centering
     \caption{典型检测范式比较表}
     \label{tab:detection-paradigm-comparison}
-    \begin{tabularx}{\textwidth}{P{1.9cm}P{2.2cm}YYP{2.2cm}}
+    \begin{tabularx}{\textwidth}{@{}L{1.7cm}L{1.8cm}YYY@{}}
         \toprule
-        检测范式 & 代表方法 & 主要优点 & 主要局限 & 与本文关系 \\
+        \txhead{检测范式} & \txhead{代表方法} & \txhead{主要优点} & \txhead{主要局限} & \txhead{与本文关系} \\
         \midrule
         两阶段检测 & R-CNN 系列 & 候选区域精细，识别能力较强 & 推理较慢，部署成本较高 & 作为理论参照，不作为主路线 \\
         一阶段检测 & SSD、YOLO 系列 & 速度快，工程实现成熟 & 小目标和复杂背景下易受干扰 & 作为本文主路线 \\
@@ -639,15 +542,15 @@ Haurum 和 Moeslund\cite{ref:sewerml}发布 Sewer-ML 数据集后，排水管道
     \centering
     \caption{评价指标定义与说明}
     \label{tab:metric-definitions}
-    \begin{tabularx}{\textwidth}{P{2.2cm}P{2.1cm}P{2.3cm}Y}
+    \begin{tabularx}{\textwidth}{@{}L{1.4cm}L{1.8cm}L{1.8cm}Y@{}}
         \toprule
-        指标 & 计算方式说明 & 主要含义 & 本文中的使用场景 \\
+        \txhead{指标} & \txhead{计算方式\\说明} & \txhead{主要含义} & \txhead{本文中的使用场景} \\
         \midrule
-        Precision & 预测为正的样本中，真实为正的比例 & 预测结果的准确性 & 反映误报控制能力，直接影响人工复核成本。 \\
-        Recall & 真实正样本中，被模型成功检出的比例 & 对真实缺陷的覆盖能力 & 对缺陷检测尤其关键，漏检会直接削弱维护决策可靠性。 \\
-        Specificity & 真实负样本中，被模型正确排除的比例 & 对正常样本的过滤能力 & 是第一阶段 gate 的核心指标，反映正常帧过滤能力。 \\
-        F1-score & Precision 与 Recall 的调和平均 & 识别效果的综合折中 & 适合用于概括模型总体识别能力，但仍需配合 Precision 与 Recall 同时分析。 \\
-        Gate Recall & 前级预筛保留下来的异常样本占全部异常样本的比例 & 前级 gate 对异常样本的保留能力 & 是第一阶段的硬约束指标，用于保证真正异常样本尽可能不被误滤除。 \\
+        精确率 & 预测为正的样本中，真实为正的比例 & 预测结果的准确性 & 反映误报控制能力，直接影响人工复核成本。 \\
+        召回率 & 真实正样本中，被模型成功检出的比例 & 对真实缺陷的覆盖能力 & 对缺陷检测尤其关键，漏检会直接削弱维护决策可靠性。 \\
+        特异度 & 真实负样本中，被模型正确排除的比例 & 对正常样本的过滤能力 & 是第一阶段 gate 的核心指标，反映正常帧过滤能力。 \\
+        F1值 & 精确率与召回率的调和平均 & 识别效果的综合折中 & 适合用于概括模型总体识别能力，但仍需配合精确率与召回率同时分析。 \\
+        门控召回率 & 前级预筛保留下来的异常样本占全部异常样本的比例 & 前级 gate 对异常样本的保留能力 & 是第一阶段的硬约束指标，用于保证真正异常样本尽可能不被误滤除。 \\
         AP50 & 在 IoU 阈值为 0.5 时统计平均精度 & 模型是否大致检出目标 & 是第二阶段 detector 的主评价指标之一，更贴近工程中缺陷发现能力的需求。 \\
         AP50-95 & 在多个 IoU 阈值下统计平均精度并取平均 & 同时反映检测与定位质量 & 适合用于正式实验对比，能够更严格地衡量定位边界是否稳定。 \\
         \bottomrule
@@ -672,7 +575,7 @@ YOLOv11 在工程实现中延续了主干特征提取、颈部多尺度融合和
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.88\textwidth]{../../img/ch2_yolo11_architecture.pdf}
+    \includegraphics[width=0.88\textwidth]{ch2_yolo11_architecture.pdf}
     \caption{YOLO11 检测模型结构示意}
     \label{fig:ch2-yolo11-architecture}
     \figsource{根据官方公开结构关系整理与改绘\cite{ref:yolo11diagram2025}。}
@@ -710,9 +613,9 @@ YOLOv11 的分类模型与检测模型虽然共享部分工程接口，但二者
     \centering
     \caption{典型注意力模块比较表}
     \label{tab:attention-comparison}
-    \begin{tabularx}{\textwidth}{P{1.6cm}P{2.4cm}P{2.1cm}YP{2.5cm}}
+    \begin{tabularx}{\textwidth}{@{}L{1.3cm}L{1.8cm}L{1.6cm}YY@{}}
         \toprule
-        模块 & 机制类型 & 参数/计算开销 & 优点 & 是否适合本文 \\
+        \txhead{模块} & \txhead{机制类型} & \txhead{参数/计算开销} & \txhead{优点} & \txhead{是否适合本文} \\
         \midrule
         SE & 通道重标定 & 低到中等 & 结构简单，易集成 & 适合作为轻量基线 \\
         CBAM & 通道+空间联合注意力 & 中等 & 对关键区域建模更直接 & 适合复杂背景场景 \\
@@ -741,9 +644,9 @@ YOLOv11 的分类模型与检测模型虽然共享部分工程接口，但二者
     \centering
     \caption{典型损失函数与适用问题比较表}
     \label{tab:loss-comparison}
-    \begin{tabularx}{\textwidth}{P{2.0cm}P{2.5cm}P{2.5cm}Y}
+    \begin{tabularx}{\textwidth}{@{}L{1.6cm}L{2.1cm}L{2.1cm}Y@{}}
         \toprule
-        损失函数 & 主要解决问题 & 适合场景 & 与本文关系 \\
+        \txhead{损失函数} & \txhead{主要解决问题} & \txhead{适合场景} & \txhead{与本文关系} \\
         \midrule
         BCE / CE & 基础分类训练 & 常规分类与检测分类支路 & 作为基础对照 \\
         Focal Loss & 类别不均衡、易样本主导 & 正负样本数量差距大时 & 适合作为候选改进项 \\
@@ -769,7 +672,7 @@ YOLOv11 的分类模型与检测模型虽然共享部分工程接口，但二者
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.88\textwidth]{../../img/ch2_domain_gap_factors.pdf}
+    \includegraphics[width=0.88\textwidth]{ch2_domain_gap_factors.pdf}
     \caption{地下排水管道检测任务中的主要域差来源}
     \label{fig:ch2-domain-gap-factors}
     \figsource{根据相关 sewer detection 与 transfer learning 文献整理与改绘。}
@@ -785,9 +688,9 @@ YOLOv11 的分类模型与检测模型虽然共享部分工程接口，但二者
     \centering
     \caption{迁移学习与域适应策略比较表}
     \label{tab:transfer-strategy-comparison}
-    \begin{tabularx}{\textwidth}{P{2.4cm}P{1.9cm}P{1.9cm}P{1.8cm}Y}
+    \begin{tabularx}{\textwidth}{@{}L{2.0cm}N{1.5cm}N{1.5cm}L{1.8cm}Y@{}}
         \toprule
-        方法类型 & 是否需要目标域标签 & 是否需要对抗训练 & 工程复杂度 & 本文采用情况 \\
+        \txhead{方法类型} & \txhead{是否需要目标域标签} & \txhead{是否需要对抗训练} & \txhead{工程复杂度} & \txhead{本文采用情况} \\
         \midrule
         通用预训练+微调 & 需要 & 否 & 低 & 作为基础对照 \\
         同领域源域预训练+微调 & 需要少量标签 & 否 & 低到中等 & 本文主路线 \\
@@ -831,9 +734,9 @@ CAM 和 Grad-CAM 通过分析分类模型的响应分布，给出图像中对当
     \centering
     \caption{监督粒度与训练目标对应关系表}
     \label{tab:supervision-granularity}
-    \begin{tabularx}{\textwidth}{P{2.0cm}P{2.6cm}P{2.4cm}Y}
+    \begin{tabularx}{\textwidth}{@{}L{1.8cm}L{2.2cm}L{2.1cm}Y@{}}
         \toprule
-        监督粒度 & 典型监督形式 & 主要训练目标 & 在本文中的角色 \\
+        \txhead{监督粒度} & \txhead{典型监督形式} & \txhead{主要训练目标} & \txhead{在本文中的角色} \\
         \midrule
         图像级监督 & 单标签/多标签分类标签 & 学习类别存在性与粗粒度判别边界 & 服务于源域预训练、目标域分类微调与前级 gate \\
         候选区域监督 & CAM 热力图、伪框、人工抽检结果 & 提供候选位置先验，降低精框构建成本 & 服务于弱监督增强与 detector 初始监督 \\
@@ -844,7 +747,7 @@ CAM 和 Grad-CAM 通过分析分类模型的响应分布，给出图像中对当
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.88\textwidth]{../../img/ch2_supervision_continuum.pdf}
+    \includegraphics[width=0.88\textwidth]{ch2_supervision_continuum.pdf}
     \caption{从图像级监督到检测级监督的连续体}
     \label{fig:ch2-supervision-continuum}
     \figsource{根据文献\cite{ref:gradcam2017,ref:wsol2025}整理与改绘。}
@@ -852,17 +755,17 @@ CAM 和 Grad-CAM 通过分析分类模型的响应分布，给出图像中对当
 
 \section{本章小结}
 
-本章围绕后续研究实际需要使用的理论进行了系统梳理。首先，明确了排水管道缺陷图像在尺度、纹理、背景和类别分布上的任务难点，并说明了将目标域任务冻结为六类结构性缺陷的依据；其次，从目标检测任务定义、YOLO 路线发展和 YOLOv11 结构特点出发，解释了本文选择一阶段 detector 作为工程基础的原因；再次，从注意力机制、损失函数与迁移学习角度建立了第 5 章模型改进与跨域训练的理论依据；最后，阐明了 CAM / Grad-CAM 在低标注增强链路中的角色定位。上述内容共同构成第 3 章数据组织、第 4 章前级预筛以及第 5 章改进检测与跨域迁移策略的理论前提。
+本章围绕后续章节真正会用到的理论基础，完成了四项铺垫工作：其一，明确排水管道缺陷图像在尺度、纹理、背景和类别分布上的任务特征，并据此说明目标域六类结构性缺陷定义的合理性；其二，结合目标检测范式比较与 YOLOv11 结构特点，给出本文以一阶段检测器作为主路线的工程依据；其三，从注意力机制、损失函数和迁移学习三个维度，为第 5 章模型改进与跨域训练策略提供理论支撑；其四，界定 CAM、Grad-CAM 与监督粒度连续体在低标注增强链路中的角色。由此，本章的作用不在于罗列概念，而在于为后续数据组织、预筛设计、检测改进和迁移实验建立统一的理论语义。
 
-为避免后续章节出现理论基础与实验设计脱节的问题，本章进一步将相关理论压缩为可执行的研究问题映射关系。第二章不仅界定相关概念，还明确这些概念分别支撑后续哪类实验、哪项研究问题以及哪条技术路线。表~\ref{tab:theory-rq-mapping} 对这一关系进行集中总结。
+在此基础上，表~\ref{tab:theory-rq-mapping} 将研究问题与理论基础的对应关系进一步收束，避免后续章节出现“方法提出有依据、实验设计无映射”的断裂现象。第 3 章将在这一理论框架上转入数据组织与总体系统设计，第 4 章进一步展开前级高召回预筛与弱监督增强策略，第 5 章则聚焦改进 YOLOv11 检测方法与跨域迁移训练策略本体。
 
 \begin{table}[H]
     \centering
     \caption{研究问题与理论基础映射表}
     \label{tab:theory-rq-mapping}
-    \begin{tabularx}{\textwidth}{P{1.4cm}P{3.2cm}P{3.0cm}Y}
+    \begin{tabularx}{\textwidth}{@{}N{1.1cm}L{2.5cm}L{2.7cm}Y@{}}
         \toprule
-        研究问题 & 对应理论基础 & 直接支撑章节 & 主要回答内容 \\
+        \txhead{研究问题} & \txhead{对应理论基础} & \txhead{直接支撑章节} & \txhead{主要回答内容} \\
         \midrule
         RQ1 & 缺陷图像特征、核心评价指标、监督粒度连续体 & 第 4 章、第 6.2--6.3 节 & 高召回 gate 是否能有效降低误报与正常样本流入 \\
         RQ2 & YOLOv11 原理、注意力机制、损失函数与框回归 & 第 5 章、第 6.4--6.5 节 & 改进 detector 是否能提升复杂场景下的检测性能 \\
@@ -1017,7 +920,7 @@ YOLO 的基本思想是将目标检测视为统一回归问题，在单个网络
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.90\textwidth]{../../img/ch2_yolo11_architecture.pdf}
+    \includegraphics[width=0.90\textwidth]{ch2_yolo11_architecture.pdf}
     \caption{YOLO11 检测模型结构示意}
     \label{fig:ch2-yolo11-architecture-old}
     
@@ -1057,7 +960,7 @@ YOLO 的基本思想是将目标检测视为统一回归问题，在单个网络
 与之对应，后续实验章节还将结合 Recall 与 Specificity 的关系曲线，进一步展示不同任务目标之间的权衡关系。
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.90\textwidth]{../../img/ch2_theory_support_map.pdf}
+    \includegraphics[width=0.90\textwidth]{ch2_theory_support_map.pdf}
     \caption{本文理论基础与方法响应关系图}
     \label{fig:ch2-theory-support-map-old}
     
@@ -1331,7 +1234,7 @@ SE-Net 是通道注意力的经典代表，其核心思想是通过全局信息�
 为了直观展示三个改进模块的边际收益与协同收益，图~\ref{fig:innovation1-gains} 对创新点一的消融结果进行图形化呈现。
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.92\textwidth]{../../img/ch2_supervision_continuum.pdf}
+    \includegraphics[width=0.92\textwidth]{ch2_supervision_continuum.pdf}
     \caption{从图像级监督到检测级监督的连续体}
     \label{fig:ch2-supervision-continuum-old}
     
@@ -1370,10 +1273,10 @@ SE-Net 是通道注意力的经典代表，其核心思想是通过全局信息�
 \begin{table}[H]
     \centering
     \caption{源域单标签六类分类数据集分布}
-    \label{tab:source-dataset}
-    \begin{tabular}{lccc}
+\label{tab:source-dataset}
+    \begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}cccc@{}}
         \toprule
-        类别 & 训练集数量 & 验证集数量 & 总数量 \\
+        \txhead{类别} & \txhead{训练集数量} & \txhead{验证集数量} & \txhead{总数量} \\
         \midrule
         Normal & 1080 & 120 & 1200 \\
         Deformation & 1080 & 120 & 1200 \\
@@ -1384,7 +1287,7 @@ SE-Net 是通道注意力的经典代表，其核心思想是通过全局信息�
         \midrule
         合计 & 6480 & 720 & 7200 \\
         \bottomrule
-    \end{tabular}
+    \end{tabular*}
 \end{table}
 
 同样地，图~\ref{fig:innovation2-gains} 用于展示不同初始化与微调路径带来的迁移收益差异。
@@ -1409,9 +1312,9 @@ SE-Net 是通道注意力的经典代表，其核心思想是通过全局信息�
     \centering
     \caption{目标域六类缺陷与任务定义}
     \label{tab:target-classes}
-    \begin{tabularx}{\textwidth}{P{0.9cm}P{2.5cm}Y}
+    \begin{tabularx}{\textwidth}{@{}N{1.0cm}L{2.2cm}Y@{}}
         \toprule
-        编号 & 类别名称 & 说明 \\
+        \txhead{编号} & \txhead{类别名称} & \txhead{说明} \\
         \midrule
         0 & 破裂裂缝类 & 对应破裂、裂缝、坍塌等管壁破坏性缺陷 \\
         1 & 表面损伤类 & 对应表面损伤、腐蚀样损伤及相关施工或制造缺陷 \\
@@ -1439,9 +1342,9 @@ SE-Net 是通道注意力的经典代表，其核心思想是通过全局信息�
     \centering
     \caption{源域任务视图与目标域任务视图的关系}
     \label{tab:source-target-alignment}
-    \begin{tabularx}{\textwidth}{P{3.0cm}P{3.6cm}Y}
+    \begin{tabularx}{\textwidth}{@{}L{2.4cm}L{3.0cm}Y@{}}
         \toprule
-        任务层级 & 类别视图 & 主要作用 \\
+        \txhead{任务层级} & \txhead{类别视图} & \txhead{主要作用} \\
         \midrule
         源域分类预训练 & 正常、变形、树根、接口异常、壁面损伤、沉积附着 & 学习 sewer scene 通用表征，支撑 gate 与 CAM \\
         第一阶段预筛 & 正常/异常二分类 & 在高召回约束下最大化正常样本过滤率 \\
@@ -1485,9 +1388,9 @@ SE-Net 是通道注意力的经典代表，其核心思想是通过全局信息�
     \centering
     \caption{数据来源与划分协议}
     \label{tab:data-splits}
-    \begin{tabularx}{\textwidth}{P{2.4cm}P{3.2cm}Y}
+    \begin{tabularx}{\textwidth}{@{}L{2.2cm}L{2.6cm}Y@{}}
         \toprule
-        数据层级 & 当前状态 & 主要用途 \\
+        \txhead{数据层级} & \txhead{当前状态} & \txhead{主要用途} \\
         \midrule
         源域分类数据 & 已构建源域单标签六类数据集（7200 张，含 train/val） & source pretrain、gate 扫描、CAM 生成 \\
         目标域图像级数据 & 按六类检测任务持续补充 & target cls finetune、候选区域生成 \\
@@ -1502,9 +1405,9 @@ SE-Net 是通道注意力的经典代表，其核心思想是通过全局信息�
     \centering
     \caption{图像尺寸与长宽比分布统计表}
     \label{tab:image-shape-distribution}
-    \begin{tabularx}{\textwidth}{P{2.3cm}P{2.3cm}P{2.3cm}Y}
+    \begin{tabularx}{\textwidth}{@{}L{2.0cm}L{2.2cm}L{2.3cm}Y@{}}
         \toprule
-        数据层级 & 典型尺寸范围 & 长宽比分布特点 & 主要作用 \\
+        \txhead{数据层级} & \txhead{典型尺寸范围} & \txhead{长宽比分布特点} & \txhead{主要作用} \\
         \midrule
         源域分类数据 & \TODO{填写} & \TODO{填写} & 支撑 source pretrain 与 gate 实验 \\
         目标域图像级数据 & \TODO{填写} & \TODO{填写} & 支撑 target cls finetune 与 CAM 生成 \\
@@ -1517,9 +1420,9 @@ SE-Net 是通道注意力的经典代表，其核心思想是通过全局信息�
     \centering
     \caption{数据质量与清洗规则表}
     \label{tab:data-cleaning-rules}
-    \begin{tabularx}{\textwidth}{P{2.1cm}P{3.0cm}P{1.6cm}Y}
+    \begin{tabularx}{\textwidth}{@{}L{1.8cm}L{2.7cm}N{1.4cm}Y@{}}
         \toprule
-        问题类型 & 判定标准 & 是否剔除 & 后续用途 \\
+        \txhead{问题类型} & \txhead{判定标准} & \txhead{是否剔除} & \txhead{后续用途} \\
         \midrule
         严重模糊/不可辨识 & 缺陷区域无法人工确认 & 是 & 不进入训练与验证 \\
         重复或近重复帧 & 连续多帧信息增量极低 & 部分剔除 & 保留少量代表帧构建运行型验证集 \\
@@ -1568,15 +1471,19 @@ SE-Net 是通道注意力的经典代表，其核心思想是通过全局信息�
 
 \section{YOLO11-cls 源域分类基线扫描}
 
-为确定第一阶段最合适的源域分类容量，本文以 YOLO11-cls 系列的五个尺度模型作为统一候选，即 \textrm{n}、\textrm{s}、\textrm{m}、\textrm{l} 和 \textrm{x}。在相同数据集和相同训练协议下，本文分别开展六类 source 分类基线扫描与二分类 gate 基线扫描。当前五组六类分类结果已经完成汇总，二分类 gate 结果则按当前稿已完成的模型纳入。表\ref{tab:stage1-capacity-scan-cls6}给出六类分类视图下的关键指标，表\ref{tab:stage1-capacity-scan-gate2}给出当前已纳入的二分类 gate 基线结果。后续新增模型将继续按同一字段补入，不改变表结构。
+为确定第一阶段最合适的源域分类容量，本文以 YOLO11-cls 系列的五个尺度模型作为统一候选，即 \textrm{n}、\textrm{s}、\textrm{m}、\textrm{l} 和 \textrm{x}。在相同数据集和相同训练协议下，本文分别开展六类 source 分类基线扫描与二分类 gate 基线扫描。当前五组六类分类结果与五组二分类 gate 结果均已完成汇总。表\ref{tab:stage1-capacity-scan-cls6}给出六类分类视图下的关键指标，表\ref{tab:stage1-capacity-scan-gate2}给出二分类 gate 基线结果。
 
 \begin{table}[H]
     \centering
     \caption{YOLO11-cls 五尺度六类分类结果表}
-    \label{tab:stage1-capacity-scan-cls6}
-    \begin{tabularx}{\textwidth}{P{2.0cm}CCCC}
+\label{tab:stage1-capacity-scan-cls6}
+    \begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}N{2.3cm}
+        S[table-format=1.4]
+        S[table-format=1.4]
+        S[table-format=1.4]
+        N{4.6cm}@{}}
         \toprule
-        模型 & 准确率 & 宏平均F1 & AUPRC & 说明 \\
+        模型 & \numhead{准确率} & \numhead{宏平均\\F1} & \numhead{AUPRC} & \multicolumn{1}{c}{结果说明} \\
         \midrule
         yolo11n-cls & 0.6792 & 0.6800 & 0.9813 & 基础容量，分类性能稳定 \\
         yolo11s-cls & 0.6681 & 0.6708 & 0.9794 & 分类视图整体最弱 \\
@@ -1584,26 +1491,85 @@ SE-Net 是通道注意力的经典代表，其核心思想是通过全局信息�
         yolo11l-cls & 0.7139 & 0.7151 & 0.9879 & 六类分类视图整体最优 \\
         yolo11x-cls & 0.6736 & 0.6762 & 0.9868 & 大模型但分类收益不突出 \\
         \bottomrule
-    \end{tabularx}
+    \end{tabular*}
+\end{table}
+
+\begin{table}[H]
+    \centering
+    \caption{YOLO11-cls 六类间接 gate 默认阈值过滤统计表}
+\label{tab:stage1-filtering-cls6}
+    \begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}N{2.3cm}
+        S[table-format=3.0]
+        S[table-format=2.0]
+        S[table-format=2.0]
+        S[table-format=2.0]
+        S[table-format=1.4]
+        S[table-format=1.4]@{}}
+        \toprule
+        模型 & \numhead{异常正确\\保留} & \numhead{异常\\误过滤} & \numhead{正常正确\\过滤} & \numhead{正常\\未过滤} & \numhead{异常\\召回率} & \numhead{正常\\过滤率} \\
+        \midrule
+        yolo11n-cls & 583 & 17 & 84 & 36 & 0.9717 & 0.7000 \\
+        yolo11s-cls & 589 & 11 & 72 & 48 & 0.9817 & 0.6000 \\
+        yolo11m-cls & 579 & 21 & 87 & 33 & 0.9650 & 0.7250 \\
+        yolo11l-cls & 582 & 18 & 86 & 34 & 0.9700 & 0.7167 \\
+        yolo11x-cls & 578 & 22 & 80 & 40 & 0.9633 & 0.6667 \\
+        \bottomrule
+    \end{tabular*}
 \end{table}
 
 \begin{table}[H]
     \centering
     \caption{YOLO11-cls 二分类 gate 基线结果表}
-    \label{tab:stage1-capacity-scan-gate2}
-    \begin{tabularx}{\textwidth}{P{2.0cm}CCCCCC}
+\label{tab:stage1-capacity-scan-gate2}
+    \begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}N{2.3cm}
+        S[table-format=1.4]
+        S[table-format=1.4]
+        S[table-format=1.4]
+        S[table-format=1.4]
+        S[table-format=1.4]
+        S[table-format=1.4]@{}}
         \toprule
-        模型 & 准确率 & 宏平均F1 & AUROC & AUPRC & 99.5\%召回锚点特异度 & 99.0\%召回锚点特异度 \\
+        模型 & \numhead{准确率} & \numhead{宏平均\\F1} & \numhead{ROC\\面积} & \numhead{PR\\面积} & \numhead{R99.5\\特异度} & \numhead{R99.0\\特异度} \\
         \midrule
         yolo11n-cls & 0.9208 & 0.8531 & 0.9206 & 0.9813 & 0.3167 & 0.4750 \\
         yolo11s-cls & 0.9347 & 0.8762 & 0.9384 & 0.9854 & 0.4083 & 0.4250 \\
+        yolo11m-cls & 0.9292 & 0.8627 & 0.9428 & 0.9873 & 0.3917 & 0.4833 \\
+        yolo11l-cls & 0.9333 & 0.8740 & 0.9439 & 0.9867 & 0.5000 & 0.6167 \\
+        yolo11x-cls & 0.9292 & 0.8606 & 0.9328 & 0.9830 & 0.3417 & 0.4583 \\
         \bottomrule
-    \end{tabularx}
+    \end{tabular*}
+\end{table}
+
+\begin{table}[H]
+    \centering
+    \caption{YOLO11-cls 二分类 gate 默认阈值过滤统计表}
+\label{tab:stage1-filtering-gate2}
+    \begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}N{2.3cm}
+        S[table-format=3.0]
+        S[table-format=2.0]
+        S[table-format=2.0]
+        S[table-format=2.0]
+        S[table-format=1.4]
+        S[table-format=1.4]@{}}
+        \toprule
+        模型 & \numhead{异常正确\\保留} & \numhead{异常\\误过滤} & \numhead{正常正确\\过滤} & \numhead{正常\\未过滤} & \numhead{异常\\召回率} & \numhead{正常\\过滤率} \\
+        \midrule
+        yolo11n-cls & 576 & 24 & 87 & 33 & 0.9600 & 0.7250 \\
+        yolo11s-cls & 584 & 16 & 89 & 31 & 0.9733 & 0.7417 \\
+        yolo11m-cls & 585 & 15 & 84 & 36 & 0.9750 & 0.7000 \\
+        yolo11l-cls & 583 & 17 & 89 & 31 & 0.9717 & 0.7417 \\
+        yolo11x-cls & 587 & 13 & 82 & 38 & 0.9783 & 0.6833 \\
+        \bottomrule
+    \end{tabular*}
 \end{table}
 
 从表\ref{tab:stage1-capacity-scan-cls6}可以看出，\textrm{yolo11l-cls} 在六类分类视图下取得最高的准确率、宏平均 F1 和 AUPRC，说明较大的分类容量有利于提升源域表征质量；\textrm{yolo11m-cls} 的分类表现同样处于第一梯队，体现出较好的综合平衡；而 \textrm{yolo11n-cls}、\textrm{yolo11s-cls} 与 \textrm{yolo11x-cls} 的表现则相对接近。
 
-从表\ref{tab:stage1-capacity-scan-gate2}可以看出，当前稿纳入的二分类 gate baseline 已能够在高召回约束下形成可用的正常样本过滤能力，但不同模型容量对应的收益并不一致。\textrm{yolo11s-cls} 在准确率、宏平均 F1、AUROC 和 AUPRC 四项总体指标上优于 \textrm{yolo11n-cls}，且在 99.5\% 召回锚点下取得更高的特异度；相比之下，\textrm{yolo11n-cls} 在 99.0\% 召回锚点下的特异度略高于 \textrm{yolo11s-cls}。这说明第一阶段 gate 的最优容量并不与六类分类结果完全一致，后续仍需结合其余尺度的二分类结果，进一步判断最佳 gate 容量配置。
+从表\ref{tab:stage1-filtering-cls6}可以看出，在默认阈值下，六类间接 gate 的异常保留能力整体较强，其中 \textrm{yolo11s-cls} 保留了 589 张异常图像，异常召回率达到 0.9817；但其正常过滤数量仅为 72 张，明显低于 \textrm{yolo11m-cls} 的 87 张和 \textrm{yolo11l-cls} 的 86 张。该结果说明，六类分类视图虽然能够形成较高的异常保留率，但默认阈值下的正常样本过滤能力与分类精度并不同步，仍需结合过滤统计进一步判断其作为 gate 的实际价值。
+
+从表\ref{tab:stage1-capacity-scan-gate2}可以看出，当前五组二分类 gate baseline 已形成完整容量扫描结果，但不同模型容量对应的收益并不一致。\textrm{yolo11s-cls} 在准确率和宏平均 F1 上表现最佳，说明其默认阈值下的总体判别能力最强；\textrm{yolo11l-cls} 则在 AUROC、99.5\% 召回锚点特异度和 99.0\% 召回锚点特异度上均取得当前最优结果，表明其在极高召回约束下具备更强的正常样本过滤能力。\textrm{yolo11m-cls} 继续在 AUPRC 上保持最高，说明其中高容量模型在阈值可调空间内仍具备较好的 gate 潜力；相比之下，\textrm{yolo11x-cls} 并未延续大模型优势，其关键锚点指标反而回落，说明容量进一步增大并不必然带来第一阶段 gate 收益。上述结果表明，第一阶段最优容量已经基本收敛于 \textrm{s} 与 \textrm{l} 两个尺度：前者更适合作为默认阈值下的高效 gate 基线，后者更适合在高召回约束下追求更强的正常样本过滤能力。
+
+从表\ref{tab:stage1-filtering-gate2}可以进一步看出，直接二分类 gate 在默认阈值下的过滤统计更具可比性。\textrm{yolo11s-cls} 与 \textrm{yolo11l-cls} 均正确过滤了 89 张正常图像，是当前正常过滤数量最高的两组模型；\textrm{yolo11x-cls} 虽保留了最多的异常图像，但正常过滤数量回落至 82 张，未能继续扩大默认阈值下的过滤收益；\textrm{yolo11m-cls} 在异常误过滤数量上最低，仅误过滤 15 张异常图像，说明其中等容量模型在异常保留与正常过滤之间仍具有较好的均衡性。结合高召回锚点结果可知，二分类 gate 的优选模型并非单一容量垄断，而是需要在默认阈值和高召回约束两个视角下综合确定。
 
 \section{阈值校准与 operating point 选择}
 
@@ -1637,9 +1603,9 @@ SE-Net 是通道注意力的经典代表，其核心思想是通过全局信息�
     \centering
     \caption{CAM 伪框抽检与后续处理模板}
     \label{tab:cam-review-template}
-    \begin{tabularx}{\textwidth}{P{2.2cm}CCCCCC}
+    \begin{tabularx}{\textwidth}{@{}L{1.9cm}*{5}{C}L{3.1cm}@{}}
         \toprule
-        类别 & 抽检数量 & 可直接用 & 轻改可用 & 不可用 & 可用率 & 建议路线 \\
+        \txhead{类别} & \txhead{抽检数量} & \txhead{可直接用} & \txhead{轻改可用} & \txhead{不可用} & \txhead{可用率} & \txhead{建议路线} \\
         \midrule
         破裂裂缝 & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} \\
         表面损伤 & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} \\
@@ -1727,9 +1693,9 @@ SE-Net 是通道注意力的经典代表，其核心思想是通过全局信息�
     \centering
     \caption{改进模块设计说明表}
     \label{tab:improvement-design}
-    \begin{tabularx}{\textwidth}{P{2.2cm}Y}
+    \begin{tabularx}{\textwidth}{@{}L{2.3cm}Y@{}}
         \toprule
-        模块 & 设计目的 \\
+        \txhead{模块} & \txhead{设计目的} \\
         \midrule
         注意力机制 & 强化关键区域与关键通道响应，抑制复杂背景干扰 \\
         检测头改进 & 提升多尺度与细粒度缺陷的分类与定位组织能力 \\
@@ -1742,9 +1708,9 @@ SE-Net 是通道注意力的经典代表，其核心思想是通过全局信息�
     \centering
     \caption{模块插入位置与复杂度变化表}
     \label{tab:module-complexity}
-    \begin{tabularx}{\textwidth}{P{2.2cm}P{2.1cm}P{1.8cm}P{1.8cm}Y}
+    \begin{tabularx}{\textwidth}{@{}L{2.0cm}L{2.1cm}N{1.6cm}N{1.6cm}Y@{}}
         \toprule
-        模块 & 插入层位置 & Params 变化 & FLOPs 变化 & 设计目的 \\
+        \txhead{模块} & \txhead{插入层位置} & \txhead{Params 变化} & \txhead{FLOPs 变化} & \txhead{设计目的} \\
         \midrule
         注意力模块 & \TODO{填写} & \TODO{填写} & \TODO{填写} & 增强关键区域与关键通道响应 \\
         改进检测头 & \TODO{填写} & \TODO{填写} & \TODO{填写} & 提升多尺度与细粒度目标表达能力 \\
@@ -1778,9 +1744,9 @@ SE-Net 是通道注意力的经典代表，其核心思想是通过全局信息�
     \centering
     \caption{迁移策略设置表}
     \label{tab:transfer-design}
-    \begin{tabularx}{\textwidth}{P{1.2cm}Y}
+    \begin{tabularx}{\textwidth}{@{}N{1.1cm}Y@{}}
         \toprule
-        方案编号 & 训练策略说明 \\
+        \txhead{方案编号} & \txhead{训练策略说明} \\
         \midrule
         T0 & 目标域随机初始化，从零开始训练检测器 \\
         T1 & 使用官方 YOLOv11 通用预训练权重直接在目标域检测任务上微调 \\
@@ -1795,9 +1761,9 @@ SE-Net 是通道注意力的经典代表，其核心思想是通过全局信息�
     \centering
     \caption{训练阶段组织与冻结/解冻策略表}
     \label{tab:training-stage-schedule}
-    \begin{tabularx}{\textwidth}{P{2.1cm}P{2.4cm}P{2.1cm}P{1.6cm}P{1.6cm}Y}
+    \begin{tabularx}{\textwidth}{@{}L{1.9cm}L{2.1cm}L{1.9cm}N{1.4cm}N{1.4cm}Y@{}}
         \toprule
-        阶段 & 初始化方式 & 冻结层设置 & 学习率 & 训练轮数 & 输出结果 \\
+        \txhead{阶段} & \txhead{初始化方式} & \txhead{冻结层设置} & \txhead{学习率} & \txhead{训练轮数} & \txhead{输出结果} \\
         \midrule
         Source cls & 官方分类权重 & 不冻结或轻冻结 & \TODO{填写} & \TODO{填写} & source 预训练权重 \\
         Target cls / gate & source cls 迁移 & 视实验设定部分冻结 & \TODO{填写} & \TODO{填写} & target 分类权重与 gate 模型 \\
@@ -1818,40 +1784,52 @@ SE-Net 是通道注意力的经典代表，其核心思想是通过全局信息�
 
 \subsection{实验平台与训练配置}
 
-本文实验在单卡 GPU 工作站上完成，硬件平台采用 \textrm{NVIDIA GeForce RTX 3090}（24GB 显存）。实验软件环境以 \textrm{Python 3.11.15} 为基础，深度学习框架采用 \textrm{PyTorch 2.11.0+cu128}、\textrm{TorchVision 0.26.0+cu128}、\textrm{CUDA 12.8} 与 \textrm{Ultralytics 8.3.0}。对于当前已完成的第一阶段 source 实验，统一使用 \textrm{sewerml\_cls6\_train7200} 数据集，在相同输入尺寸、训练轮数和批大小设置下完成五个尺度的六类分类基线扫描，以保证不同容量模型之间的比较具有可比性。
+本文实验在单卡 GPU 工作站上完成，硬件平台采用 \textrm{NVIDIA GeForce RTX 3090}（24GB 显存）。软件环境以 \textrm{Python 3.11.15} 为基础，深度学习框架采用 \textrm{PyTorch}、\textrm{TorchVision}、\textrm{CUDA} 和 \textrm{Ultralytics}。在当前已完成的第一阶段实验中，六类 source 分类任务以 \textrm{sewerml\_cls6\_train7200} 为输入，二分类 gate 任务则基于同源图像重标注后的 \textrm{sewerml\_gate2\_train7200} 数据集开展。上一轮二分类 gate 五尺度 baseline 采用统一训练协议，即输入尺寸 640、训练轮数 200、batch size 32、数据加载线程数 4、早停 patience 20，并保持 \textrm{optimizer=auto}、\textrm{cache=false} 和 \textrm{resume=false} 不变。为消除早期六类 source baseline 中批大小等配置差异对容量排序的影响，本文随后补充了统一重跑方案：仍以 \textrm{sewerml\_cls6\_train7200} 为输入，对 \textrm{YOLO11n/s/m/l/x-cls} 统一采用输入尺寸 640、训练轮数 100、batch size 32、数据加载线程数 4、早停 patience 20 的设置，并保持其余优化器与数据增强参数一致，用于形成可直接横向比较的六类容量扫描结果。
 
 \begin{table}[H]
     \centering
     \caption{实验参数设置表}
     \label{tab:exp-config}
-    \begin{tabularx}{\textwidth}{P{2.8cm}Y}
+    \begin{tabularx}{\textwidth}{@{}L{2.7cm}Y@{}}
         \toprule
-        项目 & 配置 \\
+        \txhead{项目} & \txhead{配置} \\
         \midrule
         硬件平台 & NVIDIA GeForce RTX 3090，24GB 显存 \\
         软件环境 & Python 3.11.15，CUDA 12.8，PyTorch 2.11.0+cu128，Ultralytics 8.3.0 \\
-        Source 数据集 & \textrm{sewerml\_cls6\_train7200} \\
-        Source 基线模型 & \textrm{YOLO11n/s/m/l/x-cls} \\
-        输入尺寸 & 640×640 \\
-        训练轮数 & 200 \\
-        批大小 & 32 \\
-        数据加载线程数 & 2 \\
-        主要评价指标 & Accuracy、Macro-F1、AUROC、AUPRC \\
+        六类 source 数据集 & \textrm{sewerml\_cls6\_train7200} \\
+        二分类 gate 数据集 & \textrm{sewerml\_gate2\_train7200} \\
+        第一阶段模型范围 & \textrm{YOLO11n/s/m/l/x-cls} \\
+        二分类 gate 输入尺寸 & 640×640 \\
+        二分类 gate 训练轮数 & 200 \\
+        二分类 gate 批大小 & 32 \\
+        二分类 gate 数据加载线程数 & 4 \\
+        二分类 gate 早停轮数 & 20 \\
+        六类统一重跑输入尺寸 & 640×640 \\
+        六类统一重跑训练轮数 & 100 \\
+        六类统一重跑批大小 & 32 \\
+        六类统一重跑数据加载线程数 & 4 \\
+        六类统一重跑早停轮数 & 20 \\
+        第一阶段主要评价指标 & Accuracy、Macro-F1、AUROC、AUPRC、锚点特异度 \\
         \bottomrule
     \end{tabularx}
 \end{table}
 
 \section{第一阶段六类分类与二分类 gate 基线结果分析}
 
-本节首先比较五个 YOLO11-cls 尺度在源域六类分类任务上的容量差异，并进一步结合当前稿已纳入的二分类 gate 结果，分析第一阶段任务重定义后的性能变化。现阶段结果表明，六类分类视图与二分类 gate 视图并不必然对应同一最优模型：在六类分类任务上，\textrm{l} 与 \textrm{m} 构成第一梯队；而在当前已纳入的二分类 gate baseline 中，\textrm{s} 的整体二分类判别能力优于 \textrm{n}，但 \textrm{n} 在 99.0\% 召回锚点下又表现出更高的特异度。这一现象恰好说明，第一阶段的最优模型选择必须结合任务视图和 operating point 共同判断。
+本节首先比较五个 YOLO11-cls 尺度在源域六类分类任务上的容量差异，并进一步结合当前稿已纳入的二分类 gate 结果，分析第一阶段任务重定义后的性能变化。现阶段结果表明，六类分类视图与二分类 gate 视图并不必然对应同一最优模型：在六类分类任务上，\textrm{l} 与 \textrm{m} 构成第一梯队；而在当前已纳入的二分类 gate baseline 中，\textrm{s} 在默认阈值下的总体二分类判别能力更强，\textrm{m} 在 99.0\% 召回锚点下则表现出更高的特异度。这一现象恰好说明，第一阶段的最优模型选择必须结合任务视图和 operating point 共同判断。
 
 \begin{table}[H]
     \centering
     \caption{第一阶段容量扫描结果表}
-    \label{tab:stage1-results}
-    \begin{tabularx}{\textwidth}{P{1.7cm}CCCCCCC}
+\label{tab:stage1-results}
+    \begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}N{2.3cm}
+        S[table-format=1.4]
+        S[table-format=1.4]
+        S[table-format=1.4]
+        S[table-format=1.4]
+        N{4.5cm}@{}}
         \toprule
-        模型 & 准确率 & 宏平均F1 & AUROC & AUPRC & 综合判断 \\
+        模型 & \numhead{准确率} & \numhead{宏平均\\F1} & \numhead{ROC\\面积} & \numhead{PR\\面积} & \multicolumn{1}{c}{综合判断} \\
         \midrule
         yolo11n-cls & 0.6792 & 0.6800 & 0.9288 & 0.9813 & 基础容量，结果稳定 \\
         yolo11s-cls & 0.6681 & 0.6708 & 0.9215 & 0.9794 & 五尺度中整体最弱 \\
@@ -1859,7 +1837,7 @@ SE-Net 是通道注意力的经典代表，其核心思想是通过全局信息�
         yolo11l-cls & 0.7139 & 0.7151 & 0.9488 & 0.9879 & 六类分类结果最优 \\
         yolo11x-cls & 0.6736 & 0.6762 & 0.9430 & 0.9868 & 大模型但分类收益不突出 \\
         \bottomrule
-    \end{tabularx}
+    \end{tabular*}
 \end{table}
 
 从整体趋势看，五个尺度并没有呈现“容量越大、分类结果越好”的完全单调关系。若仅看六类分类指标，\textrm{l} 与 \textrm{m} 构成第一梯队，其中 \textrm{l} 略优于 \textrm{m}；相比之下，\textrm{n} 更像稳定的轻量基线，\textrm{s} 与 \textrm{x} 的收益则不够突出。由此可见，在当前 source 六类分类任务中，中大容量模型更有利于形成高质量缺陷表征，但是否会进一步转化为二分类 gate 或 detector 初始化收益，仍需结合后续实验继续验证。
@@ -1867,18 +1845,28 @@ SE-Net 是通道注意力的经典代表，其核心思想是通过全局信息�
 \begin{table}[H]
     \centering
     \caption{第一阶段二分类 gate 基线结果表}
-    \label{tab:stage1-results-gate2}
-    \begin{tabularx}{\textwidth}{P{2.0cm}CCCCCCC}
+\label{tab:stage1-results-gate2}
+    \begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}N{2.3cm}
+        S[table-format=1.4]
+        S[table-format=1.4]
+        S[table-format=1.4]
+        S[table-format=1.4]
+        S[table-format=1.4]
+        S[table-format=1.4]
+        S[table-format=1.4]@{}}
         \toprule
-        模型 & 准确率 & 宏平均F1 & AUROC & AUPRC & 99.5\%召回锚点特异度 & 99.0\%召回锚点特异度 & 99.0\%召回锚点精确率 \\
+        模型 & \numhead{准确率} & \numhead{宏平均\\F1} & \numhead{ROC\\面积} & \numhead{PR\\面积} & \numhead{R99.5\\特异度} & \numhead{R99.0\\特异度} & \numhead{R99.0\\精确率} \\
         \midrule
         yolo11n-cls & 0.9208 & 0.8531 & 0.9206 & 0.9813 & 0.3167 & 0.4750 & 0.9041 \\
         yolo11s-cls & 0.9347 & 0.8762 & 0.9384 & 0.9854 & 0.4083 & 0.4250 & 0.8961 \\
+        yolo11m-cls & 0.9292 & 0.8627 & 0.9428 & 0.9873 & 0.3917 & 0.4833 & 0.9055 \\
+        yolo11l-cls & 0.9333 & 0.8740 & 0.9439 & 0.9867 & 0.5000 & 0.6167 & 0.9281 \\
+        yolo11x-cls & 0.9292 & 0.8606 & 0.9328 & 0.9830 & 0.3417 & 0.4583 & 0.9014 \\
         \bottomrule
-    \end{tabularx}
+    \end{tabular*}
 \end{table}
 
-从表\ref{tab:stage1-results-gate2}可以看出，\textrm{yolo11s-cls} 在准确率、宏平均 F1、AUROC 与 AUPRC 上均优于 \textrm{yolo11n-cls}，说明适度增加模型容量有助于提升 gate 判别边界的稳定性。进一步观察高召回约束下的 operating point，可以发现 \textrm{yolo11s-cls} 在 99.5\% 召回锚点下取得更高的特异度，而 \textrm{yolo11n-cls} 在 99.0\% 召回锚点下则表现出更高的特异度与精确率。由此可见，第一阶段 gate 的模型选择不能仅依据默认阈值下的总体指标，还需要结合目标召回锚点考察正常样本过滤收益。随着后续其余尺度结果继续补入，第一阶段容量排序将进一步收敛为更稳定的结论。
+从表\ref{tab:stage1-results-gate2}可以看出，\textrm{yolo11s-cls} 在准确率和宏平均 F1 上仍保持最佳，说明适度增加模型容量有助于提升 gate 默认阈值下的判别稳定性。\textrm{yolo11l-cls} 在 AUROC、99.5\% 召回锚点特异度、99.0\% 召回锚点特异度以及 99.0\% 召回锚点精确率上均取得当前最优结果，表明其在极高召回约束下能够获得最强的正常样本过滤收益。\textrm{yolo11m-cls} 则继续在 AUPRC 上保持优势，说明其中高容量模型在可调阈值空间内整体具备较好的 gate 潜力。相比之下，\textrm{yolo11x-cls} 的默认阈值指标与高召回锚点指标均未超过 \textrm{yolo11l-cls}，说明更大的模型容量并未继续带来稳定增益。由此可见，第一阶段 gate 的模型选择不能仅依据默认阈值下的总体指标，而应同时考察目标召回锚点下的正常样本过滤收益；综合当前结果，\textrm{yolo11s-cls} 与 \textrm{yolo11l-cls} 更适合作为后续第一阶段消融与优化的重点候选模型。
 
 \begin{figure}[H]
     \centering
@@ -1898,17 +1886,17 @@ SE-Net 是通道注意力的经典代表，其核心思想是通过全局信息�
 \begin{table}[H]
     \centering
     \caption{第二阶段 baseline 对比表}
-    \label{tab:detector-comparison}
-    \begin{tabularx}{\textwidth}{P{2.3cm}CCCCCCC}
+\label{tab:detector-comparison}
+    \begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}cccccccc@{}}
         \toprule
-        模型 & 参数量 & 计算量 & 精确率 & 召回率 & F1值 & AP50 & 图均误报 \\
+        模型 & \numhead{参数} & \numhead{计算\\量} & \numhead{精确率} & \numhead{召回率} & \numhead{F1值} & \numhead{AP50} & \numhead{误报/图} \\
         \midrule
         YOLOv11 Baseline & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} \\
         YOLOv8-s & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} \\
         YOLOv10-s & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} \\
         RT-DETR-R18 & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} \\
         \bottomrule
-    \end{tabularx}
+    \end{tabular*}
 \end{table}
 
 \begin{figure}[H]
@@ -1926,9 +1914,9 @@ SE-Net 是通道注意力的经典代表，其核心思想是通过全局信息�
     \centering
     \caption{创新点一消融表}
     \label{tab:ablation}
-    \begin{tabularx}{\textwidth}{P{1.0cm}CCCCCCCC}
+    \begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}ccccccccc@{}}
         \toprule
-        组别 & 注意力 & 检测头 & 损失 & 参数量 & 计算量 & 精确率 & 召回率 & AP50 \\
+        组别 & 注意力 & 检测头 & 损失 & \numhead{参数} & \numhead{计算\\量} & \numhead{精确率} & \numhead{召回率} & \numhead{AP50} \\
         \midrule
         B0 & 否 & 否 & 否 & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} \\
         B1 & 是 & 否 & 否 & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} \\
@@ -1939,7 +1927,7 @@ SE-Net 是通道注意力的经典代表，其核心思想是通过全局信息�
         B6 & 否 & 是 & 是 & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} \\
         B7 & 是 & 是 & 是 & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} \\
         \bottomrule
-    \end{tabularx}
+    \end{tabular*}
 \end{table}
 
 \begin{figure}[H]
@@ -1957,17 +1945,17 @@ SE-Net 是通道注意力的经典代表，其核心思想是通过全局信息�
     \centering
     \caption{创新点二迁移对比表}
     \label{tab:transfer-results}
-    \begin{tabularx}{\textwidth}{P{1.0cm}P{2.8cm}CCCCCC}
+    \begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}cccccccc@{}}
         \toprule
-        组别 & 初始化方式 & 源域预训练 & 目标域分类微调 & 精确率 & 召回率 & AP50 & 图均误报 \\
+        组别 & 初始化 & \tbhead{源域\\预训练} & \tbhead{目标域\\微调} & \numhead{精确率} & \numhead{召回率} & \numhead{AP50} & \numhead{误报/图} \\
         \midrule
         T0 & 从零训练 & 否 & 否 & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} \\
-        T1 & 官方预训练 & 否 & 否 & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} \\
-        T2 & 源域分类预训练 & 是 & 否 & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} \\
-        T3 & 源域预训练+目标域分类微调 & 是 & 是 & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} \\
-        T4 & 最佳迁移方案 & 是 & 是 & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} \\
+        T1 & 官方预训 & 否 & 否 & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} \\
+        T2 & 源域预训 & 是 & 否 & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} \\
+        T3 & \tbhead{源域预训+\\目标域微调} & 是 & 是 & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} \\
+        T4 & \tbhead{最优迁移\\方案} & 是 & 是 & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} \\
         \bottomrule
-    \end{tabularx}
+    \end{tabular*}
 \end{table}
 
 \begin{figure}[H]
@@ -1985,17 +1973,17 @@ SE-Net 是通道注意力的经典代表，其核心思想是通过全局信息�
     \centering
     \caption{两阶段系统对比表}
     \label{tab:system-comparison}
-    \begin{tabularx}{\textwidth}{P{1.0cm}P{1.8cm}P{2.6cm}CCCCCC}
+    \begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}ccccccccc@{}}
         \toprule
-        系统 & 第一阶段 & 第二阶段 & 门控召回率 & NRR & PTR & 精确率 & 召回率 & 图均误报 \\
+        系统 & 阶段一 & 阶段二 & \numhead{门控\\召回} & \numhead{NRR} & \numhead{PTR} & \numhead{精确率} & \numhead{召回率} & \numhead{误报/图} \\
         \midrule
-        S0 & 无 & 单阶段直接检测 & --- & --- & --- & \TODO{填写} & \TODO{填写} & \TODO{填写} \\
-        S1 & 原版 gate & 原版 detector & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} \\
-        S2 & 改进 gate & 原版 detector & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} \\
-        S3 & 改进 gate & 改进 YOLOv11 & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} \\
-        S4 & 改进 gate & 改进 YOLOv11 + transfer & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} \\
+        S0 & 无 & \tbhead{单阶段\\直接检测} & --- & --- & --- & \TODO{填写} & \TODO{填写} & \TODO{填写} \\
+        S1 & \tbhead{基线\\gate} & \tbhead{基线\\检测器} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} \\
+        S2 & \tbhead{改进\\gate} & \tbhead{基线\\检测器} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} \\
+        S3 & \tbhead{改进\\gate} & \tbhead{改进\\检测器} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} \\
+        S4 & \tbhead{改进\\gate} & \tbhead{迁移增强\\检测器} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} \\
         \bottomrule
-    \end{tabularx}
+    \end{tabular*}
 \end{table}
 
 \begin{figure}[H]
@@ -2013,9 +2001,9 @@ SE-Net 是通道注意力的经典代表，其核心思想是通过全局信息�
     \centering
     \caption{各类别检测结果表}
     \label{tab:per-class-detection}
-    \begin{tabularx}{\textwidth}{P{2.0cm}CCCCCY}
+    \begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}N{1.8cm}cccccN{3.8cm}@{}}
         \toprule
-        类别 & Precision & Recall & F1 & AP50 & AP50-95 & 主要错误类型 \\
+        \multicolumn{1}{c}{类别} & \numhead{精确率} & \numhead{召回率} & \numhead{F1} & \numhead{AP50} & \numhead{AP50-95} & \multicolumn{1}{c}{主要错误类型} \\
         \midrule
         破裂裂缝 & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} \\
         表面损伤 & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} \\
@@ -2024,7 +2012,7 @@ SE-Net 是通道注意力的经典代表，其核心思想是通过全局信息�
         侵入 & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} \\
         渗漏 & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} \\
         \bottomrule
-    \end{tabularx}
+    \end{tabular*}
 \end{table}
 
 \begin{figure}[H]
@@ -2071,9 +2059,9 @@ SE-Net 是通道注意力的经典代表，其核心思想是通过全局信息�
     \centering
     \caption{本文主要结论与证据对应表}
     \label{tab:conclusion-evidence}
-    \begin{tabularx}{\textwidth}{P{4.0cm}P{2.1cm}P{3.0cm}Y}
+    \begin{tabularx}{\textwidth}{@{}L{3.3cm}L{1.7cm}L{2.4cm}Y@{}}
         \toprule
-        主要结论 & 对应章节 & 关键证据图表 & 工程意义 \\
+        \txhead{主要结论} & \txhead{对应章节} & \txhead{关键证据图表} & \txhead{工程意义} \\
         \midrule
         第一阶段高召回 gate 有望在高召回约束下有效降低正常样本流量 & 第4章、第6章 & 第4章任务设计说明、表6.2及后续二分类 gate 实验结果 & 降低复核压力，减少后级计算负担 \\
         改进 YOLOv11 能提升复杂背景与小目标场景下的检测表现 & 第5章、第6章 & 表5.1、图5.1--图5.3、表6.4、表6.5 & 提升目标域检测精度与稳定性 \\
@@ -2311,9 +2299,9 @@ Wang H, Li Z, Wang H. Few-Shot Steel Surface Defect Detection[J]. IEEE Transacti
     \centering
     \caption{附录补充图表规划表}
     \label{tab:appendix-plan}
-    \begin{tabular}{p{3cm}p{5cm}p{6cm}}
+    \begin{tabularx}{\textwidth}{@{}L{1.8cm}L{3.4cm}Y@{}}
         \toprule
-        附录编号 & 建议内容 & 主要作用 \\
+        \txhead{附录编号} & \txhead{建议内容} & \txhead{主要作用} \\
         \midrule
         表A.1--表A.2 & 全量 threshold sweep 表、五尺度完整 baseline 指标表 & 补充正文未展开的原始数值 \\
         表A.3--表A.6 & 全量 run config、混淆矩阵明细、伪框抽检记录、错误样本统计表 & 展示实验原材料的完整性 \\
@@ -2321,7 +2309,7 @@ Wang H, Li Z, Wang H. Few-Shot Steel Surface Defect Detection[J]. IEEE Transacti
         图A.3--图A.4 & 更多 CAM 与 Grad-CAM 及校准图 & 支撑第一阶段支撑链分析 \\
         图A.5--图A.8 & 全量训练曲线、每类 PR 曲线、更多误检/漏检画廊、资源监控图 & 支撑实验充分性与可复核性 \\
         \bottomrule
-    \end{tabular}
+    \end{tabularx}
 \end{table}
 
 \chapter{补充说明}

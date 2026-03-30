@@ -1,0 +1,23 @@
+{
+  "encoding": "utf-8",
+  "targets": [
+    "essay.tex"
+  ],
+  "rules": [
+    {
+      "name": "remove-double-quotes",
+      "pattern": "\"([^\"]+)\"",
+      "replacement": "$1"
+    },
+    {
+      "name": "replace-colloquial-phrase",
+      "pattern": "也就是说",
+      "replacement": "即"
+    },
+    {
+      "name": "replace-oral-emphasis",
+      "pattern": "还需要强调的是",
+      "replacement": "需要指出的是"
+    }
+  ]
+}

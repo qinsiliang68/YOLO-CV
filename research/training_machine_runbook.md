@@ -17,9 +17,9 @@ Default one-click pipeline entrypoint:
 uv run --no-sync main.py
 ```
 
-`main.py` runs the default CLS6 source pretraining, target classification fine-tuning, CAM export,
-and pseudo-box generation pipeline. It stops early with a clear error if the target-domain inputs
-have not been placed into the expected local-only paths yet.
+`main.py` may be temporarily replaced on the training machine for single-purpose sweeps.
+The current dedicated six-class uniform sweep uses the same root entrypoint and does not require
+manually editing the Python script after placement.
 
 Available `-Backend` values:
 
@@ -124,6 +124,37 @@ Recommended class names:
 - 6 classes
 - 500 images per class
 - 450 train + 50 val per class
+
+### Uniform Five-Scale CLS6 Sweep
+
+This run is used to remove historical hyperparameter inconsistency across the six-class source
+capacity scan. The current uniform sweep uses:
+
+- dataset: `data/sewerml_cls6_train7200`
+- models: `yolo11n/s/m/l/x-cls.pt`
+- `imgsz=640`
+- `epochs=100`
+- `batch=32`
+- `workers=4`
+- `patience=20`
+- `optimizer=auto`
+- `cache=false`
+- `resume=false`
+
+Run:
+
+```powershell
+uv run main.py --rerun
+```
+
+Related config:
+
+- `YOLOv11/configs/runtime/cls_cls6_sweep.json`
+
+Outputs:
+
+- runs: `YOLOv11/runs/cls_source_uniform/...`
+- materials: `research/materials/...`
 
 ### Target Classification Fine-Tuning
 
