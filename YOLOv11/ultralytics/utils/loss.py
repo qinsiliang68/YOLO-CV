@@ -611,11 +611,54 @@ class v8PoseLoss(v8DetectionLoss):
 class v8ClassificationLoss:
     """Criterion class for computing training losses."""
 
+    def __init__(self, model=None):
+        """Initialize classification loss with optional custom binary-loss settings."""
+        cfg = getattr(model, "custom_loss_cfg", {}) or {}
+        self.loss_type = str(cfg.get("cls_loss_type") or "cross_entropy").lower()
+        self.pos_weight = float(cfg.get("cls_pos_weight") or 1.0)
+        self.focal_gamma = float(cfg.get("cls_focal_gamma") or 2.0)
+        self.focal_alpha = float(cfg.get("cls_focal_alpha") or 0.25)
+
+    def _binary_abnormal_target(self, batch):
+        """Map current binary gate labels to abnormal target with class index 0 as positive."""
+        cls = batch["cls"].view(-1)
+        return (cls == 0).to(dtype=torch.float32, device=cls.device)
+
+    def _binary_abnormal_logit(self, preds):
+        """Use class-0 vs class-1 logit margin as abnormal logit."""
+        return preds[:, 0] - preds[:, 1]
+
+    def _focal_bce(self, logits, targets):
+        """Binary focal BCE on abnormal logits."""
+        bce = F.binary_cross_entropy_with_logits(logits, targets, reduction="none")
+        probs = torch.sigmoid(logits)
+        p_t = targets * probs + (1.0 - targets) * (1.0 - probs)
+        alpha_t = targets * self.focal_alpha + (1.0 - targets) * (1.0 - self.focal_alpha)
+        focal_factor = (1.0 - p_t).pow(self.focal_gamma)
+        return (alpha_t * focal_factor * bce).mean()
+
     def __call__(self, preds, batch):
         """Compute the classification loss between predictions and true labels."""
-        loss = F.cross_entropy(preds, batch["cls"], reduction="mean")
-        loss_items = loss.detach()
-        return loss, loss_items
+        if preds.ndim != 2 or preds.shape[1] != 2 or self.loss_type == "cross_entropy":
+            loss = F.cross_entropy(preds, batch["cls"], reduction="mean")
+            return loss, loss.detach()
+
+        abnormal_target = self._binary_abnormal_target(batch).to(dtype=preds.dtype)
+        abnormal_logit = self._binary_abnormal_logit(preds)
+
+        if self.loss_type == "weighted_bce":
+            pos_weight = torch.tensor(self.pos_weight, dtype=preds.dtype, device=preds.device)
+            loss = F.binary_cross_entropy_with_logits(
+                abnormal_logit,
+                abnormal_target,
+                pos_weight=pos_weight,
+                reduction="mean",
+            )
+        elif self.loss_type == "focal_bce":
+            loss = self._focal_bce(abnormal_logit, abnormal_target)
+        else:
+            loss = F.cross_entropy(preds, batch["cls"], reduction="mean")
+        return loss, loss.detach()
 
 
 class v8OBBLoss(v8DetectionLoss):

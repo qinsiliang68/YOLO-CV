@@ -45,6 +45,7 @@ _upstream_git_cache/
 _recycle_bin/
 .ultralytics/
 $out/
+build/
 
 # Per-version working directories
 YOLOv11/datasets/*

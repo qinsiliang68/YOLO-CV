@@ -1,0 +1,4 @@
+operating_point,before_threshold,after_threshold,before_specificity,after_specificity,before_precision,after_precision,before_ptr,after_ptr
+recall_ge_99_5,0.17,0.17,0.369048,0.369048,0.887473,0.887473,0.934524,0.934524
+recall_ge_99_0,0.2,0.23,0.440476,0.452381,0.898707,0.900433,0.920635,0.916667
+recall_ge_98_0,0.26,0.26,0.488095,0.488095,0.905495,0.905702,0.902778,0.904762

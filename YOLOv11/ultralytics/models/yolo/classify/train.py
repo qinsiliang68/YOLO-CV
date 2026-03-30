@@ -48,6 +48,12 @@ class ClassificationTrainer(BaseTrainer):
         model = ClassificationModel(cfg, nc=self.data["nc"], verbose=verbose and RANK == -1)
         if weights:
             model.load(weights)
+        model.custom_loss_cfg = {
+            "cls_loss_type": getattr(self.args, "cls_loss_type", None),
+            "cls_pos_weight": getattr(self.args, "cls_pos_weight", None),
+            "cls_focal_gamma": getattr(self.args, "cls_focal_gamma", None),
+            "cls_focal_alpha": getattr(self.args, "cls_focal_alpha", None),
+        }
 
         for m in model.modules():
             if not self.args.pretrained and hasattr(m, "reset_parameters"):
