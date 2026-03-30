@@ -38,11 +38,13 @@ essay/docs/build/*.log
 essay/docs/build/*.lot
 essay/docs/build/*.out
 essay/docs/build/*.toc
+essay/reference/
 
 # Local clone cache
 _upstream_git_cache/
 _recycle_bin/
 .ultralytics/
+$out/
 
 # Per-version working directories
 YOLOv11/datasets/*

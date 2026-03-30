@@ -1,25 +1,25 @@
 {
-    "source_dataset": "C:/Users/ASUS/Desktop/YOLOv11/YOLO-CV/data/sewerml_cls6_train7200",
-    "project": "C:/Users/ASUS/Desktop/YOLOv11/YOLO-CV/YOLOv11/runs/cls_source_uniform",
-    "recycle_root": "C:/Users/ASUS/Desktop/YOLOv11/YOLO-CV/_recycle_bin/cls_source_uniform",
-    "temp_config_dir": "C:/Users/ASUS/Desktop/YOLOv11/YOLO-CV/$out/generated_configs/cls6_sweep",
-    "models": [
-      "yolo11n-cls.pt",
-      "yolo11s-cls.pt",
-      "yolo11m-cls.pt",
-      "yolo11l-cls.pt",
-      "yolo11x-cls.pt"
-    ],
-    "epochs": 100,
-    "imgsz": 640,
-    "batch": 32,
-    "workers": 4,
-    "device": "0",
-    "pretrained": true,
-    "patience": 20,
-    "optimizer": "auto",
-    "cache": false,
-    "resume": false,
-    "collect_batch": 16,
-    "run_name_suffix": "cls6_train7200_uniform"
-  }
+  "source_dataset": "C:/Users/ASUS/Desktop/YOLOv11/YOLO-CV/data/sewerml_cls6_train7200",
+  "project": "C:/Users/ASUS/Desktop/YOLOv11/YOLO-CV/YOLOv11/runs/cls_source_uniform",
+  "recycle_root": "C:/Users/ASUS/Desktop/YOLOv11/YOLO-CV/_recycle_bin/cls_source_uniform",
+  "temp_config_dir": "C:/Users/ASUS/Desktop/YOLOv11/YOLO-CV/$out/generated_configs/cls6_sweep",
+  "models": [
+    "yolo11n-cls.pt",
+    "yolo11s-cls.pt",
+    "yolo11m-cls.pt",
+    "yolo11l-cls.pt",
+    "yolo11x-cls.pt"
+  ],
+  "epochs": 100,
+  "imgsz": 640,
+  "batch": 32,
+  "workers": 4,
+  "device": "0",
+  "pretrained": true,
+  "patience": 20,
+  "optimizer": "auto",
+  "cache": false,
+  "resume": false,
+  "collect_batch": 16,
+  "run_name_suffix": "cls6_train7200_uniform"
+}

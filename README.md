@@ -35,6 +35,7 @@ See `research/experiment_handoff_workflow.md`.
 ## Main Entry Points
 
 - One-click source -> target -> CAM -> pseudo-box pipeline: `uv run --no-sync main.py`
+- Dedicated uniform five-scale CLS6 sweep: `uv run main.py --rerun`
 - Source classification pretraining: `.\scripts\cls_pretrain.ps1`
 - Extract the only active 3000-image source set directly from raw SewerML: `.\scripts\extract_sewerml_cls6_train3000.ps1 -Clean`
 - Target classification fine-tuning: `.\scripts\cls_finetune_target.ps1`
