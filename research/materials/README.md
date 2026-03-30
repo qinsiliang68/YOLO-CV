@@ -18,6 +18,15 @@ Each run directory keeps:
 - `val_embeddings.npy` and `val_embeddings_index.csv`: validation embedding exports
 - `raw_run_artifacts/`: copied training outputs such as `args.yaml`, `results.csv`, `results.png`, confusion matrices, batch previews, and `training_runtime.json`
 
+Some gate runs may also include a `calibration_ts/` subdirectory with:
+- `temperature_scaling.json`: fitted temperature and split metadata
+- `val_cal.csv` and `val_op.csv`: stratified calibration/evaluation split records
+- `val_op_predictions_calibrated.csv`: calibrated evaluation probabilities
+- `threshold_sweep_before.csv` and `threshold_sweep_calibrated.csv`
+- `threshold_operating_points_before.json` and `threshold_operating_points_calibrated.json`
+- `calibration_curve_before.csv` and `calibration_curve_after.csv`
+- exported comparison plots for reliability, ECE/Brier, and threshold sweep
+
 Excluded from Git:
 - original datasets
 - large model weights such as `*.pt`

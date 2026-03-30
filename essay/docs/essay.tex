@@ -810,9 +810,9 @@ YOLOv11 的分类模型与检测模型虽然共享部分工程接口，但二者
     \centering
     \caption{迁移学习与域适应策略比较表}
     \label{tab:transfer-strategy-comparison}
-    \begin{tabularx}{\textwidth}{@{}L{2.0cm}N{1.5cm}N{1.5cm}L{1.8cm}Y@{}}
+\begin{tabularx}{\textwidth}{@{}L{1.7cm}N{1.35cm}N{1.35cm}N{1.65cm}Y@{}}
         \toprule
-        \txhead{方法类型} & \txhead{是否需要目标域标签} & \txhead{是否需要对抗训练} & \txhead{工程复杂度} & \txhead{本文采用情况} \\
+        \txhead{方法类型} & \txhead{目标域标签} & \txhead{对抗训练} & \txhead{实现复杂度} & \txhead{本文采用情况} \\
         \midrule
         通用预训练+微调 & 需要 & 否 & 低 & 作为基础对照 \\
         同领域源域预训练+微调 & 需要少量标签 & 否 & 低到中等 & 本文主路线 \\
@@ -1593,7 +1593,7 @@ SE-Net 是通道注意力的经典代表，其核心思想是通过全局信息�
 
 \section{YOLO11-cls 源域分类基线扫描}
 
-为确定第一阶段最合适的源域分类容量，本文以 YOLO11-cls 系列的五个尺度模型作为统一候选，即 \textrm{n}、\textrm{s}、\textrm{m}、\textrm{l} 和 \textrm{x}。在相同数据集和相同训练协议下，本文分别开展六类 source 分类基线扫描与二分类 gate 基线扫描。当前五组六类分类结果与五组二分类 gate 结果均已完成汇总。表\ref{tab:stage1-capacity-scan-cls6}给出六类分类视图下的关键指标，表\ref{tab:stage1-capacity-scan-gate2}给出二分类 gate 基线结果。
+为确定第一阶段最合适的源域分类容量，本文以 YOLO11-cls 系列的五个尺度模型作为统一候选，即 \textrm{n}、\textrm{s}、\textrm{m}、\textrm{l} 和 \textrm{x}。在相同数据集和相同训练协议下，本文分别开展六类 source 分类基线扫描与二分类 gate 基线扫描。由于六类 source 分类实验正在按统一超参数重新跑批，旧一轮六类结果不再作为正文结论依据；当前正文先保留表\ref{tab:stage1-capacity-scan-cls6} 作为最终汇总结构位，而第一阶段模型选择主要依据已完成的二分类 gate baseline 与 calibration 结果。
 
 \begin{table}[H]
     \centering
@@ -1607,11 +1607,11 @@ SE-Net 是通道注意力的经典代表，其核心思想是通过全局信息�
         \toprule
         模型 & \numhead{准确率} & \numhead{宏平均\\F1} & \numhead{AUPRC} & \multicolumn{1}{c}{结果说明} \\
         \midrule
-        yolo11n-cls & 0.6792 & 0.6800 & 0.9813 & 基础容量，分类性能稳定 \\
-        yolo11s-cls & 0.6681 & 0.6708 & 0.9794 & 分类视图整体最弱 \\
-        yolo11m-cls & 0.7028 & 0.7025 & 0.9860 & 分类与 gate 默认阈值较均衡 \\
-        yolo11l-cls & 0.7139 & 0.7151 & 0.9879 & 六类分类视图整体最优 \\
-        yolo11x-cls & 0.6736 & 0.6762 & 0.9868 & 大模型但分类收益不突出 \\
+        yolo11n-cls & \TODO{重跑后填写} & \TODO{重跑后填写} & \TODO{重跑后填写} & 统一超参数结果待补入 \\
+        yolo11s-cls & \TODO{重跑后填写} & \TODO{重跑后填写} & \TODO{重跑后填写} & 统一超参数结果待补入 \\
+        yolo11m-cls & \TODO{重跑后填写} & \TODO{重跑后填写} & \TODO{重跑后填写} & 统一超参数结果待补入 \\
+        yolo11l-cls & \TODO{重跑后填写} & \TODO{重跑后填写} & \TODO{重跑后填写} & 统一超参数结果待补入 \\
+        yolo11x-cls & \TODO{重跑后填写} & \TODO{重跑后填写} & \TODO{重跑后填写} & 统一超参数结果待补入 \\
         \bottomrule
     \end{tabular*}
 \end{table}
@@ -1630,11 +1630,11 @@ SE-Net 是通道注意力的经典代表，其核心思想是通过全局信息�
         \toprule
         模型 & \numhead{异常正确\\保留} & \numhead{异常\\误过滤} & \numhead{正常正确\\过滤} & \numhead{正常\\未过滤} & \numhead{异常\\召回率} & \numhead{正常\\过滤率} \\
         \midrule
-        yolo11n-cls & 583 & 17 & 84 & 36 & 0.9717 & 0.7000 \\
-        yolo11s-cls & 589 & 11 & 72 & 48 & 0.9817 & 0.6000 \\
-        yolo11m-cls & 579 & 21 & 87 & 33 & 0.9650 & 0.7250 \\
-        yolo11l-cls & 582 & 18 & 86 & 34 & 0.9700 & 0.7167 \\
-        yolo11x-cls & 578 & 22 & 80 & 40 & 0.9633 & 0.6667 \\
+        yolo11n-cls & \TODO{重跑后填写} & \TODO{重跑后填写} & \TODO{重跑后填写} & \TODO{重跑后填写} & \TODO{重跑后填写} & \TODO{重跑后填写} \\
+        yolo11s-cls & \TODO{重跑后填写} & \TODO{重跑后填写} & \TODO{重跑后填写} & \TODO{重跑后填写} & \TODO{重跑后填写} & \TODO{重跑后填写} \\
+        yolo11m-cls & \TODO{重跑后填写} & \TODO{重跑后填写} & \TODO{重跑后填写} & \TODO{重跑后填写} & \TODO{重跑后填写} & \TODO{重跑后填写} \\
+        yolo11l-cls & \TODO{重跑后填写} & \TODO{重跑后填写} & \TODO{重跑后填写} & \TODO{重跑后填写} & \TODO{重跑后填写} & \TODO{重跑后填写} \\
+        yolo11x-cls & \TODO{重跑后填写} & \TODO{重跑后填写} & \TODO{重跑后填写} & \TODO{重跑后填写} & \TODO{重跑后填写} & \TODO{重跑后填写} \\
         \bottomrule
     \end{tabular*}
 \end{table}
@@ -1685,17 +1685,17 @@ SE-Net 是通道注意力的经典代表，其核心思想是通过全局信息�
     \end{tabular*}
 \end{table}
 
-从表\ref{tab:stage1-capacity-scan-cls6}可以看出，\textrm{yolo11l-cls} 在六类分类视图下取得最高的准确率、宏平均 F1 和 AUPRC，说明较大的分类容量有利于提升源域表征质量；\textrm{yolo11m-cls} 的分类表现同样处于第一梯队，体现出较好的综合平衡；而 \textrm{yolo11n-cls}、\textrm{yolo11s-cls} 与 \textrm{yolo11x-cls} 的表现则相对接近。
-
-从表\ref{tab:stage1-filtering-cls6}可以看出，在默认阈值下，六类间接 gate 的异常保留能力整体较强，其中 \textrm{yolo11s-cls} 保留了 589 张异常图像，异常召回率达到 0.9817；但其正常过滤数量仅为 72 张，明显低于 \textrm{yolo11m-cls} 的 87 张和 \textrm{yolo11l-cls} 的 86 张。该结果说明，六类分类视图虽然能够形成较高的异常保留率，但默认阈值下的正常样本过滤能力与分类精度并不同步，仍需结合过滤统计进一步判断其作为 gate 的实际价值。
+由于六类 source 分类实验已切换到统一超参数重跑协议，当前旧一轮六类结果不再作为正文分析依据。表\ref{tab:stage1-capacity-scan-cls6} 与表\ref{tab:stage1-filtering-cls6} 仅保留最终结果位，用于在全部五个尺度的新结果回收后一次性替换。当前第一阶段的模型选择与 calibration 分析，均以已完成的 direct binary gate baseline 为准。
 
 从表\ref{tab:stage1-capacity-scan-gate2}可以看出，当前五组二分类 gate baseline 已形成完整容量扫描结果，但不同模型容量对应的收益并不一致。\textrm{yolo11s-cls} 在准确率和宏平均 F1 上表现最佳，说明其默认阈值下的总体判别能力最强；\textrm{yolo11l-cls} 则在 AUROC、99.5\% 召回锚点特异度和 99.0\% 召回锚点特异度上均取得当前最优结果，表明其在极高召回约束下具备更强的正常样本过滤能力。\textrm{yolo11m-cls} 继续在 AUPRC 上保持最高，说明其中高容量模型在阈值可调空间内仍具备较好的 gate 潜力；相比之下，\textrm{yolo11x-cls} 并未延续大模型优势，其关键锚点指标反而回落，说明容量进一步增大并不必然带来第一阶段 gate 收益。上述结果表明，第一阶段最优容量已经基本收敛于 \textrm{s} 与 \textrm{l} 两个尺度：前者更适合作为默认阈值下的高效 gate 基线，后者更适合在高召回约束下追求更强的正常样本过滤能力。
 
-从表\ref{tab:stage1-filtering-gate2}可以进一步看出，直接二分类 gate 在默认阈值下的过滤统计更具可比性。\textrm{yolo11s-cls} 与 \textrm{yolo11l-cls} 均正确过滤了 89 张正常图像，是当前正常过滤数量最高的两组模型；\textrm{yolo11x-cls} 虽保留了最多的异常图像，但正常过滤数量回落至 82 张，未能继续扩大默认阈值下的过滤收益；\textrm{yolo11m-cls} 在异常误过滤数量上最低，仅误过滤 15 张异常图像，说明其中等容量模型在异常保留与正常过滤之间仍具有较好的均衡性。结合高召回锚点结果可知，二分类 gate 的优选模型并非单一容量垄断，而是需要在默认阈值和高召回约束两个视角下综合确定。
+从表\ref{tab:stage1-filtering-gate2}可以进一步看出，直接二分类 gate 在默认阈值下的过滤统计更具可比性。\textrm{yolo11s-cls} 与 \textrm{yolo11l-cls} 均正确过滤了 89 张正常图像，是当前正常过滤数量最高的两组模型；\textrm{yolo11x-cls} 虽保留了最多的异常图像，但正常过滤数量回落至 82 张，未能继续扩大默认阈值下的过滤收益；\textrm{yolo11x-cls} 在异常误过滤数量上最低，仅误过滤 13 张异常图像，说明其大容量模型在异常保留能力上最强，但正常过滤数量的回落也表明异常保留与正常过滤之间仍需权衡。结合高召回锚点结果可知，二分类 gate 的优选模型并非单一容量垄断，而是需要在默认阈值和高召回约束两个视角下综合确定。
 
 \section{阈值校准与 operating point 选择}
 
-第一阶段 gate 的有效性不能只通过默认阈值下的准确率判断，更需要结合高召回约束下的过滤能力进行分析。因此，本文采用 threshold sweep 的方式扫描不同阈值，并重点记录 Recall 锚点附近的 Specificity、Precision 以及样本通过比例等指标。当前已完成的 \textrm{n/s} 二分类结果表明，两组模型在默认阈值下都能保持较高的异常召回率，但在高召回锚点附近的过滤收益并不相同：\textrm{yolo11s-cls} 在 Recall 不低于 99.5\% 时达到 0.4083 的 Specificity，高于 \textrm{yolo11n-cls} 的 0.3167；而在 Recall 不低于 99.0\% 时，\textrm{yolo11n-cls} 的 Specificity 为 0.4750，略高于 \textrm{yolo11s-cls} 的 0.4250。该结果说明 operating point 的选择需要与目标召回锚点同步考虑，而不能仅由默认阈值性能或六类分类精度替代判断。
+第一阶段 gate 的有效性不能只通过默认阈值下的准确率判断，更需要结合高召回约束下的过滤能力进行分析。因此，本文在完成五尺度二分类 gate baseline 后，进一步选取具有代表性的 \textrm{yolo11m-cls} 与 \textrm{yolo11l-cls} 开展 Temperature Scaling 实验。其中，\textrm{yolo11s-cls} 虽然在默认阈值下取得最高的准确率和宏平均 F1，但 \textrm{yolo11m-cls} 在 AUPRC 与 99.0\% 召回锚点上表现更优，体现出更强的阈值可调空间；\textrm{yolo11l-cls} 则在高召回锚点下呈现最强的正常样本过滤收益。因此，本文将 \textrm{m} 与 \textrm{l} 作为第一阶段 calibration 的重点对象，用于比较“分数质量较优模型”和“高召回锚点最优模型”在校准后的差异。
+
+具体实现中，本文不再重新导出模型原始 logit，而是直接利用现有 raw materials 中逐图验证预测结果给出的 \textrm{p\_abnormal}，经概率裁剪后反推二分类 logit，并在此基础上拟合单标量温度参数 \textrm{T}。为避免同一份验证集同时用于拟合和报告结果，全部 720 张验证图像按类别分层拆分为两部分：其中 val-cal 占 30\%，用于拟合温度参数；val-op 占 70\%，用于重新执行 threshold sweep、计算 ECE 并报告正式 operating point。该设计在不增加模型重训成本的前提下，为后续第6章的 calibration 定量比较提供了相对干净的评估闭环。
 
 \section{Hard Negative Mining 策略}
 
@@ -1741,7 +1741,7 @@ SE-Net 是通道注意力的经典代表，其核心思想是通过全局信息�
 
 \section{本章小结}
 
-本章围绕第一阶段高召回预筛和弱监督标注增强，完成了任务定义、二分类 gate 组织方式、六类 source 分类容量扫描、二分类 gate 基线结果分析、阈值选择思路、hard negative 思路和 CAM 伪框流程的结构化说明。需要再次强调的是，本章并非本文的主创新章，而是支撑后续改进 detector 与跨域迁移落地的工程链条章节。当前正文已经纳入五组六类 source 分类结果和当前已完成的二分类 gate baseline，后续新增尺度结果与第一阶段消融将继续按同一结构补充。第5章将在此基础上转入本文的核心方法设计，即改进 YOLOv11 检测方法与跨域迁移训练策略。
+本章围绕第一阶段高召回预筛和弱监督标注增强，完成了任务定义、二分类 gate 组织方式、六类 source 分类结构位、二分类 gate 基线结果分析、阈值选择思路、hard negative 思路和 CAM 伪框流程的结构化说明。需要再次强调的是，本章并非本文的主创新章，而是支撑后续改进 detector 与跨域迁移落地的工程链条章节。当前正文中的第一阶段核心结论以五组 direct binary gate baseline 与 calibration 结果为准；六类 source 分类部分待统一超参数重跑全部完成后再整体替换。第5章将在此基础上转入本文的核心方法设计，即改进 YOLOv11 检测方法与跨域迁移训练策略。
 
 \chapter{基于改进 YOLOv11 的管道缺陷检测与跨域迁移策略}
 
@@ -1921,16 +1921,9 @@ SE-Net 是通道注意力的经典代表，其核心思想是通过全局信息�
         六类 source 数据集 & \textrm{sewerml\_cls6\_train7200} \\
         二分类 gate 数据集 & \textrm{sewerml\_gate2\_train7200} \\
         第一阶段模型范围 & \textrm{YOLO11n/s/m/l/x-cls} \\
-        二分类 gate 输入尺寸 & 640×640 \\
-        二分类 gate 训练轮数 & 200 \\
-        二分类 gate 批大小 & 32 \\
-        二分类 gate 数据加载线程数 & 4 \\
-        二分类 gate 早停轮数 & 20 \\
-        六类统一重跑输入尺寸 & 640×640 \\
-        六类统一重跑训练轮数 & 100 \\
-        六类统一重跑批大小 & 32 \\
-        六类统一重跑数据加载线程数 & 4 \\
-        六类统一重跑早停轮数 & 20 \\
+        二分类 gate 统一训练设置 & 输入尺寸 640×640，训练轮数 200，批大小 32，数据加载线程数 4，早停轮数 20 \\
+        Calibration 设置 & 候选模型为 \textrm{yolo11m-cls} 和 \textrm{yolo11l-cls}；验证集按 30\% / 70\% 分层拆分为 val-cal 与 val-op，随机种子为 20260330；采用基于逐图 \textrm{p\_abnormal} 反推 logit 的 Temperature Scaling \\
+        六类统一重跑设置 & 输入尺寸 640×640，训练轮数 100，批大小 32，数据加载线程数 4，早停轮数 20 \\
         第一阶段主要评价指标 & Accuracy、Macro-F1、AUROC、AUPRC、锚点特异度 \\
         \bottomrule
     \end{tabularx}
@@ -1938,7 +1931,7 @@ SE-Net 是通道注意力的经典代表，其核心思想是通过全局信息�
 
 \section{第一阶段六类分类与二分类 gate 基线结果分析}
 
-本节首先比较五个 YOLO11-cls 尺度在源域六类分类任务上的容量差异，并进一步结合当前稿已纳入的二分类 gate 结果，分析第一阶段任务重定义后的性能变化。现阶段结果表明，六类分类视图与二分类 gate 视图并不必然对应同一最优模型：在六类分类任务上，\textrm{l} 与 \textrm{m} 构成第一梯队；而在当前已纳入的二分类 gate baseline 中，\textrm{s} 在默认阈值下的总体二分类判别能力更强，\textrm{m} 在 99.0\% 召回锚点下则表现出更高的特异度。这一现象恰好说明，第一阶段的最优模型选择必须结合任务视图和 operating point 共同判断。
+本节主要围绕第一阶段二分类 gate baseline 与 calibration 结果展开分析。由于六类 source 分类实验正在按统一超参数重跑，当前稿暂不对六类容量排序给出正式结论；相较之下，五组 direct binary gate baseline 已形成完整容量扫描结果，可直接用于回答第一阶段默认阈值 leader、高召回锚点 leader 以及后续 calibration 与 hard negative 的模型选择问题。
 
 \begin{table}[H]
     \centering
@@ -1953,11 +1946,11 @@ SE-Net 是通道注意力的经典代表，其核心思想是通过全局信息�
         \toprule
         模型 & \numhead{准确率} & \numhead{宏平均\\F1} & \numhead{ROC\\面积} & \numhead{PR\\面积} & \multicolumn{1}{c}{综合判断} \\
         \midrule
-        yolo11n-cls & 0.6792 & 0.6800 & 0.9288 & 0.9813 & 基础容量，结果稳定 \\
-        yolo11s-cls & 0.6681 & 0.6708 & 0.9215 & 0.9794 & 五尺度中整体最弱 \\
-        yolo11m-cls & 0.7028 & 0.7025 & 0.9407 & 0.9860 & 综合表现均衡 \\
-        yolo11l-cls & 0.7139 & 0.7151 & 0.9488 & 0.9879 & 六类分类结果最优 \\
-        yolo11x-cls & 0.6736 & 0.6762 & 0.9430 & 0.9868 & 大模型但分类收益不突出 \\
+        yolo11n-cls & \TODO{重跑后填写} & \TODO{重跑后填写} & \TODO{重跑后填写} & \TODO{重跑后填写} & 统一超参数结果待补入 \\
+        yolo11s-cls & \TODO{重跑后填写} & \TODO{重跑后填写} & \TODO{重跑后填写} & \TODO{重跑后填写} & 统一超参数结果待补入 \\
+        yolo11m-cls & \TODO{重跑后填写} & \TODO{重跑后填写} & \TODO{重跑后填写} & \TODO{重跑后填写} & 统一超参数结果待补入 \\
+        yolo11l-cls & \TODO{重跑后填写} & \TODO{重跑后填写} & \TODO{重跑后填写} & \TODO{重跑后填写} & 统一超参数结果待补入 \\
+        yolo11x-cls & \TODO{重跑后填写} & \TODO{重跑后填写} & \TODO{重跑后填写} & \TODO{重跑后填写} & 统一超参数结果待补入 \\
         \bottomrule
     \end{tabular*}
 \end{table}
@@ -1997,9 +1990,60 @@ SE-Net 是通道注意力的经典代表，其核心思想是通过全局信息�
     \label{fig:stage1-capacity-bars}
 \end{figure}
 
-\section{第一阶段二分类 gate 后续实验安排}
+\section{第一阶段 calibration 结果分析}
 
-围绕第一阶段 gate，本文后续仍将重点开展四类实验：任务重映射（六类间接 gate 与直接二分类 gate 对比）、校准策略、hard negative 回流策略以及损失函数设计。与第二阶段 detector 不同，第一阶段消融不追求复杂模块堆叠，而是优先回答“哪种低成本策略最有效地提升高召回约束下的正常样本过滤率”这一核心问题。当前正文已纳入当前已完成的二分类 gate baseline，因此后续新增实验将主要用于回答两类问题：其一，其余尺度 gate 模型是否会改变当前的容量排序；其二，在确定候选模型后，阈值校准、hard negative 回流和损失函数调整能否在既定 Recall 锚点下继续提升 Specificity 与 Precision。
+在完成五尺度二分类 gate baseline 后，本文进一步针对 \textrm{yolo11m-cls} 与 \textrm{yolo11l-cls} 开展 Temperature Scaling 实验，以验证分数校准对第一阶段 operating point 稳定性的影响。实验采用分层随机拆分验证集的方式，将全部 720 张验证图像划分为 val-cal 和 val-op 两部分，其中 val-cal 用于拟合温度参数，val-op 用于重做 threshold sweep 与正式结果报告。校准前后比较重点关注 ECE、Brier Score 以及高召回锚点下的 Specificity、Precision 和样本通过比例。
+
+\begin{table}[H]
+    \centering
+    \caption{第一阶段 Temperature Scaling 前后对比表}
+    \label{tab:stage1-calibration-results}
+    \begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}N{2.0cm}N{1.5cm}
+        S[table-format=1.4]
+        S[table-format=1.4]
+        S[table-format=1.4]
+        S[table-format=1.4]
+        S[table-format=1.4]
+        S[table-format=1.4]
+        S[table-format=1.4]@{}}
+        \toprule
+        模型 & 状态 & \numhead{温度\\T} & \numhead{ECE} & \numhead{Brier} & \numhead{R99.5\\特异度} & \numhead{R99.0\\特异度} & \numhead{R99.0\\精确率} & \numhead{R99.0\\通过率} \\
+        \midrule
+        yolo11m-cls & 校准前 & 1.0000 & 0.0579 & 0.0670 & 0.3452 & 0.4524 & 0.9004 & 0.9167 \\
+        yolo11m-cls & 校准后 & 2.8371 & 0.0285 & 0.0622 & 0.3452 & 0.4524 & 0.9004 & 0.9167 \\
+        yolo11l-cls & 校准前 & 1.0000 & 0.0407 & 0.0581 & 0.4048 & 0.4643 & 0.9026 & 0.9167 \\
+        yolo11l-cls & 校准后 & 2.2227 & 0.0308 & 0.0581 & 0.4286 & 0.4762 & 0.9043 & 0.9127 \\
+        \bottomrule
+    \end{tabular*}
+\end{table}
+
+从表\ref{tab:stage1-calibration-results}可以看出，两组模型拟合得到的温度参数均大于 1，说明 baseline 预测分数整体存在一定程度的过度自信倾向。经过 Temperature Scaling 处理后，\textrm{yolo11m-cls} 的 ECE 从 0.0579 下降到 0.0285，Brier Score 也由 0.0670 降至 0.0622；\textrm{yolo11l-cls} 的 ECE 从 0.0407 下降到 0.0308，表明两组模型的置信度可信性均得到改善。由此可见，第一阶段 calibration 的主要收益首先体现在分数可靠性层面，而不是直接改变分类器的排序能力。
+
+进一步比较高召回锚点下的 operating point 可以发现，\textrm{yolo11m-cls} 在当前 val-op 划分上虽然显著改善了 ECE 与 Brier Score，但在 Recall 不低于 99.5\% 与 99.0\% 的锚点上，Specificity、Precision 和 PTR 基本保持不变，说明 calibration 对其阈值前沿的直接推动有限。\textrm{yolo11l-cls} 则表现出更明确的正向收益：在 Recall 不低于 99.5\% 时，Specificity 由 0.4048 提升到 0.4286；在 Recall 不低于 99.0\% 时，Specificity 由 0.4643 提升到 0.4762，Precision 也由 0.9026 小幅提升到 0.9043，同时 PTR 从 0.9167 略降至 0.9127，说明在保持高召回约束的同时，分数经校准后形成了更稳健的筛选边界。综合来看，Temperature Scaling 作为低成本后处理策略，能够有效改善第一阶段分数可信度，其中 \textrm{yolo11l-cls} 的收益更为明确，因此后续优先对 \textrm{yolo11l-cls} 继续开展 Hard Negative Mining 更具性价比。
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.88\textwidth]{../../research/materials/yolo11l_gate2_train7200/calibration_ts/reliability_diagram_before_after.pdf}
+
+    \vspace{0.8em}
+
+    \includegraphics[width=0.88\textwidth]{../../research/materials/yolo11m_gate2_train7200/calibration_ts/reliability_diagram_before_after.pdf}
+    \caption{yolo11l-cls 与 yolo11m-cls 的 Reliability Diagram 对比}
+    \label{fig:stage1-calibration-reliability}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.88\textwidth]{../../research/materials/yolo11l_gate2_train7200/calibration_ts/threshold_sweep_before_after.pdf}
+
+    \vspace{0.8em}
+
+    \includegraphics[width=0.88\textwidth]{../../research/materials/yolo11m_gate2_train7200/calibration_ts/threshold_sweep_before_after.pdf}
+    \caption{yolo11l-cls 与 yolo11m-cls 的 Calibration 前后 threshold sweep 对比}
+    \label{fig:stage1-calibration-sweep}
+\end{figure}
+
+在完成 calibration 验证后，第一阶段后续实验重点将转向 Hard Negative 回流与损失函数设计。与 calibration 相比，这两类策略更有可能直接推动高召回锚点下的过滤曲线向右上方移动，因此将作为下一阶段的主要优化方向。
 
 \section{第二阶段检测 baseline 对比实验}
 
@@ -2014,9 +2058,9 @@ SE-Net 是通道注意力的经典代表，其核心思想是通过全局信息�
         模型 & \numhead{参数} & \numhead{计算\\量} & \numhead{精确率} & \numhead{召回率} & \numhead{F1值} & \numhead{AP50} & \numhead{误报/图} \\
         \midrule
         YOLOv11 Baseline & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} \\
-        YOLOv8-s & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} \\
-        YOLOv10-s & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} \\
-        RT-DETR-R18 & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} \\
+        一阶段候选基线A & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} \\
+        一阶段候选基线B & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} \\
+        其他范式候选基线 & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} & \TODO{填写} \\
         \bottomrule
     \end{tabular*}
 \end{table}
@@ -2350,7 +2394,7 @@ Rezatofighi H, Tsoi N, Gwak J Y, et al. Generalized Intersection Over Union: A M
 Carion N, Massa F, Synnaeve G, et al. End-to-End Object Detection with Transformers[C]//Computer Vision--ECCV 2020. Cham: Springer, 2020: 213-229.
 
 \bibitem{ref:pipeyolo112026}
-Cheng X, Wang Y. Pipeline Defect Detection Based on Improved YOLOv11[J]. Processes, 2026, 14(3): 530.
+Cheng X, Wang Y. Pipeline Defect Detection Based on Improved \allowbreak YOLOv11[J]. Processes, 2026, 14(3): 530.
 
 \bibitem{ref:sewermultisensor2024}
 Jung J T, Reiterer A. Improving Sewer Damage Inspection: Development of a Deep Learning Integration Concept for a Multi-Sensor System[J]. Sensors, 2024, 24(23): 7786.
