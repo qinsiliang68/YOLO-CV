@@ -13,6 +13,20 @@ from ultralytics.utils.plotting import plot_images, plot_results
 from ultralytics.utils.torch_utils import is_parallel, strip_optimizer, torch_distributed_zero_first
 
 
+CUSTOM_CLASSIFY_ARGS = {
+    "contrastive_enable",
+    "contrastive_method",
+    "contrastive_weight",
+    "contrastive_temperature",
+    "contrastive_proj_dim",
+    "contrastive_proj_hidden",
+    "cls_loss_type",
+    "cls_pos_weight",
+    "cls_focal_gamma",
+    "cls_focal_alpha",
+}
+
+
 class ClassificationTrainer(BaseTrainer):
     """
     A class extending the BaseTrainer class for training based on a classification model.
@@ -127,8 +141,12 @@ class ClassificationTrainer(BaseTrainer):
     def get_validator(self):
         """Returns an instance of ClassificationValidator for validation."""
         self.loss_names = ["loss"]
+        validator_args = copy(self.args)
+        for key in CUSTOM_CLASSIFY_ARGS:
+            if hasattr(validator_args, key):
+                delattr(validator_args, key)
         return yolo.classify.ClassificationValidator(
-            self.test_loader, self.save_dir, args=copy(self.args), _callbacks=self.callbacks
+            self.test_loader, self.save_dir, args=validator_args, _callbacks=self.callbacks
         )
 
     def label_loss_items(self, loss_items=None, prefix="train"):
