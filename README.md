@@ -7,35 +7,42 @@ and run outputs stay local.
 ## Layout
 
 - `YOLOv11/`: local YOLOv11 source tree plus runtime configs
-- `scripts/`: root workflow entrypoints built around `uv`
-- `research/`: label alignment, pipeline specs, and training-machine notes
+- `scripts/`: workflow entrypoints, sync helpers, calibration and analysis scripts
+- `research/`: experiment materials, result summaries, runbook and pipeline notes
+- `essay/`: thesis sources, figures and generated PDF
 - `data/`: local-only raw data and intermediate results, ignored by Git
 
-## Branch Workflow
+## Synchronization Workflow
 
-This repository now uses two branches:
+This repository uses a **single main branch** for both the local working machine and the training machine.
 
-- `main`: curated code, thesis files, and selected experiment materials
-- `exp-dropoff`: raw experiment handoff branch for the training machine
+- Local working machine:
+  - updates code, configs, scripts and thesis
+  - pushes curated changes to `main`
+- Training machine:
+  - syncs from `main`
+  - runs experiments
+  - pushes only `research/materials` and `research/results`
 
-The training machine should only push experiment outputs to `exp-dropoff`.
-The local working machine pulls from `exp-dropoff`, keeps only the useful files,
-updates the thesis, and pushes the curated state to `main`.
+Helper scripts:
 
-See `research/experiment_handoff_workflow.md`.
+- sync local machine to latest main  
+  `powershell -ExecutionPolicy Bypass -File .\scripts\git_sync_main.ps1`
+- push only experiment outputs  
+  `powershell -ExecutionPolicy Bypass -File .\scripts\git_push_results_main.ps1`
 
 ## Training Machine Flow
 
-1. `git pull`
+1. `powershell -ExecutionPolicy Bypass -File .\scripts\git_sync_main.ps1`
 2. `.\scripts\setup.ps1 -Backend cu128`
 3. `.\scripts\check.ps1`
 4. Move datasets into the fixed local-only paths described in `research/training_machine_runbook.md`
-5. Run `uv run --no-sync main.py`
+5. Run `uv run main.py --rerun`
 
 ## Main Entry Points
 
-- One-click source -> target -> CAM -> pseudo-box pipeline: `uv run --no-sync main.py`
-- Dedicated uniform five-scale CLS6 sweep: `uv run main.py --rerun`
+- Current root training entrypoint for the uniform five-scale CLS6 sweep: `uv run main.py --rerun`
+- Compatibility wrapper for the same sweep: `uv run main_cls6_sweep.py --rerun`
 - Source classification pretraining: `.\scripts\cls_pretrain.ps1`
 - Extract the only active 3000-image source set directly from raw SewerML: `.\scripts\extract_sewerml_cls6_train3000.ps1 -Clean`
 - Target classification fine-tuning: `.\scripts\cls_finetune_target.ps1`

@@ -1,25 +1,25 @@
 # Training Machine Runbook
 
 This runbook is for the machine that will actually train models. The intended flow is:
-`git pull`, sync the `uv` environment, move datasets into fixed local-only paths, then run.
+sync to `origin/main`, sync the `uv` environment, move datasets into fixed local-only paths, then run.
 
 ## 1. Environment Bootstrap
 
 ```powershell
 cd C:\GitHub\YOLO-CV
+powershell -ExecutionPolicy Bypass -File .\scripts\git_sync_main.ps1
 .\scripts\setup.ps1 -Backend cu128
 .\scripts\check.ps1
 ```
 
-Default one-click pipeline entrypoint:
+Current root training entrypoint:
 
 ```powershell
-uv run --no-sync main.py
+uv run main.py --rerun
 ```
 
-`main.py` may be temporarily replaced on the training machine for single-purpose sweeps.
-The current dedicated six-class uniform sweep uses the same root entrypoint and does not require
-manually editing the Python script after placement.
+`main.py` is the active entrypoint for the current uniform five-scale six-class sweep.
+`main_cls6_sweep.py` is kept only as a compatibility wrapper and should behave the same way.
 
 Available `-Backend` values:
 
@@ -156,6 +156,19 @@ Outputs:
 - runs: `YOLOv11/runs/cls_source_uniform/...`
 - materials: `research/materials/...`
 
+### Push Results Back To Main
+
+After training and raw-material collection finish:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\git_push_results_main.ps1
+```
+
+This stages and pushes only:
+
+- `research/materials/`
+- `research/results/`
+
 ### Target Classification Fine-Tuning
 
 ```powershell
@@ -239,3 +252,5 @@ Pseudo-box baseline alternative:
 - All training commands run through the root `uv` project.
 - Local `YOLOv11` source edits take effect immediately because the scripts import the repo checkout directly.
 - If you change CUDA backend, rerun `.\scripts\setup.ps1 -Backend <cpu|cu126|cu128>`.
+- The training machine syncs from `main` and pushes only experiment outputs.
+- The training machine should not edit thesis files or repository structure.
