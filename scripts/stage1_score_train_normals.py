@@ -22,7 +22,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--output-dir", required=True, help="Directory for exported scores and gallery.")
     parser.add_argument("--device", default="0", help="Inference device.")
     parser.add_argument("--imgsz", type=int, default=640, help="Inference image size.")
-    parser.add_argument("--batch", type=int, default=8, help="Inference batch size.")
+    parser.add_argument("--batch", type=int, default=2, help="Inference batch size.")
     parser.add_argument("--top-k", type=int, default=200, help="Top-K train-side hard negatives to keep.")
     return parser.parse_args()
 

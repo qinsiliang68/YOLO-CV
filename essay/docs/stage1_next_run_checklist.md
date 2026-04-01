@@ -28,7 +28,7 @@
 
 ### 1. 用主模型 `l` 给训练侧 normal 池重新打分
 ```powershell
-uv run python .\scripts\stage1_score_train_normals.py --weights C:\Users\ASUS\Desktop\YOLOv11\YOLO-CV\YOLOv11\runs\cls_gate_source\yolo11l_gate2_train7200\weights\best.pt --data-root C:\Users\ASUS\Desktop\YOLOv11\YOLO-CV\YOLOv11\datasets\sewerml_gate2_train7200 --output-dir C:\Users\ASUS\Desktop\YOLOv11\YOLO-CV\research\materials\stage1_hn\yolo11l_gate2_train7200 --device 0 --imgsz 640 --batch 16 --top-k 22
+uv run python .\scripts\stage1_score_train_normals.py --weights C:\Users\ASUS\Desktop\YOLOv11\YOLO-CV\YOLOv11\runs\cls_gate_source\yolo11l_gate2_train7200\weights\best.pt --data-root C:\Users\ASUS\Desktop\YOLOv11\YOLO-CV\YOLOv11\datasets\sewerml_gate2_train7200 --output-dir C:\Users\ASUS\Desktop\YOLOv11\YOLO-CV\research\materials\stage1_hn\yolo11l_gate2_train7200 --device 0 --imgsz 640 --batch 2 --top-k 22
 ```
 
 ### 2. 构建 `l` 的 HN 2% 数据集
@@ -48,7 +48,7 @@ uv run python .\scripts\stage1_gate_train.py --config .\YOLOv11\configs\runtime\
 
 ### 4. 用第二模型 `s` 给训练侧 normal 池重新打分
 ```powershell
-uv run python .\scripts\stage1_score_train_normals.py --weights C:\Users\ASUS\Desktop\YOLOv11\YOLO-CV\YOLOv11\runs\cls_gate_source\yolo11s_gate2_train7200\weights\best.pt --data-root C:\Users\ASUS\Desktop\YOLOv11\YOLO-CV\YOLOv11\datasets\sewerml_gate2_train7200 --output-dir C:\Users\ASUS\Desktop\YOLOv11\YOLO-CV\research\materials\stage1_hn\yolo11s_gate2_train7200 --device 0 --imgsz 640 --batch 16 --top-k 22
+uv run python .\scripts\stage1_score_train_normals.py --weights C:\Users\ASUS\Desktop\YOLOv11\YOLO-CV\YOLOv11\runs\cls_gate_source\yolo11s_gate2_train7200\weights\best.pt --data-root C:\Users\ASUS\Desktop\YOLOv11\YOLO-CV\YOLOv11\datasets\sewerml_gate2_train7200 --output-dir C:\Users\ASUS\Desktop\YOLOv11\YOLO-CV\research\materials\stage1_hn\yolo11s_gate2_train7200 --device 0 --imgsz 640 --batch 2 --top-k 22
 ```
 
 ### 5. 构建 `s` 的 HN 2% 数据集

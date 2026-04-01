@@ -43,7 +43,7 @@ BUILTIN_STAGE1_ENTRY_CONFIG = {
     "task": "stage1_gate_s_hn",
     "device": "0",
     "top_k": 22,
-    "score_batch": 16,
+    "score_batch": 2,
 }
 STAGE1_HN_TASKS = {
     "stage1_gate_l_hn": {
@@ -271,7 +271,7 @@ def run_stage1_hn(task_name: str, entry_cfg: dict, dry_run: bool) -> None:
 
     device = resolve_str(entry_cfg.get("device"), "0")
     top_k = str(int(entry_cfg.get("top_k", 22) or 22))
-    score_batch = str(int(entry_cfg.get("score_batch", 16) or 16))
+    score_batch = str(int(entry_cfg.get("score_batch", 2) or 2))
 
     print_step("task", f"{task_name} ({task_cfg['label']})")
     run_python(
