@@ -37,6 +37,11 @@ uv run python .\scripts\stage1_build_hn_dataset.py --source-dataset C:\Users\ASU
 ```
 
 ### 3. 先跑最高优先级实验 `l + HN 2%`
+也可以直接用一键脚本：
+```powershell
+.\scripts\run_stage1_gate_l_hn.ps1
+```
+
 ```powershell
 uv run python .\scripts\stage1_gate_train.py --config .\YOLOv11\configs\runtime\stage1_gate_l_hn.json
 ```
@@ -52,6 +57,11 @@ uv run python .\scripts\stage1_build_hn_dataset.py --source-dataset C:\Users\ASU
 ```
 
 ### 6. 跑 `s + HN 2%`
+也可以直接用一键脚本：
+```powershell
+.\scripts\run_stage1_gate_s_hn.ps1
+```
+
 ```powershell
 uv run python .\scripts\stage1_gate_train.py --config .\YOLOv11\configs\runtime\stage1_gate_s_hn.json
 ```

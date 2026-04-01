@@ -1734,7 +1734,7 @@ SE-Net 是通道注意力的经典代表，其核心思想是通过全局信息�
 
 需要说明的是，HN 回流并非天然有效，其成立前提包括：误报样本必须经过确认，确保其为 true normal 而非漏标异常；回流样本必须来自训练侧或额外 normal 池，而不能直接污染用于报告结果的 val-op；同时还需控制回流强度并执行去重，避免同一视频或同一场景中的连续相似帧过度主导训练。基于这些约束，本文将 HN 视为第一阶段最值得优先验证的训练策略假设，而非默认必然有效的经验规则。
 
-基于当前主模型 \textrm{yolo11l-cls}，本文先完成了固定校准协议下的 HN 回流比例扫描。全部实验沿用相同的 val-cal / val-op 划分、相同的 Temperature Scaling 流程以及一致的训练超参数，仅改变回流到训练集的 hardest normal 比例，并在 \textrm{0\%}、\textrm{2\%}、\textrm{4\%}、\textrm{6\%}、\textrm{8\%}、\textrm{10\%}、\textrm{12\%}、\textrm{14\%}、\textrm{16\%}、\textrm{18\%} 与 \textrm{20\%} 十一组设置下比较 \textrm{Spec@R99.5}、\textrm{Spec@R99.0}、\textrm{Prec@R99.0} 与 \textrm{PTR@R99.0}。表\ref{tab:stage1-hn-ratio-sweep} 给出了完整比例扫描结果。可以看出，在当前 sweep 中，\textrm{hn02} 即 2\% 回流比例取得了最优的高召回锚点组合：\textrm{Spec@R99.5} 从基线组的 0.4405 提升至 0.5119，\textrm{Spec@R99.0} 由 0.5357 提升至 0.5476，\textrm{Prec@R99.0} 由 0.9143 提升至 0.9165，而 \textrm{PTR@R99.0} 保持不变。这意味着当前 \textrm{val-op} 上，模型在固定 \textrm{R99.5} 约束下多拦截了 7 张 normal 图像，即由 36/84 提升到 43/84，绝对提升 0.0833。
+基于当前主模型 \textrm{yolo11l-cls}，本文先完成了固定校准协议下的 HN 回流比例扫描。全部实验沿用相同的 val-cal / val-op 划分、相同的 Temperature Scaling 流程以及一致的训练超参数，仅改变回流到训练集的 hardest normal 比例，并在 \textrm{0\%}、\textrm{2\%}、\textrm{4\%}、\textrm{6\%}、\textrm{8\%}、\textrm{10\%}、\textrm{12\%}、\textrm{14\%}、\textrm{16\%}、\textrm{18\%} 与 \textrm{20\%} 十一组设置下比较 \textrm{Spec@R99.5}、\textrm{Spec@R99.0}、\textrm{Prec@R99.0} 与 \textrm{PTR@R99.0}。表\ref{tab:stage1-hn-ratio-sweep} 给出了完整比例扫描结果。可以看出，在当前 sweep 中，\textrm{hn02} 即 2\% 回流比例取得了最优的高召回锚点组合：\textrm{Spec@R99.5} 从基线组的 0.4405 提升至 0.5119，\textrm{Spec@R99.0} 由 0.5357 提升至 0.5476，\textrm{Prec@R99.0} 由 0.9143 提升至 0.9165，而 \textrm{PTR@R99.0} 保持不变。这意味着当前 \textrm{val-op} 上，模型在固定 \textrm{R99.5} 约束下多拦截了 6 张 normal 图像，即由 37/84 提升到 43/84，绝对提升 0.0714。
 
 \begin{table}[H]
     \centering
