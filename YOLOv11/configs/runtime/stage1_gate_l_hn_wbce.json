@@ -1,6 +1,6 @@
 {
   "model": "C:/Users/ASUS/Desktop/YOLOv11/YOLO-CV/YOLOv11/runs/cls_gate_source/yolo11l_gate2_train7200/weights/best.pt",
-  "data": "C:/Users/ASUS/Desktop/YOLOv11/YOLO-CV/YOLOv11/datasets/stage1_gate2_l_hn_top200_r2",
+  "data": "C:/Users/ASUS/Desktop/YOLOv11/YOLO-CV/YOLOv11/datasets/stage1_gate_hn_backflow/yolo11l_gate2_hn02",
   "epochs": 200,
   "imgsz": 640,
   "batch": 32,
@@ -13,7 +13,7 @@
   "resume": false,
   "seed": 20260330,
   "project": "C:/Users/ASUS/Desktop/YOLOv11/YOLO-CV/YOLOv11/runs/stage1_gate_hn",
-  "name": "yolo11l_gate2_hn_wbce_top200_r2",
+  "name": "yolo11l_gate2_hn02_wbce",
   "cls_loss_type": "weighted_bce",
   "cls_pos_weight": 1.5
 }

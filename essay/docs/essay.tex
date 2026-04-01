@@ -628,36 +628,9 @@ Haurum 和 Moeslund\cite{ref:sewerml}发布 Sewer-ML 数据集后，排水管道
 
 \section{图像分类与目标检测评价指标}
 
-\subsection{目标检测任务定义}
-
-目标检测任务要求模型同时完成类别判定与空间定位。与图像分类仅回答图像中是否存在某类目标不同，检测模型还需要给出候选边界框、类别标签及相应置信度，因此更适合服务于排水管道巡检中的缺陷定位、类别识别和复核优先级排序等实际需求\cite{ref:cheng2018,ref:zhang2023automatic}。对 sewer 场景而言，这种能力尤其重要，因为同一张图像中可能同时包含多个异常区域，且异常边界往往并不清晰。
-
-按照候选区域生成方式和预测组织形式的不同，现有检测方法大致可以分为两阶段方法、一阶段方法和端到端集合预测方法。两阶段方法以 R-CNN 系列为代表，先生成候选区域再分类回归，具有较强的精细识别能力；一阶段方法以 SSD 和 YOLO 系列为代表，将分类和回归整合到同一网络中，兼顾速度与精度；基于 Transformer 的 DETR 路线则从集合匹配角度重构了检测流程\cite{ref:rcnn2014,ref:ssd2016,ref:detr2020}。考虑到本文面向的是海量巡检图像和长视频场景，一阶段检测器在工程部署上更具优势，因此成为后续模型设计的主要基础。
-
-\subsection{目标检测方法演进}
-
-从发展脉络看，地下排水管道缺陷检测并不是一开始就建立在深度目标检测基础之上的。早期工作更多依赖传统图像处理、边缘纹理特征和机器学习分类器，在局部规则明确的场景下能够形成初步自动筛查能力，但对设备差异、光照变化和背景噪声极为敏感\cite{ref:hogsvm2014,ref:tool2018}。随着 CNN 的引入，研究重点逐渐转向深度特征学习，缺陷识别开始由人工特征构造转向以数据驱动表征学习为核心的技术路线。
-
-在此基础上，一阶段 detector 尤其是 YOLO 路线逐渐成为 sewer defect detection 的主流工程方案。其原因并不只是速度快，更在于该路线生态成熟、训练流程稳定、易于与分类模型、迁移学习和部署工具衔接\cite{ref:wang2023yolov5,ref:zhao2024yolov5sewer}。但已有研究同时指出，直接采用通用 detector 往往难以同时兼顾高召回、低误报和跨域稳定性，这也是本文后续要从注意力机制、检测头与损失函数三个层面进行场景化改进的直接动因。
-
-\begin{table}[H]
-    \centering
-    \caption{典型检测范式比较表}
-    \label{tab:detection-paradigm-comparison}
-    \begin{tabularx}{\textwidth}{@{}L{1.7cm}L{1.8cm}YYY@{}}
-        \toprule
-        \txhead{检测范式} & \txhead{代表方法} & \txhead{主要优点} & \txhead{主要局限} & \txhead{与本文关系} \\
-        \midrule
-        两阶段检测 & R-CNN 系列 & 候选区域精细，识别能力较强 & 推理较慢，部署成本较高 & 作为理论参照，不作为主路线 \\
-        一阶段检测 & SSD、YOLO 系列 & 速度快，工程实现成熟 & 小目标和复杂背景下易受干扰 & 作为本文主路线 \\
-        端到端集合预测 & DETR 系列 & 结构统一，后处理依赖较弱 & 收敛与部署成本较高 & 作为强基线参考 \\
-        \bottomrule
-    \end{tabularx}
-\end{table}
-
 \subsection{常用评价指标}
 
-本文后续同时涉及源域分类、前级高召回预筛和目标域目标检测三个层次，因此评价体系不能仅依赖单一准确率。对于前级预筛，更重要的是在尽量不漏掉异常样本的前提下过滤正常样本；对于检测模型，则需要同时关注识别精度、定位质量与误报水平。基于这一考虑，本文不在理论基础章节中罗列过多指标，而仅保留后续实验中会反复使用、且能直接支撑研究问题回答的六个核心指标。
+本文后续同时涉及源域分类、前级高召回预筛和目标域目标检测三个层次，因此评价体系不能仅依赖单一准确率。考虑到后文真正反复使用的是前级 gate 的 operating point 指标、分类基础指标以及后级 detector 的检测指标，本节不再展开通用检测范式演进等泛化背景，而仅保留能够直接支撑后续实验分析的核心指标定义。
 
 其中，Precision、Recall 与 F1-score 用于刻画识别准确性与漏检之间的折中关系，Specificity 与 Gate Recall 用于服务第一阶段预筛在高召回约束下的误报控制分析，AP50 与 AP50-95 则用于评价第二阶段 detector 的检测与定位质量。上述指标既覆盖了分类与检测的主要评价需求，也对应后续章节中的系统级实验结论。为便于全文统一引用，表~\ref{tab:metric-definitions} 对这六个核心指标作集中定义。
 \begin{table}[H]
@@ -1761,7 +1734,7 @@ SE-Net 是通道注意力的经典代表，其核心思想是通过全局信息�
 
 需要说明的是，HN 回流并非天然有效，其成立前提包括：误报样本必须经过确认，确保其为 true normal 而非漏标异常；回流样本必须来自训练侧或额外 normal 池，而不能直接污染用于报告结果的 val-op；同时还需控制回流强度并执行去重，避免同一视频或同一场景中的连续相似帧过度主导训练。基于这些约束，本文将 HN 视为第一阶段最值得优先验证的训练策略假设，而非默认必然有效的经验规则。
 
-基于当前主模型 \textrm{yolo11l-cls}，本文进一步完成了固定校准协议下的 HN 回流比例扫描。具体地，全部实验沿用相同的 val-cal / val-op 划分、相同的 Temperature Scaling 流程以及一致的训练超参数，仅改变回流到训练集的 hardest normal 比例，并在 \textrm{0\%}、\textrm{2\%}、\textrm{4\%}、\textrm{6\%}、\textrm{8\%}、\textrm{10\%}、\textrm{12\%}、\textrm{14\%}、\textrm{16\%}、\textrm{18\%} 与 \textrm{20\%} 十一组设置下比较 \textrm{Spec@R99.5}、\textrm{Spec@R99.0}、\textrm{Prec@R99.0} 与 \textrm{PTR@R99.0}。表\ref{tab:stage1-hn-ratio-sweep} 给出了关键结果。可以看出，在当前 sweep 中，\textrm{hn02} 即 2\% 回流比例取得了最优的高召回锚点组合：\textrm{Spec@R99.5} 从基线组的 0.4405 提升至 0.5119，\textrm{Spec@R99.0} 由 0.5357 提升至 0.5476，\textrm{Prec@R99.0} 由 0.9143 提升至 0.9165，而 \textrm{PTR@R99.0} 保持不变。随着回流比例继续增大，多数组别在 \textrm{Spec@R99.5} 上出现回落，说明 HN 回流强度并非越大越好。
+基于当前主模型 \textrm{yolo11l-cls}，本文先完成了固定校准协议下的 HN 回流比例扫描。全部实验沿用相同的 val-cal / val-op 划分、相同的 Temperature Scaling 流程以及一致的训练超参数，仅改变回流到训练集的 hardest normal 比例，并在 \textrm{0\%}、\textrm{2\%}、\textrm{4\%}、\textrm{6\%}、\textrm{8\%}、\textrm{10\%}、\textrm{12\%}、\textrm{14\%}、\textrm{16\%}、\textrm{18\%} 与 \textrm{20\%} 十一组设置下比较 \textrm{Spec@R99.5}、\textrm{Spec@R99.0}、\textrm{Prec@R99.0} 与 \textrm{PTR@R99.0}。表\ref{tab:stage1-hn-ratio-sweep} 给出了完整比例扫描结果。可以看出，在当前 sweep 中，\textrm{hn02} 即 2\% 回流比例取得了最优的高召回锚点组合：\textrm{Spec@R99.5} 从基线组的 0.4405 提升至 0.5119，\textrm{Spec@R99.0} 由 0.5357 提升至 0.5476，\textrm{Prec@R99.0} 由 0.9143 提升至 0.9165，而 \textrm{PTR@R99.0} 保持不变。这意味着当前 \textrm{val-op} 上，模型在固定 \textrm{R99.5} 约束下多拦截了 7 张 normal 图像，即由 36/84 提升到 43/84，绝对提升 0.0833。
 
 \begin{table}[H]
     \centering
@@ -1811,7 +1784,7 @@ SE-Net 是通道注意力的经典代表，其核心思想是通过全局信息�
     \label{fig:stage1-hn-ratio-sweep}
 \end{figure}
 
-从图\ref{fig:stage1-hn-ratio-sweep}可以进一步看出，\textrm{Spec@R99.5} 对回流比例最为敏感：当回流比例由 0\% 提高到 2\% 时，曲线出现最明显的正向抬升；而当比例继续扩大后，\textrm{Spec@R99.5} 反而整体回落。这说明当前阶段最值钱的并不是大量回流 hardest normal，而是以较小比例注入最具信息量的误报 normal，从而在不显著牺牲通过率的条件下改善高召回区间的过滤能力。进一步结合附录表\ref{tab:appendix-stage1-hn-full} 可知，\textrm{hn02} 虽然在 Accuracy、Macro-F1、AUROC 与 AUPRC 上略低于 \textrm{hn00}，但这种回落并不构成对 HN 路线的否定。原因在于，第一阶段优化目标并非追求默认阈值下的总体分类分数，而是在固定高召回约束下尽可能提高 normal 过滤能力并维持通过率稳定；从这一目标出发，\textrm{hn02} 在关键 operating point 上优于基线组，而大比例回流组虽个别全局指标偶有回升，却未能持续改善 \textrm{Spec@R99.5} 与 \textrm{Prec@R99.0}。因此，后续 stage-1 主线实验优先采用 \textrm{hn02} 作为 \textrm{yolo11l-cls} 的 HN 回流方案。
+从图\ref{fig:stage1-hn-ratio-sweep}可以进一步看出，\textrm{Spec@R99.5} 对回流比例最为敏感：当回流比例由 0\% 提高到 2\% 时，曲线出现最明显的正向抬升；而当比例继续扩大后，\textrm{Spec@R99.5} 反而整体回落。这说明当前阶段最值钱的并不是大量回流 hardest normal，而是以较小比例注入最具信息量的误报 normal，从而在不显著牺牲通过率的条件下改善高召回区间的过滤能力。进一步结合附录表\ref{tab:appendix-stage1-hn-full} 可知，\textrm{hn02} 虽然在 Accuracy、Macro-F1、AUROC 与 AUPRC 上略低于 \textrm{hn00}，但这种回落并不构成对 HN 路线的否定。原因在于，第一阶段优化目标并非追求默认阈值下的总体分类分数，而是在固定高召回约束下尽可能提高 normal 过滤能力并维持通过率稳定。换言之，小比例高置信误报 normal 回流不会提升默认阈值下的总体分类分数，但能够显著提升第一阶段 gate 在固定高召回约束下的 normal 过滤能力；在当前 sweep 中，最优回流强度为 2\%。因此，后续 stage-1 主线实验虽然只保留 \textrm{hn00} 与 \textrm{hn02} 作为正式对照，但完整的 \textrm{2\%} 至 \textrm{20\%} 比例扫描仍作为正文与附录中的证据链保留，用于支撑“最优回流强度为 2\%”这一结论。
 
 \begin{table}[H]
     \centering
@@ -1821,14 +1794,14 @@ SE-Net 是通道注意力的经典代表，其核心思想是通过全局信息�
         \toprule
         组别 & 模型 & 校准 & HN回流 & 损失函数 & \numhead{Spec@\\R99.5} & \numhead{Spec@\\R99.0} & \numhead{Prec@\\R99.0} & \numhead{PTR@\\R99.0} \\
         \midrule
-        G0 & yolo11l-cls & 否 & 否 & BCE & 0.4048 & 0.4643 & 0.9026 & 0.9167 \\
-        G1 & yolo11l-cls & 是 & 否 & BCE & 0.4286 & 0.4762 & 0.9043 & 0.9127 \\
-        G2 & yolo11l-cls & 是 & 是 & BCE & 0.5119 & 0.5476 & 0.9165 & 0.9028 \\
-        G3 & yolo11s-cls & 是 & 是 & BCE & 待填充 & 待填充 & 待填充 & 待填充 \\
-        G4 & yolo11l-cls & 是 & 是 & WBCE & 待填充 & 待填充 & 待填充 & 待填充 \\
-        G5 & yolo11l-cls & 是 & 是 & Focal & 待填充 & 待填充 & 待填充 & 待填充 \\
-        G6 & yolo11l-cls & 是 & 是 & BestLoss & 待填充 & 待填充 & 待填充 & 待填充 \\
-        G7 & yolo11l-cls & 是 & 是 & \tbhead{BestLoss+\\LA} & 待填充 & 待填充 & 待填充 & 待填充 \\
+        G0 & yolo11l-cls & 否 & 0\% & BCE & 0.4048 & 0.4643 & 0.9026 & 0.9167 \\
+        G1 & yolo11l-cls & 是 & 0\% & BCE & 0.4286 & 0.4762 & 0.9043 & 0.9127 \\
+        G2 & yolo11l-cls & 是 & 2\% & BCE & 0.5119 & 0.5476 & 0.9165 & 0.9028 \\
+        G3 & yolo11s-cls & 是 & 2\% & BCE & 待填充 & 待填充 & 待填充 & 待填充 \\
+        G4 & yolo11l-cls & 是 & 2\% & WBCE & 待填充 & 待填充 & 待填充 & 待填充 \\
+        G5 & yolo11l-cls & 是 & 2\% & Focal & 待填充 & 待填充 & 待填充 & 待填充 \\
+        G6 & yolo11l-cls & 是 & 2\% & BestLoss & 待填充 & 待填充 & 待填充 & 待填充 \\
+        G7 & yolo11l-cls & 是 & 2\% & \tbhead{BestLoss+\\LA} & 待填充 & 待填充 & 待填充 & 待填充 \\
         \bottomrule
     \end{tabular*}
 \end{table}
@@ -2085,14 +2058,14 @@ SE-Net 是通道注意力的经典代表，其核心思想是通过全局信息�
         \toprule
         组别 & 模型 & 校准 & HN回流 & 损失函数 & \numhead{Spec@\\R99.5} & \numhead{Spec@\\R99.0} & \numhead{Prec@\\R99.0} & \numhead{PTR@\\R99.0} \\
         \midrule
-        G0 & yolo11l-cls & 否 & 否 & BCE & 0.4048 & 0.4643 & 0.9026 & 0.9167 \\
-        G1 & yolo11l-cls & 是 & 否 & BCE & 0.4286 & 0.4762 & 0.9043 & 0.9127 \\
-        G2 & yolo11l-cls & 是 & 是 & BCE & 0.5119 & 0.5476 & 0.9165 & 0.9028 \\
-        G3 & yolo11s-cls & 是 & 是 & BCE & 待填充 & 待填充 & 待填充 & 待填充 \\
-        G4 & yolo11l-cls & 是 & 是 & WBCE & 待填充 & 待填充 & 待填充 & 待填充 \\
-        G5 & yolo11l-cls & 是 & 是 & Focal & 待填充 & 待填充 & 待填充 & 待填充 \\
-        G6 & yolo11l-cls & 是 & 是 & BestLoss & 待填充 & 待填充 & 待填充 & 待填充 \\
-        G7 & yolo11l-cls & 是 & 是 & \tbhead{BestLoss+\\LA} & 待填充 & 待填充 & 待填充 & 待填充 \\
+        G0 & yolo11l-cls & 否 & 0\% & BCE & 0.4048 & 0.4643 & 0.9026 & 0.9167 \\
+        G1 & yolo11l-cls & 是 & 0\% & BCE & 0.4286 & 0.4762 & 0.9043 & 0.9127 \\
+        G2 & yolo11l-cls & 是 & 2\% & BCE & 0.5119 & 0.5476 & 0.9165 & 0.9028 \\
+        G3 & yolo11s-cls & 是 & 2\% & BCE & 待填充 & 待填充 & 待填充 & 待填充 \\
+        G4 & yolo11l-cls & 是 & 2\% & WBCE & 待填充 & 待填充 & 待填充 & 待填充 \\
+        G5 & yolo11l-cls & 是 & 2\% & Focal & 待填充 & 待填充 & 待填充 & 待填充 \\
+        G6 & yolo11l-cls & 是 & 2\% & BestLoss & 待填充 & 待填充 & 待填充 & 待填充 \\
+        G7 & yolo11l-cls & 是 & 2\% & \tbhead{BestLoss+\\LA} & 待填充 & 待填充 & 待填充 & 待填充 \\
         \bottomrule
     \end{tabular*}
 \end{table}
