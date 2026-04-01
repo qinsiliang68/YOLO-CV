@@ -1,7 +1,7 @@
 param(
     [string]$Device = "0",
     [int]$TopK = 22,
-    [int]$ScoreBatch = 16
+    [int]$ScoreBatch = 8
 )
 
 $ErrorActionPreference = "Stop"
