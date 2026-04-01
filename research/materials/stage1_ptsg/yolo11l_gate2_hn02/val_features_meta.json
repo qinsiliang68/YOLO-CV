@@ -1,0 +1,18 @@
+{
+  "weights": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\cls_gate_hn_sweep\\yolo11l_gate2_train7200_hn02\\weights\\best.pt",
+  "data_root": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\datasets\\stage1_gate_hn_backflow\\yolo11l_gate2_hn02",
+  "split": "val",
+  "rows": 720,
+  "embedding_dim": 512,
+  "class_names": [
+    "Abnormal",
+    "Normal"
+  ],
+  "normal_class": "Normal",
+  "device": "0",
+  "imgsz": 640,
+  "batch": 2,
+  "chunk_size": 16,
+  "predict_seconds": 14.087325,
+  "embed_seconds": 13.424096
+}
