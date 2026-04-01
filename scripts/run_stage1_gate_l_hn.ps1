@@ -1,7 +1,8 @@
 param(
-    [string]$ScoreDevice = "cpu",
+    [string]$ScoreDevice = "0",
     [int]$TopK = 22,
-    [int]$ScoreBatch = 2
+    [int]$ScoreBatch = 1,
+    [int]$ChunkSize = 32
 )
 
 $ErrorActionPreference = "Stop"
@@ -24,6 +25,7 @@ uv run python .\scripts\stage1_score_train_normals.py `
   --device $ScoreDevice `
   --imgsz 640 `
   --batch $ScoreBatch `
+  --chunk-size $ChunkSize `
   --top-k $TopK
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 

@@ -41,9 +41,10 @@ BUILTIN_DEFAULT_CONFIG = {
 }
 BUILTIN_STAGE1_ENTRY_CONFIG = {
     "task": "stage1_gate_s_hn",
-    "score_device": "cpu",
+    "score_device": "0",
     "top_k": 22,
-    "score_batch": 2,
+    "score_batch": 1,
+    "score_chunk_size": 32,
 }
 STAGE1_HN_TASKS = {
     "stage1_gate_l_hn": {
@@ -269,9 +270,10 @@ def run_stage1_hn(task_name: str, entry_cfg: dict, dry_run: bool) -> None:
     if task_cfg is None:
         raise SystemExit(f"Unsupported stage-1 task: {task_name}")
 
-    score_device = resolve_str(entry_cfg.get("score_device"), "cpu")
+    score_device = resolve_str(entry_cfg.get("score_device"), "0")
     top_k = str(int(entry_cfg.get("top_k", 22) or 22))
-    score_batch = str(int(entry_cfg.get("score_batch", 2) or 2))
+    score_batch = str(int(entry_cfg.get("score_batch", 1) or 1))
+    score_chunk_size = str(int(entry_cfg.get("score_chunk_size", 32) or 32))
 
     print_step("task", f"{task_name} ({task_cfg['label']})")
     run_python(
@@ -289,6 +291,8 @@ def run_stage1_hn(task_name: str, entry_cfg: dict, dry_run: bool) -> None:
             "640",
             "--batch",
             score_batch,
+            "--chunk-size",
+            score_chunk_size,
             "--top-k",
             top_k,
         ],

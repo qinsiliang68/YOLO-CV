@@ -22,7 +22,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--output-dir", required=True, help="Directory for exported scores and gallery.")
     parser.add_argument("--device", default="0", help="Inference device.")
     parser.add_argument("--imgsz", type=int, default=640, help="Inference image size.")
-    parser.add_argument("--batch", type=int, default=2, help="Inference batch size.")
+    parser.add_argument("--batch", type=int, default=1, help="Inference batch size.")
+    parser.add_argument("--chunk-size", type=int, default=32, help="How many image paths to process per predict call.")
     parser.add_argument("--top-k", type=int, default=200, help="Top-K train-side hard negatives to keep.")
     return parser.parse_args()
 
@@ -31,15 +32,61 @@ def print_step(name: str, detail: str) -> None:
     print(f"[{name}] {detail}")
 
 
-def run_predict(model, image_paths: list[Path], imgsz: int, batch: int, device: str):
-    return model.predict(
-        source=[str(path) for path in image_paths],
-        stream=True,
-        verbose=False,
-        imgsz=imgsz,
-        batch=batch,
-        device=device,
-    )
+def iter_predict_pairs(model, image_paths: list[Path], imgsz: int, batch: int, chunk_size: int, device: str):
+    use_half = device.lower() != "cpu"
+    for start in range(0, len(image_paths), chunk_size):
+        chunk = image_paths[start : start + chunk_size]
+        chunk_batch = min(batch, len(chunk))
+        results = model.predict(
+            source=[str(path) for path in chunk],
+            stream=True,
+            verbose=False,
+            imgsz=imgsz,
+            batch=chunk_batch,
+            device=device,
+            half=use_half,
+        )
+        for image_path, result in zip(chunk, results, strict=True):
+            yield image_path, result
+        if use_half:
+            try:
+                import torch
+
+                torch.cuda.empty_cache()
+            except Exception:
+                pass
+
+
+def collect_rows(model, image_paths: list[Path], data_root: Path, imgsz: int, batch: int, chunk_size: int, device: str) -> list[dict]:
+    rows: list[dict] = []
+    for image_path, result in iter_predict_pairs(model, image_paths, imgsz, batch, chunk_size, device):
+        probs = result.probs.data.detach().cpu().numpy().astype(float)
+        class_names = result.names
+        p_abnormal = float(probs[0])
+        p_normal = float(probs[1])
+        pred_index = int(np.argmax(probs))
+        pred_label = class_names[pred_index]
+        group, reason = heuristic_group(image_path)
+        top_indices = list(np.argsort(-probs)[:3])
+        rows.append(
+            {
+                "img_path": str(image_path),
+                "img_rel_path": str(image_path.relative_to(data_root)),
+                "gt": "Normal",
+                "pred": pred_label,
+                "p_abnormal": round(p_abnormal, 6),
+                "p_normal": round(p_normal, 6),
+                "top1_label": class_names[top_indices[0]],
+                "top1_prob": round(float(probs[top_indices[0]]), 6),
+                "top2_label": class_names[top_indices[1]],
+                "top2_prob": round(float(probs[top_indices[1]]), 6),
+                "top3_label": class_names[top_indices[2]],
+                "top3_prob": round(float(probs[top_indices[2]]), 6),
+                "heuristic_group": group,
+                "heuristic_reason": reason,
+            }
+        )
+    return rows
 
 
 def heuristic_group(image_path: Path) -> tuple[str, str]:
@@ -100,9 +147,9 @@ def main() -> None:
 
     print_step("data", f"scoring {len(image_paths)} train-side normal images")
     model = YOLO(str(weights), task="classify")
-    score_device = args.device
+    score_device = str(args.device)
     try:
-        results = run_predict(model, image_paths, args.imgsz, args.batch, score_device)
+        rows = collect_rows(model, image_paths, data_root, args.imgsz, args.batch, args.chunk_size, score_device)
     except Exception as exc:
         if score_device.lower() != "cpu" and "out of memory" in str(exc).lower():
             print_step("warn", f"CUDA OOM during scoring on device={score_device}; retry on CPU")
@@ -113,38 +160,9 @@ def main() -> None:
             except Exception:
                 pass
             score_device = "cpu"
-            results = run_predict(model, image_paths, args.imgsz, args.batch, score_device)
+            rows = collect_rows(model, image_paths, data_root, args.imgsz, 1, 8, score_device)
         else:
             raise
-
-    rows: list[dict] = []
-    for image_path, result in zip(image_paths, results, strict=True):
-        probs = result.probs.data.detach().cpu().numpy().astype(float)
-        class_names = result.names
-        p_abnormal = float(probs[0])
-        p_normal = float(probs[1])
-        pred_index = int(np.argmax(probs))
-        pred_label = class_names[pred_index]
-        group, reason = heuristic_group(image_path)
-        top_indices = list(np.argsort(-probs)[:3])
-        rows.append(
-            {
-                "img_path": str(image_path),
-                "img_rel_path": str(image_path.relative_to(data_root)),
-                "gt": "Normal",
-                "pred": pred_label,
-                "p_abnormal": round(p_abnormal, 6),
-                "p_normal": round(p_normal, 6),
-                "top1_label": class_names[top_indices[0]],
-                "top1_prob": round(float(probs[top_indices[0]]), 6),
-                "top2_label": class_names[top_indices[1]],
-                "top2_prob": round(float(probs[top_indices[1]]), 6),
-                "top3_label": class_names[top_indices[2]],
-                "top3_prob": round(float(probs[top_indices[2]]), 6),
-                "heuristic_group": group,
-                "heuristic_reason": reason,
-            }
-        )
 
     rows_sorted = sorted(rows, key=lambda item: item["p_abnormal"], reverse=True)
     top_rows = rows_sorted[: args.top_k]
