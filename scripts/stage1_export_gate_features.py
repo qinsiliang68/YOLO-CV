@@ -56,6 +56,33 @@ def flatten_embedding(value: Any) -> np.ndarray:
     return array.reshape(-1)
 
 
+def normalize_batch_embeddings(raw_embeddings: Any, expected_count: int) -> list[np.ndarray]:
+    if hasattr(raw_embeddings, "detach"):
+        raw_embeddings = [raw_embeddings]
+
+    normalized: list[np.ndarray] = []
+    for item in raw_embeddings:
+        if hasattr(item, "detach"):
+            array = item.detach().cpu().numpy()
+        else:
+            array = np.asarray(item)
+        array = np.asarray(array, dtype=np.float32)
+        if array.ndim <= 1:
+            normalized.append(array.reshape(-1))
+            continue
+        if array.shape[0] == expected_count and not normalized:
+            normalized.extend(array[index].reshape(-1) for index in range(array.shape[0]))
+            continue
+        normalized.append(array.reshape(-1))
+
+    if len(normalized) != expected_count:
+        raise RuntimeError(
+            f"Embedding count mismatch: expected {expected_count}, got {len(normalized)}. "
+            "Inspect model.embed() output shape for this model/build."
+        )
+    return normalized
+
+
 def collect_image_paths(data_root: Path, split: str) -> list[Path]:
     split_root = data_root / split
     if not split_root.exists():
@@ -83,10 +110,11 @@ def export_split(
     if not image_paths:
         raise SystemExit(f"No images found for split '{split}' under {data_root}")
 
-    model = YOLO(str(weights_path), task="classify")
+    predict_model = YOLO(str(weights_path), task="classify")
+    embed_model = YOLO(str(weights_path), task="classify")
     use_half = str(device).lower() != "cpu"
 
-    class_names = class_names_from_model_names(model.names)
+    class_names = class_names_from_model_names(predict_model.names)
     if normal_class not in class_names:
         raise SystemExit(f"Normal class '{normal_class}' not found in model classes: {class_names}")
     normal_index = class_names.index(normal_class)
@@ -101,7 +129,7 @@ def export_split(
         source = [str(path) for path in batch_paths]
 
         predict_start = time.time()
-        batch_results = model.predict(
+        batch_results = predict_model.predict(
             source=source,
             verbose=False,
             stream=False,
@@ -116,7 +144,7 @@ def export_split(
             torch.cuda.empty_cache()
 
         embed_start = time.time()
-        batch_embed_results = model.embed(
+        batch_embed_results = embed_model.embed(
             source=source,
             verbose=False,
             stream=False,
@@ -126,19 +154,19 @@ def export_split(
             half=use_half,
         )
         embed_seconds += time.time() - embed_start
+        batch_embeddings = normalize_batch_embeddings(batch_embed_results, len(batch_paths))
 
         if torch.cuda.is_available() and use_half:
             torch.cuda.empty_cache()
 
-        for path, result, embedding in zip(batch_paths, batch_results, batch_embed_results, strict=True):
+        for path, result, embedding_vector in zip(batch_paths, batch_results, batch_embeddings, strict=True):
             probs = [float(value) for value in result.probs.data.detach().cpu().tolist()]
             top_indices = sorted(range(len(probs)), key=lambda idx: probs[idx], reverse=True)
             pred_index = top_indices[0]
             p_normal = probs[normal_index]
             p_abnormal = 1.0 - p_normal
-            embedding_vector = flatten_embedding(embedding.detach().cpu().numpy())
             embedding_index = len(embeddings)
-            embeddings.append(embedding_vector)
+            embeddings.append(flatten_embedding(embedding_vector))
             gt_label = path.parent.name
             row = {
                 "row_id": len(rows),
