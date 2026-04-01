@@ -1788,7 +1788,7 @@ SE-Net 是通道注意力的经典代表，其核心思想是通过全局信息�
 
 \begin{table}[H]
     \centering
-    \caption{第一阶段关键消融与工程增强实验设计表}
+    \caption{第一阶段主线消融与工程增强实验设计表}
     \label{tab:stage1-ablation-plan}
     \begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}N{1.0cm}N{1.8cm}N{1.0cm}N{1.1cm}N{1.6cm}N{1.45cm}N{1.45cm}N{1.45cm}N{1.45cm}@{}}
         \toprule
@@ -1797,8 +1797,6 @@ SE-Net 是通道注意力的经典代表，其核心思想是通过全局信息�
         G0 & yolo11l-cls & 否 & 0\% & BCE & 0.4048 & 0.4643 & 0.9026 & 0.9167 \\
         G1 & yolo11l-cls & 是 & 0\% & BCE & 0.4286 & 0.4762 & 0.9043 & 0.9127 \\
         G2 & yolo11l-cls & 是 & 2\% & BCE & 0.5119 & 0.5476 & 0.9165 & 0.9028 \\
-        G3 & yolo11s-cls & 是 & 0\% & BCE & 0.3571 & 0.4167 & 0.8949 & 0.9246 \\
-        G4 & yolo11s-cls & 是 & 2\% & BCE & 0.4167 & 0.4881 & 0.9063 & 0.9107 \\
         G5 & yolo11l-cls & 是 & 2\% & WBCE & 待填充 & 待填充 & 待填充 & 待填充 \\
         G6 & yolo11l-cls & 是 & 2\% & Focal & 待填充 & 待填充 & 待填充 & 待填充 \\
         G7 & yolo11l-cls & 是 & 2\% & BestLoss & 待填充 & 待填充 & 待填充 & 待填充 \\
@@ -1806,9 +1804,24 @@ SE-Net 是通道注意力的经典代表，其核心思想是通过全局信息�
         \bottomrule
 \end{tabular*}
 \end{table}
-\noindent\parbox{\textwidth}{其中，G3 与 G4 构成第二模型 \textrm{yolo11s-cls} 的自对照；WBCE 表示 Weighted BCE，LA 表示 Light Attention；G0、G1、G3 与 G4 均采用统一 val-op 口径。}
+\noindent\parbox{\textwidth}{其中，WBCE 表示 Weighted BCE，LA 表示 Light Attention；G0 与 G1 均采用统一 val-op 口径。}
 
-当前第二模型对照组也已经形成自洽对照：G3 对应 \textrm{yolo11s-cls} 的统一校准基线，G4 对应相同模型在 \textrm{hn02} 回流后的结果。由 G3 与 G4 可见，\textrm{Spec@R99.5} 由 0.3571 提升至 0.4167，\textrm{Spec@R99.0} 由 0.4167 提升至 0.4881，\textrm{Prec@R99.0} 由 0.8949 提升至 0.9063，同时 \textrm{PTR@R99.0} 由 0.9246 降至 0.9107。该结果说明，\textrm{hn02} 并非只对主模型 \textrm{yolo11l-cls} 有效，而是在第二模型容量上同样能够改善高召回工作点附近的过滤能力；但其综合收益仍低于 G2，因此当前第一阶段主线仍保持为“\textrm{l} 作为主模型、\textrm{s} 作为跨容量对照模型”的双模型结构。
+此外，本文还额外设置了第二模型 \textrm{yolo11s-cls} 的跨容量对照实验，用于验证 \textrm{hn02} 回流方案是否只对主模型 \textrm{yolo11l-cls} 有效。表\ref{tab:stage1-second-model-check} 给出了 \textrm{yolo11s-cls} 在统一校准基线与 \textrm{hn02} 回流后的对照结果。可以看出，\textrm{Spec@R99.5} 由 0.3571 提升至 0.4167，\textrm{Spec@R99.0} 由 0.4167 提升至 0.4881，\textrm{Prec@R99.0} 由 0.8949 提升至 0.9063，同时 \textrm{PTR@R99.0} 由 0.9246 降至 0.9107。该结果说明，\textrm{hn02} 并非只对主模型有效，而是在第二模型容量上同样能够改善高召回工作点附近的过滤能力；但其综合收益仍低于 G2，因此当前第一阶段主线仍保持为“\textrm{l} 作为主模型、\textrm{s} 作为跨容量对照模型”的双模型结构。
+
+\begin{table}[H]
+    \centering
+    \caption{第一阶段第二模型跨容量对照实验表}
+    \label{tab:stage1-second-model-check}
+    \begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}N{1.0cm}N{1.8cm}N{1.0cm}N{1.1cm}N{1.6cm}N{1.45cm}N{1.45cm}N{1.45cm}N{1.45cm}@{}}
+        \toprule
+        组别 & 模型 & 校准 & HN回流 & 损失函数 & \numhead{Spec@\\R99.5} & \numhead{Spec@\\R99.0} & \numhead{Prec@\\R99.0} & \numhead{PTR@\\R99.0} \\
+        \midrule
+        G3 & yolo11s-cls & 是 & 0\% & BCE & 0.3571 & 0.4167 & 0.8949 & 0.9246 \\
+        G4 & yolo11s-cls & 是 & 2\% & BCE & 0.4167 & 0.4881 & 0.9063 & 0.9107 \\
+        \bottomrule
+    \end{tabular*}
+\end{table}
+\noindent\parbox{\textwidth}{其中，G3 与 G4 构成第二模型 \textrm{yolo11s-cls} 的自对照，主要用于补充说明 HN 回流的收益并非只依赖单一模型容量。}
 
 \begin{figure}[H]
     \centering
@@ -2055,7 +2068,7 @@ SE-Net 是通道注意力的经典代表，其核心思想是通过全局信息�
 
 \begin{table}[H]
     \centering
-    \caption{第一阶段关键消融结果表}
+    \caption{第一阶段主线消融结果表}
     \label{tab:stage1-ablation-results}
     \begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}N{1.0cm}N{1.8cm}N{1.0cm}N{1.1cm}N{1.6cm}N{1.45cm}N{1.45cm}N{1.45cm}N{1.45cm}@{}}
         \toprule
@@ -2064,8 +2077,6 @@ SE-Net 是通道注意力的经典代表，其核心思想是通过全局信息�
         G0 & yolo11l-cls & 否 & 0\% & BCE & 0.4048 & 0.4643 & 0.9026 & 0.9167 \\
         G1 & yolo11l-cls & 是 & 0\% & BCE & 0.4286 & 0.4762 & 0.9043 & 0.9127 \\
         G2 & yolo11l-cls & 是 & 2\% & BCE & 0.5119 & 0.5476 & 0.9165 & 0.9028 \\
-        G3 & yolo11s-cls & 是 & 0\% & BCE & 0.3571 & 0.4167 & 0.8949 & 0.9246 \\
-        G4 & yolo11s-cls & 是 & 2\% & BCE & 0.4167 & 0.4881 & 0.9063 & 0.9107 \\
         G5 & yolo11l-cls & 是 & 2\% & WBCE & 待填充 & 待填充 & 待填充 & 待填充 \\
         G6 & yolo11l-cls & 是 & 2\% & Focal & 待填充 & 待填充 & 待填充 & 待填充 \\
         G7 & yolo11l-cls & 是 & 2\% & BestLoss & 待填充 & 待填充 & 待填充 & 待填充 \\
@@ -2073,7 +2084,22 @@ SE-Net 是通道注意力的经典代表，其核心思想是通过全局信息�
         \bottomrule
     \end{tabular*}
 \end{table}
-\noindent\parbox{\textwidth}{其中，G3 与 G4 为第二模型 \textrm{yolo11s-cls} 的自对照组；WBCE 表示 Weighted BCE，LA 表示 Light Attention；G0、G1、G3 与 G4 均采用统一 val-op 口径。}
+\noindent\parbox{\textwidth}{其中，WBCE 表示 Weighted BCE，LA 表示 Light Attention；G0 与 G1 均采用统一 val-op 口径。}
+
+\begin{table}[H]
+    \centering
+    \caption{第一阶段第二模型跨容量对照结果表}
+    \label{tab:stage1-second-model-results}
+    \begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}N{1.0cm}N{1.8cm}N{1.0cm}N{1.1cm}N{1.6cm}N{1.45cm}N{1.45cm}N{1.45cm}N{1.45cm}@{}}
+        \toprule
+        组别 & 模型 & 校准 & HN回流 & 损失函数 & \numhead{Spec@\\R99.5} & \numhead{Spec@\\R99.0} & \numhead{Prec@\\R99.0} & \numhead{PTR@\\R99.0} \\
+        \midrule
+        G3 & yolo11s-cls & 是 & 0\% & BCE & 0.3571 & 0.4167 & 0.8949 & 0.9246 \\
+        G4 & yolo11s-cls & 是 & 2\% & BCE & 0.4167 & 0.4881 & 0.9063 & 0.9107 \\
+        \bottomrule
+    \end{tabular*}
+\end{table}
+\noindent\parbox{\textwidth}{其中，G3 与 G4 为第二模型 \textrm{yolo11s-cls} 的自对照组，用于补充证明 HN 回流在非主模型容量下同样具有一定稳定收益。}
 
 \section{第二阶段检测 baseline 对比实验}
 
