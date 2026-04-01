@@ -1,0 +1,13 @@
+{
+  "collection_runtime": {
+    "predict_seconds": 10.604372,
+    "predict_images_per_second": 67.896526,
+    "embed_seconds": null,
+    "embed_images_per_second": null
+  },
+  "train_runtime_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\cls_gate_hn_sweep\\yolo11l_gate2_train7200_hn04\\training_runtime.json",
+  "train_runtime": null,
+  "epoch_metrics_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\research\\materials\\stage1_gate_hn_ratio_sweep\\hn04\\epoch_metrics.csv",
+  "val_images": 720,
+  "embeddings_exported": false
+}

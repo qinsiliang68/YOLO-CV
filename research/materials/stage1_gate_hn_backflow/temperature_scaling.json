@@ -1,0 +1,8 @@
+{
+  "seed": 20260330,
+  "temperature": 2.24551257,
+  "nll_before": 0.29062035,
+  "nll_after": 0.20975559,
+  "val_cal_count": 216,
+  "val_op_count": 504
+}

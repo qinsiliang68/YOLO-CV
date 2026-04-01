@@ -1,0 +1,19 @@
+{
+  "ratio_id": "hn16",
+  "temperature": 1.09548594,
+  "val_cal_count": 216,
+  "val_op_count": 504,
+  "accuracy": 0.906746,
+  "macro_f1": 0.8107,
+  "auroc": 0.919473,
+  "auprc": 0.980637,
+  "ece": 0.038282,
+  "brier": 0.068339,
+  "spec_at_r995": 0.297619,
+  "spec_at_r990": 0.47619,
+  "prec_at_r990": 0.904348,
+  "ptr_at_r990": 0.912698,
+  "threshold_at_r995": 0.193845,
+  "threshold_at_r990": 0.325466,
+  "default_threshold": 0.5
+}

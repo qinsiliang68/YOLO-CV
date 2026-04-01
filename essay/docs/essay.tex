@@ -1761,11 +1761,61 @@ SE-Net 是通道注意力的经典代表，其核心思想是通过全局信息�
 
 需要说明的是，HN 回流并非天然有效，其成立前提包括：误报样本必须经过确认，确保其为 true normal 而非漏标异常；回流样本必须来自训练侧或额外 normal 池，而不能直接污染用于报告结果的 val-op；同时还需控制回流强度并执行去重，避免同一视频或同一场景中的连续相似帧过度主导训练。基于这些约束，本文将 HN 视为第一阶段最值得优先验证的训练策略假设，而非默认必然有效的经验规则。
 
-当前版本尚未纳入完整的 HN / loss 消融结果，因此第一阶段关键消融部分目前仅先填入统一 val-op 口径下的 baseline 与 calibration 数值。后续实验将围绕困难负样本回流、损失函数设计与轻量工程增强三类因素展开，并据实补充对应的定量表格与曲线图。表\ref{tab:stage1-ablation-plan} 给出了下一阶段第一阶段关键消融的固定实验框架，后续只需按既定顺序补入剩余数值。
+基于当前主模型 \textrm{yolo11l-cls}，本文进一步完成了固定校准协议下的 HN 回流比例扫描。具体地，全部实验沿用相同的 val-cal / val-op 划分、相同的 Temperature Scaling 流程以及一致的训练超参数，仅改变回流到训练集的 hardest normal 比例，并在 \textrm{0\%}、\textrm{2\%}、\textrm{4\%}、\textrm{6\%}、\textrm{8\%}、\textrm{10\%}、\textrm{12\%}、\textrm{14\%}、\textrm{16\%}、\textrm{18\%} 与 \textrm{20\%} 十一组设置下比较 \textrm{Spec@R99.5}、\textrm{Spec@R99.0}、\textrm{Prec@R99.0} 与 \textrm{PTR@R99.0}。表\ref{tab:stage1-hn-ratio-sweep} 给出了关键结果。可以看出，在当前 sweep 中，\textrm{hn02} 即 2\% 回流比例取得了最优的高召回锚点组合：\textrm{Spec@R99.5} 从基线组的 0.4405 提升至 0.5119，\textrm{Spec@R99.0} 由 0.5357 提升至 0.5476，\textrm{Prec@R99.0} 由 0.9143 提升至 0.9165，而 \textrm{PTR@R99.0} 保持不变。随着回流比例继续增大，多数组别在 \textrm{Spec@R99.5} 上出现回落，说明 HN 回流强度并非越大越好。
 
 \begin{table}[H]
     \centering
-    \caption{第一阶段关键消融实验设计表（待填充）}
+    \caption{第一阶段 HN 回流比例扫描结果表}
+    \label{tab:stage1-hn-ratio-sweep}
+    \begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}N{1.3cm}N{1.4cm}N{1.6cm}N{1.6cm}N{1.6cm}N{1.6cm}N{1.6cm}@{}}
+        \toprule
+        组别 & 回流比例/\% & 回流样本数 & \numhead{Spec@\\R99.5} & \numhead{Spec@\\R99.0} & \numhead{Prec@\\R99.0} & \numhead{PTR@\\R99.0} \\
+        \midrule
+        hn00 & 0  & 0   & 0.4405 & 0.5357 & 0.9143 & 0.9028 \\
+        hn02 & 2  & 22  & 0.5119 & 0.5476 & 0.9165 & 0.9028 \\
+        hn04 & 4  & 43  & 0.4286 & 0.4524 & 0.9004 & 0.9167 \\
+        hn06 & 6  & 65  & 0.3929 & 0.4881 & 0.9063 & 0.9107 \\
+        hn08 & 8  & 86  & 0.3452 & 0.4881 & 0.9063 & 0.9107 \\
+        hn10 & 10 & 108 & 0.2500 & 0.5119 & 0.9103 & 0.9067 \\
+        hn12 & 12 & 130 & 0.4167 & 0.4881 & 0.9063 & 0.9107 \\
+        hn14 & 14 & 151 & 0.3214 & 0.5476 & 0.9163 & 0.9008 \\
+        hn16 & 16 & 173 & 0.2976 & 0.4762 & 0.9043 & 0.9127 \\
+        hn18 & 18 & 194 & 0.3571 & 0.3690 & 0.8872 & 0.9325 \\
+        hn20 & 20 & 216 & 0.2738 & 0.3690 & 0.8870 & 0.9306 \\
+        \bottomrule
+    \end{tabular*}
+\end{table}
+
+\begin{figure}[H]
+    \centering
+    \begin{minipage}{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{stage1_hn_ratio_vs_spec_r995.png}
+    \end{minipage}\hfill
+    \begin{minipage}{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{stage1_hn_ratio_vs_spec_r990.png}
+    \end{minipage}
+
+    \vspace{0.5em}
+
+    \begin{minipage}{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{stage1_hn_ratio_vs_prec_r990.png}
+    \end{minipage}\hfill
+    \begin{minipage}{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{stage1_hn_ratio_vs_ptr_r990.png}
+    \end{minipage}
+    \caption{第一阶段 HN 回流比例扫描关键指标对比}
+    \label{fig:stage1-hn-ratio-sweep}
+\end{figure}
+
+从图\ref{fig:stage1-hn-ratio-sweep}可以进一步看出，\textrm{Spec@R99.5} 对回流比例最为敏感：当回流比例由 0\% 提高到 2\% 时，曲线出现最明显的正向抬升；而当比例继续扩大后，\textrm{Spec@R99.5} 反而整体回落。这说明当前阶段最值钱的并不是大量回流 hardest normal，而是以较小比例注入最具信息量的误报 normal，从而在不显著牺牲通过率的条件下改善高召回区间的过滤能力。进一步结合附录表\ref{tab:appendix-stage1-hn-full} 可知，\textrm{hn02} 虽然在 Accuracy、Macro-F1、AUROC 与 AUPRC 上略低于 \textrm{hn00}，但这种回落并不构成对 HN 路线的否定。原因在于，第一阶段优化目标并非追求默认阈值下的总体分类分数，而是在固定高召回约束下尽可能提高 normal 过滤能力并维持通过率稳定；从这一目标出发，\textrm{hn02} 在关键 operating point 上优于基线组，而大比例回流组虽个别全局指标偶有回升，却未能持续改善 \textrm{Spec@R99.5} 与 \textrm{Prec@R99.0}。因此，后续 stage-1 主线实验优先采用 \textrm{hn02} 作为 \textrm{yolo11l-cls} 的 HN 回流方案。
+
+\begin{table}[H]
+    \centering
+    \caption{第一阶段关键消融与工程增强实验设计表}
     \label{tab:stage1-ablation-plan}
     \begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}N{1.0cm}N{1.8cm}N{1.0cm}N{1.1cm}N{1.6cm}N{1.45cm}N{1.45cm}N{1.45cm}N{1.45cm}@{}}
         \toprule
@@ -1773,7 +1823,7 @@ SE-Net 是通道注意力的经典代表，其核心思想是通过全局信息�
         \midrule
         G0 & yolo11l-cls & 否 & 否 & BCE & 0.4048 & 0.4643 & 0.9026 & 0.9167 \\
         G1 & yolo11l-cls & 是 & 否 & BCE & 0.4286 & 0.4762 & 0.9043 & 0.9127 \\
-        G2 & yolo11l-cls & 是 & 是 & BCE & 待填充 & 待填充 & 待填充 & 待填充 \\
+        G2 & yolo11l-cls & 是 & 是 & BCE & 0.5119 & 0.5476 & 0.9165 & 0.9028 \\
         G3 & yolo11s-cls & 是 & 是 & BCE & 待填充 & 待填充 & 待填充 & 待填充 \\
         G4 & yolo11l-cls & 是 & 是 & WBCE & 待填充 & 待填充 & 待填充 & 待填充 \\
         G5 & yolo11l-cls & 是 & 是 & Focal & 待填充 & 待填充 & 待填充 & 待填充 \\
@@ -2024,12 +2074,12 @@ SE-Net 是通道注意力的经典代表，其核心思想是通过全局信息�
 
 进一步比较高召回锚点下的 operating point 可以发现，不同模型的 calibration 收益并不一致。\textrm{yolo11l-cls} 是唯一在两组高召回锚点上都出现明确正向增益的模型：其 \textrm{Spec@R99.5} 由 0.4048 提升到 0.4286，\textrm{Spec@R99.0} 由 0.4643 提升到 0.4762，\textrm{Prec@R99.0} 也由 0.9026 提升到 0.9043，说明分数经校准后形成了更稳健的筛选边界。\textrm{yolo11m-cls} 虽然在 ECE 与 Brier Score 上改善明显，但高召回锚点指标基本不变；\textrm{yolo11s-cls} 则在统一 val-op 口径下补齐了 \textrm{Spec@R99.5}，其值为 0.3571，高于 \textrm{yolo11m-cls} 的 0.3452，但仍落后于 \textrm{yolo11l-cls}。若按“先比较 \textrm{Spec@R99.5}，再比较 \textrm{Spec@R99.0}，最后比较 \textrm{Prec@R99.0}”的规则排序，统一 calibration 后的高召回锚点顺序为 \textrm{yolo11l-cls}、\textrm{yolo11n-cls}、\textrm{yolo11s-cls}、\textrm{yolo11m-cls}、\textrm{yolo11x-cls}。结合 baseline 中 \textrm{yolo11s-cls} 的默认阈值 leader 地位，本文最终将 \textrm{yolo11l-cls} 确定为第一阶段主模型，将 \textrm{yolo11s-cls} 确定为第二对照模型，并将 \textrm{yolo11m-cls} 保留为 AUPRC 参考模型。由此可见，Temperature Scaling 作为低成本后处理策略，已经足以帮助后续 Hard Negative Mining 的模型选择收敛为 \textrm{l} 与 \textrm{s} 两条主线。
 
-在完成 calibration 验证后，第一阶段后续实验重点将转向 Hard Negative 回流与损失函数设计。与 calibration 相比，这两类策略更有可能直接推动高召回锚点下的过滤曲线向右上方移动，因此将作为下一阶段的主要优化方向。
-为保证后续结果能直接回填，表\ref{tab:stage1-ablation-results} 预先固定了第一阶段关键消融的结果字段。当前已先填入统一 val-op 口径下的 G0 与 G1，后续主模型与第二模型的 HN / loss 实验完成后即可直接补入剩余组别。
+在完成 calibration 验证后，第一阶段已经进一步完成了主模型 \textrm{yolo11l-cls} 的 HN 回流比例扫描。结果表明，\textrm{hn02} 即 2\% 回流比例取得了当前最优的高召回锚点组合：\textrm{Spec@R99.5} 提升至 0.5119，\textrm{Spec@R99.0} 提升至 0.5476，\textrm{Prec@R99.0} 提升至 0.9165，而 \textrm{PTR@R99.0} 维持在 0.9028。相比之下，更高比例的 HN 回流并未继续带来稳定收益，说明 hardest normal 回流强度需要受到控制，不能简单按比例堆高。需要说明的是，\textrm{hn02} 相较基线组在 Accuracy、Macro-F1、AUROC 与 AUPRC 上均有小幅回落，但这一现象与第一阶段目标并不矛盾：stage-1 gate 更关心的是在固定高召回约束下提升 normal 过滤能力，而不是追求默认阈值下的总体分类得分。因此，只要 \textrm{Spec@R99.5}、\textrm{Spec@R99.0} 与 \textrm{Prec@R99.0} 同步改善且 \textrm{PTR@R99.0} 未恶化，就可以认为 HN 回流对当前门控任务是有效的。
+为保证后续结果能直接回填，表\ref{tab:stage1-ablation-results} 固定了第一阶段关键消融的结果字段。当前已填入统一 val-op 口径下的 G0、G1 以及主模型最优 HN 组 G2；后续第二模型与 loss 实验完成后即可继续补入剩余组别。
 
 \begin{table}[H]
     \centering
-    \caption{第一阶段关键消融结果表（待填充）}
+    \caption{第一阶段关键消融结果表}
     \label{tab:stage1-ablation-results}
     \begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}N{1.0cm}N{1.8cm}N{1.0cm}N{1.1cm}N{1.6cm}N{1.45cm}N{1.45cm}N{1.45cm}N{1.45cm}@{}}
         \toprule
@@ -2037,7 +2087,7 @@ SE-Net 是通道注意力的经典代表，其核心思想是通过全局信息�
         \midrule
         G0 & yolo11l-cls & 否 & 否 & BCE & 0.4048 & 0.4643 & 0.9026 & 0.9167 \\
         G1 & yolo11l-cls & 是 & 否 & BCE & 0.4286 & 0.4762 & 0.9043 & 0.9127 \\
-        G2 & yolo11l-cls & 是 & 是 & BCE & 待填充 & 待填充 & 待填充 & 待填充 \\
+        G2 & yolo11l-cls & 是 & 是 & BCE & 0.5119 & 0.5476 & 0.9165 & 0.9028 \\
         G3 & yolo11s-cls & 是 & 是 & BCE & 待填充 & 待填充 & 待填充 & 待填充 \\
         G4 & yolo11l-cls & 是 & 是 & WBCE & 待填充 & 待填充 & 待填充 & 待填充 \\
         G5 & yolo11l-cls & 是 & 是 & Focal & 待填充 & 待填充 & 待填充 & 待填充 \\
@@ -2508,6 +2558,47 @@ Wang H, Li Z, Wang H. Few-Shot Steel Surface Defect Detection[J]. IEEE Transacti
     \includegraphics[width=0.94\textwidth]{stage1_cls6_key_metrics_current.pdf}
     \caption{六类间接 gate 五模型的关键锚点指标对比}
     \label{fig:appendix-cls6-calibration-metrics}
+\end{figure}
+
+\section{第一阶段 HN 回流比例扫描补充结果}
+
+为补充展示第一阶段主模型 \textrm{yolo11l-cls} 在不同 HN 回流强度下的响应规律，本附录进一步给出 \textrm{hn00} 至 \textrm{hn20} 十一组实验的全量指标汇总。正文主要保留高召回锚点相关指标及最优比例结论；本附录额外补充整体精度、排序质量和分数可信度指标，以增强实验过程的可复核性。
+
+\begin{table}[H]
+    \centering
+    \caption{第一阶段 HN 回流比例扫描全量指标表}
+    \label{tab:appendix-stage1-hn-full}
+    \begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}N{1.3cm}N{1.3cm}N{1.6cm}N{1.4cm}N{1.3cm}N{1.3cm}N{1.2cm}N{1.2cm}@{}}
+        \toprule
+        组别 & 回流比例/\% & 回流样本数 & \numhead{Accuracy} & \numhead{Macro-\\F1} & \numhead{AUROC} & \numhead{AUPRC} & \numhead{ECE} \\
+        \midrule
+        hn00 & 0  & 0   & 0.9385 & 0.8818 & 0.9497 & 0.9886 & 0.0326 \\
+        hn02 & 2  & 22  & 0.9246 & 0.8630 & 0.9397 & 0.9858 & 0.0298 \\
+        hn04 & 4  & 43  & 0.9167 & 0.8407 & 0.9009 & 0.9712 & 0.0381 \\
+        hn06 & 6  & 65  & 0.9365 & 0.8760 & 0.9355 & 0.9842 & 0.0447 \\
+        hn08 & 8  & 86  & 0.9246 & 0.8559 & 0.9288 & 0.9828 & 0.0314 \\
+        hn10 & 10 & 108 & 0.9226 & 0.8464 & 0.9244 & 0.9824 & 0.0291 \\
+        hn12 & 12 & 130 & 0.9147 & 0.8325 & 0.9188 & 0.9805 & 0.0275 \\
+        hn14 & 14 & 151 & 0.9385 & 0.8818 & 0.9346 & 0.9826 & 0.0337 \\
+        hn16 & 16 & 173 & 0.9067 & 0.8107 & 0.9195 & 0.9806 & 0.0383 \\
+        hn18 & 18 & 194 & 0.9226 & 0.8513 & 0.9350 & 0.9838 & 0.0271 \\
+        hn20 & 20 & 216 & 0.9226 & 0.8497 & 0.9321 & 0.9851 & 0.0363 \\
+        \bottomrule
+    \end{tabular*}
+\end{table}
+
+\begin{figure}[H]
+    \centering
+    \begin{minipage}{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{stage1_hn_candidate_cumulative_curve.png}
+    \end{minipage}\hfill
+    \begin{minipage}{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{stage1_hn_candidate_score_distribution.png}
+    \end{minipage}
+    \caption{第一阶段 HN 候选样本累计数量与分数分布补充图}
+    \label{fig:appendix-stage1-hn-candidate-plots}
 \end{figure}
 
 \end{document}
