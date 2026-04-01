@@ -40,13 +40,14 @@ BUILTIN_DEFAULT_CONFIG = {
     "run_name_suffix": "cls6_train7200_uniform",
 }
 BUILTIN_STAGE1_ENTRY_CONFIG = {
-    "task": "stage1_gate_ptsg_nextwave",
+    "task": "stage1_gate_embed_supcon",
     "score_device": "0",
     "top_k": 22,
     "score_batch": 1,
     "score_chunk_size": 32,
     "ptsg_eval_config": r"YOLOv11\configs\runtime\stage1_gate_ptsg_eval.json",
     "ptsg_nextwave_config": r"YOLOv11\configs\runtime\stage1_gate_ptsg_nextwave.json",
+    "stage1_embed_supcon_config": r"YOLOv11\configs\runtime\stage1_gate_embedding_supcon_eval.json",
 }
 STAGE1_HN_TASKS = {
     "stage1_gate_l_hn": {
@@ -86,6 +87,7 @@ def parse_args() -> argparse.Namespace:
             "stage1_gate_s_hn",
             "stage1_gate_ptsg_eval",
             "stage1_gate_ptsg_nextwave",
+            "stage1_gate_embed_supcon",
         ),
         default="auto",
         help="Task to run. 'auto' reads YOLOv11/configs/runtime/main_entry.json.",
@@ -467,6 +469,123 @@ def run_stage1_ptsg_nextwave(entry_cfg: dict, dry_run: bool) -> None:
     )
 
 
+def run_stage1_embed_supcon(entry_cfg: dict, dry_run: bool) -> None:
+    config_path = resolve_path(
+        entry_cfg.get("stage1_embed_supcon_config"),
+        base=YOLOV11_ROOT / "configs" / "runtime" / "stage1_gate_embedding_supcon_eval.json",
+    )
+    embed_cfg = load_json(config_path)
+    train_config_path = resolve_path(
+        embed_cfg.get("train_config"),
+        base=YOLOV11_ROOT / "configs" / "runtime" / "stage1_gate_l_hn02_supcon.json",
+    )
+    train_cfg = load_json(train_config_path)
+
+    project_dir = Path(resolve_str(train_cfg.get("project"), ""))
+    run_name = resolve_str(train_cfg.get("name"), "yolo11l_gate2_hn02_supcon")
+    run_dir = project_dir / run_name
+    recycle_root = resolve_path(
+        embed_cfg.get("recycle_root"),
+        base=REPO_ROOT / "_recycle_bin" / "stage1_gate_embed",
+    )
+    output_dir = resolve_path(
+        embed_cfg.get("output_dir"),
+        base=REPO_ROOT / "research" / "materials" / "stage1_embedding_gate" / run_name,
+    )
+    baseline_dir = resolve_path(
+        embed_cfg.get("baseline_dir"),
+        base=REPO_ROOT / "research" / "materials" / "stage1_ptsg" / "yolo11l_gate2_hn02",
+    )
+    results_dir = resolve_path(
+        embed_cfg.get("results_dir"),
+        base=REPO_ROOT / "research" / "results" / "stage1_embedding_gate",
+    )
+    weights_path = run_dir / "weights" / "best.pt"
+
+    print_step("task", f"stage1_gate_embed_supcon ({resolve_str(embed_cfg.get('label'), run_name)})")
+    archive_existing_run(run_dir, recycle_root, dry_run=dry_run)
+    run_python("scripts/stage1_gate_train.py", ["--config", str(train_config_path)], dry_run=dry_run)
+    run_python(
+        "scripts/stage1_export_gate_features.py",
+        [
+            "--weights",
+            str(weights_path),
+            "--data-root",
+            resolve_str(train_cfg.get("data"), ""),
+            "--output-dir",
+            str(output_dir),
+            "--device",
+            resolve_str(embed_cfg.get("device"), "0"),
+            "--imgsz",
+            str(int(embed_cfg.get("imgsz", 640) or 640)),
+            "--batch",
+            str(int(embed_cfg.get("batch", 2) or 2)),
+            "--chunk-size",
+            str(int(embed_cfg.get("chunk_size", 16) or 16)),
+            "--normal-class",
+            resolve_str(embed_cfg.get("normal_class"), "Normal"),
+        ],
+        dry_run=dry_run,
+    )
+    run_python(
+        "scripts/stage1_build_ptsg_bank.py",
+        [
+            "--train-features-csv",
+            str(output_dir / "train_features.csv"),
+            "--train-embeddings-npy",
+            str(output_dir / "train_embeddings.npy"),
+            "--output-dir",
+            str(output_dir),
+            "--normal-class",
+            resolve_str(embed_cfg.get("normal_class"), "Normal"),
+            "--hn-manifest",
+            resolve_str(embed_cfg.get("hn_manifest"), ""),
+            "--hn-weight",
+            str(float(embed_cfg.get("hn_weight", 3.0) or 3.0)),
+        ],
+        dry_run=dry_run,
+    )
+
+    eval_args = [
+        "--val-features-csv",
+        str(output_dir / "val_features.csv"),
+        "--val-embeddings-npy",
+        str(output_dir / "val_embeddings.npy"),
+        "--val-split-csv",
+        resolve_str(embed_cfg.get("split_csv"), ""),
+        "--normal-proto",
+        str(output_dir / "normal_proto.npy"),
+        "--abnormal-proto",
+        str(output_dir / "abnormal_proto.npy"),
+        "--output-dir",
+        str(output_dir),
+        "--normal-class",
+        resolve_str(embed_cfg.get("normal_class"), "Normal"),
+        "--alpha",
+        str(float(embed_cfg.get("alpha", 1.0) or 1.0)),
+        "--beta",
+        str(float(embed_cfg.get("beta", 1.0) or 1.0)),
+        "--gamma",
+        str(float(embed_cfg.get("gamma", 0.5) or 0.5)),
+    ]
+    hn_proto = output_dir / "normal_proto_hn_aware.npy"
+    if dry_run or hn_proto.exists():
+        eval_args.extend(["--hn-aware-normal-proto", str(hn_proto)])
+    run_python("scripts/stage1_eval_ptsg.py", eval_args, dry_run=dry_run)
+    run_python(
+        "scripts/stage1_compare_embedding_gate.py",
+        [
+            "--baseline-dir",
+            str(baseline_dir),
+            "--candidate-dir",
+            str(output_dir),
+            "--output-dir",
+            str(results_dir),
+        ],
+        dry_run=dry_run,
+    )
+
+
 def main() -> None:
     args = parse_args()
     if args.task == "cls6_sweep":
@@ -491,6 +610,10 @@ def main() -> None:
 
     if task_name == "stage1_gate_ptsg_nextwave":
         run_stage1_ptsg_nextwave(entry_cfg, dry_run=args.dry_run)
+        return
+
+    if task_name == "stage1_gate_embed_supcon":
+        run_stage1_embed_supcon(entry_cfg, dry_run=args.dry_run)
         return
 
     run_stage1_hn(task_name, entry_cfg, dry_run=args.dry_run)

@@ -6,6 +6,7 @@ import math
 
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
 from torch.nn.init import constant_, xavier_uniform_
 
 from ultralytics.utils.tal import TORCH_1_10, dist2bbox, dist2rbox, make_anchors
@@ -273,17 +274,44 @@ class Classify(nn.Module):
         """Initializes YOLOv8 classification head to transform input tensor from (b,c1,20,20) to (b,c2) shape."""
         super().__init__()
         c_ = 1280  # efficientnet_b0 size
+        self.trust_dim = c1
+        self.embed_dim = c_
         self.conv = Conv(c1, c_, k, s, p, g)
         self.pool = nn.AdaptiveAvgPool2d(1)  # to x(b,c_,1,1)
         self.drop = nn.Dropout(p=0.0, inplace=True)
         self.linear = nn.Linear(c_, c2)  # to x(b,c2)
+        self.proj = None
+        self.proj_dim = 0
+
+    def configure_projection(self, proj_dim=0, proj_hidden=0):
+        """Attach an optional projection head for supervised contrastive training."""
+        proj_dim = int(proj_dim or 0)
+        proj_hidden = int(proj_hidden or 0)
+        if proj_dim <= 0:
+            self.proj = None
+            self.proj_dim = 0
+            return
+        hidden = proj_hidden if proj_hidden > 0 else self.trust_dim
+        self.proj = nn.Sequential(
+            nn.Linear(self.trust_dim, hidden),
+            nn.SiLU(inplace=True),
+            nn.Linear(hidden, proj_dim),
+        )
+        self.proj_dim = proj_dim
 
     def forward(self, x):
         """Performs a forward pass of the YOLO model on input image data."""
         if isinstance(x, list):
             x = torch.cat(x, 1)
-        x = self.linear(self.drop(self.pool(self.conv(x)).flatten(1)))
-        return x if self.training else x.softmax(1)
+        trust_features = self.pool(x).flatten(1)
+        features = self.pool(self.conv(x)).flatten(1)
+        logits = self.linear(self.drop(features))
+        if self.training:
+            if self.proj is None:
+                return logits
+            projection = F.normalize(self.proj(trust_features), dim=1)
+            return {"logits": logits, "projection": projection, "penultimate": trust_features}
+        return logits.softmax(1)
 
 
 class WorldDetect(Detect):

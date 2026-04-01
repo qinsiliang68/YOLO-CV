@@ -7,7 +7,18 @@ from classify_train_callbacks import register_classification_material_callbacks
 from pipeline_common import YOLOV11_ROOT, compact_dict, ensure_yolov11_importable, load_json_config, resolve_model_value, resolve_relative_path
 
 
-CUSTOM_LOSS_KEYS = ("cls_loss_type", "cls_pos_weight", "cls_focal_gamma", "cls_focal_alpha")
+CUSTOM_LOSS_KEYS = (
+    "cls_loss_type",
+    "cls_pos_weight",
+    "cls_focal_gamma",
+    "cls_focal_alpha",
+    "contrastive_enable",
+    "contrastive_method",
+    "contrastive_weight",
+    "contrastive_temperature",
+    "contrastive_proj_dim",
+    "contrastive_proj_hidden",
+)
 
 
 def parse_args() -> argparse.Namespace:

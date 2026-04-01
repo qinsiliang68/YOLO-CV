@@ -1,0 +1,19 @@
+{
+  "label": "yolo11l-cls + hn02 + SupCon + P2",
+  "train_config": "YOLOv11/configs/runtime/stage1_gate_l_hn02_supcon.json",
+  "recycle_root": "C:/Users/ASUS/Desktop/YOLOv11/YOLO-CV/_recycle_bin/stage1_gate_embed",
+  "baseline_dir": "C:/Users/ASUS/Desktop/YOLOv11/YOLO-CV/research/materials/stage1_ptsg/yolo11l_gate2_hn02",
+  "output_dir": "C:/Users/ASUS/Desktop/YOLOv11/YOLO-CV/research/materials/stage1_embedding_gate/yolo11l_gate2_hn02_supcon",
+  "results_dir": "C:/Users/ASUS/Desktop/YOLOv11/YOLO-CV/research/results/stage1_embedding_gate",
+  "split_csv": "C:/Users/ASUS/Desktop/YOLOv11/YOLO-CV/research/materials/stage1_gate_hn_backflow/val_cal_op_split.csv",
+  "hn_manifest": "C:/Users/ASUS/Desktop/YOLOv11/YOLO-CV/research/materials/stage1_gate_hn_backflow/manifests/hn02_top022.csv",
+  "device": "0",
+  "imgsz": 640,
+  "batch": 2,
+  "chunk_size": 16,
+  "normal_class": "Normal",
+  "alpha": 1.0,
+  "beta": 1.0,
+  "gamma": 0.5,
+  "hn_weight": 3.0
+}

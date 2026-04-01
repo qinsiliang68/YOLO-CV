@@ -53,7 +53,19 @@ class ClassificationTrainer(BaseTrainer):
             "cls_pos_weight": getattr(self.args, "cls_pos_weight", None),
             "cls_focal_gamma": getattr(self.args, "cls_focal_gamma", None),
             "cls_focal_alpha": getattr(self.args, "cls_focal_alpha", None),
+            "contrastive_enable": getattr(self.args, "contrastive_enable", None),
+            "contrastive_method": getattr(self.args, "contrastive_method", None),
+            "contrastive_weight": getattr(self.args, "contrastive_weight", None),
+            "contrastive_temperature": getattr(self.args, "contrastive_temperature", None),
+            "contrastive_proj_dim": getattr(self.args, "contrastive_proj_dim", None),
+            "contrastive_proj_hidden": getattr(self.args, "contrastive_proj_hidden", None),
         }
+        head = model.model[-1] if hasattr(model, "model") else None
+        if hasattr(head, "configure_projection"):
+            head.configure_projection(
+                proj_dim=int(getattr(self.args, "contrastive_proj_dim", 0) or 0),
+                proj_hidden=int(getattr(self.args, "contrastive_proj_hidden", 0) or 0),
+            )
 
         for m in model.modules():
             if not self.args.pretrained and hasattr(m, "reset_parameters"):

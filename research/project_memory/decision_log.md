@@ -121,3 +121,26 @@ Prune aggressively:
   - `P6b`: `K=8` multi-prototype + margin trust
 - Stop rule:
   - if none of `P5/P6` clearly beats `P2`, stop deepening stage-1 and pivot to stage-2.
+
+### D12. Stage-1 Strong-Embedding Route
+
+- The final stage-1 heavy route is:
+  - keep `yolo11l-cls`
+  - keep `hn02`
+  - keep the existing `val-cal / val-op` calibration protocol
+  - strengthen the embedding space
+  - then reuse the proven `P2 = calibrated p_abnormal + trust` gate
+- First implementation uses `SupCon`, not CCL-SC.
+- Comparison is fixed to:
+  - `H0`: current best `yolo11l-cls + hn02 + P2`
+  - `H1`: contrastive-enhanced backbone + calibration + plain score
+  - `H2`: contrastive-enhanced backbone + calibration + trust gate
+- If `H2` does not clearly beat `H0`, stage-1 is considered fully saturated and the mainline moves to stage-2 detector work.
+
+### D13. Human-Friendly Execution
+
+- The strong-embedding route must stay one-command friendly on training machines.
+- Required command:
+  - `uv run main.py`
+- The active entry for this route is controlled through:
+  - `YOLOv11/configs/runtime/main_entry.json`

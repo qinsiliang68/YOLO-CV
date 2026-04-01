@@ -1,10 +1,11 @@
 {
-  "task": "stage1_gate_ptsg_nextwave",
+  "task": "stage1_gate_embed_supcon",
   "score_device": "0",
   "top_k": 22,
   "score_batch": 1,
   "score_chunk_size": 32,
   "ptsg_eval_config": "YOLOv11/configs/runtime/stage1_gate_ptsg_eval.json",
   "ptsg_nextwave_config": "YOLOv11/configs/runtime/stage1_gate_ptsg_nextwave.json",
+  "stage1_embed_supcon_config": "YOLOv11/configs/runtime/stage1_gate_embedding_supcon_eval.json",
   "cls6_sweep_config": "YOLOv11/configs/runtime/cls_cls6_sweep.json"
 }
