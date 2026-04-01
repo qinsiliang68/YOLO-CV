@@ -334,13 +334,14 @@ def run_stage1_ptsg(entry_cfg: dict, dry_run: bool) -> None:
         ptsg_cfg.get("output_dir"),
         base=REPO_ROOT / "research" / "materials" / "stage1_ptsg" / "yolo11l_gate2_hn02",
     )
+    label = resolve_str(ptsg_cfg.get("label"), Path(resolve_str(ptsg_cfg.get("weights"), "stage1_ptsg")).stem)
 
     train_features_csv = output_dir / "train_features.csv"
     train_embeddings_npy = output_dir / "train_embeddings.npy"
     val_features_csv = output_dir / "val_features.csv"
     val_embeddings_npy = output_dir / "val_embeddings.npy"
 
-    print_step("task", "stage1_gate_ptsg_eval (yolo11l-cls + hn02)")
+    print_step("task", f"stage1_gate_ptsg_eval ({label})")
     run_python(
         "scripts/stage1_export_gate_features.py",
         [
