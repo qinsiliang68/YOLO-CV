@@ -68,6 +68,9 @@ def collect_rows(model, image_paths: list[Path], data_root: Path, imgsz: int, ba
         pred_label = class_names[pred_index]
         group, reason = heuristic_group(image_path)
         top_indices = list(np.argsort(-probs)[:3])
+        top1_idx = top_indices[0]
+        top2_idx = top_indices[1] if len(top_indices) > 1 else top_indices[0]
+        top3_idx = top_indices[2] if len(top_indices) > 2 else None
         rows.append(
             {
                 "img_path": str(image_path),
@@ -76,12 +79,12 @@ def collect_rows(model, image_paths: list[Path], data_root: Path, imgsz: int, ba
                 "pred": pred_label,
                 "p_abnormal": round(p_abnormal, 6),
                 "p_normal": round(p_normal, 6),
-                "top1_label": class_names[top_indices[0]],
-                "top1_prob": round(float(probs[top_indices[0]]), 6),
-                "top2_label": class_names[top_indices[1]],
-                "top2_prob": round(float(probs[top_indices[1]]), 6),
-                "top3_label": class_names[top_indices[2]],
-                "top3_prob": round(float(probs[top_indices[2]]), 6),
+                "top1_label": class_names[top1_idx],
+                "top1_prob": round(float(probs[top1_idx]), 6),
+                "top2_label": class_names[top2_idx],
+                "top2_prob": round(float(probs[top2_idx]), 6),
+                "top3_label": class_names[top3_idx] if top3_idx is not None else "",
+                "top3_prob": round(float(probs[top3_idx]), 6) if top3_idx is not None else 0.0,
                 "heuristic_group": group,
                 "heuristic_reason": reason,
             }
