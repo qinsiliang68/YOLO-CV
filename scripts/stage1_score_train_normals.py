@@ -31,6 +31,17 @@ def print_step(name: str, detail: str) -> None:
     print(f"[{name}] {detail}")
 
 
+def run_predict(model, image_paths: list[Path], imgsz: int, batch: int, device: str):
+    return model.predict(
+        source=[str(path) for path in image_paths],
+        stream=True,
+        verbose=False,
+        imgsz=imgsz,
+        batch=batch,
+        device=device,
+    )
+
+
 def heuristic_group(image_path: Path) -> tuple[str, str]:
     with Image.open(image_path) as image:
         rgb = image.convert("RGB")
@@ -89,14 +100,22 @@ def main() -> None:
 
     print_step("data", f"scoring {len(image_paths)} train-side normal images")
     model = YOLO(str(weights), task="classify")
-    results = model.predict(
-        source=[str(path) for path in image_paths],
-        stream=True,
-        verbose=False,
-        imgsz=args.imgsz,
-        batch=args.batch,
-        device=args.device,
-    )
+    score_device = args.device
+    try:
+        results = run_predict(model, image_paths, args.imgsz, args.batch, score_device)
+    except Exception as exc:
+        if score_device.lower() != "cpu" and "out of memory" in str(exc).lower():
+            print_step("warn", f"CUDA OOM during scoring on device={score_device}; retry on CPU")
+            try:
+                import torch
+
+                torch.cuda.empty_cache()
+            except Exception:
+                pass
+            score_device = "cpu"
+            results = run_predict(model, image_paths, args.imgsz, args.batch, score_device)
+        else:
+            raise
 
     rows: list[dict] = []
     for image_path, result in zip(image_paths, results, strict=True):
@@ -145,6 +164,7 @@ def main() -> None:
             {
                 "weights": str(weights),
                 "data_root": str(data_root),
+                "score_device": score_device,
                 "total_train_normals": len(rows_sorted),
                 "top_k": args.top_k,
             },

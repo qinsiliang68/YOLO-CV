@@ -1,5 +1,5 @@
 param(
-    [string]$Device = "0",
+    [string]$ScoreDevice = "cpu",
     [int]$TopK = 22,
     [int]$ScoreBatch = 2
 )
@@ -21,7 +21,7 @@ uv run python .\scripts\stage1_score_train_normals.py `
   --weights $weights `
   --data-root $dataRoot `
   --output-dir $outputDir `
-  --device $Device `
+  --device $ScoreDevice `
   --imgsz 640 `
   --batch $ScoreBatch `
   --top-k $TopK

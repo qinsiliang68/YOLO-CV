@@ -41,7 +41,7 @@ BUILTIN_DEFAULT_CONFIG = {
 }
 BUILTIN_STAGE1_ENTRY_CONFIG = {
     "task": "stage1_gate_s_hn",
-    "device": "0",
+    "score_device": "cpu",
     "top_k": 22,
     "score_batch": 2,
 }
@@ -269,7 +269,7 @@ def run_stage1_hn(task_name: str, entry_cfg: dict, dry_run: bool) -> None:
     if task_cfg is None:
         raise SystemExit(f"Unsupported stage-1 task: {task_name}")
 
-    device = resolve_str(entry_cfg.get("device"), "0")
+    score_device = resolve_str(entry_cfg.get("score_device"), "cpu")
     top_k = str(int(entry_cfg.get("top_k", 22) or 22))
     score_batch = str(int(entry_cfg.get("score_batch", 2) or 2))
 
@@ -284,7 +284,7 @@ def run_stage1_hn(task_name: str, entry_cfg: dict, dry_run: bool) -> None:
             "--output-dir",
             task_cfg["output_dir"],
             "--device",
-            device,
+            score_device,
             "--imgsz",
             "640",
             "--batch",
