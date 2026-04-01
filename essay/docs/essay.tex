@@ -1797,15 +1797,17 @@ SE-Net 是通道注意力的经典代表，其核心思想是通过全局信息�
         G0 & yolo11l-cls & 否 & 0\% & BCE & 0.4048 & 0.4643 & 0.9026 & 0.9167 \\
         G1 & yolo11l-cls & 是 & 0\% & BCE & 0.4286 & 0.4762 & 0.9043 & 0.9127 \\
         G2 & yolo11l-cls & 是 & 2\% & BCE & 0.5119 & 0.5476 & 0.9165 & 0.9028 \\
-        G3 & yolo11s-cls & 是 & 2\% & BCE & 待填充 & 待填充 & 待填充 & 待填充 \\
+        G3 & yolo11s-cls & 是 & 2\% & BCE & 0.4167 & 0.4881 & 0.9063 & 0.9107 \\
         G4 & yolo11l-cls & 是 & 2\% & WBCE & 待填充 & 待填充 & 待填充 & 待填充 \\
         G5 & yolo11l-cls & 是 & 2\% & Focal & 待填充 & 待填充 & 待填充 & 待填充 \\
         G6 & yolo11l-cls & 是 & 2\% & BestLoss & 待填充 & 待填充 & 待填充 & 待填充 \\
         G7 & yolo11l-cls & 是 & 2\% & \tbhead{BestLoss+\\LA} & 待填充 & 待填充 & 待填充 & 待填充 \\
         \bottomrule
-    \end{tabular*}
+\end{tabular*}
 \end{table}
 \noindent\parbox{\textwidth}{其中，G3 用于验证在非主模型容量下，HN 回流是否仍具有稳定增益；WBCE 表示 Weighted BCE，LA 表示 Light Attention；G0 与 G1 均采用统一 val-op 口径。}
+
+当前第二模型对照组 G3 已完成补跑与统一 calibration。与 \textrm{yolo11s-cls} 的校准后 baseline 相比，其 \textrm{Spec@R99.5} 由 0.3571 提升至 0.4167，\textrm{Spec@R99.0} 由 0.4167 提升至 0.4881，\textrm{Prec@R99.0} 由 0.8949 提升至 0.9063，同时 \textrm{PTR@R99.0} 由 0.9246 降至 0.9107。该结果说明，\textrm{hn02} 并非只对主模型 \textrm{yolo11l-cls} 有效，而是在第二模型容量上同样能够改善高召回工作点附近的过滤能力；但其综合收益仍低于 G2，因此当前第一阶段主线仍保持为“\textrm{l} 作为主模型、\textrm{s} 作为跨容量对照模型”的双模型结构。
 
 \begin{figure}[H]
     \centering
@@ -2047,8 +2049,8 @@ SE-Net 是通道注意力的经典代表，其核心思想是通过全局信息�
 
 进一步比较高召回锚点下的 operating point 可以发现，不同模型的 calibration 收益并不一致。\textrm{yolo11l-cls} 是唯一在两组高召回锚点上都出现明确正向增益的模型：其 \textrm{Spec@R99.5} 由 0.4048 提升到 0.4286，\textrm{Spec@R99.0} 由 0.4643 提升到 0.4762，\textrm{Prec@R99.0} 也由 0.9026 提升到 0.9043，说明分数经校准后形成了更稳健的筛选边界。\textrm{yolo11m-cls} 虽然在 ECE 与 Brier Score 上改善明显，但高召回锚点指标基本不变；\textrm{yolo11s-cls} 则在统一 val-op 口径下补齐了 \textrm{Spec@R99.5}，其值为 0.3571，高于 \textrm{yolo11m-cls} 的 0.3452，但仍落后于 \textrm{yolo11l-cls}。若按“先比较 \textrm{Spec@R99.5}，再比较 \textrm{Spec@R99.0}，最后比较 \textrm{Prec@R99.0}”的规则排序，统一 calibration 后的高召回锚点顺序为 \textrm{yolo11l-cls}、\textrm{yolo11n-cls}、\textrm{yolo11s-cls}、\textrm{yolo11m-cls}、\textrm{yolo11x-cls}。结合 baseline 中 \textrm{yolo11s-cls} 的默认阈值 leader 地位，本文最终将 \textrm{yolo11l-cls} 确定为第一阶段主模型，将 \textrm{yolo11s-cls} 确定为第二对照模型，并将 \textrm{yolo11m-cls} 保留为 AUPRC 参考模型。由此可见，Temperature Scaling 作为低成本后处理策略，已经足以帮助后续 Hard Negative Mining 的模型选择收敛为 \textrm{l} 与 \textrm{s} 两条主线。
 
-在完成 calibration 验证后，第一阶段已经进一步完成了主模型 \textrm{yolo11l-cls} 的 HN 回流比例扫描。结果表明，\textrm{hn02} 即 2\% 回流比例取得了当前最优的高召回锚点组合：\textrm{Spec@R99.5} 提升至 0.5119，\textrm{Spec@R99.0} 提升至 0.5476，\textrm{Prec@R99.0} 提升至 0.9165，而 \textrm{PTR@R99.0} 维持在 0.9028。相比之下，更高比例的 HN 回流并未继续带来稳定收益，说明 hardest normal 回流强度需要受到控制，不能简单按比例堆高。需要说明的是，\textrm{hn02} 相较基线组在 Accuracy、Macro-F1、AUROC 与 AUPRC 上均有小幅回落，但这一现象与第一阶段目标并不矛盾：stage-1 gate 更关心的是在固定高召回约束下提升 normal 过滤能力，而不是追求默认阈值下的总体分类得分。因此，只要 \textrm{Spec@R99.5}、\textrm{Spec@R99.0} 与 \textrm{Prec@R99.0} 同步改善且 \textrm{PTR@R99.0} 未恶化，就可以认为 HN 回流对当前门控任务是有效的。
-为保证后续结果能直接回填，表\ref{tab:stage1-ablation-results} 固定了第一阶段关键消融的结果字段。当前已填入统一 val-op 口径下的 G0、G1 以及主模型最优 HN 组 G2；后续第二模型与 loss 实验完成后即可继续补入剩余组别。
+在完成 calibration 验证后，第一阶段已经进一步完成了主模型 \textrm{yolo11l-cls} 的 HN 回流比例扫描。结果表明，\textrm{hn02} 即 2\% 回流比例取得了当前最优的高召回锚点组合：\textrm{Spec@R99.5} 提升至 0.5119，\textrm{Spec@R99.0} 提升至 0.5476，\textrm{Prec@R99.0} 提升至 0.9165，而 \textrm{PTR@R99.0} 维持在 0.9028。相比之下，更高比例的 HN 回流并未继续带来稳定收益，说明 hardest normal 回流强度需要受到控制，不能简单按比例堆高。需要说明的是，\textrm{hn02} 相较基线组在 Accuracy、Macro-F1、AUROC 与 AUPRC 上均有小幅回落，但这一现象与第一阶段目标并不矛盾：stage-1 gate 更关心的是在固定高召回约束下提升 normal 过滤能力，而不是追求默认阈值下的总体分类得分。因此，只要 \textrm{Spec@R99.5}、\textrm{Spec@R99.0} 与 \textrm{Prec@R99.0} 同步改善且 \textrm{PTR@R99.0} 未恶化，就可以认为 HN 回流对当前门控任务是有效的。进一步地，\textrm{yolo11s-cls} 在采用相同 \textrm{hn02} 回流方案并完成统一 calibration 后，也表现出一致的正向变化：其 \textrm{Spec@R99.5} 由 0.3571 提升至 0.4167，\textrm{Spec@R99.0} 由 0.4167 提升至 0.4881，\textrm{Prec@R99.0} 由 0.8949 提升至 0.9063，\textrm{PTR@R99.0} 由 0.9246 降至 0.9107。这表明 \textrm{hn02} 的收益并非只依赖单一模型容量，而是具有一定跨容量稳定性；但与主模型 G2 相比，第二模型 G3 的高召回锚点仍然整体偏低，因此 stage-1 的正式主线结论仍收敛于 \textrm{yolo11l-cls + hn02}。
+为保证后续结果能直接回填，表\ref{tab:stage1-ablation-results} 固定了第一阶段关键消融的结果字段。当前已填入统一 val-op 口径下的 G0、G1、主模型最优 HN 组 G2 以及第二模型对照组 G3；后续 loss 实验完成后即可继续补入剩余组别。
 
 \begin{table}[H]
     \centering
@@ -2061,7 +2063,7 @@ SE-Net 是通道注意力的经典代表，其核心思想是通过全局信息�
         G0 & yolo11l-cls & 否 & 0\% & BCE & 0.4048 & 0.4643 & 0.9026 & 0.9167 \\
         G1 & yolo11l-cls & 是 & 0\% & BCE & 0.4286 & 0.4762 & 0.9043 & 0.9127 \\
         G2 & yolo11l-cls & 是 & 2\% & BCE & 0.5119 & 0.5476 & 0.9165 & 0.9028 \\
-        G3 & yolo11s-cls & 是 & 2\% & BCE & 待填充 & 待填充 & 待填充 & 待填充 \\
+        G3 & yolo11s-cls & 是 & 2\% & BCE & 0.4167 & 0.4881 & 0.9063 & 0.9107 \\
         G4 & yolo11l-cls & 是 & 2\% & WBCE & 待填充 & 待填充 & 待填充 & 待填充 \\
         G5 & yolo11l-cls & 是 & 2\% & Focal & 待填充 & 待填充 & 待填充 & 待填充 \\
         G6 & yolo11l-cls & 是 & 2\% & BestLoss & 待填充 & 待填充 & 待填充 & 待填充 \\

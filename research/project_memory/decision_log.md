@@ -60,3 +60,13 @@ Prune aggressively:
 - redundant JPG artifacts
 - duplicate profile files
 - temporary generated configs
+
+### D8. Stage-1 Cross-Capacity HN Validation
+
+- `yolo11s-cls + hn02` has been completed and calibrated.
+- Compared with calibrated `yolo11s-cls` baseline:
+  - `Spec@R99.5`: `0.3571 -> 0.4167`
+  - `Spec@R99.0`: `0.4167 -> 0.4881`
+  - `Prec@R99.0`: `0.8949 -> 0.9063`
+  - `PTR@R99.0`: `0.9246 -> 0.9107`
+- This confirms that `hn02` has cross-capacity benefit, but `yolo11l-cls + hn02` remains the mainline because its calibrated high-recall operating points are still stronger.
