@@ -89,3 +89,35 @@ Prune aggressively:
   - `Spec@R99.0`
   - `Prec@R99.0`
   - `PTR@R99.0`
+
+### D10. First-Round PTSG Result
+
+- First-round post-hoc PTSG on `yolo11l-cls + hn02` has been completed.
+- Best variant is `P2 = calibrated p_abnormal + trust`.
+- Compared with `P0`:
+  - `Spec@R99.5`: `0.5000 -> 0.5238`
+  - `Spec@R99.0`: `0.5476 -> 0.5595`
+  - `Prec@R99.0`: `0.9165 -> 0.9183`
+  - `PTR@R99.0`: `0.9028 -> 0.8988`
+- `P1` (uncertainty only) is negative.
+- `P3/P4` do not beat `P2`.
+- Current interpretation:
+  - the useful gain comes from `trust`
+  - stage-1 should be framed more explicitly as a selective safe-normal gate, not as a plain binary classifier
+
+### D11. PTSG Next Wave Scope
+
+- The next-wave stage-1 PTSG experiment stays post-hoc only.
+- Fixed conditions:
+  - main model `yolo11l-cls`
+  - `hn02`
+  - existing `val-cal / val-op` split
+  - no backbone retraining
+- Fixed comparison set:
+  - `P2`: single-prototype trust baseline
+  - `P5a`: `K=4` multi-prototype normal trust
+  - `P5b`: `K=8` multi-prototype normal trust
+  - `P6a`: `K=4` multi-prototype + margin trust
+  - `P6b`: `K=8` multi-prototype + margin trust
+- Stop rule:
+  - if none of `P5/P6` clearly beats `P2`, stop deepening stage-1 and pivot to stage-2.

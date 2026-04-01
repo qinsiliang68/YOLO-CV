@@ -40,12 +40,13 @@ BUILTIN_DEFAULT_CONFIG = {
     "run_name_suffix": "cls6_train7200_uniform",
 }
 BUILTIN_STAGE1_ENTRY_CONFIG = {
-    "task": "stage1_gate_ptsg_eval",
+    "task": "stage1_gate_ptsg_nextwave",
     "score_device": "0",
     "top_k": 22,
     "score_batch": 1,
     "score_chunk_size": 32,
     "ptsg_eval_config": r"YOLOv11\configs\runtime\stage1_gate_ptsg_eval.json",
+    "ptsg_nextwave_config": r"YOLOv11\configs\runtime\stage1_gate_ptsg_nextwave.json",
 }
 STAGE1_HN_TASKS = {
     "stage1_gate_l_hn": {
@@ -78,7 +79,14 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument(
         "--task",
-        choices=("auto", "cls6_sweep", "stage1_gate_l_hn", "stage1_gate_s_hn", "stage1_gate_ptsg_eval"),
+        choices=(
+            "auto",
+            "cls6_sweep",
+            "stage1_gate_l_hn",
+            "stage1_gate_s_hn",
+            "stage1_gate_ptsg_eval",
+            "stage1_gate_ptsg_nextwave",
+        ),
         default="auto",
         help="Task to run. 'auto' reads YOLOv11/configs/runtime/main_entry.json.",
     )
@@ -410,6 +418,55 @@ def run_stage1_ptsg(entry_cfg: dict, dry_run: bool) -> None:
     run_python("scripts/stage1_eval_ptsg.py", eval_args, dry_run=dry_run)
 
 
+def run_stage1_ptsg_nextwave(entry_cfg: dict, dry_run: bool) -> None:
+    config_path = resolve_path(
+        entry_cfg.get("ptsg_nextwave_config"),
+        base=YOLOV11_ROOT / "configs" / "runtime" / "stage1_gate_ptsg_nextwave.json",
+    )
+    ptsg_cfg = load_json(config_path)
+    output_dir = resolve_path(
+        ptsg_cfg.get("output_dir"),
+        base=REPO_ROOT / "research" / "results" / "stage1_ptsg_nextwave",
+    )
+    label = resolve_str(ptsg_cfg.get("label"), "yolo11l-cls + hn02 multi-prototype trust")
+
+    print_step("task", f"stage1_gate_ptsg_nextwave ({label})")
+    run_python(
+        "scripts/stage1_eval_ptsg_nextwave.py",
+        [
+            "--train-features-csv",
+            resolve_str(ptsg_cfg.get("train_features_csv"), ""),
+            "--train-embeddings-npy",
+            resolve_str(ptsg_cfg.get("train_embeddings_npy"), ""),
+            "--val-features-csv",
+            resolve_str(ptsg_cfg.get("val_features_csv"), ""),
+            "--val-embeddings-npy",
+            resolve_str(ptsg_cfg.get("val_embeddings_npy"), ""),
+            "--val-split-csv",
+            resolve_str(ptsg_cfg.get("split_csv"), ""),
+            "--output-dir",
+            str(output_dir),
+            "--normal-class",
+            resolve_str(ptsg_cfg.get("normal_class"), "Normal"),
+            "--alpha",
+            str(float(ptsg_cfg.get("alpha", 1.0) or 1.0)),
+            "--beta",
+            str(float(ptsg_cfg.get("beta", 1.0) or 1.0)),
+            "--delta",
+            str(float(ptsg_cfg.get("delta", 0.5) or 0.5)),
+            "--seed",
+            str(int(ptsg_cfg.get("seed", 20260330) or 20260330)),
+            "--kmeans-max-iter",
+            str(int(ptsg_cfg.get("kmeans_max_iter", 50) or 50)),
+            "--temperature-max-iter",
+            str(int(ptsg_cfg.get("temperature_max_iter", 200) or 200)),
+            "--k-values",
+            *[str(int(value)) for value in ptsg_cfg.get("k_values", [4, 8])],
+        ],
+        dry_run=dry_run,
+    )
+
+
 def main() -> None:
     args = parse_args()
     if args.task == "cls6_sweep":
@@ -430,6 +487,10 @@ def main() -> None:
 
     if task_name == "stage1_gate_ptsg_eval":
         run_stage1_ptsg(entry_cfg, dry_run=args.dry_run)
+        return
+
+    if task_name == "stage1_gate_ptsg_nextwave":
+        run_stage1_ptsg_nextwave(entry_cfg, dry_run=args.dry_run)
         return
 
     run_stage1_hn(task_name, entry_cfg, dry_run=args.dry_run)
