@@ -1,11 +1,11 @@
-$ErrorActionPreference = "Stop"
-Set-StrictMode -Version Latest
-
 param(
     [string]$Device = "0",
     [int]$TopK = 22,
     [int]$ScoreBatch = 16
 )
+
+$ErrorActionPreference = "Stop"
+Set-StrictMode -Version Latest
 
 $repoRoot = Resolve-Path (Join-Path $PSScriptRoot "..")
 Set-Location $repoRoot
