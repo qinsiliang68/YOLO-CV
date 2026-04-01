@@ -12,6 +12,7 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parent
 YOLOV11_ROOT = REPO_ROOT / "YOLOv11"
 DEFAULT_CONFIG = YOLOV11_ROOT / "configs" / "runtime" / "cls_cls6_sweep.json"
+DEFAULT_ENTRY_CONFIG = YOLOV11_ROOT / "configs" / "runtime" / "main_entry.json"
 IMAGE_SUFFIXES = {".jpg", ".jpeg", ".png", ".bmp", ".webp", ".tif", ".tiff"}
 BUILTIN_DEFAULT_CONFIG = {
     "source_dataset": r"C:\Users\ASUS\Desktop\YOLOv11\YOLO-CV\data\sewerml_cls6_train7200",
@@ -38,16 +39,46 @@ BUILTIN_DEFAULT_CONFIG = {
     "collect_batch": 16,
     "run_name_suffix": "cls6_train7200_uniform",
 }
+BUILTIN_STAGE1_ENTRY_CONFIG = {
+    "task": "stage1_gate_s_hn",
+    "device": "0",
+    "top_k": 22,
+    "score_batch": 16,
+}
+STAGE1_HN_TASKS = {
+    "stage1_gate_l_hn": {
+        "weights": r"C:\Users\ASUS\Desktop\YOLOv11\YOLO-CV\YOLOv11\runs\cls_gate_source\yolo11l_gate2_train7200\weights\best.pt",
+        "data_root": r"C:\Users\ASUS\Desktop\YOLOv11\YOLO-CV\YOLOv11\datasets\sewerml_gate2_train7200",
+        "output_dir": r"C:\Users\ASUS\Desktop\YOLOv11\YOLO-CV\research\materials\stage1_hn\yolo11l_gate2_train7200",
+        "hn_dataset": r"C:\Users\ASUS\Desktop\YOLOv11\YOLO-CV\YOLOv11\datasets\stage1_gate_hn_backflow\yolo11l_gate2_hn02",
+        "train_config": r".\YOLOv11\configs\runtime\stage1_gate_l_hn.json",
+        "label": "yolo11l-cls",
+    },
+    "stage1_gate_s_hn": {
+        "weights": r"C:\Users\ASUS\Desktop\YOLOv11\YOLO-CV\YOLOv11\runs\cls_gate_source\yolo11s_gate2_train7200\weights\best.pt",
+        "data_root": r"C:\Users\ASUS\Desktop\YOLOv11\YOLO-CV\YOLOv11\datasets\sewerml_gate2_train7200",
+        "output_dir": r"C:\Users\ASUS\Desktop\YOLOv11\YOLO-CV\research\materials\stage1_hn\yolo11s_gate2_train7200",
+        "hn_dataset": r"C:\Users\ASUS\Desktop\YOLOv11\YOLO-CV\YOLOv11\datasets\stage1_gate_hn_backflow\yolo11s_gate2_hn02",
+        "train_config": r".\YOLOv11\configs\runtime\stage1_gate_s_hn.json",
+        "label": "yolo11s-cls",
+    },
+}
 
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Run a five-scale SewerML six-class source sweep with identical hyperparameters."
+        description="Unified launcher for the current YOLO-CV training task."
     )
     parser.add_argument(
         "--config",
-        default=str(DEFAULT_CONFIG),
-        help="Sweep config JSON. In normal use only dataset and project paths need editing.",
+        default="",
+        help="Config JSON for the selected task. For cls6_sweep this is the sweep config; otherwise the active entry config is used.",
+    )
+    parser.add_argument(
+        "--task",
+        choices=("auto", "cls6_sweep", "stage1_gate_l_hn", "stage1_gate_s_hn"),
+        default="auto",
+        help="Task to run. 'auto' reads YOLOv11/configs/runtime/main_entry.json.",
     )
     parser.add_argument("--dry-run", action="store_true", help="Print planned actions without training.")
     parser.add_argument("--rerun", action="store_true", help="Archive existing runs and rerun all configured models.")
@@ -73,6 +104,16 @@ def load_sweep_config(path: Path) -> dict:
         print_step("config", f"loaded sweep config: {path}")
     else:
         print_step("config", f"missing sweep config, using built-in defaults: {path}")
+    return config
+
+
+def load_entry_config(path: Path) -> dict:
+    config = dict(BUILTIN_STAGE1_ENTRY_CONFIG)
+    if path.exists():
+        config.update(load_json(path))
+        print_step("config", f"loaded entry config: {path}")
+    else:
+        print_step("config", f"missing entry config, using built-in defaults: {path}")
     return config
 
 
@@ -223,11 +264,80 @@ def run_cls6_sweep(cfg: dict, dry_run: bool, rerun: bool) -> None:
     print_step("summary", f"materials -> {REPO_ROOT / 'research' / 'materials'}")
 
 
+def run_stage1_hn(task_name: str, entry_cfg: dict, dry_run: bool) -> None:
+    task_cfg = STAGE1_HN_TASKS.get(task_name)
+    if task_cfg is None:
+        raise SystemExit(f"Unsupported stage-1 task: {task_name}")
+
+    device = resolve_str(entry_cfg.get("device"), "0")
+    top_k = str(int(entry_cfg.get("top_k", 22) or 22))
+    score_batch = str(int(entry_cfg.get("score_batch", 16) or 16))
+
+    print_step("task", f"{task_name} ({task_cfg['label']})")
+    run_python(
+        "scripts/stage1_score_train_normals.py",
+        [
+            "--weights",
+            task_cfg["weights"],
+            "--data-root",
+            task_cfg["data_root"],
+            "--output-dir",
+            task_cfg["output_dir"],
+            "--device",
+            device,
+            "--imgsz",
+            "640",
+            "--batch",
+            score_batch,
+            "--top-k",
+            top_k,
+        ],
+        dry_run=dry_run,
+    )
+    run_python(
+        "scripts/stage1_build_hn_dataset.py",
+        [
+            "--source-dataset",
+            task_cfg["data_root"],
+            "--scores-csv",
+            str(Path(task_cfg["output_dir"]) / "top_false_positive_normals.csv"),
+            "--output-dataset",
+            task_cfg["hn_dataset"],
+            "--top-k",
+            top_k,
+            "--repeat",
+            "1",
+            "--link-mode",
+            "hardlink",
+        ],
+        dry_run=dry_run,
+    )
+    run_python(
+        "scripts/stage1_gate_train.py",
+        ["--config", task_cfg["train_config"]],
+        dry_run=dry_run,
+    )
+
+
 def main() -> None:
     args = parse_args()
-    config_path = resolve_path(args.config, base=DEFAULT_CONFIG)
-    config = load_sweep_config(config_path)
-    run_cls6_sweep(config, dry_run=args.dry_run, rerun=args.rerun)
+    if args.task == "cls6_sweep":
+        config_path = resolve_path(args.config, base=DEFAULT_CONFIG) if args.config else DEFAULT_CONFIG
+        config = load_sweep_config(config_path)
+        run_cls6_sweep(config, dry_run=args.dry_run, rerun=args.rerun)
+        return
+
+    entry_config_path = resolve_path(args.config, base=DEFAULT_ENTRY_CONFIG) if args.config else DEFAULT_ENTRY_CONFIG
+    entry_cfg = load_entry_config(entry_config_path)
+    task_name = resolve_str(entry_cfg.get("task"), BUILTIN_STAGE1_ENTRY_CONFIG["task"]) if args.task == "auto" else args.task
+
+    if task_name == "cls6_sweep":
+        sweep_path = resolve_path(entry_cfg.get("cls6_sweep_config"), base=DEFAULT_CONFIG)
+        sweep_cfg = load_sweep_config(sweep_path)
+        run_cls6_sweep(sweep_cfg, dry_run=args.dry_run, rerun=args.rerun)
+        return
+
+    run_stage1_hn(task_name, entry_cfg, dry_run=args.dry_run)
 
 
 if __name__ == "__main__":

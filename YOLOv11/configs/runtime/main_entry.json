@@ -1,0 +1,7 @@
+{
+  "task": "stage1_gate_s_hn",
+  "device": "0",
+  "top_k": 22,
+  "score_batch": 16,
+  "cls6_sweep_config": "YOLOv11/configs/runtime/cls_cls6_sweep.json"
+}
