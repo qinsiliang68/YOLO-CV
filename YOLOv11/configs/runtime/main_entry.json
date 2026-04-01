@@ -1,8 +1,9 @@
 {
-  "task": "stage1_gate_s_hn",
+  "task": "stage1_gate_ptsg_eval",
   "score_device": "0",
   "top_k": 22,
   "score_batch": 1,
   "score_chunk_size": 32,
+  "ptsg_eval_config": "YOLOv11/configs/runtime/stage1_gate_ptsg_eval.json",
   "cls6_sweep_config": "YOLOv11/configs/runtime/cls_cls6_sweep.json"
 }

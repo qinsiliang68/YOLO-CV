@@ -98,3 +98,26 @@ stage-1 中真正限制 `Spec@R99.5 / Spec@R99.0` 的，往往不是 easy normal
 - 第一阶段关键消融与工程增强实验
 
 而不应混写成同一种严格单因素消融。
+## 7. PTSG Candidate Line
+
+- Framework-level framing: `SNSG / selective safe-normal gate`
+- Immediate implementation path: `PTSG`
+- Current execution rule:
+  - keep `G2 = yolo11l-cls + calibration + hn02`
+  - do post-hoc evaluation first
+  - do not retrain the backbone first
+
+Fixed first-round comparison set:
+
+- `P0`: calibrated `p_abnormal`
+- `P1`: `p_abnormal + uncertainty`
+- `P2`: `p_abnormal + trust`
+- `P3`: `p_abnormal + trust + uncertainty`
+- `P4`: `P3 + HN-aware normal bank`
+
+The ranking rule does not change:
+
+- `Spec@R99.5`
+- `Spec@R99.0`
+- `Prec@R99.0`
+- `PTR@R99.0`

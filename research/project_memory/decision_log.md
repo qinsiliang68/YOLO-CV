@@ -70,3 +70,22 @@ Prune aggressively:
   - `Prec@R99.0`: `0.8949 -> 0.9063`
   - `PTR@R99.0`: `0.9246 -> 0.9107`
 - This confirms that `hn02` has cross-capacity benefit, but `yolo11l-cls + hn02` remains the mainline because its calibrated high-recall operating points are still stronger.
+
+### D9. Stage-1 Next Method Candidate
+
+- The next stage-1 method candidate is **PTSG** under the broader **SNSG/selective gate** framing.
+- Immediate implementation priority is:
+  - keep the current `G2 = yolo11l-cls + calibration + hn02`
+  - add a post-hoc safe-normal score
+  - do **not** retrain the backbone first
+- First comparison set is fixed to:
+  - `P0`: calibrated `p_abnormal`
+  - `P1`: `p_abnormal + uncertainty`
+  - `P2`: `p_abnormal + trust`
+  - `P3`: `p_abnormal + trust + uncertainty`
+  - `P4`: `P3 + HN-aware normal bank`
+- Ranking remains:
+  - `Spec@R99.5`
+  - `Spec@R99.0`
+  - `Prec@R99.0`
+  - `PTR@R99.0`

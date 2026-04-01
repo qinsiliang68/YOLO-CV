@@ -40,11 +40,12 @@ BUILTIN_DEFAULT_CONFIG = {
     "run_name_suffix": "cls6_train7200_uniform",
 }
 BUILTIN_STAGE1_ENTRY_CONFIG = {
-    "task": "stage1_gate_s_hn",
+    "task": "stage1_gate_ptsg_eval",
     "score_device": "0",
     "top_k": 22,
     "score_batch": 1,
     "score_chunk_size": 32,
+    "ptsg_eval_config": r"YOLOv11\configs\runtime\stage1_gate_ptsg_eval.json",
 }
 STAGE1_HN_TASKS = {
     "stage1_gate_l_hn": {
@@ -77,7 +78,7 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument(
         "--task",
-        choices=("auto", "cls6_sweep", "stage1_gate_l_hn", "stage1_gate_s_hn"),
+        choices=("auto", "cls6_sweep", "stage1_gate_l_hn", "stage1_gate_s_hn", "stage1_gate_ptsg_eval"),
         default="auto",
         help="Task to run. 'auto' reads YOLOv11/configs/runtime/main_entry.json.",
     )
@@ -323,6 +324,91 @@ def run_stage1_hn(task_name: str, entry_cfg: dict, dry_run: bool) -> None:
     )
 
 
+def run_stage1_ptsg(entry_cfg: dict, dry_run: bool) -> None:
+    config_path = resolve_path(
+        entry_cfg.get("ptsg_eval_config"),
+        base=YOLOV11_ROOT / "configs" / "runtime" / "stage1_gate_ptsg_eval.json",
+    )
+    ptsg_cfg = load_json(config_path)
+    output_dir = resolve_path(
+        ptsg_cfg.get("output_dir"),
+        base=REPO_ROOT / "research" / "materials" / "stage1_ptsg" / "yolo11l_gate2_hn02",
+    )
+
+    train_features_csv = output_dir / "train_features.csv"
+    train_embeddings_npy = output_dir / "train_embeddings.npy"
+    val_features_csv = output_dir / "val_features.csv"
+    val_embeddings_npy = output_dir / "val_embeddings.npy"
+
+    print_step("task", "stage1_gate_ptsg_eval (yolo11l-cls + hn02)")
+    run_python(
+        "scripts/stage1_export_gate_features.py",
+        [
+            "--weights",
+            resolve_str(ptsg_cfg.get("weights"), ""),
+            "--data-root",
+            resolve_str(ptsg_cfg.get("data_root"), ""),
+            "--output-dir",
+            str(output_dir),
+            "--device",
+            resolve_str(ptsg_cfg.get("device"), "0"),
+            "--imgsz",
+            str(int(ptsg_cfg.get("imgsz", 640) or 640)),
+            "--batch",
+            str(int(ptsg_cfg.get("batch", 4) or 4)),
+            "--chunk-size",
+            str(int(ptsg_cfg.get("chunk_size", 32) or 32)),
+            "--normal-class",
+            resolve_str(ptsg_cfg.get("normal_class"), "Normal"),
+        ],
+        dry_run=dry_run,
+    )
+    run_python(
+        "scripts/stage1_build_ptsg_bank.py",
+        [
+            "--train-features-csv",
+            str(train_features_csv),
+            "--train-embeddings-npy",
+            str(train_embeddings_npy),
+            "--output-dir",
+            str(output_dir),
+            "--normal-class",
+            resolve_str(ptsg_cfg.get("normal_class"), "Normal"),
+            "--hn-manifest",
+            resolve_str(ptsg_cfg.get("hn_manifest"), ""),
+            "--hn-weight",
+            str(float(ptsg_cfg.get("hn_weight", 3.0) or 3.0)),
+        ],
+        dry_run=dry_run,
+    )
+    eval_args = [
+        "--val-features-csv",
+        str(val_features_csv),
+        "--val-embeddings-npy",
+        str(val_embeddings_npy),
+        "--val-split-csv",
+        resolve_str(ptsg_cfg.get("split_csv"), ""),
+        "--normal-proto",
+        str(output_dir / "normal_proto.npy"),
+        "--abnormal-proto",
+        str(output_dir / "abnormal_proto.npy"),
+        "--output-dir",
+        str(output_dir),
+        "--normal-class",
+        resolve_str(ptsg_cfg.get("normal_class"), "Normal"),
+        "--alpha",
+        str(float(ptsg_cfg.get("alpha", 1.0) or 1.0)),
+        "--beta",
+        str(float(ptsg_cfg.get("beta", 1.0) or 1.0)),
+        "--gamma",
+        str(float(ptsg_cfg.get("gamma", 0.5) or 0.5)),
+    ]
+    hn_proto = output_dir / "normal_proto_hn_aware.npy"
+    if dry_run or hn_proto.exists():
+        eval_args.extend(["--hn-aware-normal-proto", str(hn_proto)])
+    run_python("scripts/stage1_eval_ptsg.py", eval_args, dry_run=dry_run)
+
+
 def main() -> None:
     args = parse_args()
     if args.task == "cls6_sweep":
@@ -339,6 +425,10 @@ def main() -> None:
         sweep_path = resolve_path(entry_cfg.get("cls6_sweep_config"), base=DEFAULT_CONFIG)
         sweep_cfg = load_sweep_config(sweep_path)
         run_cls6_sweep(sweep_cfg, dry_run=args.dry_run, rerun=args.rerun)
+        return
+
+    if task_name == "stage1_gate_ptsg_eval":
+        run_stage1_ptsg(entry_cfg, dry_run=args.dry_run)
         return
 
     run_stage1_hn(task_name, entry_cfg, dry_run=args.dry_run)
