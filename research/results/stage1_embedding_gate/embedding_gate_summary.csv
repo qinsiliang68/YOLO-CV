@@ -1,0 +1,4 @@
+group,description,spec_at_r995,spec_at_r990,prec_at_r990,ptr_at_r990,threshold_at_r995,threshold_at_r990,tn_at_r995,fp_at_r995,fn_at_r995,tp_at_r995,tn_at_r990,fp_at_r990,fn_at_r990,tp_at_r990
+H0,current best yolo11l-cls + hn02 + P2,0.52381,0.559524,0.918322,0.89881,0.21,0.22,44,40,2,418,47,37,4,416
+H1,contrastive backbone + calibration + plain score,0.47619,0.559524,0.918322,0.89881,0.19,0.27,40,44,1,419,47,37,4,416
+H2,contrastive backbone + calibration + trust gate,0.452381,0.52381,0.912281,0.904762,0.2,0.21,38,46,2,418,44,40,4,416

@@ -1,0 +1,67 @@
+{
+  "best_group": "H0",
+  "verdict": "no_clear_gain",
+  "verdict_detail": "H2 does not clearly beat H0; stage-1 strong-embedding route is not yet worth extending.",
+  "ranking_rule": [
+    "Spec@R99.5 descending",
+    "Spec@R99.0 descending",
+    "Prec@R99.0 descending",
+    "PTR@R99.0 ascending"
+  ],
+  "rows": [
+    {
+      "group": "H0",
+      "description": "current best yolo11l-cls + hn02 + P2",
+      "spec_at_r995": "0.52381",
+      "spec_at_r990": "0.559524",
+      "prec_at_r990": "0.918322",
+      "ptr_at_r990": "0.89881",
+      "threshold_at_r995": "0.21",
+      "threshold_at_r990": "0.22",
+      "tn_at_r995": 44,
+      "fp_at_r995": 40,
+      "fn_at_r995": 2,
+      "tp_at_r995": 418,
+      "tn_at_r990": 47,
+      "fp_at_r990": 37,
+      "fn_at_r990": 4,
+      "tp_at_r990": 416
+    },
+    {
+      "group": "H1",
+      "description": "contrastive backbone + calibration + plain score",
+      "spec_at_r995": "0.47619",
+      "spec_at_r990": "0.559524",
+      "prec_at_r990": "0.918322",
+      "ptr_at_r990": "0.89881",
+      "threshold_at_r995": "0.19",
+      "threshold_at_r990": "0.27",
+      "tn_at_r995": 40,
+      "fp_at_r995": 44,
+      "fn_at_r995": 1,
+      "tp_at_r995": 419,
+      "tn_at_r990": 47,
+      "fp_at_r990": 37,
+      "fn_at_r990": 4,
+      "tp_at_r990": 416
+    },
+    {
+      "group": "H2",
+      "description": "contrastive backbone + calibration + trust gate",
+      "spec_at_r995": "0.452381",
+      "spec_at_r990": "0.52381",
+      "prec_at_r990": "0.912281",
+      "ptr_at_r990": "0.904762",
+      "threshold_at_r995": "0.2",
+      "threshold_at_r990": "0.21",
+      "tn_at_r995": 38,
+      "fp_at_r995": 46,
+      "fn_at_r995": 2,
+      "tp_at_r995": 418,
+      "tn_at_r990": 44,
+      "fp_at_r990": 40,
+      "fn_at_r990": 4,
+      "tp_at_r990": 416
+    }
+  ]
+}
