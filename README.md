@@ -6,11 +6,22 @@ and run outputs stay local.
 
 ## Layout
 
+- `PROJECT_MEMORY.md`: long-term project memory and stable decisions
 - `YOLOv11/`: local YOLOv11 source tree plus runtime configs
 - `scripts/`: workflow entrypoints, sync helpers, calibration and analysis scripts
-- `research/`: experiment materials, result summaries, runbook and pipeline notes
+- `research/`: experiment materials, result summaries, runbook, project memory and pipeline notes
 - `essay/`: thesis sources, figures and generated PDF
 - `data/`: local-only raw data and intermediate results, ignored by Git
+
+## Project Memory
+
+Before editing code, thesis, configs, or long-running experiment scripts, read:
+
+- `PROJECT_MEMORY.md`
+- `research/project_memory/stage1_memory.md`
+- `research/project_memory/decision_log.md`
+
+These files store the current thesis direction, stage-1 stable conclusions, workflow rules, and long-term decisions.
 
 ## Synchronization Workflow
 
@@ -37,11 +48,13 @@ Helper scripts:
 2. `.\scripts\setup.ps1 -Backend cu128`
 3. `.\scripts\check.ps1`
 4. Move datasets into the fixed local-only paths described in `research/training_machine_runbook.md`
-5. Run `uv run main.py --rerun`
+5. Run `uv run main.py`
 
 ## Main Entry Points
 
-- Current root training entrypoint for the uniform five-scale CLS6 sweep: `uv run main.py --rerun`
+- Current root human-facing training entrypoint: `uv run main.py`
+- Active task selector: `YOLOv11/configs/runtime/main_entry.json`
+- Run the uniform five-scale CLS6 sweep explicitly: `uv run main.py --task cls6_sweep --rerun`
 - Compatibility wrapper for the same sweep: `uv run main_cls6_sweep.py --rerun`
 - Source classification pretraining: `.\scripts\cls_pretrain.ps1`
 - Extract the only active 3000-image source set directly from raw SewerML: `.\scripts\extract_sewerml_cls6_train3000.ps1 -Clean`

@@ -15,11 +15,25 @@ powershell -ExecutionPolicy Bypass -File .\scripts\git_sync_main.ps1
 Current root training entrypoint:
 
 ```powershell
-uv run main.py --rerun
+uv run main.py
 ```
 
-`main.py` is the active entrypoint for the current uniform five-scale six-class sweep.
-`main_cls6_sweep.py` is kept only as a compatibility wrapper and should behave the same way.
+`main.py` is the unified human-facing entrypoint.
+The active task is controlled by:
+
+- `YOLOv11/configs/runtime/main_entry.json`
+
+At the current stage, the committed default task is:
+
+- `stage1_gate_s_hn`
+
+That means `uv run main.py` currently performs:
+
+1. train-side `Normal` scoring
+2. HN 2% dataset build
+3. `yolo11s-cls + HN 2%` training
+
+`main_cls6_sweep.py` is kept only as a compatibility wrapper for the six-class sweep.
 
 Available `-Backend` values:
 
@@ -144,7 +158,7 @@ capacity scan. The current uniform sweep uses:
 Run:
 
 ```powershell
-uv run main.py --rerun
+uv run main.py --task cls6_sweep --rerun
 ```
 
 Related config:
@@ -254,3 +268,7 @@ Pseudo-box baseline alternative:
 - If you change CUDA backend, rerun `.\scripts\setup.ps1 -Backend <cpu|cu126|cu128>`.
 - The training machine syncs from `main` and pushes only experiment outputs.
 - The training machine should not edit thesis files or repository structure.
+- Before changing task direction or script defaults, read:
+  - `PROJECT_MEMORY.md`
+  - `research/project_memory/stage1_memory.md`
+  - `research/project_memory/decision_log.md`

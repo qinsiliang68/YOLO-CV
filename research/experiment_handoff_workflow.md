@@ -28,6 +28,12 @@ This repository now uses a **single-branch workflow**.
 
 ## Standard commands
 
+Before changing defaults or deciding the next experiment, read:
+
+- `PROJECT_MEMORY.md`
+- `research/project_memory/stage1_memory.md`
+- `research/project_memory/decision_log.md`
+
 ### Sync code before training
 
 ```powershell
