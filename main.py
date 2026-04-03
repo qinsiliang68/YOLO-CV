@@ -40,7 +40,7 @@ BUILTIN_DEFAULT_CONFIG = {
     "run_name_suffix": "cls6_train7200_uniform",
 }
 BUILTIN_STAGE1_ENTRY_CONFIG = {
-    "task": "stage1_gate_embed_supcon",
+    "task": "stage1_gate_maxfilter_suite",
     "score_device": "0",
     "top_k": 22,
     "score_batch": 1,
@@ -48,6 +48,7 @@ BUILTIN_STAGE1_ENTRY_CONFIG = {
     "ptsg_eval_config": r"YOLOv11\configs\runtime\stage1_gate_ptsg_eval.json",
     "ptsg_nextwave_config": r"YOLOv11\configs\runtime\stage1_gate_ptsg_nextwave.json",
     "stage1_embed_supcon_config": r"YOLOv11\configs\runtime\stage1_gate_embedding_supcon_eval.json",
+    "stage1_maxfilter_suite_config": r"YOLOv11\configs\runtime\stage1_gate_maxfilter_suite.json",
 }
 STAGE1_HN_TASKS = {
     "stage1_gate_l_hn": {
@@ -88,6 +89,7 @@ def parse_args() -> argparse.Namespace:
             "stage1_gate_ptsg_eval",
             "stage1_gate_ptsg_nextwave",
             "stage1_gate_embed_supcon",
+            "stage1_gate_maxfilter_suite",
         ),
         default="auto",
         help="Task to run. 'auto' reads YOLOv11/configs/runtime/main_entry.json.",
@@ -469,6 +471,276 @@ def run_stage1_ptsg_nextwave(entry_cfg: dict, dry_run: bool) -> None:
     )
 
 
+def run_stage1_ptsg_material_eval(
+    *,
+    weights_path: Path,
+    data_root: Path,
+    output_dir: Path,
+    split_csv: str,
+    normal_class: str,
+    device: str,
+    imgsz: int,
+    batch: int,
+    chunk_size: int,
+    alpha: float,
+    beta: float,
+    gamma: float,
+    hn_manifest: str,
+    hn_weight: float,
+    dry_run: bool,
+) -> None:
+    run_python(
+        "scripts/stage1_export_gate_features.py",
+        [
+            "--weights",
+            str(weights_path),
+            "--data-root",
+            str(data_root),
+            "--output-dir",
+            str(output_dir),
+            "--device",
+            device,
+            "--imgsz",
+            str(imgsz),
+            "--batch",
+            str(batch),
+            "--chunk-size",
+            str(chunk_size),
+            "--normal-class",
+            normal_class,
+        ],
+        dry_run=dry_run,
+    )
+    run_python(
+        "scripts/stage1_build_ptsg_bank.py",
+        [
+            "--train-features-csv",
+            str(output_dir / "train_features.csv"),
+            "--train-embeddings-npy",
+            str(output_dir / "train_embeddings.npy"),
+            "--output-dir",
+            str(output_dir),
+            "--normal-class",
+            normal_class,
+            "--hn-manifest",
+            hn_manifest,
+            "--hn-weight",
+            str(hn_weight),
+        ],
+        dry_run=dry_run,
+    )
+    eval_args = [
+        "--val-features-csv",
+        str(output_dir / "val_features.csv"),
+        "--val-embeddings-npy",
+        str(output_dir / "val_embeddings.npy"),
+        "--val-split-csv",
+        split_csv,
+        "--normal-proto",
+        str(output_dir / "normal_proto.npy"),
+        "--abnormal-proto",
+        str(output_dir / "abnormal_proto.npy"),
+        "--output-dir",
+        str(output_dir),
+        "--normal-class",
+        normal_class,
+        "--alpha",
+        str(alpha),
+        "--beta",
+        str(beta),
+        "--gamma",
+        str(gamma),
+    ]
+    hn_proto = output_dir / "normal_proto_hn_aware.npy"
+    if dry_run or hn_proto.exists():
+        eval_args.extend(["--hn-aware-normal-proto", str(hn_proto)])
+    run_python("scripts/stage1_eval_ptsg.py", eval_args, dry_run=dry_run)
+
+
+def run_stage1_maxfilter_suite(entry_cfg: dict, dry_run: bool) -> None:
+    config_path = resolve_path(
+        entry_cfg.get("stage1_maxfilter_suite_config"),
+        base=YOLOV11_ROOT / "configs" / "runtime" / "stage1_gate_maxfilter_suite.json",
+    )
+    suite_cfg = load_json(config_path)
+    print_step("task", f"stage1_gate_maxfilter_suite ({resolve_str(suite_cfg.get('label'), 'stage1 maxfilter suite')})")
+
+    source_dataset = resolve_path(
+        suite_cfg.get("source_dataset"),
+        base=YOLOV11_ROOT / "datasets" / "sewerml_gate2_train7200",
+    )
+    base_hn_dataset = resolve_path(
+        suite_cfg.get("base_hn_dataset"),
+        base=YOLOV11_ROOT / "datasets" / "stage1_gate_hn_backflow" / "yolo11l_gate2_hn02",
+    )
+    miner_weights = resolve_path(
+        suite_cfg.get("miner_weights"),
+        base=YOLOV11_ROOT / "runs" / "cls_gate_hn_sweep" / "yolo11l_gate2_train7200_hn02" / "weights" / "best.pt",
+    )
+    scoring_output_dir = resolve_path(
+        suite_cfg.get("scoring_output_dir"),
+        base=REPO_ROOT / "research" / "materials" / "stage1_gate_maxfilter" / "miner_yolo11l_gate2_hn02",
+    )
+    hard_mining_dataset = resolve_path(
+        suite_cfg.get("hard_mining_dataset"),
+        base=YOLOV11_ROOT / "datasets" / "stage1_gate_maxfilter" / "yolo11l_gate2_hn02_hardmix",
+    )
+    defect_oversample_dataset = resolve_path(
+        suite_cfg.get("defect_oversample_dataset"),
+        base=YOLOV11_ROOT / "datasets" / "stage1_gate_maxfilter" / "yolo11l_gate2_hn02_defectos",
+    )
+    baseline_dir = resolve_path(
+        suite_cfg.get("baseline_dir"),
+        base=REPO_ROOT / "research" / "materials" / "stage1_ptsg" / "yolo11l_gate2_hn02",
+    )
+    results_dir = resolve_path(
+        suite_cfg.get("results_dir"),
+        base=REPO_ROOT / "research" / "results" / "stage1_gate_maxfilter_suite",
+    )
+    recycle_root = resolve_path(
+        suite_cfg.get("recycle_root"),
+        base=REPO_ROOT / "_recycle_bin" / "stage1_gate_maxfilter",
+    )
+
+    normal_class = resolve_str(suite_cfg.get("normal_class"), "Normal")
+    device = resolve_str(suite_cfg.get("device"), "0")
+    imgsz = int(suite_cfg.get("imgsz", 640) or 640)
+    batch = int(suite_cfg.get("batch", 2) or 2)
+    chunk_size = int(suite_cfg.get("chunk_size", 16) or 16)
+    score_batch = int(suite_cfg.get("score_batch", 1) or 1)
+    score_chunk_size = int(suite_cfg.get("score_chunk_size", 32) or 32)
+    alpha = float(suite_cfg.get("alpha", 1.0) or 1.0)
+    beta = float(suite_cfg.get("beta", 1.0) or 1.0)
+    gamma = float(suite_cfg.get("gamma", 0.5) or 0.5)
+    hn_manifest = resolve_str(suite_cfg.get("hn_manifest"), "")
+    hn_weight = float(suite_cfg.get("hn_weight", 3.0) or 3.0)
+
+    run_python(
+        "scripts/stage1_score_train_samples.py",
+        [
+            "--weights",
+            str(miner_weights),
+            "--data-root",
+            str(source_dataset),
+            "--output-dir",
+            str(scoring_output_dir),
+            "--device",
+            device,
+            "--imgsz",
+            str(imgsz),
+            "--batch",
+            str(score_batch),
+            "--chunk-size",
+            str(score_chunk_size),
+            "--normal-class",
+            normal_class,
+        ],
+        dry_run=dry_run,
+    )
+
+    scores_csv = scoring_output_dir / "train_sample_scores.csv"
+    run_python(
+        "scripts/stage1_build_augmented_gate_dataset.py",
+        [
+            "--source-dataset",
+            str(source_dataset),
+            "--scores-csv",
+            str(scores_csv),
+            "--output-dataset",
+            str(hard_mining_dataset),
+            "--normal-class",
+            normal_class,
+            "--hard-negative-top-k",
+            str(int(suite_cfg.get("hard_negative_top_k", 22) or 22)),
+            "--hard-negative-repeat",
+            str(int(suite_cfg.get("hard_negative_repeat", 1) or 1)),
+            "--hard-positive-top-k",
+            str(int(suite_cfg.get("hard_positive_top_k", 22) or 22)),
+            "--hard-positive-repeat",
+            str(int(suite_cfg.get("hard_positive_repeat", 1) or 1)),
+            "--abnormal-repeat-all",
+            "0",
+            "--link-mode",
+            resolve_str(suite_cfg.get("link_mode"), "hardlink"),
+        ],
+        dry_run=dry_run,
+    )
+    run_python(
+        "scripts/stage1_build_augmented_gate_dataset.py",
+        [
+            "--source-dataset",
+            str(source_dataset),
+            "--scores-csv",
+            str(scores_csv),
+            "--output-dataset",
+            str(defect_oversample_dataset),
+            "--normal-class",
+            normal_class,
+            "--hard-negative-top-k",
+            str(int(suite_cfg.get("hard_negative_top_k", 22) or 22)),
+            "--hard-negative-repeat",
+            str(int(suite_cfg.get("hard_negative_repeat", 1) or 1)),
+            "--hard-positive-top-k",
+            "0",
+            "--hard-positive-repeat",
+            "0",
+            "--abnormal-repeat-all",
+            str(int(suite_cfg.get("abnormal_repeat_all", 1) or 1)),
+            "--link-mode",
+            resolve_str(suite_cfg.get("link_mode"), "hardlink"),
+        ],
+        dry_run=dry_run,
+    )
+
+    compare_args = [
+        "--baseline-dir",
+        str(baseline_dir),
+        "--baseline-label",
+        "H0 current best hn02 + P2",
+        "--output-dir",
+        str(results_dir),
+    ]
+
+    for experiment in suite_cfg.get("experiments", []):
+        train_config_path = resolve_path(
+            experiment.get("train_config"),
+            base=YOLOV11_ROOT / "configs" / "runtime" / "stage1_gate_l_hn_selective.json",
+        )
+        train_cfg = load_json(train_config_path)
+        run_project = resolve_path(train_cfg.get("project"), base=YOLOV11_ROOT / "runs" / "stage1_gate_maxfilter")
+        run_name = resolve_str(train_cfg.get("name"), train_config_path.stem)
+        run_dir = run_project / run_name
+        weights_path = run_dir / "weights" / "best.pt"
+        data_root = resolve_path(train_cfg.get("data"), base=base_hn_dataset)
+        materials_dir = resolve_path(
+            experiment.get("materials_dir"),
+            base=REPO_ROOT / "research" / "materials" / "stage1_gate_maxfilter" / run_name,
+        )
+
+        archive_existing_run(run_dir, recycle_root, dry_run=dry_run)
+        run_python("scripts/stage1_gate_train.py", ["--config", str(train_config_path)], dry_run=dry_run)
+        run_stage1_ptsg_material_eval(
+            weights_path=weights_path,
+            data_root=data_root,
+            output_dir=materials_dir,
+            split_csv=resolve_str(suite_cfg.get("split_csv"), ""),
+            normal_class=normal_class,
+            device=device,
+            imgsz=imgsz,
+            batch=batch,
+            chunk_size=chunk_size,
+            alpha=alpha,
+            beta=beta,
+            gamma=gamma,
+            hn_manifest=hn_manifest,
+            hn_weight=hn_weight,
+            dry_run=dry_run,
+        )
+        compare_args.extend(["--experiment", f"{resolve_str(experiment.get('label'), run_name)}::{materials_dir}"])
+
+    run_python("scripts/stage1_compare_maxfilter_suite.py", compare_args, dry_run=dry_run)
+
+
 def run_stage1_embed_supcon(entry_cfg: dict, dry_run: bool) -> None:
     config_path = resolve_path(
         entry_cfg.get("stage1_embed_supcon_config"),
@@ -505,73 +777,23 @@ def run_stage1_embed_supcon(entry_cfg: dict, dry_run: bool) -> None:
     print_step("task", f"stage1_gate_embed_supcon ({resolve_str(embed_cfg.get('label'), run_name)})")
     archive_existing_run(run_dir, recycle_root, dry_run=dry_run)
     run_python("scripts/stage1_gate_train.py", ["--config", str(train_config_path)], dry_run=dry_run)
-    run_python(
-        "scripts/stage1_export_gate_features.py",
-        [
-            "--weights",
-            str(weights_path),
-            "--data-root",
-            resolve_str(train_cfg.get("data"), ""),
-            "--output-dir",
-            str(output_dir),
-            "--device",
-            resolve_str(embed_cfg.get("device"), "0"),
-            "--imgsz",
-            str(int(embed_cfg.get("imgsz", 640) or 640)),
-            "--batch",
-            str(int(embed_cfg.get("batch", 2) or 2)),
-            "--chunk-size",
-            str(int(embed_cfg.get("chunk_size", 16) or 16)),
-            "--normal-class",
-            resolve_str(embed_cfg.get("normal_class"), "Normal"),
-        ],
+    run_stage1_ptsg_material_eval(
+        weights_path=weights_path,
+        data_root=resolve_path(train_cfg.get("data"), base=YOLOV11_ROOT / "datasets" / "stage1_gate_hn_backflow" / "yolo11l_gate2_hn02"),
+        output_dir=output_dir,
+        split_csv=resolve_str(embed_cfg.get("split_csv"), ""),
+        normal_class=resolve_str(embed_cfg.get("normal_class"), "Normal"),
+        device=resolve_str(embed_cfg.get("device"), "0"),
+        imgsz=int(embed_cfg.get("imgsz", 640) or 640),
+        batch=int(embed_cfg.get("batch", 2) or 2),
+        chunk_size=int(embed_cfg.get("chunk_size", 16) or 16),
+        alpha=float(embed_cfg.get("alpha", 1.0) or 1.0),
+        beta=float(embed_cfg.get("beta", 1.0) or 1.0),
+        gamma=float(embed_cfg.get("gamma", 0.5) or 0.5),
+        hn_manifest=resolve_str(embed_cfg.get("hn_manifest"), ""),
+        hn_weight=float(embed_cfg.get("hn_weight", 3.0) or 3.0),
         dry_run=dry_run,
     )
-    run_python(
-        "scripts/stage1_build_ptsg_bank.py",
-        [
-            "--train-features-csv",
-            str(output_dir / "train_features.csv"),
-            "--train-embeddings-npy",
-            str(output_dir / "train_embeddings.npy"),
-            "--output-dir",
-            str(output_dir),
-            "--normal-class",
-            resolve_str(embed_cfg.get("normal_class"), "Normal"),
-            "--hn-manifest",
-            resolve_str(embed_cfg.get("hn_manifest"), ""),
-            "--hn-weight",
-            str(float(embed_cfg.get("hn_weight", 3.0) or 3.0)),
-        ],
-        dry_run=dry_run,
-    )
-
-    eval_args = [
-        "--val-features-csv",
-        str(output_dir / "val_features.csv"),
-        "--val-embeddings-npy",
-        str(output_dir / "val_embeddings.npy"),
-        "--val-split-csv",
-        resolve_str(embed_cfg.get("split_csv"), ""),
-        "--normal-proto",
-        str(output_dir / "normal_proto.npy"),
-        "--abnormal-proto",
-        str(output_dir / "abnormal_proto.npy"),
-        "--output-dir",
-        str(output_dir),
-        "--normal-class",
-        resolve_str(embed_cfg.get("normal_class"), "Normal"),
-        "--alpha",
-        str(float(embed_cfg.get("alpha", 1.0) or 1.0)),
-        "--beta",
-        str(float(embed_cfg.get("beta", 1.0) or 1.0)),
-        "--gamma",
-        str(float(embed_cfg.get("gamma", 0.5) or 0.5)),
-    ]
-    hn_proto = output_dir / "normal_proto_hn_aware.npy"
-    if dry_run or hn_proto.exists():
-        eval_args.extend(["--hn-aware-normal-proto", str(hn_proto)])
-    run_python("scripts/stage1_eval_ptsg.py", eval_args, dry_run=dry_run)
     run_python(
         "scripts/stage1_compare_embedding_gate.py",
         [
@@ -614,6 +836,10 @@ def main() -> None:
 
     if task_name == "stage1_gate_embed_supcon":
         run_stage1_embed_supcon(entry_cfg, dry_run=args.dry_run)
+        return
+
+    if task_name == "stage1_gate_maxfilter_suite":
+        run_stage1_maxfilter_suite(entry_cfg, dry_run=args.dry_run)
         return
 
     run_stage1_hn(task_name, entry_cfg, dry_run=args.dry_run)

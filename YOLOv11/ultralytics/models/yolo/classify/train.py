@@ -24,6 +24,8 @@ CUSTOM_CLASSIFY_ARGS = {
     "cls_pos_weight",
     "cls_focal_gamma",
     "cls_focal_alpha",
+    "cls_recall_margin",
+    "cls_recall_penalty",
 }
 
 
@@ -67,6 +69,8 @@ class ClassificationTrainer(BaseTrainer):
             "cls_pos_weight": getattr(self.args, "cls_pos_weight", None),
             "cls_focal_gamma": getattr(self.args, "cls_focal_gamma", None),
             "cls_focal_alpha": getattr(self.args, "cls_focal_alpha", None),
+            "cls_recall_margin": getattr(self.args, "cls_recall_margin", None),
+            "cls_recall_penalty": getattr(self.args, "cls_recall_penalty", None),
             "contrastive_enable": getattr(self.args, "contrastive_enable", None),
             "contrastive_method": getattr(self.args, "contrastive_method", None),
             "contrastive_weight": getattr(self.args, "contrastive_weight", None),

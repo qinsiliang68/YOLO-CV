@@ -1,0 +1,63 @@
+{
+  "label": "yolo11l stage-1 max-filter suite",
+  "miner_weights": "C:/Users/ASUS/Desktop/YOLOv11/YOLO-CV/YOLOv11/runs/cls_gate_hn_sweep/yolo11l_gate2_train7200_hn02/weights/best.pt",
+  "source_dataset": "C:/Users/ASUS/Desktop/YOLOv11/YOLO-CV/YOLOv11/datasets/sewerml_gate2_train7200",
+  "base_hn_dataset": "C:/Users/ASUS/Desktop/YOLOv11/YOLO-CV/YOLOv11/datasets/stage1_gate_hn_backflow/yolo11l_gate2_hn02",
+  "baseline_dir": "C:/Users/ASUS/Desktop/YOLOv11/YOLO-CV/research/materials/stage1_ptsg/yolo11l_gate2_hn02",
+  "scoring_output_dir": "C:/Users/ASUS/Desktop/YOLOv11/YOLO-CV/research/materials/stage1_gate_maxfilter/miner_yolo11l_gate2_hn02",
+  "hard_mining_dataset": "C:/Users/ASUS/Desktop/YOLOv11/YOLO-CV/YOLOv11/datasets/stage1_gate_maxfilter/yolo11l_gate2_hn02_hardmix",
+  "defect_oversample_dataset": "C:/Users/ASUS/Desktop/YOLOv11/YOLO-CV/YOLOv11/datasets/stage1_gate_maxfilter/yolo11l_gate2_hn02_defectos",
+  "results_dir": "C:/Users/ASUS/Desktop/YOLOv11/YOLO-CV/research/results/stage1_gate_maxfilter_suite",
+  "recycle_root": "C:/Users/ASUS/Desktop/YOLOv11/YOLO-CV/_recycle_bin/stage1_gate_maxfilter",
+  "split_csv": "C:/Users/ASUS/Desktop/YOLOv11/YOLO-CV/research/materials/stage1_gate_hn_backflow/val_cal_op_split.csv",
+  "hn_manifest": "C:/Users/ASUS/Desktop/YOLOv11/YOLO-CV/research/materials/stage1_gate_hn_backflow/manifests/hn02_top022.csv",
+  "normal_class": "Normal",
+  "device": "0",
+  "imgsz": 640,
+  "batch": 2,
+  "chunk_size": 16,
+  "score_batch": 1,
+  "score_chunk_size": 32,
+  "alpha": 1.0,
+  "beta": 1.0,
+  "gamma": 0.5,
+  "hn_weight": 3.0,
+  "hard_negative_top_k": 22,
+  "hard_negative_repeat": 1,
+  "hard_positive_top_k": 22,
+  "hard_positive_repeat": 1,
+  "abnormal_repeat_all": 1,
+  "link_mode": "hardlink",
+  "experiments": [
+    {
+      "name": "selective_loss",
+      "label": "Selective / recall-constrained loss",
+      "train_config": "YOLOv11/configs/runtime/stage1_gate_l_hn_selective.json",
+      "materials_dir": "C:/Users/ASUS/Desktop/YOLOv11/YOLO-CV/research/materials/stage1_gate_maxfilter/yolo11l_gate2_hn02_selective"
+    },
+    {
+      "name": "hard_mining",
+      "label": "Hard positive + hard normal mining",
+      "train_config": "YOLOv11/configs/runtime/stage1_gate_l_hardmix.json",
+      "materials_dir": "C:/Users/ASUS/Desktop/YOLOv11/YOLO-CV/research/materials/stage1_gate_maxfilter/yolo11l_gate2_hn02_hardmix"
+    },
+    {
+      "name": "weighted_bce",
+      "label": "Weighted BCE",
+      "train_config": "YOLOv11/configs/runtime/stage1_gate_l_hn_wbce_suite.json",
+      "materials_dir": "C:/Users/ASUS/Desktop/YOLOv11/YOLO-CV/research/materials/stage1_gate_maxfilter/yolo11l_gate2_hn02_wbce_suite"
+    },
+    {
+      "name": "focal_bce",
+      "label": "Focal BCE",
+      "train_config": "YOLOv11/configs/runtime/stage1_gate_l_hn_focal_suite.json",
+      "materials_dir": "C:/Users/ASUS/Desktop/YOLOv11/YOLO-CV/research/materials/stage1_gate_maxfilter/yolo11l_gate2_hn02_focal_suite"
+    },
+    {
+      "name": "defect_oversample",
+      "label": "Defect oversampling",
+      "train_config": "YOLOv11/configs/runtime/stage1_gate_l_defectos.json",
+      "materials_dir": "C:/Users/ASUS/Desktop/YOLOv11/YOLO-CV/research/materials/stage1_gate_maxfilter/yolo11l_gate2_hn02_defectos"
+    }
+  ]
+}

@@ -618,6 +618,8 @@ class v8ClassificationLoss:
         self.pos_weight = float(cfg.get("cls_pos_weight") or 1.0)
         self.focal_gamma = float(cfg.get("cls_focal_gamma") or 2.0)
         self.focal_alpha = float(cfg.get("cls_focal_alpha") or 0.25)
+        self.recall_margin = float(cfg.get("cls_recall_margin") or 1.0)
+        self.recall_penalty = float(cfg.get("cls_recall_penalty") or 0.0)
         self.contrastive_enable = bool(cfg.get("contrastive_enable") or False)
         self.contrastive_method = str(cfg.get("contrastive_method") or "supcon").lower()
         self.contrastive_weight = float(cfg.get("contrastive_weight") or 0.0)
@@ -640,6 +642,16 @@ class v8ClassificationLoss:
         alpha_t = targets * self.focal_alpha + (1.0 - targets) * (1.0 - self.focal_alpha)
         focal_factor = (1.0 - p_t).pow(self.focal_gamma)
         return (alpha_t * focal_factor * bce).mean()
+
+    def _recall_constrained_bce(self, logits, targets):
+        """Weighted BCE plus a positive-class margin penalty as a recall-oriented surrogate."""
+        pos_weight = torch.tensor(self.pos_weight, dtype=logits.dtype, device=logits.device)
+        base = F.binary_cross_entropy_with_logits(logits, targets, pos_weight=pos_weight, reduction="mean")
+        positive_mask = targets > 0.5
+        if not torch.any(positive_mask) or self.recall_penalty <= 0:
+            return base
+        positive_margin = F.relu(self.recall_margin - logits[positive_mask]).mean()
+        return base + self.recall_penalty * positive_margin
 
     def _supcon_loss(self, projections, labels):
         """Single-view supervised contrastive loss over the current batch."""
@@ -691,6 +703,8 @@ class v8ClassificationLoss:
                 )
             elif self.loss_type == "focal_bce":
                 cls_loss = self._focal_bce(abnormal_logit, abnormal_target)
+            elif self.loss_type == "recall_constrained_bce":
+                cls_loss = self._recall_constrained_bce(abnormal_logit, abnormal_target)
             else:
                 cls_loss = F.cross_entropy(logits, targets, reduction="mean")
 

@@ -12,6 +12,8 @@ CUSTOM_LOSS_KEYS = (
     "cls_pos_weight",
     "cls_focal_gamma",
     "cls_focal_alpha",
+    "cls_recall_margin",
+    "cls_recall_penalty",
     "contrastive_enable",
     "contrastive_method",
     "contrastive_weight",
