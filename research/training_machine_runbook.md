@@ -25,13 +25,15 @@ The active task is controlled by:
 
 At the current stage, the committed default task is:
 
-- `stage1_gate_s_hn`
+- `stage1_gate_maxfilter_suite`
 
 That means `uv run main.py` currently performs:
 
-1. train-side `Normal` scoring
-2. HN 2% dataset build
-3. `yolo11s-cls + HN 2%` training
+1. score all train-side gate samples with the current `yolo11l + hn02` miner
+2. build the hard-mix stage-1 dataset
+3. build the defect-oversample stage-1 dataset
+4. sequentially train the max-filter suite experiments
+5. after each run, export features, rebuild prototype banks, rerun PTSG evaluation, and summarize the suite
 
 `main_cls6_sweep.py` is kept only as a compatibility wrapper for the six-class sweep.
 
@@ -269,6 +271,7 @@ Pseudo-box baseline alternative:
 - The training machine syncs from `main` and pushes only experiment outputs.
 - The training machine should not edit thesis files or repository structure.
 - Before changing task direction or script defaults, read:
-  - `PROJECT_MEMORY.md`
-  - `research/project_memory/stage1_memory.md`
-  - `research/project_memory/decision_log.md`
+- `PROJECT_MEMORY.md`
+- `research/project_memory/stage1_memory.md`
+- `research/project_memory/decision_log.md`
+- `research/project_memory/stage1_gate_theory_and_maxfilter_report.md`

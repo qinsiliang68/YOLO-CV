@@ -33,6 +33,7 @@ Before changing defaults or deciding the next experiment, read:
 - `PROJECT_MEMORY.md`
 - `research/project_memory/stage1_memory.md`
 - `research/project_memory/decision_log.md`
+- `research/project_memory/stage1_gate_theory_and_maxfilter_report.md`
 
 ### Sync code before training
 

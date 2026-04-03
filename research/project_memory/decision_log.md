@@ -144,3 +144,24 @@ Prune aggressively:
   - `uv run main.py`
 - The active entry for this route is controlled through:
   - `YOLOv11/configs/runtime/main_entry.json`
+
+### D14. Stage-1 Max-Filter Suite
+
+- The current one-click default task is now `stage1_gate_maxfilter_suite`.
+- It is designed as the final broad stage-1 continuation suite before fully pivoting to stage-2.
+- The suite fixes:
+  - main model `yolo11l-cls`
+  - `hn02`
+  - existing calibration and PTSG evaluation protocol
+- It then compares four method families plus one hard-mix variant:
+  - selective / recall-constrained loss
+  - hard positive + hard normal mining
+  - weighted BCE
+  - focal BCE
+  - defect oversampling
+- All candidates must still be judged by the shared stage-1 ranking rule:
+  - `Spec@R99.5`
+  - `Spec@R99.0`
+  - `Prec@R99.0`
+  - `PTR@R99.0`
+- This suite is meant to answer whether stage-1 still has meaningful headroom under the current protocol, not to change the role definition of stage-1 itself.

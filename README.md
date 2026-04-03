@@ -20,6 +20,7 @@ Before editing code, thesis, configs, or long-running experiment scripts, read:
 - `PROJECT_MEMORY.md`
 - `research/project_memory/stage1_memory.md`
 - `research/project_memory/decision_log.md`
+- `research/project_memory/stage1_gate_theory_and_maxfilter_report.md`
 
 These files store the current thesis direction, stage-1 stable conclusions, workflow rules, and long-term decisions.
 
@@ -54,6 +55,7 @@ Helper scripts:
 
 - Current root human-facing training entrypoint: `uv run main.py`
 - Active task selector: `YOLOv11/configs/runtime/main_entry.json`
+- Current committed default task: `stage1_gate_maxfilter_suite`
 - Run the uniform five-scale CLS6 sweep explicitly: `uv run main.py --task cls6_sweep --rerun`
 - Compatibility wrapper for the same sweep: `uv run main_cls6_sweep.py --rerun`
 - Source classification pretraining: `.\scripts\cls_pretrain.ps1`
