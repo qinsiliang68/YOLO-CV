@@ -49,7 +49,8 @@
 
 ### 4.1 五模型 baseline 角色定位
 
-- 六类 source 分类 leader：`yolo11l-cls`（旧完整口径）
+- 六类 source 分类 accuracy leader：`yolo11x-cls`（统一重跑正式口径）
+- 六类 source 分类 AUROC/AUPRC leader：`yolo11n-cls`（统一重跑正式口径）
 - direct binary gate 默认阈值 leader：`yolo11s-cls`
 - direct binary gate 高召回锚点 leader：`yolo11l-cls`
 - direct binary gate AUPRC 参考模型：`yolo11m-cls`
@@ -58,6 +59,7 @@
 
 - 不能把 `yolo11m-cls` 写成默认阈值 leader。
 - prose 必须服从 raw materials，不允许“图里是 s 强，正文写成 m 强”。
+- 旧版 `yolo11l-cls` 六类 source leader 口径仅作为历史 raw materials 留档，不再作为当前正文正式 leader 表述。
 
 ### 4.2 calibration 结论
 
@@ -75,6 +77,12 @@
 - 让模型选型与阈值分析建立在统一校准后的分数体系上
 
 calibration 改的是分数刻度，不是模型本体。
+
+补充约束：
+
+- `research/materials/stage1_gate_calibration_all_models.csv` 里的 `yolo11l-cls + calibration + 0% HN` 只用于五模型 calibration 选型。
+- `research/results/stage1_gate_hn_ratio_sweep/hn_ratio_sweep_summary.csv` 里的 `hn00` 是后续 HN/PTSG/max-filter 主线的内部基线。
+- 两者虽然都属于 `0% HN` 风格 baseline，但来自不同重算批次，不做跨表绝对值逐项比较。
 
 ### 4.3 HN 结论
 
@@ -98,8 +106,8 @@ calibration 改的是分数刻度，不是模型本体。
 
 1. `yolo11l-cls + calibration + hn02`
 2. `yolo11s-cls + hn02` 作为第二容量对照
-3. `yolo11l-cls + hn02 + Weighted BCE`
-4. `yolo11l-cls + hn02 + Focal`
+3. `yolo11l-cls + hn02 + P2` 作为后处理最优阶段结论
+4. `yolo11l-cls + calibration + hn02 + HardMix` 作为当前训练侧综合最优候选
 
 `yolo11s-cls + hn02` 的定位不是重新给 `s` 找全局最优 HN 比例，而是验证：
 
@@ -123,7 +131,7 @@ uv run main.py
 
 当前默认任务是：
 
-- `stage1_gate_s_hn`
+- `stage1_gate_maxfilter_suite`
 
 也就是：
 
@@ -197,6 +205,7 @@ uv run main.py --task cls6_sweep --rerun
 - `PROJECT_MEMORY.md`
 - `research/project_memory/stage1_memory.md`
 - `research/project_memory/decision_log.md`
+- `research/project_memory/stage1_table_traceability.md`
 - `research/training_machine_runbook.md`
 - `research/experiment_handoff_workflow.md`
 - `essay/docs/stage1_next_run_checklist.md`

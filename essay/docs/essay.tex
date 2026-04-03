@@ -1788,23 +1788,24 @@ SE-Net 是通道注意力的经典代表，其核心思想是通过全局信息�
 
 \begin{table}[H]
     \centering
-    \caption{第一阶段主线消融与工程增强实验设计表}
+    \caption{第一阶段主线消融与工程增强实验概览表}
     \label{tab:stage1-ablation-plan}
-    \begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}N{1.0cm}N{1.8cm}N{1.0cm}N{1.1cm}N{1.6cm}N{1.45cm}N{1.45cm}N{1.45cm}N{1.45cm}@{}}
+    \begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}N{0.85cm}N{1.8cm}N{0.8cm}N{0.9cm}N{1.35cm}N{0.95cm}N{1.35cm}N{1.35cm}N{1.35cm}N{1.35cm}@{}}
         \toprule
-        组别 & 模型 & 校准 & HN回流 & 损失函数 & \numhead{Spec@\\R99.5} & \numhead{Spec@\\R99.0} & \numhead{Prec@\\R99.0} & \numhead{PTR@\\R99.0} \\
+        组别 & 模型 & 校准 & HN回流 & 损失函数 & 后处理 & \numhead{Spec@\\R99.5} & \numhead{Spec@\\R99.0} & \numhead{Prec@\\R99.0} & \numhead{PTR@\\R99.0} \\
         \midrule
-        G0 & yolo11l-cls & 否 & 0\% & BCE & 0.4048 & 0.4643 & 0.9026 & 0.9167 \\
-        G1 & yolo11l-cls & 是 & 0\% & BCE & 0.4286 & 0.4762 & 0.9043 & 0.9127 \\
-        G2 & yolo11l-cls & 是 & 2\% & BCE & 0.5119 & 0.5476 & 0.9165 & 0.9028 \\
-        G3 & yolo11l-cls & 是 & 2\% & WBCE & 待填充 & 待填充 & 待填充 & 待填充 \\
-        G4 & yolo11l-cls & 是 & 2\% & Focal & 待填充 & 待填充 & 待填充 & 待填充 \\
-        G5 & yolo11l-cls & 是 & 2\% & BestLoss & 待填充 & 待填充 & 待填充 & 待填充 \\
-        G6 & yolo11l-cls & 是 & 2\% & \tbhead{BestLoss+\\LA} & 待填充 & 待填充 & 待填充 & 待填充 \\
+        G0 & yolo11l-cls & 否 & 0\% & BCE & P0 & 0.4048 & 0.4643 & 0.9026 & 0.9167 \\
+        G1 & yolo11l-cls & 是 & 0\% & BCE & P0 & 0.4286 & 0.4762 & 0.9043 & 0.9127 \\
+        G2 & yolo11l-cls & 是 & 2\% & BCE & P2 & 0.5119 & 0.5476 & 0.9165 & 0.9028 \\
+        G3 & yolo11l-cls & 是 & 2\% & Selective & P1 & 0.4881 & 0.5238 & 0.9125 & 0.9067 \\
+        G4 & yolo11l-cls & 是 & 2\% & HardMix & P0 & 0.5238 & 0.5833 & 0.9224 & 0.8948 \\
+        G5 & yolo11l-cls & 是 & 2\% & WBCE & P0 & 0.4881 & 0.5595 & 0.9183 & 0.8988 \\
+        G6 & yolo11l-cls & 是 & 2\% & Focal & P2 & 0.4405 & 0.5357 & 0.9143 & 0.9028 \\
+        G7 & yolo11l-cls & 是 & 2\% & DefectOS & P3 & 0.4048 & 0.5357 & 0.9143 & 0.9028 \\
         \bottomrule
 \end{tabular*}
 \end{table}
-\noindent\parbox{\textwidth}{其中，WBCE 表示 Weighted BCE，LA 表示 Light Attention；G0 与 G1 均采用统一 val-op 口径。}
+\noindent\parbox{\textwidth}{其中，后处理列表示各训练策略在共享 PTSG 协议下取得最优 operating point 的 gate 变体；HardMix 表示 hard positive + hard normal mining，DefectOS 表示 defect oversampling。}
 
 此外，本文还额外设置了第二模型 \textrm{yolo11s-cls} 的跨容量对照实验，用于验证 \textrm{hn02} 回流方案是否只对主模型 \textrm{yolo11l-cls} 有效。表\ref{tab:stage1-second-model-check} 给出了 \textrm{yolo11s-cls} 在统一校准基线与 \textrm{hn02} 回流后的对照结果。可以看出，\textrm{Spec@R99.5} 由 0.3571 提升至 0.4167，\textrm{Spec@R99.0} 由 0.4167 提升至 0.4881，\textrm{Prec@R99.0} 由 0.8949 提升至 0.9063，同时 \textrm{PTR@R99.0} 由 0.9246 降至 0.9107。该结果说明，\textrm{hn02} 并非只对主模型有效，而是在第二模型容量上同样能够改善高召回工作点附近的过滤能力；但其综合收益仍低于 G2，因此当前第一阶段主线仍保持为“\textrm{l} 作为主模型、\textrm{s} 作为跨容量对照模型”的双模型结构。
 
@@ -1861,7 +1862,7 @@ SE-Net 是通道注意力的经典代表，其核心思想是通过全局信息�
 
 \section{本章小结}
 
-本章围绕第一阶段高召回预筛和弱监督标注增强，完成了任务定义、二分类 gate 组织方式、六类 source 分类结构位、二分类 gate 基线结果分析、统一 calibration 和 Hard Negative Mining 前置准备的结构化说明。当前 raw materials 所支持的第一阶段结论已经明确：在当前已完成的统一超参数六类 source 重跑结果中，\textrm{yolo11x-cls} 在准确率上最高，\textrm{yolo11n-cls} 在 \textrm{AUROC} 与 \textrm{AUPRC} 上更优，说明 source 视图下的容量收益并不呈现简单单调规律；六类间接 gate 视图下 \textrm{yolo11s-cls} 保持默认阈值 leader；二分类 gate 视图下 \textrm{yolo11s-cls} 是默认阈值 leader，\textrm{yolo11l-cls} 是高召回锚点 leader，\textrm{yolo11m-cls} 则保留为 AUPRC 参考模型；统一 Temperature Scaling 完成后，后续 stage-1 训练的主模型确定为 \textrm{yolo11l-cls}，第二对照模型确定为 \textrm{yolo11s-cls}。需要强调的是，本章并非本文的主创新章，而是支撑后续改进 detector 与跨域迁移落地的工程链条章节。第5章将在此基础上转入本文的核心方法设计，即改进 YOLOv11 检测方法与跨域迁移训练策略。
+本章围绕第一阶段高召回预筛和弱监督标注增强，系统完成了任务定义、容量选型、统一 calibration、HN 回流、PTSG 后处理及训练侧 max-filter 扩展的结构化分析。当前 raw materials 所支持的第一阶段结论已经较为完整：其一，六类 source 统一重跑口径下，\textrm{yolo11x-cls} 在准确率上最高，\textrm{yolo11n-cls} 在 \textrm{AUROC} 与 \textrm{AUPRC} 上更优；其二，二分类 gate 视图下，\textrm{yolo11s-cls} 是默认阈值 leader，\textrm{yolo11l-cls} 是高召回锚点 leader，\textrm{yolo11m-cls} 则保留为 AUPRC 参考模型；其三，统一 Temperature Scaling 完成后，后续 stage-1 训练的主模型确定为 \textrm{yolo11l-cls}，第二对照模型确定为 \textrm{yolo11s-cls}；其四，\textrm{hn02} 被证明是当前最优 HN 回流强度，`P2` 说明概率与 trust 融合的选择性门控具有阶段性收益，但多原型 trust 与强 embedding 并未继续带来稳定增益；其五，在训练侧 max-filter 套件中，最有效的剩余增益来自 \textrm{HardMix}，使第一阶段最终候选收敛为“\textrm{yolo11l-cls + calibration + hn02 + HardMix}”，其最优 gate 决策也回归到 \textrm{P0 = calibrated p\_abnormal}。由此可见，第一阶段证据链已经基本闭合，后续研究重点应转入第5章的 detector 三大件优化与跨域迁移策略，而不再继续扩张 stage-1 的复杂度。
 
 \chapter{基于改进 YOLOv11 的管道缺陷检测与跨域迁移策略}
 
@@ -2026,7 +2027,7 @@ SE-Net 是通道注意力的经典代表，其核心思想是通过全局信息�
 
 \subsection{实验平台与训练配置}
 
-本文实验在单卡 GPU 工作站上完成，硬件平台采用 \textrm{NVIDIA GeForce RTX 3090}（24GB 显存）。软件环境以 \textrm{Python 3.11.15} 为基础，深度学习框架采用 \textrm{PyTorch}、\textrm{TorchVision}、\textrm{CUDA} 和 \textrm{Ultralytics}。在当前已完成的第一阶段实验中，六类 source 分类任务以 \textrm{sewerml\_cls6\_train7200} 为输入，二分类 gate 任务则基于同源图像重标注后的 \textrm{sewerml\_gate2\_train7200} 数据集开展。上一轮二分类 gate 五尺度 baseline 采用统一训练协议，即输入尺寸 640、训练轮数 200、batch size 32、数据加载线程数 4、早停 patience 20，并保持 \textrm{optimizer=auto}、\textrm{cache=false} 和 \textrm{resume=false} 不变。为消除早期六类 source baseline 中批大小等配置差异对容量排序的影响，本文随后补充了统一重跑方案：仍以 \textrm{sewerml\_cls6\_train7200} 为输入，对 \textrm{YOLO11n/s/m/l/x-cls} 统一采用输入尺寸 640、训练轮数 100、batch size 32、数据加载线程数 4、早停 patience 20 的设置，并保持其余优化器与数据增强参数一致；当前稿中六类 source 排名仍以可追溯完整五模型 raw materials 为正式依据，统一重跑结果作为后续复核材料持续补充。
+本文实验在单卡 GPU 工作站上完成，硬件平台采用 \textrm{NVIDIA GeForce RTX 3090}（24GB 显存）。软件环境以 \textrm{Python 3.11.15} 为基础，深度学习框架采用 \textrm{PyTorch}、\textrm{TorchVision}、\textrm{CUDA} 和 \textrm{Ultralytics}。在当前已完成的第一阶段实验中，六类 source 分类任务以 \textrm{sewerml\_cls6\_train7200} 为输入，二分类 gate 任务则基于同源图像重标注后的 \textrm{sewerml\_gate2\_train7200} 数据集开展。上一轮二分类 gate 五尺度 baseline 采用统一训练协议，即输入尺寸 640、训练轮数 200、batch size 32、数据加载线程数 4、早停 patience 20，并保持 \textrm{optimizer=auto}、\textrm{cache=false} 和 \textrm{resume=false} 不变。为消除早期六类 source baseline 中批大小等配置差异对容量排序的影响，本文随后补充了统一重跑方案：仍以 \textrm{sewerml\_cls6\_train7200} 为输入，对 \textrm{YOLO11n/s/m/l/x-cls} 统一采用输入尺寸 640、训练轮数 100、batch size 32、数据加载线程数 4、早停 patience 20 的设置，并保持其余优化器与数据增强参数一致。当前稿中六类 source 排名的正式口径已统一为该批 \textrm{uniform rerun} raw materials：其中 \textrm{yolo11x-cls} 为 accuracy leader，\textrm{yolo11n-cls} 为 \textrm{AUROC/AUPRC} leader；旧版 `yolo11l-cls` 六类 source 结论仅保留为历史 raw materials 留档，不再作为当前正文 leader 表述。
 
 \begin{table}[H]
     \centering
@@ -2059,47 +2060,61 @@ SE-Net 是通道注意力的经典代表，其核心思想是通过全局信息�
 
 第4章已经给出了统一 Temperature Scaling 的协议、完整对比表以及五模型 calibration 前后的可视化结果，因此本节不再重复展开方法描述，而只从模型选型与后续 stage-1 训练准备的角度收束第一阶段 calibration 的实验结论。需要强调的是，本文后续用于第一阶段比较和阈值选择的依据，不再是未经处理的 raw score，而是基于统一 val-cal / val-op 划分得到的校准后分数体系。
 
+这里还需说明一个口径边界：表\ref{tab:stage1-calibration-results} 中的 `yolo11l-cls + calibration + 0\% HN` 仅用于五模型 calibration 选型；而后续 HN 比例扫描、PTSG 与 max-filter 套件中出现的 `hn00`，则来自更晚一轮主线重算批次，用于充当 HN/PTSG/max-filter 链路内部的统一基线。两者都属于 `0\% HN` 风格 baseline，但服务于不同实验链路，因此本文只在各自链路内部做相对比较，不做跨表绝对值逐项比较。
+
 从表\ref{tab:stage1-calibration-results}可以看出，五组模型拟合得到的温度参数均大于 1，说明 baseline 预测分数整体存在一定程度的过度自信倾向。校准后的 ECE 全部下降，其中 \textrm{yolo11m-cls} 从 0.0579 降至 0.0285，降幅最大；\textrm{yolo11s-cls} 从 0.0605 降至 0.0395；\textrm{yolo11l-cls} 从 0.0407 降至 0.0308；\textrm{yolo11n-cls} 与 \textrm{yolo11x-cls} 也出现了小幅改善。这说明 Temperature Scaling 对第一阶段的首要收益在于提升分数可信度与阈值稳定性，而不是简单改变模型排序。
 
 进一步比较高召回锚点下的 operating point 可以发现，不同模型的 calibration 收益并不一致。\textrm{yolo11l-cls} 是唯一在两组高召回锚点上都出现明确正向增益的模型：其 \textrm{Spec@R99.5} 由 0.4048 提升到 0.4286，\textrm{Spec@R99.0} 由 0.4643 提升到 0.4762，\textrm{Prec@R99.0} 也由 0.9026 提升到 0.9043，说明分数经校准后形成了更稳健的筛选边界。\textrm{yolo11m-cls} 虽然在 ECE 与 Brier Score 上改善明显，但高召回锚点指标基本不变；\textrm{yolo11s-cls} 则在统一 val-op 口径下补齐了 \textrm{Spec@R99.5}，其值为 0.3571，高于 \textrm{yolo11m-cls} 的 0.3452，但仍落后于 \textrm{yolo11l-cls}。若按“先比较 \textrm{Spec@R99.5}，再比较 \textrm{Spec@R99.0}，最后比较 \textrm{Prec@R99.0}”的规则排序，统一 calibration 后的高召回锚点顺序为 \textrm{yolo11l-cls}、\textrm{yolo11n-cls}、\textrm{yolo11s-cls}、\textrm{yolo11m-cls}、\textrm{yolo11x-cls}。结合 baseline 中 \textrm{yolo11s-cls} 的默认阈值 leader 地位，本文最终将 \textrm{yolo11l-cls} 确定为第一阶段主模型，将 \textrm{yolo11s-cls} 确定为第二对照模型，并将 \textrm{yolo11m-cls} 保留为 AUPRC 参考模型。由此可见，Temperature Scaling 作为低成本后处理策略，已经足以帮助后续 Hard Negative Mining 的模型选择收敛为 \textrm{l} 与 \textrm{s} 两条主线。
 
 在完成 calibration 验证后，第一阶段已经进一步完成了主模型 \textrm{yolo11l-cls} 的 HN 回流比例扫描。结果表明，\textrm{hn02} 即 2\% 回流比例取得了当前最优的高召回锚点组合：\textrm{Spec@R99.5} 提升至 0.5119，\textrm{Spec@R99.0} 提升至 0.5476，\textrm{Prec@R99.0} 提升至 0.9165，而 \textrm{PTR@R99.0} 维持在 0.9028。相比之下，更高比例的 HN 回流并未继续带来稳定收益，说明 hardest normal 回流强度需要受到控制，不能简单按比例堆高。需要说明的是，\textrm{hn02} 相较基线组在 Accuracy、Macro-F1、AUROC 与 AUPRC 上均有小幅回落，但这一现象与第一阶段目标并不矛盾：stage-1 gate 更关心的是在固定高召回约束下提升 normal 过滤能力，而不是追求默认阈值下的总体分类得分。因此，只要 \textrm{Spec@R99.5}、\textrm{Spec@R99.0} 与 \textrm{Prec@R99.0} 同步改善且 \textrm{PTR@R99.0} 未恶化，就可以认为 HN 回流对当前门控任务是有效的。进一步地，在第二模型 \textrm{yolo11s-cls} 上，统一校准基线与 \textrm{hn02} 回流后的对照结果也表现出一致的正向变化：其 \textrm{Spec@R99.5} 由 0.3571 提升至 0.4167，\textrm{Spec@R99.0} 由 0.4167 提升至 0.4881，\textrm{Prec@R99.0} 由 0.8949 提升至 0.9063，\textrm{PTR@R99.0} 由 0.9246 降至 0.9107。这表明 \textrm{hn02} 的收益并非只依赖单一模型容量，而是具有一定跨容量稳定性；但与主模型 G2 相比，第二模型在高召回锚点上的综合收益仍然偏低，因此 stage-1 的正式主线结论仍收敛于 \textrm{yolo11l-cls + hn02}。
-为保证后续结果能直接回填，表\ref{tab:stage1-ablation-results} 固定了第一阶段关键消融的结果字段。当前已填入统一 val-op 口径下的 G0、G1、主模型最优 HN 组 G2，以及后续主线 loss 扩展所需的连续组号；第二模型自对照则单独列在表\ref{tab:stage1-second-model-results} 中作为补充验证。
+为保证后续结果能直接回填，表\ref{tab:stage1-ablation-results} 固定了第一阶段主线消融与工程增强的结果字段。当前已写入统一 val-op 口径下的 G0、G1、HN 最优组 G2 以及 max-filter 套件扩展出的 G3--G7；第二模型自对照则单独列在表\ref{tab:stage1-second-model-results} 中作为补充验证，不再复用主线 `G` 编号。
 
 \begin{table}[H]
     \centering
-    \caption{第一阶段主线消融结果表}
+    \caption{第一阶段主线消融与工程增强实验概览表}
     \label{tab:stage1-ablation-results}
-    \begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}N{1.0cm}N{1.8cm}N{1.0cm}N{1.1cm}N{1.6cm}N{1.45cm}N{1.45cm}N{1.45cm}N{1.45cm}@{}}
+    \begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}N{0.85cm}N{1.8cm}N{0.8cm}N{0.9cm}N{1.35cm}N{0.95cm}N{1.35cm}N{1.35cm}N{1.35cm}N{1.35cm}@{}}
         \toprule
-        组别 & 模型 & 校准 & HN回流 & 损失函数 & \numhead{Spec@\\R99.5} & \numhead{Spec@\\R99.0} & \numhead{Prec@\\R99.0} & \numhead{PTR@\\R99.0} \\
+        组别 & 模型 & 校准 & HN回流 & 损失函数 & 后处理 & \numhead{Spec@\\R99.5} & \numhead{Spec@\\R99.0} & \numhead{Prec@\\R99.0} & \numhead{PTR@\\R99.0} \\
         \midrule
-        G0 & yolo11l-cls & 否 & 0\% & BCE & 0.4048 & 0.4643 & 0.9026 & 0.9167 \\
-        G1 & yolo11l-cls & 是 & 0\% & BCE & 0.4286 & 0.4762 & 0.9043 & 0.9127 \\
-        G2 & yolo11l-cls & 是 & 2\% & BCE & 0.5119 & 0.5476 & 0.9165 & 0.9028 \\
-        G5 & yolo11l-cls & 是 & 2\% & WBCE & 待填充 & 待填充 & 待填充 & 待填充 \\
-        G6 & yolo11l-cls & 是 & 2\% & Focal & 待填充 & 待填充 & 待填充 & 待填充 \\
-        G7 & yolo11l-cls & 是 & 2\% & BestLoss & 待填充 & 待填充 & 待填充 & 待填充 \\
-        G8 & yolo11l-cls & 是 & 2\% & \tbhead{BestLoss+\\LA} & 待填充 & 待填充 & 待填充 & 待填充 \\
+        G0 & yolo11l-cls & 否 & 0\% & BCE & P0 & 0.4048 & 0.4643 & 0.9026 & 0.9167 \\
+        G1 & yolo11l-cls & 是 & 0\% & BCE & P0 & 0.4286 & 0.4762 & 0.9043 & 0.9127 \\
+        G2 & yolo11l-cls & 是 & 2\% & BCE & P2 & 0.5119 & 0.5476 & 0.9165 & 0.9028 \\
+        G3 & yolo11l-cls & 是 & 2\% & Selective & P1 & 0.4881 & 0.5238 & 0.9125 & 0.9067 \\
+        G4 & yolo11l-cls & 是 & 2\% & HardMix & P0 & 0.5238 & 0.5833 & 0.9224 & 0.8948 \\
+        G5 & yolo11l-cls & 是 & 2\% & WBCE & P0 & 0.4881 & 0.5595 & 0.9183 & 0.8988 \\
+        G6 & yolo11l-cls & 是 & 2\% & Focal & P2 & 0.4405 & 0.5357 & 0.9143 & 0.9028 \\
+        G7 & yolo11l-cls & 是 & 2\% & DefectOS & P3 & 0.4048 & 0.5357 & 0.9143 & 0.9028 \\
         \bottomrule
     \end{tabular*}
 \end{table}
-\noindent\parbox{\textwidth}{其中，WBCE 表示 Weighted BCE，LA 表示 Light Attention；G0 与 G1 均采用统一 val-op 口径。}
+\noindent\parbox{\textwidth}{其中，后处理列表示各训练策略在共享 PTSG 协议下取得最优 operating point 的 gate 变体；HardMix 表示 hard positive + hard normal mining，DefectOS 表示 defect oversampling。}
 
 \begin{table}[H]
     \centering
     \caption{第一阶段第二模型跨容量对照结果表}
     \label{tab:stage1-second-model-results}
-    \begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}N{1.0cm}N{1.8cm}N{1.0cm}N{1.1cm}N{1.6cm}N{1.45cm}N{1.45cm}N{1.45cm}N{1.45cm}@{}}
+    \begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}N{1.8cm}N{1.8cm}N{1.0cm}N{1.1cm}N{1.6cm}N{1.45cm}N{1.45cm}N{1.45cm}N{1.45cm}@{}}
         \toprule
-        组别 & 模型 & 校准 & HN回流 & 损失函数 & \numhead{Spec@\\R99.5} & \numhead{Spec@\\R99.0} & \numhead{Prec@\\R99.0} & \numhead{PTR@\\R99.0} \\
+        对照项 & 模型 & 校准 & HN回流 & 损失函数 & \numhead{Spec@\\R99.5} & \numhead{Spec@\\R99.0} & \numhead{Prec@\\R99.0} & \numhead{PTR@\\R99.0} \\
         \midrule
-        G3 & yolo11s-cls & 是 & 0\% & BCE & 0.3571 & 0.4167 & 0.8949 & 0.9246 \\
-        G4 & yolo11s-cls & 是 & 2\% & BCE & 0.4167 & 0.4881 & 0.9063 & 0.9107 \\
+        第二模型基线 & yolo11s-cls & 是 & 0\% & BCE & 0.3571 & 0.4167 & 0.8949 & 0.9246 \\
+        第二模型+HN2\% & yolo11s-cls & 是 & 2\% & BCE & 0.4167 & 0.4881 & 0.9063 & 0.9107 \\
         \bottomrule
     \end{tabular*}
 \end{table}
-\noindent\parbox{\textwidth}{其中，G3 与 G4 为第二模型 \textrm{yolo11s-cls} 的自对照组，用于补充证明 HN 回流在非主模型容量下同样具有一定稳定收益。}
+\noindent\parbox{\textwidth}{其中，两行结果构成第二模型 \textrm{yolo11s-cls} 的自对照组，用于补充证明 HN 回流在非主模型容量下同样具有一定稳定收益；为避免与主线消融组混淆，此处不再复用 `G` 编号。}
+
+在完成 HN、PTSG、多原型 next-wave 与强 embedding 路线后，本文又进一步组织了统一的 max-filter 套件，用于测试第一阶段在现有协议下是否仍有剩余 headroom。该套件统一比较了 Selective / recall-constrained loss、HardMix、Weighted BCE、Focal BCE 以及 defect oversampling 五条训练侧增强路线，并在每条路线内部继续执行共享 PTSG 协议下的 `P0~P4` 后处理评估。结果显示，\textrm{HardMix} 是本轮综合最优的新实验：其在最严格的 `Spec@R99.5` 上与旧主线最优 `H0` 持平，均为 0.5238，但在次级排序指标上继续取得正向增益，即 `Spec@R99.0` 由 0.5595 提升至 0.5833，`Prec@R99.0` 由 0.9183 提升至 0.9224，同时 `PTR@R99.0` 由 0.8988 下降至 0.8948。若从计数角度观察，在 `R99.0` 下其 `TN/FN` 由 `47/4` 提升为 `49/4`，说明在保持漏检不恶化的前提下，又额外拦截了 2 张 normal。相比之下，Selective loss 虽然进一步降低了 `FN`，但牺牲了 `Specificity`；WBCE 未形成新的综合优势；Focal BCE 与 defect oversampling 的整体收益更弱。更重要的是，这轮结果还表明最佳后处理不再固定为 `P2`：在 HardMix 与 WBCE 路线上，最优 gate 已退回到 `P0 = calibrated p\_abnormal`。这说明 trust 并非在所有训练分布下都固定占优，而第一阶段当前更值钱的剩余增益，主要来自对 hardest positive 与 hardest normal 的更充分暴露。
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.92\textwidth]{stage1_maxfilter_suite_best_metrics.png}
+    \caption{第一阶段 max-filter 套件各实验最佳 operating point 指标对比图}
+    \label{fig:stage1-maxfilter-suite-best}
+\end{figure}
+
+图\ref{fig:stage1-maxfilter-suite-best} 中每个方法族的柱值均取自其在共享 PTSG 协议下的最佳后处理变体，而非固定使用同一个 `P` 编号。因此，该图反映的是“训练策略 + 最优 gate 决策”的综合表现，而不是单一后处理配置的平面比较。
 
 \section{第二阶段检测 baseline 对比实验}
 
@@ -2267,7 +2282,7 @@ SE-Net 是通道注意力的经典代表，其核心思想是通过全局信息�
 
 \section{本章小结}
 
-本章重新组织了全文实验矩阵：先验证第一阶段 gate 的容量选择与关键增强，再比较第二阶段 baseline，随后分别检验创新点一和创新点二，最后从系统级角度比较单阶段与两阶段路线。当前五个 \textrm{YOLO11-cls} 尺度的 source baseline 结果已经补齐，后续将继续把 detector、迁移和系统级实验结果按本章表格字段同步写入，以形成完整的实验闭环。
+本章重新组织了全文实验矩阵：先系统收束第一阶段 gate 的容量选择、calibration、HN 回流、PTSG 与 max-filter 套件，再比较第二阶段 baseline、创新点一消融、创新点二迁移以及系统级路线。就当前已完成的第一阶段结果而言，证据链已经基本闭合：统一 calibration 完成了主模型与第二模型的选型，`hn02` 证明 hardest normal 回流有效，`P2` 证明 prototype trust 对 safe-normal gate 具有阶段性价值，而多原型 trust 与强 embedding 没有继续形成稳定增益；随后 max-filter 套件进一步表明，最有效的剩余 headroom 来自 HardMix，而在该训练分布下最优 gate 也回归到 `P0 = calibrated p\_abnormal`。因此，当前第一阶段的最终候选可以正式收敛为“\textrm{yolo11l-cls + calibration + hn02 + HardMix}”，后续不再继续扩张 stage-1 的复杂度，而将研究主线转入 detector、迁移与系统级验证。
 
 \chapter{结论与展望}
 
@@ -2275,7 +2290,7 @@ SE-Net 是通道注意力的经典代表，其核心思想是通过全局信息�
 
 本文围绕地下排水管道 CCTV 图像缺陷检测中的小目标难识别、背景干扰强、正常样本占比高、目标域标注不足以及跨域泛化能力不足等问题展开研究，构建了面向地下排水管道智能巡检的检测方法与实验体系。论文的主要工作包括源域单标签分类数据集构建、目标域缺陷类别体系设计、高召回预筛与后级精检总体框架构建、改进 YOLOv11 检测模型设计以及源域预训练与目标域微调相结合的跨域迁移训练策略设计。
 
-从本文研究路线来看，后续实验预期将验证以下结论：其一，改进 YOLOv11 模型能够提升地下排水管道缺陷检测的精度、召回能力与复杂背景鲁棒性；其二，源域预训练与目标域微调相结合的跨域迁移策略能够在目标域标注不足条件下提升模型性能和收敛效率；其三，高召回预筛与后级精检相结合的系统设计能够在工程层面降低误报并提升整体运行效率。
+从当前已完成的实验链来看，第一阶段高召回 gate 的方法边界已经较为清晰：其核心作用并不是追求默认阈值下的总体分类分数，而是在固定高召回约束下尽可能拦截 normal。围绕这一目标，本文已经依次完成了统一 calibration、HN 回流、PTSG、多原型 next-wave、强 embedding 以及 max-filter 套件验证，最终使第一阶段收敛到“\textrm{yolo11l-cls + calibration + hn02 + HardMix}”，并以 `P0 = calibrated p\_abnormal` 作为最终 gate 决策。后续真正的研究增量，应集中于改进 YOLOv11 detector、跨域迁移策略以及系统级两阶段验证，而不再继续扩张 stage-1 的复杂度。
 
  \begin{table}[H]
     \centering
@@ -2285,7 +2300,7 @@ SE-Net 是通道注意力的经典代表，其核心思想是通过全局信息�
         \toprule
         \txhead{主要结论} & \txhead{对应章节} & \txhead{关键证据图表} & \txhead{工程意义} \\
         \midrule
-        第一阶段高召回 gate 有望在高召回约束下有效降低正常样本流量 & 第4章、第6章 & 第4章任务设计说明、表6.2及后续二分类 gate 实验结果 & 降低复核压力，减少后级计算负担 \\
+        第一阶段高召回 gate 已在高召回约束下稳定降低正常样本流量，并收敛至 hn02 + HardMix + P0 的最终候选 & 第4章、第6章 & 第4章任务设计说明、表\ref{tab:stage1-ablation-results}、表\ref{tab:stage1-second-model-results}及图\ref{fig:stage1-maxfilter-suite-best} & 降低复核压力，减少后级计算负担 \\
         改进 YOLOv11 能提升复杂背景与小目标场景下的检测表现 & 第5章、第6章 & 表5.1、图5.1--图5.3、表6.4、表6.5 & 提升目标域检测精度与稳定性 \\
         源域预训练与目标域微调的迁移策略能缓解目标域样本不足问题 & 第5章、第6章 & 图5.4、表5.2、表6.6 & 降低对大量框标注的依赖 \\
         两阶段系统整体优于单阶段直接检测的工程运行方式 & 第3章、第6章 & 图3.2、表6.7、图6.9 & 提升系统可部署性与误报控制能力 \\

@@ -165,3 +165,32 @@ Prune aggressively:
   - `Prec@R99.0`
   - `PTR@R99.0`
 - This suite is meant to answer whether stage-1 still has meaningful headroom under the current protocol, not to change the role definition of stage-1 itself.
+
+### D15. Stage-1 Max-Filter Suite Result
+
+- The full `max-filter suite` has completed.
+- Best new experiment is:
+  - `Hard positive + hard normal mining`
+- Under the shared ranking rule, it becomes the new stage-1 training-side best candidate because:
+  - `Spec@R99.5` ties the previous best `H0`
+  - `Spec@R99.0` improves from `0.559524 -> 0.583333`
+  - `Prec@R99.0` improves from `0.918322 -> 0.922395`
+  - `PTR@R99.0` improves from `0.89881 -> 0.894841`
+  - count-level change at `R99.0`: `47/4 -> 49/4`
+- The best post-hoc variant for this new winner is no longer `P2`, but:
+  - `P0 = calibrated p_abnormal`
+- Current stage-1 final candidate is therefore:
+  - `yolo11l-cls + calibration + hn02 + HardMix`
+  - best gate decision uses `P0`
+
+### D16. Stage-1 Formal Traceability Unification
+
+- Official six-class source wording is now unified to the uniform rerun raw materials:
+  - `yolo11x-cls` is the accuracy leader
+  - `yolo11n-cls` is the AUROC/AUPRC leader
+- The old `yolo11l-cls` six-class source leader wording is kept only as historical archive, not as current prose.
+- The calibration-table `0% HN` baseline and the later `hn00` baseline are now treated as two different chains:
+  - calibration table: model-selection baseline
+  - `hn00`: HN/PTSG/max-filter mainline baseline
+- These two baselines are not to be compared across tables item by item.
+- The second-model supplementary table no longer reuses `G` numbering, to avoid confusion with the mainline ablation table.

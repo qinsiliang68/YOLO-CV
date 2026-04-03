@@ -22,14 +22,19 @@
    - 正确事实：`yolo11s-cls` 才是默认阈值 leader，`accuracy=0.934722`，`macro_f1=0.876214`。
    - 修正动作：第 4 章、第 6 章相关 prose 已统一改为 `s` 默认阈值最强、`l` 高召回锚点最强、`m` 为 AUPRC 参考模型。
 
-2. 第 6 章六类 source baseline 表存在占位符
-   - 原问题：`表 6.2` 仍保留 `TODO`，与 raw materials 不一致。
-   - 修正动作：已替换为完整五模型 source baseline 数值。
-   - 当前正式口径：六类 source 分类视图下 `yolo11l-cls` 最强，`accuracy=0.7139`，`macro_f1=0.7151`，`AUPRC=0.9879`。
+2. 六类 source 排名口径已统一到统一重跑 raw materials
+   - 原问题：旧 prose 与统一重跑结果并存，source leader 出现两套口径。
+   - 修正动作：正文正式口径统一改为 `research/materials/run_master.csv` 中的 `yolo11*_cls6_train7200_uniform`。
+   - 当前正式口径：`yolo11x-cls` 为 accuracy leader（`0.6972`），`yolo11n-cls` 为 `AUROC/AUPRC` leader（`0.9496 / 0.9882`）。
 
 3. 第 6 章 calibration 只写了 `m/l`
    - 原问题：文稿只展示 `m/l` 两组 calibration，对五模型统一比较不完整。
    - 修正动作：已替换为五模型统一 Temperature Scaling 结果表，并改用五模型汇总图。
+
+4. `0% HN` baseline 用途已拆分
+   - 原问题：calibration 表中的 `yolo11l-cls + calibration + 0% HN` 与 HN/PTSG 主线中的 `hn00` 同时存在，容易被误读为同一条基线。
+   - 修正动作：正文统一说明 calibration 表仅服务于五模型选型，`hn00` 仅作为 HN/PTSG/max-filter 主线内部基线。
+   - 当前正式口径：两者都属于 `0% HN` 风格 baseline，但来自不同重算批次，不做跨表绝对值逐项比较。
 
 ## 原本正确、保持不变的内容
 - 二分类 gate baseline 表中的五模型数值与 raw materials 一致。
@@ -38,7 +43,8 @@
 - `yolo11m-cls` 作为 AUPRC 参考模型的结论保持不变。
 
 ## 当前第一阶段正式口径
-- 六类 source 分类 leader：`yolo11l-cls`
+- 六类 source 分类 accuracy leader：`yolo11x-cls`
+- 六类 source 分类 AUROC/AUPRC leader：`yolo11n-cls`
 - 默认阈值 gate leader：`yolo11s-cls`
 - 高召回锚点 gate leader：`yolo11l-cls`
 - AUPRC 参考模型：`yolo11m-cls`
@@ -46,4 +52,4 @@
 - unified calibration 后第二对照模型：`yolo11s-cls`
 
 ## 备注
-- 新一轮统一超参数六类 source 重跑已收到 `n/s/m/l`，但 `x` 尚未齐备，因此本次 stage-1 正式 source 排名仍以完整五模型旧 raw materials 为准。
+- 旧版 `yolo11l-cls` 六类 source raw-material 结论仅保留为历史档案，不再作为当前正文正式 leader 表述。
