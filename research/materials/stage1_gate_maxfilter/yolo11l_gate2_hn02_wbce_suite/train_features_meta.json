@@ -1,0 +1,18 @@
+{
+  "weights": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_gate_maxfilter\\yolo11l_gate2_hn02_wbce_suite\\weights\\best.pt",
+  "data_root": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\datasets\\stage1_gate_hn_backflow\\yolo11l_gate2_hn02",
+  "split": "train",
+  "rows": 6502,
+  "embedding_dim": 512,
+  "class_names": [
+    "Abnormal",
+    "Normal"
+  ],
+  "normal_class": "Normal",
+  "device": "0",
+  "imgsz": 640,
+  "batch": 2,
+  "chunk_size": 16,
+  "predict_seconds": 124.727747,
+  "embed_seconds": 123.026647
+}

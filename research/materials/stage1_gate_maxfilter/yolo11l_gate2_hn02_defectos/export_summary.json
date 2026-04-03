@@ -1,0 +1,23 @@
+{
+  "weights": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_gate_maxfilter\\yolo11l_gate2_hn02_defectos\\weights\\best.pt",
+  "data_root": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\datasets\\stage1_gate_maxfilter\\yolo11l_gate2_hn02_defectos",
+  "output_dir": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\research\\materials\\stage1_gate_maxfilter\\yolo11l_gate2_hn02_defectos",
+  "splits": [
+    {
+      "split": "train",
+      "csv_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\research\\materials\\stage1_gate_maxfilter\\yolo11l_gate2_hn02_defectos\\train_features.csv",
+      "npy_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\research\\materials\\stage1_gate_maxfilter\\yolo11l_gate2_hn02_defectos\\train_embeddings.npy",
+      "meta_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\research\\materials\\stage1_gate_maxfilter\\yolo11l_gate2_hn02_defectos\\train_features_meta.json",
+      "rows": 11902,
+      "embedding_dim": 512
+    },
+    {
+      "split": "val",
+      "csv_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\research\\materials\\stage1_gate_maxfilter\\yolo11l_gate2_hn02_defectos\\val_features.csv",
+      "npy_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\research\\materials\\stage1_gate_maxfilter\\yolo11l_gate2_hn02_defectos\\val_embeddings.npy",
+      "meta_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\research\\materials\\stage1_gate_maxfilter\\yolo11l_gate2_hn02_defectos\\val_features_meta.json",
+      "rows": 720,
+      "embedding_dim": 512
+    }
+  ]
+}

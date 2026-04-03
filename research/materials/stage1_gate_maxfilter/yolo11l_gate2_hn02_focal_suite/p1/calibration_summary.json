@@ -1,0 +1,8 @@
+{
+  "bins": 10,
+  "ece": 0.408438,
+  "mce": 0.443048,
+  "brier_score": 0.238188,
+  "positive_class": "abnormal",
+  "normal_class": "Normal"
+}

@@ -1,0 +1,14 @@
+{
+  "best_variant": "P2",
+  "description": "p_abnormal + trust",
+  "temperature": 1.98526164,
+  "alpha": 1.0,
+  "beta": 1.0,
+  "gamma": 0.5,
+  "ranking_rule": [
+    "Spec@R99.5 descending",
+    "Spec@R99.0 descending",
+    "Prec@R99.0 descending",
+    "PTR@R99.0 ascending"
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "weights": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\cls_gate_hn_sweep\\yolo11l_gate2_train7200_hn02\\weights\\best.pt",
+  "data_root": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\datasets\\sewerml_gate2_train7200",
+  "score_device": "0",
+  "total_train_images": 6480,
+  "normal_class": "Normal",
+  "normal_count": 1080,
+  "abnormal_count": 5400
+}
