@@ -2,6 +2,14 @@
 
 This directory stores pushed experiment materials for the YOLO11 classification baselines.
 
+Formal stage-1 thesis-facing materials now belong under:
+
+- `research/materials/stage1_formal/`
+
+Legacy exploratory materials should migrate into:
+
+- `research/archive/stage1_preformal_legacy/`
+
 Included:
 - `run_master.csv`: one-line summary per baseline run
 - `yolo11*_cls6_train7200/`: per-run raw materials and copied artifacts

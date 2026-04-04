@@ -158,6 +158,23 @@ Prune aggressively:
   - hard positive + hard normal mining
   - weighted BCE
   - focal BCE
+
+### D15. Stage-1 RCIS First-Wave
+
+- RCIS is currently positioned as a **first-pass information-driven resampling strategy**, not as a full dynamic sampling system.
+- The current stage-1 baseline before RCIS remains:
+  - `G4 current best HardMix + P0`
+- The default first-wave RCIS suite is fixed to:
+  - `R1`: boundary-only
+  - `R2`: rcis_core
+  - `R3`: rcis_full_exploratory
+- First-wave signal priority is fixed to:
+  - `boundary`
+  - `hardness`
+  - `redundancy`
+- `uncertainty` stays as a light auxiliary signal only.
+- `flip` is currently just a `P0/P2` proxy disagreement signal and is disabled in `rcis_core`.
+- `quality_penalty` is disabled in `rcis_core` because sewer low-quality frames may still be deployment-real hard samples.
   - defect oversampling
 - All candidates must still be judged by the shared stage-1 ranking rule:
   - `Spec@R99.5`
@@ -194,3 +211,33 @@ Prune aggressively:
   - `hn00`: HN/PTSG/max-filter mainline baseline
 - These two baselines are not to be compared across tables item by item.
 - The second-model supplementary table no longer reuses `G` numbering, to avoid confusion with the mainline ablation table.
+
+### D17. Stage-1 Formal Capacity Protocol
+
+- Stage-1 formal capacity scan is now governed by:
+  - `research/project_memory/stage1_formal_protocol.md`
+- Formal thesis-facing stage-1 materials must be written under:
+  - `research/materials/stage1_formal/`
+  - `research/results/stage1_formal/`
+- Binary gate formal selection no longer trusts trainer-internal `top1_acc` or `best.pt`.
+- Formal binary gate selection must come from checkpoint-level external summaries ranked by:
+  - `Spec@R99.5`
+  - `Spec@R99.0`
+  - `Prec@R99.0`
+  - `PTR@R99.0`
+- Capacity-scan stage runs to a fixed `200` epochs and does not use early stopping as the official stop rule.
+- All thesis-facing stage-1 formal classification runs use:
+  - `batch = 24`
+  - `save_period = 1`
+  - `patience = 0`
+
+### D18. Stage-1 Formal Dual-Machine Entrypoints
+
+- Computer A formal launcher:
+  - `uv run main_A.py`
+  - fixed task `stage1_formal_gate_capacity`
+- Computer B formal launcher:
+  - `uv run main_B.py`
+  - fixed task `stage1_formal_cls6_capacity`
+- Formal reruns archive previous run/material directories into repo-local recycle paths.
+- Formal resumes keep completed checkpoint summaries and backfill missing external evaluations before continuing training.

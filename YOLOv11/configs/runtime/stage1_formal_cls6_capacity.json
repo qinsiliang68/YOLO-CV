@@ -1,0 +1,33 @@
+{
+  "label": "formal cls6 capacity scan",
+  "task_kind": "cls6",
+  "models": [
+    "yolo11n-cls.pt",
+    "yolo11s-cls.pt",
+    "yolo11m-cls.pt",
+    "yolo11l-cls.pt",
+    "yolo11x-cls.pt"
+  ],
+  "source_dataset": "YOLOv11/datasets/sewerml_cls6_train7200",
+  "project": "YOLOv11/runs/stage1_formal_cls6",
+  "recycle_root": "_recycle_bin/stage1_formal_cls6",
+  "temp_config_dir": "$out/generated_configs/stage1_formal/cls6_capacity",
+  "materials_root": "research/materials/stage1_formal/cls6_capacity",
+  "results_dir": "research/results/stage1_formal/cls6_capacity",
+  "registry_csv": "research/materials/stage1_formal/manifests/formal_capacity_scan_registry.csv",
+  "epochs": 200,
+  "imgsz": 640,
+  "batch": 24,
+  "eval_batch": 24,
+  "workers": 4,
+  "device": "0",
+  "pretrained": true,
+  "patience": 0,
+  "optimizer": "auto",
+  "cache": false,
+  "save_period": 1,
+  "resume": true,
+  "seed": 20260330,
+  "normal_class": "Normal",
+  "run_name_suffix": "cls6_formal_200ep"
+}

@@ -1,0 +1,41 @@
+﻿{
+    "archived_at":  "2026-04-04 18:57:57",
+    "policy":  "non_destructive_move",
+    "entries":  [
+                    {
+                        "original_path":  "research/project_memory/stage1_memory.md",
+                        "archived_path":  "research/archive/stage1_preformal_legacy/general/stage1_memory.md",
+                        "reason":  "legacy_note"
+                    },
+                    {
+                        "original_path":  "research/project_memory/stage1_table_traceability.md",
+                        "archived_path":  "research/archive/stage1_preformal_legacy/general/stage1_table_traceability.md",
+                        "reason":  "preformal_doc"
+                    },
+                    {
+                        "original_path":  "research/project_memory/stage1_gate_theory_and_maxfilter_report.md",
+                        "archived_path":  "research/archive/stage1_preformal_legacy/gate_maxfilter/stage1_gate_theory_and_maxfilter_report.md",
+                        "reason":  "outdated_stage1_summary"
+                    },
+                    {
+                        "original_path":  "research/results/stage1_gate_maxfilter_suite/stage1_maxfilter_suite_report.md",
+                        "archived_path":  "research/archive/stage1_preformal_legacy/gate_maxfilter/stage1_maxfilter_suite_report.md",
+                        "reason":  "outdated_stage1_summary"
+                    },
+                    {
+                        "original_path":  "research/project_memory/stage1_rcis_design_note.md",
+                        "archived_path":  "research/archive/stage1_preformal_legacy/gate_rcis/stage1_rcis_design_note.md",
+                        "reason":  "legacy_note"
+                    },
+                    {
+                        "original_path":  "research/materials/stage1_gate_audit_report.md",
+                        "archived_path":  "research/archive/stage1_preformal_legacy/gate_capacity/stage1_gate_audit_report.md",
+                        "reason":  "preformal_doc"
+                    },
+                    {
+                        "original_path":  "research/materials/stage1_hn/stage1_hn_plan.md",
+                        "archived_path":  "research/archive/stage1_preformal_legacy/gate_hn/stage1_hn_plan.md",
+                        "reason":  "legacy_note"
+                    }
+                ]
+}

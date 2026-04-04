@@ -1,0 +1,8 @@
+{
+  "task": "TBD",
+  "dataset_root": "TBD",
+  "train_split": "train",
+  "val_split": "val",
+  "split_manifest": "research/materials/stage1_formal/manifests/val_cal_op_split.csv",
+  "notes": "Record the exact formal dataset root used for the capacity scan."
+}

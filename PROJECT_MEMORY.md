@@ -203,9 +203,9 @@ uv run main.py --task cls6_sweep --rerun
 任何接手本项目的人或 AI，优先看这几个文件：
 
 - `PROJECT_MEMORY.md`
-- `research/project_memory/stage1_memory.md`
+- `research/project_memory/stage1_formal_protocol.md`
 - `research/project_memory/decision_log.md`
-- `research/project_memory/stage1_table_traceability.md`
+- `research/archive/stage1_preformal_legacy/archive_manifest.md`
 - `research/training_machine_runbook.md`
 - `research/experiment_handoff_workflow.md`
 - `essay/docs/stage1_next_run_checklist.md`

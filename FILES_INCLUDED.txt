@@ -17,4 +17,4 @@ YOLOv11\configs\runtime\stage1_gate_l_rcis_noredundancy.json
 YOLOv11\configs\runtime\stage1_gate_rcis_suite.json
 scripts\stage1_build_rcis_dataset.py
 scripts\stage1_compare_rcis_suite.py
-research\project_memory\stage1_rcis_design_note.md
+research\archive\stage1_preformal_legacy\gate_rcis\stage1_rcis_design_note.md

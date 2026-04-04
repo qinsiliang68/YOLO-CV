@@ -18,11 +18,11 @@ and run outputs stay local.
 Before editing code, thesis, configs, or long-running experiment scripts, read:
 
 - `PROJECT_MEMORY.md`
-- `research/project_memory/stage1_memory.md`
+- `research/project_memory/stage1_formal_protocol.md`
 - `research/project_memory/decision_log.md`
-- `research/project_memory/stage1_gate_theory_and_maxfilter_report.md`
+- `research/archive/stage1_preformal_legacy/archive_manifest.md`
 
-These files store the current thesis direction, stage-1 stable conclusions, workflow rules, and long-term decisions.
+These files store the current thesis direction, the formal stage-1 rules, stable decisions, and the traceable location of archived legacy notes.
 
 ## Synchronization Workflow
 
@@ -49,13 +49,17 @@ Helper scripts:
 2. `.\scripts\setup.ps1 -Backend cu128`
 3. `.\scripts\check.ps1`
 4. Move datasets into the fixed local-only paths described in `research/training_machine_runbook.md`
-5. Run `uv run main.py`
+5. Run `uv run main_A.py` on the gate machine or `uv run main_B.py` on the cls6 machine
 
 ## Main Entry Points
 
-- Current root human-facing training entrypoint: `uv run main.py`
+- Computer A formal binary gate entrypoint: `uv run main_A.py`
+- Computer B formal cls6 entrypoint: `uv run main_B.py`
+- Explicit formal gate task: `uv run main.py --task stage1_formal_gate_capacity`
+- Explicit formal cls6 task: `uv run main.py --task stage1_formal_cls6_capacity`
+- Shared exploratory/default entrypoint: `uv run main.py`
 - Active task selector: `YOLOv11/configs/runtime/main_entry.json`
-- Current committed default task: `stage1_gate_maxfilter_suite`
+- Current committed exploratory default task: `stage1_gate_rcis_suite`
 - Run the uniform five-scale CLS6 sweep explicitly: `uv run main.py --task cls6_sweep --rerun`
 - Compatibility wrapper for the same sweep: `uv run main_cls6_sweep.py --rerun`
 - Source classification pretraining: `.\scripts\cls_pretrain.ps1`

@@ -31,14 +31,28 @@ This repository now uses a **single-branch workflow**.
 Before changing defaults or deciding the next experiment, read:
 
 - `PROJECT_MEMORY.md`
-- `research/project_memory/stage1_memory.md`
+- `research/project_memory/stage1_formal_protocol.md`
 - `research/project_memory/decision_log.md`
-- `research/project_memory/stage1_gate_theory_and_maxfilter_report.md`
+- `research/archive/stage1_preformal_legacy/archive_manifest.md`
 
 ### Sync code before training
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File .\scripts\git_sync_main.ps1
+```
+
+### Start formal capacity scan
+
+Computer A:
+
+```powershell
+uv run main_A.py
+```
+
+Computer B:
+
+```powershell
+uv run main_B.py
 ```
 
 ### Push results after training

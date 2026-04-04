@@ -50,6 +50,8 @@ BUILTIN_STAGE1_ENTRY_CONFIG = {
     "stage1_embed_supcon_config": r"YOLOv11\configs\runtime\stage1_gate_embedding_supcon_eval.json",
     "stage1_maxfilter_suite_config": r"YOLOv11\configs\runtime\stage1_gate_maxfilter_suite.json",
     "stage1_rcis_suite_config": r"YOLOv11\configs\runtime\stage1_gate_rcis_suite.json",
+    "stage1_formal_gate_capacity_config": r"YOLOv11\configs\runtime\stage1_formal_gate_capacity.json",
+    "stage1_formal_cls6_capacity_config": r"YOLOv11\configs\runtime\stage1_formal_cls6_capacity.json",
 }
 STAGE1_HN_TASKS = {
     "stage1_gate_l_hn": {
@@ -92,6 +94,8 @@ def parse_args() -> argparse.Namespace:
             "stage1_gate_embed_supcon",
             "stage1_gate_maxfilter_suite",
             "stage1_gate_rcis_suite",
+            "stage1_formal_gate_capacity",
+            "stage1_formal_cls6_capacity",
         ),
         default="auto",
         help="Task to run. 'auto' reads YOLOv11/configs/runtime/main_entry.json.",
@@ -934,6 +938,27 @@ def run_stage1_rcis_suite(entry_cfg: dict, dry_run: bool) -> None:
     run_python("scripts/stage1_compare_rcis_suite.py", compare_args, dry_run=dry_run)
 
 
+def run_stage1_formal_capacity(entry_cfg: dict, *, task_kind: str, dry_run: bool, rerun: bool) -> None:
+    key = "stage1_formal_gate_capacity_config" if task_kind == "gate" else "stage1_formal_cls6_capacity_config"
+    base_name = "stage1_formal_gate_capacity.json" if task_kind == "gate" else "stage1_formal_cls6_capacity.json"
+    config_path = resolve_path(
+        entry_cfg.get(key),
+        base=YOLOV11_ROOT / "configs" / "runtime" / base_name,
+    )
+    run_python(
+        "scripts/stage1_formal_capacity_suite.py",
+        [
+            "--config",
+            str(config_path),
+            "--task-kind",
+            task_kind,
+            *(["--dry-run"] if dry_run else []),
+            *(["--rerun"] if rerun else []),
+        ],
+        dry_run=False,
+    )
+
+
 def run_stage1_embed_supcon(entry_cfg: dict, dry_run: bool) -> None:
     config_path = resolve_path(
         entry_cfg.get("stage1_embed_supcon_config"),
@@ -1037,6 +1062,14 @@ def main() -> None:
 
     if task_name == "stage1_gate_rcis_suite":
         run_stage1_rcis_suite(entry_cfg, dry_run=args.dry_run)
+        return
+
+    if task_name == "stage1_formal_gate_capacity":
+        run_stage1_formal_capacity(entry_cfg, task_kind="gate", dry_run=args.dry_run, rerun=args.rerun)
+        return
+
+    if task_name == "stage1_formal_cls6_capacity":
+        run_stage1_formal_capacity(entry_cfg, task_kind="cls6", dry_run=args.dry_run, rerun=args.rerun)
         return
 
     run_stage1_hn(task_name, entry_cfg, dry_run=args.dry_run)

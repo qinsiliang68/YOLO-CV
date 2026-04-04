@@ -12,28 +12,35 @@ powershell -ExecutionPolicy Bypass -File .\scripts\git_sync_main.ps1
 .\scripts\check.ps1
 ```
 
-Current root training entrypoint:
+Current formal dual-machine entrypoints:
 
 ```powershell
-uv run main.py
+uv run main_A.py
+uv run main_B.py
 ```
 
-`main.py` is the unified human-facing entrypoint.
-The active task is controlled by:
+`main_A.py` launches the formal direct binary gate capacity scan.
+`main_B.py` launches the formal six-class source capacity scan.
+
+`main.py` remains the shared explicit-task entrypoint.
+The active task selector is controlled by:
 
 - `YOLOv11/configs/runtime/main_entry.json`
 
-At the current stage, the committed default task is:
+The formal launch pair is:
 
-- `stage1_gate_maxfilter_suite`
+- `uv run main_A.py`
+  - `stage1_formal_gate_capacity`
+- `uv run main_B.py`
+  - `stage1_formal_cls6_capacity`
 
-That means `uv run main.py` currently performs:
+Both formal tasks:
 
-1. score all train-side gate samples with the current `yolo11l + hn02` miner
-2. build the hard-mix stage-1 dataset
-3. build the defect-oversample stage-1 dataset
-4. sequentially train the max-filter suite experiments
-5. after each run, export features, rebuild prototype banks, rerun PTSG evaluation, and summarize the suite
+- use `batch=24`
+- run fixed `epochs=200`
+- save every epoch checkpoint
+- ignore trainer `top1/acc` for formal selection
+- use external summaries to choose the final formal best checkpoint
 
 `main_cls6_sweep.py` is kept only as a compatibility wrapper for the six-class sweep.
 
@@ -272,6 +279,6 @@ Pseudo-box baseline alternative:
 - The training machine should not edit thesis files or repository structure.
 - Before changing task direction or script defaults, read:
 - `PROJECT_MEMORY.md`
-- `research/project_memory/stage1_memory.md`
+- `research/project_memory/stage1_formal_protocol.md`
 - `research/project_memory/decision_log.md`
-- `research/project_memory/stage1_gate_theory_and_maxfilter_report.md`
+- `research/archive/stage1_preformal_legacy/archive_manifest.md`

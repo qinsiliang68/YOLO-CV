@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import csv
 import json
+import os
+import shutil
 import time
 from pathlib import Path
 from typing import Any
@@ -34,6 +36,21 @@ EPOCH_METRIC_FIELDS = [
     "is_best_epoch",
 ]
 
+CHECKPOINT_INDEX_FIELDS = [
+    "epoch",
+    "checkpoint_file",
+    "checkpoint_path",
+    "formal_checkpoint_file",
+    "formal_checkpoint_path",
+    "last_path",
+    "best_path",
+    "checkpoint_exists",
+    "formal_checkpoint_exists",
+    "best_exists",
+    "save_period",
+    "is_best_fitness_epoch",
+]
+
 
 def _to_float(value: Any) -> float | None:
     if value is None:
@@ -54,6 +71,27 @@ def _append_row(path: Path, row: dict[str, Any]) -> None:
         writer.writerow(row)
 
 
+def _append_checkpoint_row(path: Path, row: dict[str, Any]) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    write_header = not path.exists()
+    with path.open("a", encoding="utf-8", newline="") as handle:
+        writer = csv.DictWriter(handle, fieldnames=CHECKPOINT_INDEX_FIELDS)
+        if write_header:
+            writer.writeheader()
+        writer.writerow(row)
+
+
+def _materialize_checkpoint_alias(src: Path, dst: Path) -> None:
+    if not src.exists() or dst.exists():
+        return
+    dst.parent.mkdir(parents=True, exist_ok=True)
+    try:
+        os.link(src, dst)
+        return
+    except OSError:
+        shutil.copy2(src, dst)
+
+
 def _label_loss(trainer: Any) -> dict[str, Any]:
     with torch.no_grad():
         try:
@@ -68,6 +106,26 @@ def register_classification_material_callbacks(model: Any) -> None:
         trainer._raw_epoch_metrics_last_epoch = 0
         trainer._raw_epoch_metrics_peak_reserved_gb = 0.0
         trainer._raw_epoch_metrics_peak_allocated_gb = 0.0
+        trainer._checkpoint_index_path = Path(trainer.save_dir) / "all_checkpoints_index.csv"
+        trainer._checkpoint_index_last_epoch = 0
+        if trainer._raw_epoch_metrics_path.exists():
+            try:
+                with trainer._raw_epoch_metrics_path.open("r", encoding="utf-8", newline="") as handle:
+                    rows = list(csv.DictReader(handle))
+                if rows:
+                    trainer._raw_epoch_metrics_last_epoch = max(int(float(row["epoch"])) for row in rows if row.get("epoch"))
+            except Exception:
+                trainer._raw_epoch_metrics_last_epoch = 0
+        if trainer._checkpoint_index_path.exists():
+            try:
+                with trainer._checkpoint_index_path.open("r", encoding="utf-8", newline="") as handle:
+                    rows = list(csv.DictReader(handle))
+                if rows:
+                    trainer._checkpoint_index_last_epoch = max(
+                        int(float(row["epoch"])) for row in rows if row.get("epoch")
+                    )
+            except Exception:
+                trainer._checkpoint_index_last_epoch = 0
 
     def on_train_epoch_start(trainer: Any) -> None:
         if torch.cuda.is_available():
@@ -140,6 +198,42 @@ def register_classification_material_callbacks(model: Any) -> None:
         _append_row(Path(trainer._raw_epoch_metrics_path), row)
         trainer._raw_epoch_metrics_last_epoch = epoch
 
+    def on_model_save(trainer: Any) -> None:
+        epoch = int(getattr(trainer, "epoch", 0)) + 1
+        last_epoch = int(getattr(trainer, "_checkpoint_index_last_epoch", 0))
+        if epoch <= last_epoch:
+            return
+
+        checkpoint_file = ""
+        checkpoint_path = None
+        save_period = int(getattr(trainer, "save_period", -1) or -1)
+        if save_period > 0 and (int(getattr(trainer, "epoch", 0)) % save_period == 0):
+            checkpoint_path = Path(trainer.wdir) / f"epoch{int(getattr(trainer, 'epoch', 0))}.pt"
+            checkpoint_file = checkpoint_path.name
+        formal_checkpoint_path = None
+        if checkpoint_path is not None and checkpoint_path.exists():
+            formal_checkpoint_path = Path(trainer.wdir) / f"epoch_{epoch:03d}.pt"
+            _materialize_checkpoint_alias(checkpoint_path, formal_checkpoint_path)
+
+        best_path = Path(trainer.best)
+        last_path = Path(trainer.last)
+        row = {
+            "epoch": epoch,
+            "checkpoint_file": checkpoint_file,
+            "checkpoint_path": "" if checkpoint_path is None else str(checkpoint_path),
+            "formal_checkpoint_file": "" if formal_checkpoint_path is None else formal_checkpoint_path.name,
+            "formal_checkpoint_path": "" if formal_checkpoint_path is None else str(formal_checkpoint_path),
+            "last_path": str(last_path),
+            "best_path": str(best_path),
+            "checkpoint_exists": int(checkpoint_path is not None and checkpoint_path.exists()),
+            "formal_checkpoint_exists": int(formal_checkpoint_path is not None and formal_checkpoint_path.exists()),
+            "best_exists": int(best_path.exists()),
+            "save_period": save_period,
+            "is_best_fitness_epoch": int(bool(best_path.exists() and getattr(trainer, "best_fitness", None) == getattr(trainer, "fitness", None))),
+        }
+        _append_checkpoint_row(Path(trainer._checkpoint_index_path), row)
+        trainer._checkpoint_index_last_epoch = epoch
+
     def on_train_end(trainer: Any) -> None:
         output_path = Path(trainer.save_dir) / "training_runtime.json"
         payload = {
@@ -156,4 +250,5 @@ def register_classification_material_callbacks(model: Any) -> None:
     model.add_callback("on_train_start", on_train_start)
     model.add_callback("on_train_epoch_start", on_train_epoch_start)
     model.add_callback("on_fit_epoch_end", on_fit_epoch_end)
+    model.add_callback("on_model_save", on_model_save)
     model.add_callback("on_train_end", on_train_end)
