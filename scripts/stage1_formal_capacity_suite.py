@@ -99,6 +99,46 @@ def highest_saved_epoch(run_dir: Path) -> int:
     return max(valid) if valid else 0
 
 
+def find_auto_increment_candidate(run_dir: Path) -> Path | None:
+    base_name = run_dir.name
+    candidates = [
+        path
+        for path in run_dir.parent.glob(f"{base_name}*")
+        if path.is_dir() and path.name != base_name and re.fullmatch(rf"{re.escape(base_name)}\d+", path.name)
+    ]
+    if not candidates:
+        return None
+    ranked = sorted(candidates, key=lambda path: (highest_saved_epoch(path), path.name), reverse=True)
+    return ranked[0]
+
+
+def looks_like_log_stub(run_dir: Path) -> bool:
+    if not run_dir.exists():
+        return True
+    allowed = {"stdout.log", "stderr.log"}
+    children = [path.name for path in run_dir.iterdir()]
+    return all(name in allowed for name in children)
+
+
+def normalize_run_dir(run_dir: Path, dry_run: bool) -> None:
+    if highest_saved_epoch(run_dir) > 0:
+        return
+    candidate = find_auto_increment_candidate(run_dir)
+    if candidate is None or not looks_like_log_stub(run_dir):
+        return
+    print_step("repair", f"{candidate} -> {run_dir}")
+    if dry_run:
+        return
+    for log_name in ("stdout.log", "stderr.log"):
+        stub_log = run_dir / log_name
+        candidate_log = candidate / log_name
+        if stub_log.exists() and not candidate_log.exists():
+            shutil.move(str(stub_log), str(candidate_log))
+    if run_dir.exists():
+        shutil.rmtree(run_dir)
+    shutil.move(str(candidate), str(run_dir))
+
+
 def build_names(task_kind: str, model_name: str) -> tuple[str, str]:
     stem = model_stem(model_name)
     if task_kind == "gate":
@@ -127,6 +167,7 @@ def build_train_config(
         "workers": int(suite_cfg.get("workers", 4) or 4),
         "project": str(project_dir),
         "name": run_name,
+        "exist_ok": True,
         "pretrained": bool(suite_cfg.get("pretrained", True)),
         "patience": int(suite_cfg.get("patience", 0) or 0),
         "optimizer": resolve_str(suite_cfg.get("optimizer"), "auto"),
@@ -336,6 +377,8 @@ def run_suite(args: argparse.Namespace) -> None:
         if args.rerun:
             archive_existing_path(run_dir, recycle_root / "runs", dry_run=args.dry_run)
             archive_existing_path(summary_dir, recycle_root / "materials", dry_run=args.dry_run)
+
+        normalize_run_dir(run_dir, dry_run=args.dry_run)
 
         maybe_prepare_run(
             task_kind=task_kind,

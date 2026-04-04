@@ -86,6 +86,7 @@ def build_overrides(cfg: dict) -> tuple[str, dict]:
             "workers": cfg.get("workers"),
             "project": resolve_relative_path(cfg.get("project"), YOLOV11_ROOT),
             "name": cfg.get("name"),
+            "exist_ok": cfg.get("exist_ok"),
             "pretrained": cfg.get("pretrained"),
             "patience": cfg.get("patience"),
             "optimizer": cfg.get("optimizer"),
@@ -108,6 +109,8 @@ def main() -> None:
         print(json.dumps({"model": model, "overrides": overrides, "custom_loss_cfg": custom_loss_cfg}, indent=2, ensure_ascii=False))
         return
 
+    original_stdout = sys.stdout
+    original_stderr = sys.stderr
     stdout_tee = TeeStream(sys.stdout, args.stdout_log)
     stderr_tee = TeeStream(sys.stderr, args.stderr_log)
     sys.stdout = stdout_tee
@@ -122,6 +125,8 @@ def main() -> None:
         register_classification_material_callbacks(trainer)
         trainer.train()
     finally:
+        sys.stdout = original_stdout
+        sys.stderr = original_stderr
         stdout_tee.flush()
         stderr_tee.flush()
         stdout_tee.close()

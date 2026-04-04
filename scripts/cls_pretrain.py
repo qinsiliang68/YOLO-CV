@@ -75,6 +75,7 @@ def build_train_kwargs(args: argparse.Namespace) -> tuple[str, dict]:
             "workers": cfg.get("workers"),
             "project": resolve_relative_path(project_value, YOLOV11_ROOT),
             "name": args.name or cfg.get("name"),
+            "exist_ok": cfg.get("exist_ok"),
             "pretrained": cfg.get("pretrained"),
             "patience": cfg.get("patience"),
             "optimizer": cfg.get("optimizer"),
@@ -95,6 +96,8 @@ def main() -> None:
         print(json.dumps({"model": model, "train_kwargs": train_kwargs}, indent=2, ensure_ascii=False))
         return
 
+    original_stdout = sys.stdout
+    original_stderr = sys.stderr
     stdout_tee = TeeStream(sys.stdout, args.stdout_log)
     stderr_tee = TeeStream(sys.stderr, args.stderr_log)
     sys.stdout = stdout_tee
@@ -107,6 +110,8 @@ def main() -> None:
     try:
         trainer.train(**train_kwargs)
     finally:
+        sys.stdout = original_stdout
+        sys.stderr = original_stderr
         stdout_tee.flush()
         stderr_tee.flush()
         stdout_tee.close()
