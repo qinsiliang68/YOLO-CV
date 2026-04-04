@@ -40,7 +40,7 @@ BUILTIN_DEFAULT_CONFIG = {
     "run_name_suffix": "cls6_train7200_uniform",
 }
 BUILTIN_STAGE1_ENTRY_CONFIG = {
-    "task": "stage1_gate_maxfilter_suite",
+    "task": "stage1_gate_rcis_suite",
     "score_device": "0",
     "top_k": 22,
     "score_batch": 1,
@@ -49,6 +49,7 @@ BUILTIN_STAGE1_ENTRY_CONFIG = {
     "ptsg_nextwave_config": r"YOLOv11\configs\runtime\stage1_gate_ptsg_nextwave.json",
     "stage1_embed_supcon_config": r"YOLOv11\configs\runtime\stage1_gate_embedding_supcon_eval.json",
     "stage1_maxfilter_suite_config": r"YOLOv11\configs\runtime\stage1_gate_maxfilter_suite.json",
+    "stage1_rcis_suite_config": r"YOLOv11\configs\runtime\stage1_gate_rcis_suite.json",
 }
 STAGE1_HN_TASKS = {
     "stage1_gate_l_hn": {
@@ -90,6 +91,7 @@ def parse_args() -> argparse.Namespace:
             "stage1_gate_ptsg_nextwave",
             "stage1_gate_embed_supcon",
             "stage1_gate_maxfilter_suite",
+            "stage1_gate_rcis_suite",
         ),
         default="auto",
         help="Task to run. 'auto' reads YOLOv11/configs/runtime/main_entry.json.",
@@ -741,6 +743,197 @@ def run_stage1_maxfilter_suite(entry_cfg: dict, dry_run: bool) -> None:
     run_python("scripts/stage1_compare_maxfilter_suite.py", compare_args, dry_run=dry_run)
 
 
+def run_stage1_rcis_suite(entry_cfg: dict, dry_run: bool) -> None:
+    config_path = resolve_path(
+        entry_cfg.get("stage1_rcis_suite_config"),
+        base=YOLOV11_ROOT / "configs" / "runtime" / "stage1_gate_rcis_suite.json",
+    )
+    suite_cfg = load_json(config_path)
+    print_step("task", f"stage1_gate_rcis_suite ({resolve_str(suite_cfg.get('label'), 'stage1 RCIS suite')})")
+
+    source_dataset = resolve_path(
+        suite_cfg.get("source_dataset"),
+        base=YOLOV11_ROOT / "datasets" / "sewerml_gate2_train7200",
+    )
+    miner_weights = resolve_path(
+        suite_cfg.get("miner_weights"),
+        base=YOLOV11_ROOT / "runs" / "stage1_gate_maxfilter" / "yolo11l_gate2_hn02_hardmix" / "weights" / "best.pt",
+    )
+    baseline_dir = resolve_path(
+        suite_cfg.get("baseline_dir"),
+        base=REPO_ROOT / "research" / "materials" / "stage1_gate_maxfilter" / "yolo11l_gate2_hn02_hardmix",
+    )
+    scoring_output_dir = resolve_path(
+        suite_cfg.get("scoring_output_dir"),
+        base=REPO_ROOT / "research" / "materials" / "stage1_gate_rcis" / "miner_yolo11l_gate2_hn02_hardmix",
+    )
+    feature_output_dir = resolve_path(
+        suite_cfg.get("feature_output_dir"),
+        base=REPO_ROOT / "research" / "materials" / "stage1_gate_rcis" / "source_features_yolo11l_gate2_hn02_hardmix",
+    )
+    results_dir = resolve_path(
+        suite_cfg.get("results_dir"),
+        base=REPO_ROOT / "research" / "results" / "stage1_gate_rcis_suite",
+    )
+    recycle_root = resolve_path(
+        suite_cfg.get("recycle_root"),
+        base=REPO_ROOT / "_recycle_bin" / "stage1_gate_rcis",
+    )
+
+    normal_class = resolve_str(suite_cfg.get("normal_class"), "Normal")
+    device = resolve_str(suite_cfg.get("device"), "0")
+    imgsz = int(suite_cfg.get("imgsz", 640) or 640)
+    batch = int(suite_cfg.get("batch", 2) or 2)
+    chunk_size = int(suite_cfg.get("chunk_size", 16) or 16)
+    score_batch = int(suite_cfg.get("score_batch", 1) or 1)
+    score_chunk_size = int(suite_cfg.get("score_chunk_size", 32) or 32)
+    alpha = float(suite_cfg.get("alpha", 1.0) or 1.0)
+    beta = float(suite_cfg.get("beta", 1.0) or 1.0)
+    gamma = float(suite_cfg.get("gamma", 0.5) or 0.5)
+    hn_manifest = resolve_str(suite_cfg.get("hn_manifest"), "")
+    hn_weight = float(suite_cfg.get("hn_weight", 3.0) or 3.0)
+    reference_variant = resolve_str(suite_cfg.get("reference_variant"), "P0")
+
+    run_python(
+        "scripts/stage1_score_train_samples.py",
+        [
+            "--weights",
+            str(miner_weights),
+            "--data-root",
+            str(source_dataset),
+            "--output-dir",
+            str(scoring_output_dir),
+            "--device",
+            device,
+            "--imgsz",
+            str(imgsz),
+            "--batch",
+            str(score_batch),
+            "--chunk-size",
+            str(score_chunk_size),
+            "--normal-class",
+            normal_class,
+        ],
+        dry_run=dry_run,
+    )
+    run_python(
+        "scripts/stage1_export_gate_features.py",
+        [
+            "--weights",
+            str(miner_weights),
+            "--data-root",
+            str(source_dataset),
+            "--output-dir",
+            str(feature_output_dir),
+            "--device",
+            device,
+            "--imgsz",
+            str(imgsz),
+            "--batch",
+            str(batch),
+            "--chunk-size",
+            str(chunk_size),
+            "--normal-class",
+            normal_class,
+        ],
+        dry_run=dry_run,
+    )
+
+    compare_args = [
+        "--baseline-dir",
+        str(baseline_dir),
+        "--baseline-label",
+        "G4 current best HardMix + P0",
+        "--output-dir",
+        str(results_dir),
+    ]
+
+    for experiment in suite_cfg.get("experiments", []):
+        dataset_root = resolve_path(
+            experiment.get("dataset"),
+            base=YOLOV11_ROOT / "datasets" / "stage1_gate_rcis" / resolve_str(experiment.get("name"), "rcis"),
+        )
+        materials_dir = resolve_path(
+            experiment.get("materials_dir"),
+            base=REPO_ROOT / "research" / "materials" / "stage1_gate_rcis" / resolve_str(experiment.get("name"), "rcis"),
+        )
+        train_config_path = resolve_path(
+            experiment.get("train_config"),
+            base=YOLOV11_ROOT / "configs" / "runtime" / "stage1_gate_l_rcis_full.json",
+        )
+        train_cfg = load_json(train_config_path)
+        run_project = resolve_path(train_cfg.get("project"), base=YOLOV11_ROOT / "runs" / "stage1_gate_rcis")
+        run_name = resolve_str(train_cfg.get("name"), train_config_path.stem)
+        run_dir = run_project / run_name
+        weights_path = run_dir / "weights" / "best.pt"
+        rcis_args = experiment.get("rcis_args") or {}
+
+        build_args = [
+            "--source-dataset",
+            str(source_dataset),
+            "--scores-csv",
+            str(scoring_output_dir / "train_sample_scores.csv"),
+            "--train-features-csv",
+            str(feature_output_dir / "train_features.csv"),
+            "--train-embeddings-npy",
+            str(feature_output_dir / "train_embeddings.npy"),
+            "--reference-material-dir",
+            str(baseline_dir),
+            "--output-dataset",
+            str(dataset_root),
+            "--normal-class",
+            normal_class,
+            "--reference-variant",
+            reference_variant,
+            "--normal-clusters",
+            str(int(suite_cfg.get("normal_clusters", 24) or 24)),
+            "--abnormal-clusters",
+            str(int(suite_cfg.get("abnormal_clusters", 12) or 12)),
+            "--cluster-iter",
+            str(int(suite_cfg.get("cluster_iter", 30) or 30)),
+            "--sigmoid-gain",
+            str(float(suite_cfg.get("sigmoid_gain", 4.0) or 4.0)),
+            "--normal-wmin",
+            str(float(suite_cfg.get("normal_wmin", 0.25) or 0.25)),
+            "--normal-wmax",
+            str(float(suite_cfg.get("normal_wmax", 3.0) or 3.0)),
+            "--abnormal-wmin",
+            str(float(suite_cfg.get("abnormal_wmin", 1.0) or 1.0)),
+            "--abnormal-wmax",
+            str(float(suite_cfg.get("abnormal_wmax", 4.0) or 4.0)),
+            "--link-mode",
+            resolve_str(suite_cfg.get("link_mode"), "hardlink"),
+            "--seed",
+            str(int(suite_cfg.get("seed", 20260330) or 20260330)),
+        ]
+        for key, value in rcis_args.items():
+            build_args.extend([f"--{str(key).replace('_', '-')}", str(value)])
+
+        run_python("scripts/stage1_build_rcis_dataset.py", build_args, dry_run=dry_run)
+        archive_existing_run(run_dir, recycle_root, dry_run=dry_run)
+        run_python("scripts/stage1_gate_train.py", ["--config", str(train_config_path)], dry_run=dry_run)
+        run_stage1_ptsg_material_eval(
+            weights_path=weights_path,
+            data_root=dataset_root,
+            output_dir=materials_dir,
+            split_csv=resolve_str(suite_cfg.get("split_csv"), ""),
+            normal_class=normal_class,
+            device=device,
+            imgsz=imgsz,
+            batch=batch,
+            chunk_size=chunk_size,
+            alpha=alpha,
+            beta=beta,
+            gamma=gamma,
+            hn_manifest=hn_manifest,
+            hn_weight=hn_weight,
+            dry_run=dry_run,
+        )
+        compare_args.extend(["--experiment", f"{resolve_str(experiment.get('label'), run_name)}::{materials_dir}"])
+
+    run_python("scripts/stage1_compare_rcis_suite.py", compare_args, dry_run=dry_run)
+
+
 def run_stage1_embed_supcon(entry_cfg: dict, dry_run: bool) -> None:
     config_path = resolve_path(
         entry_cfg.get("stage1_embed_supcon_config"),
@@ -840,6 +1033,10 @@ def main() -> None:
 
     if task_name == "stage1_gate_maxfilter_suite":
         run_stage1_maxfilter_suite(entry_cfg, dry_run=args.dry_run)
+        return
+
+    if task_name == "stage1_gate_rcis_suite":
+        run_stage1_rcis_suite(entry_cfg, dry_run=args.dry_run)
         return
 
     run_stage1_hn(task_name, entry_cfg, dry_run=args.dry_run)

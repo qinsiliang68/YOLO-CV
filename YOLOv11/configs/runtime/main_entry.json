@@ -1,5 +1,5 @@
 {
-  "task": "stage1_gate_maxfilter_suite",
+  "task": "stage1_gate_rcis_suite",
   "score_device": "0",
   "top_k": 22,
   "score_batch": 1,
@@ -8,5 +8,6 @@
   "ptsg_nextwave_config": "YOLOv11/configs/runtime/stage1_gate_ptsg_nextwave.json",
   "stage1_embed_supcon_config": "YOLOv11/configs/runtime/stage1_gate_embedding_supcon_eval.json",
   "stage1_maxfilter_suite_config": "YOLOv11/configs/runtime/stage1_gate_maxfilter_suite.json",
+  "stage1_rcis_suite_config": "YOLOv11/configs/runtime/stage1_gate_rcis_suite.json",
   "cls6_sweep_config": "YOLOv11/configs/runtime/cls_cls6_sweep.json"
 }
