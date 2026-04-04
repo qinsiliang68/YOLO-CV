@@ -48,8 +48,24 @@
       }
     },
     {
+      "name": "rcis_core",
+      "label": "RCIS core linear information sampling",
+      "train_config": "YOLOv11/configs/runtime/stage1_gate_l_rcis_core.json",
+      "dataset": "C:/Users/ASUS/Desktop/YOLOv11/YOLO-CV/YOLOv11/datasets/stage1_gate_rcis/yolo11l_gate2_hn02_rcis_core",
+      "materials_dir": "C:/Users/ASUS/Desktop/YOLOv11/YOLO-CV/research/materials/stage1_gate_rcis/yolo11l_gate2_hn02_rcis_core",
+      "rcis_args": {
+        "alpha_boundary": 1.0,
+        "beta_uncertainty": 0.2,
+        "gamma_flip": 0.0,
+        "delta_rarity": 0.4,
+        "eta_hardness": 0.9,
+        "mu_redundancy": 0.8,
+        "nu_quality": 0.0
+      }
+    },
+    {
       "name": "rcis_full",
-      "label": "RCIS full linear information sampling",
+      "label": "RCIS full exploratory information sampling",
       "train_config": "YOLOv11/configs/runtime/stage1_gate_l_rcis_full.json",
       "dataset": "C:/Users/ASUS/Desktop/YOLOv11/YOLO-CV/YOLOv11/datasets/stage1_gate_rcis/yolo11l_gate2_hn02_rcis_full",
       "materials_dir": "C:/Users/ASUS/Desktop/YOLOv11/YOLO-CV/research/materials/stage1_gate_rcis/yolo11l_gate2_hn02_rcis_full",
@@ -60,22 +76,6 @@
         "delta_rarity": 0.6,
         "eta_hardness": 0.8,
         "mu_redundancy": 0.7,
-        "nu_quality": 0.4
-      }
-    },
-    {
-      "name": "rcis_noredundancy",
-      "label": "RCIS without redundancy penalty",
-      "train_config": "YOLOv11/configs/runtime/stage1_gate_l_rcis_noredundancy.json",
-      "dataset": "C:/Users/ASUS/Desktop/YOLOv11/YOLO-CV/YOLOv11/datasets/stage1_gate_rcis/yolo11l_gate2_hn02_rcis_noredundancy",
-      "materials_dir": "C:/Users/ASUS/Desktop/YOLOv11/YOLO-CV/research/materials/stage1_gate_rcis/yolo11l_gate2_hn02_rcis_noredundancy",
-      "rcis_args": {
-        "alpha_boundary": 1.0,
-        "beta_uncertainty": 0.4,
-        "gamma_flip": 0.8,
-        "delta_rarity": 0.6,
-        "eta_hardness": 0.8,
-        "mu_redundancy": 0.0,
         "nu_quality": 0.4
       }
     }

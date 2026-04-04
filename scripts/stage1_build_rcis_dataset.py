@@ -29,12 +29,12 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--normal-class", default="Normal", help="Class treated as normal.")
     parser.add_argument("--reference-variant", default="auto", help="Threshold source variant, e.g. P0/P2 or auto.")
     parser.add_argument("--alpha-boundary", type=float, default=1.0, help="Boundary-score coefficient.")
-    parser.add_argument("--beta-uncertainty", type=float, default=0.4, help="Entropy / uncertainty coefficient.")
-    parser.add_argument("--gamma-flip", type=float, default=0.8, help="P0/P2 disagreement coefficient.")
-    parser.add_argument("--delta-rarity", type=float, default=0.6, help="Rarity coefficient.")
-    parser.add_argument("--eta-hardness", type=float, default=0.8, help="Hard-type boost coefficient.")
-    parser.add_argument("--mu-redundancy", type=float, default=0.7, help="Redundancy penalty coefficient.")
-    parser.add_argument("--nu-quality", type=float, default=0.4, help="Quality penalty coefficient.")
+    parser.add_argument("--beta-uncertainty", type=float, default=0.2, help="Entropy / uncertainty coefficient.")
+    parser.add_argument("--gamma-flip", type=float, default=0.0, help="P0/P2 disagreement coefficient.")
+    parser.add_argument("--delta-rarity", type=float, default=0.4, help="Rarity coefficient.")
+    parser.add_argument("--eta-hardness", type=float, default=0.9, help="Hard-type boost coefficient.")
+    parser.add_argument("--mu-redundancy", type=float, default=0.8, help="Redundancy penalty coefficient.")
+    parser.add_argument("--nu-quality", type=float, default=0.0, help="Quality penalty coefficient.")
     parser.add_argument("--boundary-band", type=float, default=0.05, help="Operating-point boundary bandwidth.")
     parser.add_argument("--gap-scale", type=float, default=0.08, help="Scale for P0/P2 disagreement normalization.")
     parser.add_argument("--normal-clusters", type=int, default=24, help="Normal-cluster count for rarity / redundancy.")
@@ -231,6 +231,15 @@ def main() -> None:
     feature_rows = load_rows(Path(args.train_features_csv).resolve())
     embeddings = np.load(Path(args.train_embeddings_npy).resolve()).astype(np.float32)
     reference_cfg = load_reference_config(reference_dir, args.reference_variant)
+    signal_flags = {
+        "boundary_enabled": bool(args.alpha_boundary > 0),
+        "uncertainty_enabled": bool(args.beta_uncertainty > 0),
+        "flip_enabled": bool(args.gamma_flip > 0),
+        "rarity_enabled": bool(args.delta_rarity > 0),
+        "hardness_enabled": bool(args.eta_hardness > 0),
+        "redundancy_enabled": bool(args.mu_redundancy > 0),
+        "quality_enabled": bool(args.nu_quality > 0),
+    }
 
     if output_root.exists():
         shutil.rmtree(output_root)
@@ -255,8 +264,12 @@ def main() -> None:
     embeddings_norm = normalize_embeddings(embeddings)
     normal_indices = [int(row["embedding_index"]) for row in merged_rows if row["gt_label"] == args.normal_class]
     abnormal_indices = [int(row["embedding_index"]) for row in merged_rows if row["gt_label"] != args.normal_class]
-    normal_proto = embeddings[normal_indices].mean(axis=0)
-    abnormal_proto = embeddings[abnormal_indices].mean(axis=0)
+    if signal_flags["flip_enabled"]:
+        normal_proto = embeddings[normal_indices].mean(axis=0)
+        abnormal_proto = embeddings[abnormal_indices].mean(axis=0)
+    else:
+        normal_proto = None
+        abnormal_proto = None
 
     normal_labels, normal_centroids = fit_class_clusters(
         embeddings_norm,
@@ -296,18 +309,26 @@ def main() -> None:
         p_abnormal_cal = sigmoid(logit_raw / reference_cfg["temperature"])
 
         embedding_index = int(row["embedding_index"])
-        embedding = embeddings[embedding_index]
-        d_normal = float(np.linalg.norm(embedding - normal_proto))
-        d_abnormal = float(np.linalg.norm(embedding - abnormal_proto))
-        trust_normal = d_abnormal / (d_normal + d_abnormal + 1e-8)
-        p2_safe = sigmoid(reference_cfg["alpha"] * (1.0 - p_abnormal_cal) + reference_cfg["beta"] * trust_normal)
-        p2_abnormal = 1.0 - p2_safe
-
         b_score = boundary_score(p_abnormal_cal, reference_cfg["tau_r995"], reference_cfg["tau_r990"], args.boundary_band)
         u_score = binary_entropy(p_abnormal_cal)
-        disagree_995 = int((p_abnormal_cal >= reference_cfg["tau_r995"]) != (p2_abnormal >= reference_cfg["tau_r995"]))
-        disagree_990 = int((p_abnormal_cal >= reference_cfg["tau_r990"]) != (p2_abnormal >= reference_cfg["tau_r990"]))
-        flip_score = min(1.0, 0.5 * max(disagree_995, disagree_990) + 0.5 * min(1.0, abs(p2_abnormal - p_abnormal_cal) / max(args.gap_scale, 1e-6)))
+        if signal_flags["flip_enabled"]:
+            embedding = embeddings[embedding_index]
+            d_normal = float(np.linalg.norm(embedding - normal_proto))
+            d_abnormal = float(np.linalg.norm(embedding - abnormal_proto))
+            trust_normal = d_abnormal / (d_normal + d_abnormal + 1e-8)
+            p2_safe = sigmoid(reference_cfg["alpha"] * (1.0 - p_abnormal_cal) + reference_cfg["beta"] * trust_normal)
+            p2_abnormal = 1.0 - p2_safe
+            disagree_995 = int((p_abnormal_cal >= reference_cfg["tau_r995"]) != (p2_abnormal >= reference_cfg["tau_r995"]))
+            disagree_990 = int((p_abnormal_cal >= reference_cfg["tau_r990"]) != (p2_abnormal >= reference_cfg["tau_r990"]))
+            flip_score = min(
+                1.0,
+                0.5 * max(disagree_995, disagree_990)
+                + 0.5 * min(1.0, abs(p2_abnormal - p_abnormal_cal) / max(args.gap_scale, 1e-6)),
+            )
+            p2_abnormal_proxy = p2_abnormal
+        else:
+            flip_score = 0.0
+            p2_abnormal_proxy = p_abnormal_cal
 
         class_key = "normal" if row["gt_label"] == args.normal_class else "abnormal"
         if class_key == "normal":
@@ -318,7 +339,15 @@ def main() -> None:
         class_signals = class_signal_lookup[embedding_index]
         r_score = float(class_signals["rarity"])
         d_score = float(class_signals["redundancy"])
-        q_score, q_detail = quality_penalty(image_path)
+        if signal_flags["quality_enabled"]:
+            q_score, q_detail = quality_penalty(image_path)
+        else:
+            q_score = 0.0
+            q_detail = {
+                "blur_penalty": 0.0,
+                "exposure_penalty": 0.0,
+                "contrast_penalty": 0.0,
+            }
 
         info_score = (
             args.alpha_boundary * b_score
@@ -338,7 +367,7 @@ def main() -> None:
                 "class_key": class_key,
                 "p_abnormal_raw": round(p_abnormal_raw, 6),
                 "p_abnormal_cal": round(p_abnormal_cal, 6),
-                "p2_abnormal_proxy": round(p2_abnormal, 6),
+                "p2_abnormal_proxy": round(p2_abnormal_proxy, 6),
                 "boundary_score": round(b_score, 6),
                 "uncertainty_score": round(u_score, 6),
                 "flip_score": round(flip_score, 6),
@@ -425,6 +454,7 @@ def main() -> None:
             "mu_redundancy": args.mu_redundancy,
             "nu_quality": args.nu_quality,
         },
+        "signal_flags": signal_flags,
         "weight_bounds": {
             "normal": [args.normal_wmin, args.normal_wmax],
             "abnormal": [args.abnormal_wmin, args.abnormal_wmax],

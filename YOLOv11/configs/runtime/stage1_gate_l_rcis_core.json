@@ -1,0 +1,17 @@
+{
+  "model": "C:/Users/ASUS/Desktop/YOLOv11/YOLO-CV/YOLOv11/runs/cls_gate_source/yolo11l_gate2_train7200/weights/best.pt",
+  "data": "C:/Users/ASUS/Desktop/YOLOv11/YOLO-CV/YOLOv11/datasets/stage1_gate_rcis/yolo11l_gate2_hn02_rcis_core",
+  "epochs": 200,
+  "imgsz": 640,
+  "batch": 32,
+  "workers": 4,
+  "device": "0",
+  "pretrained": true,
+  "patience": 20,
+  "optimizer": "auto",
+  "cache": false,
+  "resume": false,
+  "seed": 20260330,
+  "project": "C:/Users/ASUS/Desktop/YOLOv11/YOLO-CV/YOLOv11/runs/stage1_gate_rcis",
+  "name": "yolo11l_gate2_hn02_rcis_core"
+}

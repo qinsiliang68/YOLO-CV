@@ -16,6 +16,8 @@ This means the remaining headroom is more likely to come from **sample exposure*
 
 ## First-Pass RCIS
 
+RCIS is currently positioned as a **first-pass information-driven resampling strategy**, not as a complete dynamic sampling system.
+
 This implementation treats sample value as an information score and maps it to class-aware sampling weights.
 
 The first-pass linear score is:
@@ -39,6 +41,22 @@ The current implementation uses:
 - `quality_penalty`
   - blur / exposure / contrast penalty from image heuristics
 
+## First-Wave Signal Priority
+
+For the first formal RCIS wave, the primary signals should be:
+
+- `boundary`
+- `hardness`
+- `redundancy`
+
+These are the most stage-1-relevant signals for recall-constrained normal filtering.
+
+`uncertainty` is kept only as a lightweight auxiliary term.
+
+`flip` is currently just a `P0/P2` proxy disagreement signal, not real training dynamics. It should not carry high weight in the first formal pass.
+
+`quality_penalty` also carries higher risk in sewer data because dark, blurred, dirty, reflective, or low-contrast frames can still be real deployment-time hard samples. For that reason, the first formal RCIS pass keeps quality disabled by default.
+
 ## Why This Is Only a First Pass
 
 This version is intentionally lightweight so it can be dropped into the current stage-1 pipeline.
@@ -54,14 +72,21 @@ Those are second-wave upgrades only if the first RCIS pass shows real gains over
 
 ## Current RCIS Suite
 
-The one-click suite now runs three experiments:
+The default first-wave suite now runs three experiments:
 
 - `RCIS boundary-only`
   - isolates whether near-threshold boundary proximity is already enough
-- `RCIS full linear`
-  - uses the full first-pass score
-- `RCIS no-redundancy`
-  - ablates the redundancy penalty
+- `RCIS core linear`
+  - the current recommended safer first-pass RCIS
+- `RCIS full exploratory`
+  - keeps the earlier full linear score as a risk-control comparison
+
+Additional configs exist but are not part of the default first-wave suite:
+
+- `RCIS noquality`
+- `RCIS noflip`
+
+These are reserved for second-wave manual ablations if the first-wave suite shows real gains.
 
 All experiments are still ranked by the existing stage-1 rule:
 
