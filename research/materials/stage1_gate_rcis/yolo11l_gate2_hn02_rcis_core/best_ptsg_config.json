@@ -1,0 +1,14 @@
+{
+  "best_variant": "P1",
+  "description": "p_abnormal + uncertainty",
+  "temperature": 2.42709267,
+  "alpha": 1.0,
+  "beta": 1.0,
+  "gamma": 0.5,
+  "ranking_rule": [
+    "Spec@R99.5 descending",
+    "Spec@R99.0 descending",
+    "Prec@R99.0 descending",
+    "PTR@R99.0 ascending"
+  ]
+}

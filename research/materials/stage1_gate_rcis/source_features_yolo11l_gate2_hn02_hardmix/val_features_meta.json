@@ -1,0 +1,18 @@
+{
+  "weights": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_gate_maxfilter\\yolo11l_gate2_hn02_hardmix\\weights\\best.pt",
+  "data_root": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\datasets\\sewerml_gate2_train7200",
+  "split": "val",
+  "rows": 720,
+  "embedding_dim": 512,
+  "class_names": [
+    "Abnormal",
+    "Normal"
+  ],
+  "normal_class": "Normal",
+  "device": "0",
+  "imgsz": 640,
+  "batch": 2,
+  "chunk_size": 16,
+  "predict_seconds": 13.425602,
+  "embed_seconds": 13.327671
+}
