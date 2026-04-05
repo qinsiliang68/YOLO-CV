@@ -100,6 +100,7 @@ def parse_args() -> argparse.Namespace:
             "stage1_formal_cls6_capacity",
             "stage1_formal_gate_hn_m_sweep",
             "stage1_formal_gate_hn_x_crosscheck",
+            "stage1_formal_gate_hn_all",
         ),
         default="auto",
         help="Task to run. 'auto' reads YOLOv11/configs/runtime/main_entry.json.",
@@ -986,6 +987,11 @@ def run_stage1_formal_hn_suite(entry_cfg: dict, *, variant: str, dry_run: bool, 
     )
 
 
+def run_stage1_formal_hn_all(entry_cfg: dict, *, dry_run: bool, rerun: bool) -> None:
+    run_stage1_formal_hn_suite(entry_cfg, variant="m", dry_run=dry_run, rerun=rerun)
+    run_stage1_formal_hn_suite(entry_cfg, variant="x", dry_run=dry_run, rerun=rerun)
+
+
 def run_stage1_embed_supcon(entry_cfg: dict, dry_run: bool) -> None:
     config_path = resolve_path(
         entry_cfg.get("stage1_embed_supcon_config"),
@@ -1105,6 +1111,10 @@ def main() -> None:
 
     if task_name == "stage1_formal_gate_hn_x_crosscheck":
         run_stage1_formal_hn_suite(entry_cfg, variant="x", dry_run=args.dry_run, rerun=args.rerun)
+        return
+
+    if task_name == "stage1_formal_gate_hn_all":
+        run_stage1_formal_hn_all(entry_cfg, dry_run=args.dry_run, rerun=args.rerun)
         return
 
     run_stage1_hn(task_name, entry_cfg, dry_run=args.dry_run)
