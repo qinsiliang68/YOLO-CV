@@ -52,6 +52,8 @@ BUILTIN_STAGE1_ENTRY_CONFIG = {
     "stage1_rcis_suite_config": r"YOLOv11\configs\runtime\stage1_gate_rcis_suite.json",
     "stage1_formal_gate_capacity_config": r"YOLOv11\configs\runtime\stage1_formal_gate_capacity.json",
     "stage1_formal_cls6_capacity_config": r"YOLOv11\configs\runtime\stage1_formal_cls6_capacity.json",
+    "stage1_formal_gate_hn_m_sweep_config": r"YOLOv11\configs\runtime\stage1_formal_gate_hn_m_sweep.json",
+    "stage1_formal_gate_hn_x_crosscheck_config": r"YOLOv11\configs\runtime\stage1_formal_gate_hn_x_crosscheck.json",
 }
 STAGE1_HN_TASKS = {
     "stage1_gate_l_hn": {
@@ -96,6 +98,8 @@ def parse_args() -> argparse.Namespace:
             "stage1_gate_rcis_suite",
             "stage1_formal_gate_capacity",
             "stage1_formal_cls6_capacity",
+            "stage1_formal_gate_hn_m_sweep",
+            "stage1_formal_gate_hn_x_crosscheck",
         ),
         default="auto",
         help="Task to run. 'auto' reads YOLOv11/configs/runtime/main_entry.json.",
@@ -959,6 +963,29 @@ def run_stage1_formal_capacity(entry_cfg: dict, *, task_kind: str, dry_run: bool
     )
 
 
+def run_stage1_formal_hn_suite(entry_cfg: dict, *, variant: str, dry_run: bool, rerun: bool) -> None:
+    if variant == "m":
+        key = "stage1_formal_gate_hn_m_sweep_config"
+        base_name = "stage1_formal_gate_hn_m_sweep.json"
+    else:
+        key = "stage1_formal_gate_hn_x_crosscheck_config"
+        base_name = "stage1_formal_gate_hn_x_crosscheck.json"
+    config_path = resolve_path(
+        entry_cfg.get(key),
+        base=YOLOV11_ROOT / "configs" / "runtime" / base_name,
+    )
+    run_python(
+        "scripts/stage1_formal_hn_sweep.py",
+        [
+            "--config",
+            str(config_path),
+            *(["--dry-run"] if dry_run else []),
+            *(["--rerun"] if rerun else []),
+        ],
+        dry_run=False,
+    )
+
+
 def run_stage1_embed_supcon(entry_cfg: dict, dry_run: bool) -> None:
     config_path = resolve_path(
         entry_cfg.get("stage1_embed_supcon_config"),
@@ -1070,6 +1097,14 @@ def main() -> None:
 
     if task_name == "stage1_formal_cls6_capacity":
         run_stage1_formal_capacity(entry_cfg, task_kind="cls6", dry_run=args.dry_run, rerun=args.rerun)
+        return
+
+    if task_name == "stage1_formal_gate_hn_m_sweep":
+        run_stage1_formal_hn_suite(entry_cfg, variant="m", dry_run=args.dry_run, rerun=args.rerun)
+        return
+
+    if task_name == "stage1_formal_gate_hn_x_crosscheck":
+        run_stage1_formal_hn_suite(entry_cfg, variant="x", dry_run=args.dry_run, rerun=args.rerun)
         return
 
     run_stage1_hn(task_name, entry_cfg, dry_run=args.dry_run)

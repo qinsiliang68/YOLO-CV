@@ -92,6 +92,22 @@ The formal cls6 winner is chosen only after external evaluation over:
 - `AUROC`
 - `AUPRC`
 
+## Follow-On Rule After Capacity Scan
+
+Capacity scan is the only formal model-selection step for stage-1 backbone choice.
+
+Once the formal binary gate ranking is fixed:
+
+- the main model is the gate leader
+- the second model is the gate runner-up
+- later stage-1 experiments must reuse the same calibrated external evaluation protocol
+
+This means:
+
+- `calibration` is no longer treated as a separate training phase
+- later HN / HardMix / information-sampling experiments are evaluated under the same `val-cal -> temperature fit -> val-op threshold scan` pipeline
+- trainer `acc/top1` still remains a health-only signal and cannot replace gate-aware selection
+
 ## Directory Rule
 
 All new thesis-facing stage-1 materials must live under:

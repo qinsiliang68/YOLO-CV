@@ -257,10 +257,11 @@ def evaluate_checkpoint(
 
     op_995 = threshold_summary["operating_points"]["recall_ge_99_5"]
     op_990 = threshold_summary["operating_points"]["recall_ge_99_0"]
+    formal_path = formal_checkpoint_path(checkpoint_path)
     return {
         "epoch": checkpoint_epoch(checkpoint_path),
-        "checkpoint_file": checkpoint_path.name,
-        "checkpoint_path": str(formal_checkpoint_path(checkpoint_path)),
+        "checkpoint_file": formal_path.name,
+        "checkpoint_path": str(formal_path),
         "temperature_T": round(float(temperature), 6),
         "tau_r995": round(float(op_995["threshold"]), 6),
         "tau_r990": round(float(op_990["threshold"]), 6),
@@ -330,11 +331,12 @@ def main() -> None:
     index_rows = []
     for epoch, checkpoint_path in list_epoch_checkpoints(run_dir):
         summary_row = final_by_epoch.get(epoch)
+        formal_path = formal_checkpoint_path(checkpoint_path)
         index_rows.append(
             {
                 "epoch": epoch,
-                "checkpoint_file": checkpoint_path.name,
-                "checkpoint_path": str(formal_checkpoint_path(checkpoint_path)),
+                "checkpoint_file": formal_path.name,
+                "checkpoint_path": str(formal_path),
                 "checkpoint_exists": int(checkpoint_path.exists()),
                 "evaluated": int(summary_row is not None),
                 "temperature_T": "" if summary_row is None else summary_row["temperature_T"],
