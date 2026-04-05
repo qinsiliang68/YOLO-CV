@@ -54,3 +54,14 @@ YOLOv11/weights/*
 !YOLOv11/weights/.gitkeep
 YOLOv11/runs/*
 !YOLOv11/runs/.gitkeep
+
+# Formal scan raw materials kept local only
+YOLOv11/runs/stage1_formal_gate/
+YOLOv11/runs/stage1_formal_cls6/
+research/materials/stage1_formal/**/per_epoch_gate/
+research/materials/stage1_formal/**/per_epoch_cls6/
+research/materials/stage1_formal/**/dataset_inventory.csv
+research/materials/stage1_formal/**/env_snapshot.json
+research/materials/stage1_formal/**/pip_freeze.txt
+research/materials/stage1_formal/**/epoch_gate_dashboard.png
+research/materials/stage1_formal/**/epoch_cls6_dashboard.png
