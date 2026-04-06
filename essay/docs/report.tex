@@ -1,0 +1,249 @@
+﻿% !TeX program = xelatex
+% !TeX encoding = UTF-8 Unicode
+\documentclass[UTF8,12pt]{ctexart}
+
+\usepackage[a4paper]{geometry}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{enumitem}
+\usepackage{hyperref}
+\usepackage{setspace}
+\usepackage{xcolor}
+
+\geometry{
+    top=2.54cm,
+    bottom=2.54cm,
+    left=3.17cm,
+    right=3.17cm
+}
+
+\hypersetup{hidelinks}
+\setlength{\parindent}{2em}
+\setlength{\parskip}{0pt}
+\linespread{1.35}
+\pagestyle{plain}
+
+\newcommand{\TODO}[1]{\textcolor{red}{[待补：#1]}}
+\newcommand{\reportdate}[1]{\section{#1}}
+
+\title{第一阶段研究推进与 formalization 过程报告}
+\author{\TODO{填写作者姓名}}
+\date{2026-04-05}
+
+\begin{document}
+\zihao{-4}\songti
+\maketitle
+\tableofcontents
+
+\section{报告定位}
+本报告不再承担论文正文的角色，而是专门记录第一阶段相关工作的推进过程、阶段性判断、脚本改造、目录清理、formal 规范建立和训练执行情况。其目标有两个：第一，把“哪天做了什么、为什么这样做、结果如何变化、哪些路线停止继续”写清楚，避免后续回忆不准；第二，为论文正文提供一份可追溯的过程底稿，使论文只保留正式结论，报告则保留完整演进链条。
+
+与论文正文不同，这里保留的是完整的演进逻辑，而不是只保留最终结论。也就是说，正文里只会出现 formal protocol、formal results 和定稿结论；而本报告会保留如下内容：早期 exploratory 路线为什么成立、为什么停止；某一条线在什么指标上看起来有增益、为什么后来又被放弃；仓库目录和脚本如何被扶正；训练机与整理机各自承担什么职责；formal material 体系如何防止“聊天式结论”污染正文证据链。
+
+从 2026-04-01 到 2026-04-05，第一阶段的工作重点经历了三个明显变化：先是围绕 HN、PTSG 和 trust 的后处理线继续挖收益；随后转向 HardMix、max-filter 与信息量采样，证明训练侧样本暴露比更复杂的后处理更值钱；最后进入 formalization 阶段，彻底把第一阶段从“exploratory 分类流程”改造成“论文正式口径下的高召回 gate 流程”。
+
+\section{问题定义与报告前提}
+\subsection{第一阶段到底在优化什么}
+本项目的第一阶段不是普通二分类任务，而是高召回 gate。它的角色不是尽量提高默认阈值下的分类精度，而是在缺陷召回必须被守住的前提下，尽可能多过滤 normal 背景，把真正值得进入第二阶段 detector 的可疑图像放过去。因此，从 formal 口径开始，第一阶段的正式主排序固定为：
+\begin{enumerate}[label=\arabic*.]
+    \item \texttt{Spec@R99.5}
+    \item \texttt{Spec@R99.0}
+    \item \texttt{Prec@R99.0}
+    \item \texttt{PTR@R99.0}（越低越好）
+\end{enumerate}
+这一定义本身决定了后续两个重要后果：其一，trainer 的 \texttt{acc/top1/loss} 只能作为训练健康信息存在，不能直接决定正文最佳模型；其二，任何“当前最优”的判断都必须被压缩到固定 operating point 的外部 summary 里，而不是停留在训练曲线的局部波动上。
+
+\subsection{为什么必须写这份过程报告}
+如果不把 stage-1 的探索链条单独写出来，后面写论文时会立刻出现两个问题。第一，正文会不可避免地混入早期 exploratory 路线的过程性语言，比如“某一晚先试了 PTSG，再试了多原型，又试了 SupCon”，这会让论文看起来像开发日志而不是研究论文。第二，许多已经被 formal 过程推翻的旧口径，例如“trainer 的 \texttt{best.pt} 基本可等于 stage-1 最佳 checkpoint”“\texttt{acc/top1} 足以决定是否继续训练”，会在没有专门报告说明的情况下反复渗回正文。写本报告的目的，就是把这些过程性信息全部接住，让论文主稿只保留 formal 结果和稳定结论。
+
+\subsection{本报告的数据与口径边界}
+本报告中的“结果”分三类。第一类是 early exploratory 结果，它们只用于解释方法演进，不再进入正文定稿。第二类是 formal summary，即重新按统一 protocol 重跑并在结构化目录中落盘的结果，它们才是正文可引用的数字来源。第三类是训练机侧 AI 助手生成的整理材料，例如 \texttt{best\_checkpoint\_registry} 和 \texttt{epoch\_gate\_summary}；这些文件可以被视为原材料的索引和整理层，但不应直接替代研究结论，最终判断仍应由本地复核 formal csv/json/manifest 后给出。
+
+\reportdate{2026-04-01：PTSG 主线与 next-wave 探索}
+
+\subsection{当日目标}
+当天的核心目标，是在 \texttt{yolo11l-cls + calibration + hn02} 这一主线基础上，继续验证 prototype-trust 风格的后处理是否能在固定高召回约束下提高 normal 过滤能力。与普通分类不同，这一轮实验从一开始就强调 operating point，而不是默认阈值 accuracy。
+
+\subsection{完成内容}
+当天完成了第一轮 PTSG 后处理链，包括特征导出、prototype bank 构建、阈值扫描与 operating point 评估；随后又完成了 next-wave 多原型对比，即在单原型 \texttt{P2} 基础上测试多原型 trust 和 margin trust 是否继续带来收益。这里的核心不是“又多试了几个后处理公式”，而是第一次把第一阶段的评价语义强制拉到了 operating point 上：所有比较都必须围绕 \texttt{Spec@R99.5 / Spec@R99.0 / Prec@R99.0 / PTR@R99.0}，而不是只盯训练器里默认的分类准确率。相关实验在当时已经形成较清楚的判断：
+\begin{itemize}
+    \item 第一轮 PTSG 中，\texttt{P2 = calibrated p\_abnormal + trust} 为当前最佳；
+    \item 说明 trust 对 safe-normal gate 有阶段性价值；
+    \item 但多原型 next-wave 没有稳定超过 \texttt{P2}，说明继续卷轻量 post-hoc 结构的边际收益已经变小。
+\end{itemize}
+
+\subsection{这一天为什么优先做 PTSG}
+之所以 2026-04-01 先继续做 PTSG，而不是直接改训练集或损失函数，有两个现实原因。第一，当时 \texttt{hn02} 和 calibration 已经把一部分 easy / medium normal 过滤掉了，如果此时继续靠训练重跑去找增益，成本会比较高；相比之下，后处理线更容易在不重新训练大模型的前提下快速验证“特征几何信息是否还有剩余价值”。第二，prototype-trust 这条线在工程上相对轻，复用已有 best checkpoint 就能完成 embedding 导出、prototype 构建和 threshold scan，因此它很适合作为“先验证还有没有后处理 headroom”的探针。
+
+\subsection{这一天实际改变了什么认识}
+2026-04-01 以前，第一阶段还保留着一种朴素直觉：只要再往后处理里多加一点空间几何、margin 或 multi-prototype 结构，也许还能继续多拦几张 normal。但这一天的 next-wave 结果恰恰打破了这种预期。它给出的信号不是“trust 完全没用”，而是“trust 有用，但不再是最值得追加研究预算的方向”。换句话说，第一阶段这时候已经出现了很明确的边际收益排序：继续写复杂公式，收益开始快速递减；继续找训练侧更有信息量的样本暴露方式，反而更有希望。这一判断为后面 HardMix 与 RCIS 的出场提前铺好了逻辑基础。
+
+\subsection{当日结论}
+2026-04-01 的重要收束是：第一阶段的剩余 headroom 未必来自继续堆后处理公式，而更可能来自训练侧样本组织或表示空间本身。也正因此，后续才会有强 embedding 路线和 max-filter 路线的继续尝试。换句话说，这一天的价值不是把 \texttt{P2} 永久定成终点，而是证明“trust 有阶段性价值，但未必是最后的主线增益来源”。
+
+\reportdate{2026-04-02：附录图、HN 解释口径与误报池理解}
+
+\subsection{当日目标}
+这一天并没有引入新的主方法，而是围绕第一阶段已有结果补足论文解释：特别是 HN 回流到底是什么、图 4 / 图 5 / 图 6 各自画的到底是谁、remaining normal 池应该如何读。
+
+\subsection{完成内容}
+当天主要完成了三件事。第一，明确了 HN 回流的真实含义：它不是把验证集 hardest samples 拿回去训，而是用当前模型在训练集 normal 中找到 hardest normal，然后做轻度过采样。本质上，这一步做的是 training-side hard normal mining + oversampling，而不是 validation leakage。第二，补充并修改了附录图，使 \texttt{hn00} 未回流基线与 \texttt{hn02} 回流后在 \texttt{R99.5 / R99.0} 下的 remaining normal 池能够直接对照。第三，把“remaining normal 的高置信度右移”解释清楚：不是所有 normal 都被推得更像 defect，而是中低分误报被清掉之后，剩下的 residual pool 更集中在最高分、最顽固的那一批。
+
+\subsection{这一天最关键的语义修正}
+这一天最关键的工作并不是“图改好看一点”，而是把 stage-1 里若干最容易被误解的概念彻底钉死。第一，图 4、图 5、图 6 里的样本池并不是同一个集合，前者是 training-side candidate pool，后两者是 val operating point 下的 remaining normal pool；如果不把这一点讲清楚，后面读图时就会不自觉把它们当成同一批样本的前后对比。第二，remaining normal 池的高分右移，也不意味着模型整体在往“误报更多”这个方向滑，而是意味着 easy / medium 的误报已经被清掉后，剩下的是顽固的 highest-confidence false positives。第三，HN 回流不是 validation recycling，这一点如果说不清楚，后面论文里很容易被质疑成 data leakage。
+
+\subsection{对论文写作的帮助}
+从写作角度看，2026-04-02 带来的最大收益是“语言统一”。在这一天之前，stage-1 的图和实验虽然已经做出来了，但解释语义并不完全稳定，尤其是 FP normal、FN defect、remaining pool、candidate pool、回流样本、hard sample 等概念很容易互相串。完成这一天的清理之后，后面无论是写 HardMix、写 RCIS，还是写 formal gate capacity，语言都能统一到“哪一类样本在什么语义下更值钱”这个框架里，而不用每次重新解释一遍“这个 hard 指的是谁”。
+
+\subsection{当日结论}
+2026-04-02 的结论不是方法突破，而是语义澄清。它把第一阶段的核心认识讲清楚了：HN 回流的本质是让模型对 training-side hardest normal 学得更充分，而不是偷看验证集；图上的 remaining pool 更靠右，也不意味着模型整体学歪，而意味着 residual error 更集中在 hardest tail。这一天的工作看似只是补图和解释，实则非常关键，因为它统一了后面所有“hard sample 值不值钱”的语言基础。
+
+\reportdate{2026-04-03：max-filter 套件、HardMix 获胜与阶段性理论收束}
+
+\subsection{当日目标}
+这一天的目标，是给 stage-1 做最后一轮广撒网训练侧增强验证：不是继续换更复杂的 trust，而是系统测试“样本怎么喂”与“损失怎么改”到底谁更值钱。
+
+\subsection{完成内容}
+当天组织了统一的 max-filter 套件，对比了 recall-constrained loss、HardMix、Weighted BCE、Focal BCE 与 defect oversampling 等多条路线，并继续在同一评估协议下跑 PTSG 风格后处理比较。实验结果把一个关键判断钉实了：最佳新方法不是更复杂的后处理，也不是直接对 defect 过采样，而是 \texttt{hard positive + hard normal mining}，即后来的 HardMix。换句话说，这一天并不是在“广撒网乱试”，而是在系统排除一件事：第一阶段剩余 headroom 到底来自更复杂的 loss，还是来自更有边界价值的样本暴露方式。
+
+\subsection{结果解释}
+HardMix 的价值不在于让 trainer 的 \texttt{top1} 多好看，而在于它在第一阶段真正主排序指标上形成了更可靠的改善。此时的主判断变成了：第一阶段剩余 headroom 主要来自信息量更高样本的充分暴露，而不是继续复杂化 trust 结构。这一判断随后被写成一份 stage-1 理论报告，用来统一后续方法叙事。也就是说，2026-04-03 实际上已经把 stage-1 的“增益源头”判断从后处理结构转移到了训练样本组织。
+
+\subsection{为什么 HardMix 比 defect oversampling 更对题}
+这一轮比较最有价值的一点，在于它把“hard sample 更重要”从口头判断变成了实验事实。若第一阶段是普通长尾分类问题，那么对 abnormal 或 defect 直接过采样似乎是顺手的做法；但实际 gate 任务的核心不是简单抬高少数类权重，而是在高召回约束下尽量稳住 hardest tail 上的 normal / abnormal 边界。HardMix 之所以能赢，不是因为它更复杂，而是因为它同时加强了 hardest normal 和 hard positive 两侧的边界信息，而 defect oversampling 只在类别频次上做文章，没真正命中“哪类样本对 operating point 更值钱”这个问题。
+
+\subsection{这一天对后续方法选择的影响}
+如果没有 2026-04-03 这一轮 max-filter 套件，后面 RCIS 很可能会被写成“另一个很炫的新采样方法”。但这一天的实验其实已经说明了：RCIS 的正当性并不来自名字，而是来自 HardMix 已经证明“样本暴露方式比复杂后处理更值钱”。因此，RCIS 的提出不是从零开始另起炉灶，而是把 HardMix 的经验做进一步形式化：从“hard sample 多看一点”走向“哪些 sample 对高召回 gate 最有信息量，就多看一点”。这一层关系如果不在报告里写清楚，后面论文会很容易把 HardMix 和 RCIS 写成两条彼此脱节的线。
+
+\subsection{当日结论}
+2026-04-03 的结论是阶段性的分水岭：第一阶段最值钱的东西，不是更复杂的 embedding/trust 后处理，而是更有边界修正价值的样本暴露方式。也正因为这个判断，后续 RCIS 才会被提上日程。
+
+\reportdate{2026-04-04：RCIS 首轮、formal protocol 建立与仓库扶正}
+
+\subsection{RCIS 首轮思路落地}
+在 HardMix 结果基础上，这一天正式提出并落地了 RCIS（Recall-Constrained Information Sampling）首轮实现。最初的 full 版 RCIS 同时引入了 boundary、uncertainty、flip、rarity、hardness、redundancy 与 quality 等信号；但在专家 review 后，最终被收缩成更稳的 first-wave：默认只保留 \texttt{boundary + hardness + redundancy} 为主信号，\texttt{uncertainty} 轻量辅助，而 \texttt{flip} 与 \texttt{quality penalty} 降级为 exploratory。这里最重要的不是名字，而是方法定位：RCIS 不是“再造一个复杂后处理公式”，而是把第一阶段的训练样本暴露方式从粗粒度 HardMix 进一步推进到 operating-point-aware 的信息量采样。
+
+\subsection{formalization 工作真正启动}
+更重要的是，这一天不再只是继续探索方法，而是开始扶正 stage-1 的论文正式口径。这里最关键的动作，不只是新建 formal 目录和双机入口，而是正式承认早期默认沿用的 \texttt{acc/top1} 监控逻辑不适合作为 stage-1 的停止与选模准则。前期 exploratory 训练里，\texttt{top1\_acc} 曾被自然地当成“模型有没有继续变好”的代用指标，但回到第一阶段真正关心的 \texttt{Spec@R99.5 / Spec@R99.0 / Prec@R99.0 / PTR@R99.0} 后可以看出，默认阈值分类精度和高召回工作点下的 normal 过滤能力并不等价，因此必须把两者拆开：\texttt{acc/top1/loss} 继续保留为训练健康信息，正文 best checkpoint 则交由外部 gate-aware summary 决定。正式 protocol 被写入仓库，核心内容包括：
+\begin{itemize}
+    \item 第一阶段正式目标是高召回 gate；
+    \item 第一阶段所有正式训练统一 \texttt{batch=24}；
+    \item formal capacity scan 固定 \texttt{epochs=200} 跑满；
+    \item 每轮 checkpoint 都必须保存；
+    \item 正式 best checkpoint 必须由外部 gate-aware evaluator 选出；
+    \item 所有正文可引用材料必须进入 \texttt{research/materials/stage1\_formal} 与 \texttt{research/results/stage1\_formal}。
+\end{itemize}
+
+\subsection{仓库层面的具体扶正动作}
+这一天的 formalization 不是停留在口头规则层面，而是落到了仓库结构和脚本入口上。旧 exploratory 文档被非破坏性归档到 \texttt{research/archive/stage1\_preformal\_legacy}；旧 protocol、旧结论性 note 和过时 summary 从主路径让开，但原始代码、原始日志、原始结果表与原始权重不乱删。与此同时，新 formal 根目录被固定为 \texttt{research/materials/stage1\_formal} 和 \texttt{research/results/stage1\_formal}，run root 也被显式固定为 \texttt{YOLOv11/runs/stage1\_formal\_gate} 与 \texttt{YOLOv11/runs/stage1\_formal\_cls6}。也就是说，这一天不仅定义了原则，还把原则写进了目录和入口。
+
+\subsection{双机运行方式定型}
+当天同时把两台电脑的职责固定成两个显式入口：
+\begin{itemize}
+    \item \texttt{main\_A.py}：binary gate 五模型 formal capacity scan；
+    \item \texttt{main\_B.py}：six-class 五模型 formal capacity scan。
+\end{itemize}
+这样做的目的，是把旧 exploratory 入口和新的 formal 入口彻底分开，避免训练机继续沿用旧逻辑把 trainer \texttt{best.pt} 当论文最佳。形式上看只是多了两个入口文件，但本质上是把 stage-1 从“开发者自己记得哪个脚本是正式的”变成“仓库本身就区分 formal 与 exploratory”的状态。
+
+\subsection{旧文档归档}
+同一天还完成了过时 stage-1 文档的归档：旧 note、旧 report、旧 summary 不删除，但全部进入 \texttt{research/archive/stage1\_preformal\_legacy}，并通过 \texttt{archive\_manifest} 留痕。这样，主路径就不再散落一堆互相冲突的“当前最优结论”式文档。这里的原则也被固定下来：原始代码、原始训练日志、原始结果表和原始权重不乱删；真正被移走的是过时的解释性文本、旧 protocol 和旧“当前结论”类报告文档。
+
+\subsection{这一天的根本变化}
+如果只从代码 diff 看，2026-04-04 好像只是多了几个 formal task、协议文件和 archive 目录。但从研究流程上看，这一天实际上改变了第一阶段的治理方式。此前，stage-1 仍带有很强的 exploratory 气质：什么是正式结果、什么是临时结果、哪个入口应该用于训练机、哪个 best checkpoint 可以写进正文，这些问题还依赖人工记忆与聊天决策。到这一天结束时，这些事情第一次被收敛成了仓库内部可执行、可审计、可双机复用的制度化流程。后面的训练和论文，都建立在这个转折点上。
+
+\reportdate{2026-04-05：formal capacity scan 起跑与运行时问题修复}
+
+\subsection{正式训练启动}
+进入 2026-04-05 后，重点不再是方法设计，而是让 formal capacity scan 真正跑起来。机器 A 启动了 binary gate 五模型容量扫描；第一组 \texttt{yolo11n-cls} 已经完整跑到了 200 轮。这个阶段最重要的不是 \texttt{top1\_acc} 本身，而是证明 formal 训练、每轮 checkpoint 保存、后续外评与 summary 累积机制确实开始工作。换句话说，到了这一天，stage-1 的“停止逻辑”已经被正式改写：训练不再因为 \texttt{acc/top1} 看起来先到峰值就提前停下，而是统一先跑满 200 epoch，再由外部 gate-aware evaluator 从全部 checkpoint 中选出真正的 formal best。
+
+\subsection{暴露出的第一个 formal 工程问题}
+在第一组跑完后，流水线中断。问题并不是模型本体训练失败，而是 formal 工程逻辑存在两个 bug：
+\begin{enumerate}[label=\arabic*.]
+    \item 训练日志 tee 在进程退出时没有恢复 \texttt{sys.stdout / sys.stderr}，导致 Python 收尾阶段抛出 unraisable exception，子进程返回异常退出码；
+    \item formal 训练前先为了写 \texttt{stdout.log / stderr.log} 创建了目标 run 目录，但配置里没有显式 \texttt{exist\_ok=true}，于是 Ultralytics 误以为 run 目录已占用，自动把真正训练目录改成了 \texttt{...200ep2}。
+\end{enumerate}
+
+\subsection{当日修复}
+针对上述问题，仓库又补了一个修复提交：其一，在训练脚本中恢复原始 stdout/stderr，避免 tee 收尾崩掉；其二，在 formal 训练配置和入口里显式启用 \texttt{exist\_ok=true}；其三，在 formal suite 中新增自动修复逻辑，如果发现 \texttt{...200ep2} 这类 auto-increment 目录，就自动把它规范回正式 run 目录，并保留已有 checkpoint、日志和 summary。这个修复的意义很大，因为它第一次验证了 formal pipeline 的中断恢复思想不是口头上的：已有 checkpoint 和已有 summary 可以被回收、继续、接续评估，而不会因为目录名漂移就整轮报废。
+
+\subsection{当日结论}
+到 2026-04-05 为止，第一阶段已经不是“继续探索哪个小改动可能涨 0.01”的状态，而是进入了正式规范化执行阶段。此时真正关键的事情有两件：一是把五模型 formal capacity scan 跑完；二是以后正文只接受 formal summary，不再接受 trainer 里的 \texttt{best.pt} 和对话式结论。再往后，训练机 AI 的职责也被压缩到“整理材料、导出 formal best checkpoint、生成 registry”，而不再承担任何研究解释性工作。
+
+\subsection{第一波 formal gate 容量扫描的正式回收}
+同一天晚些时候，机器 A 完成了 direct binary gate 五模型的第一波 formal capacity scan 收束。训练机侧 AI 助手被限定只负责整理材料、导出 formal best checkpoint 和提交结构化 summary，而不参与研究解释；研究结论仍然在本地根据 formal csv/json/manifest 复核后给出。复核结果表明，第一波 formal gate 排序已经非常明确：\texttt{yolo11m-cls} 在 \texttt{Spec@R99.5=0.5952}、\texttt{Spec@R99.0=0.6548}、\texttt{Prec@R99.0=0.9348}、\texttt{PTR@R99.0=0.8829} 上整体最优，对应 best epoch 为 78；\texttt{yolo11x-cls} 位列第二，对应 best epoch 为 125；而 exploratory 阶段经常被沿用的 \texttt{yolo11l-cls} 只排到第三。这个结果的价值非常大，因为它第一次用 formal protocol 而不是 trainer \texttt{best.pt} 把 stage-1 主模型真正钉死了。
+
+\begin{table}[htbp]
+    \centering
+    \small
+    \caption{2026-04-05 第一波 formal direct binary gate capacity scan 结果}
+    \begin{tabular}{lccccc}
+        \toprule
+        模型 & Best Epoch & Spec@R99.5 & Spec@R99.0 & Prec@R99.0 & PTR@R99.0 \\
+        \midrule
+        yolo11n-cls & 76  & 0.5119 & 0.5833 & 0.9224 & 0.8948 \\
+        yolo11s-cls & 77  & 0.5238 & 0.5357 & 0.9143 & 0.9028 \\
+        yolo11m-cls & 78  & 0.5952 & 0.6548 & 0.9348 & 0.8829 \\
+        yolo11l-cls & 54  & 0.5238 & 0.5714 & 0.9205 & 0.8988 \\
+        yolo11x-cls & 125 & 0.5476 & 0.5952 & 0.9244 & 0.8929 \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+如果只看 operating point 计数，\texttt{yolo11m-cls} 在 \texttt{R99.5} 下实现了 \texttt{TN/FN=50/2}，在 \texttt{R99.0} 下实现了 \texttt{55/4}；\texttt{yolo11x-cls} 分别为 \texttt{46/2} 和 \texttt{50/4}；\texttt{yolo11l-cls} 则为 \texttt{44/2} 和 \texttt{48/3}。也就是说，尽管 \texttt{yolo11l-cls} 在 exploratory 阶段长期被视为“默认主力”，formal gate 第一波结果已经证明：真正值得继续往后接 calibration、HN、HardMix 和 RCIS 的模型，其实是 \texttt{yolo11m-cls}。
+
+\subsection{这轮 formal gate 扫描说明了什么}
+这轮结果进一步证明了前面 formalization 的必要性。若继续沿用普通分类训练中的 \texttt{acc/top1} 习惯，一方面很难自然停在第 78 轮或第 125 轮这种外部 gate-aware 指标真正更优的 checkpoint；另一方面也会继续把 \texttt{yolo11l-cls} 误当成稳固 leader。formal gate 第一波扫描给出的信息不是“某个 trainer 曲线看起来更顺眼”，而是：在固定高召回工作点定义下，\texttt{yolo11m-cls} 才是接下来 formal calibration、formal HN、formal HardMix 与正式 RCIS 应当围绕的 backbone，\texttt{yolo11x-cls} 则是最合理的第二对照模型。也正因为如此，后续所有第一阶段正式增强实验都应该建立在这一轮扫描结果之上，而不再回到 exploratory 阶段的临时 backbone 选择。
+
+\subsection{当日未完成项}
+虽然 gate 五模型已经完成，但 2026-04-05 当天并没有把第一阶段全部收束完。仍然悬而未决的内容包括：\texttt{main\_B.py} 对应的 six-class source 五模型 formal capacity scan；default-threshold 辅助排序；以及围绕新 formal leader \texttt{yolo11m-cls} 的 calibration、HN、HardMix 和 RCIS 正式重跑。因此，2026-04-05 的定位应被写成“第一阶段 formal protocol 已落地且 gate 第一波容量扫描已完成”，而不是“第一阶段全部结束”。
+
+\subsection{为什么这一天是第一阶段的真正拐点}
+从研究路径上看，2026-04-05 以前，stage-1 虽然已经在理念上向 formal 口径靠拢，但仍缺一个真正落地的标志性结果。这个标志性结果不是某个新方法涨了多少，而是：五模型 direct binary gate formal capacity scan 真的跑完一整轮，并给出了与 exploratory 阶段不完全相同的主模型结论。一旦 \texttt{yolo11m-cls} 被 formal 扫描确认为 leader，后面所有正式实验都不再有“究竟继续围绕 \texttt{l} 还是改用 \texttt{m}”的歧义。也就是说，这一天第一次把第一阶段主模型选择从经验判断变成了制度化结果。
+
+\section{当前总判断}
+截至本报告撰写时，第一阶段的认识已经收敛到以下几点：
+\begin{enumerate}[label=\arabic*.]
+    \item 第一阶段的目标必须被定义成高召回 gate，而不是普通二分类 accuracy。
+    \item 早期 exploratory 阶段默认沿用的 \texttt{acc/top1} 停止与选模习惯已经被推翻；它们只能保留为训练健康指标，不能继续充当正文 best checkpoint 的决定依据。
+    \item 第一波 formal direct binary gate capacity scan 已经完成，并正式确认 \texttt{yolo11m-cls} 是 high-recall leader，\texttt{yolo11x-cls} 是第二对照模型。
+    \item HN 回流与 HardMix 证明了“信息量更高的 hard samples 更值钱”。
+    \item PTSG / trust 在阶段性上有过增益，但最终最稳的剩余 headroom 更像是训练侧样本组织问题。
+    \item RCIS 的价值在于把 HardMix 从粗粒度 hard sample 暴露，提升为 operating-point-aware 的信息量采样。
+    \item 从 2026-04-04 开始，stage-1 的重心已经从“继续试新招”切换到“按论文正式口径重跑并固化证据链”。
+\end{enumerate}
+
+\section{接下来要记录什么}
+接下来这份报告还应该继续跟踪以下事项：
+\begin{itemize}
+    \item formal cls6 五模型容量扫描每天推进到了哪一组、哪一轮；
+    \item six-class 与默认阈值辅助排序如何补齐，并与 formal gate leader 形成完整容量扫描结论；
+    \item formal calibration、HN、HardMix 和 RCIS 什么时候开始正式重跑；
+    \item 任何新的脚本修复、目录调整和 protocol 更新。
+\end{itemize}
+
+\section{当前目录、入口与留档规则}
+\subsection{双机入口}
+截至当前，stage-1 formal 体系的双机入口已经固定：
+\begin{itemize}
+    \item \texttt{main\_A.py}：binary gate 五模型，统一 \texttt{batch=24}、统一 \texttt{epochs=200}、每轮保存 checkpoint，并在每轮后逐步累积 formal gate-aware summary；
+    \item \texttt{main\_B.py}：six-class source 五模型，同样统一 \texttt{batch=24} 和 \texttt{epochs=200}，但其排序规则为 \texttt{Accuracy $\rightarrow$ AUROC $\rightarrow$ AUPRC}。
+\end{itemize}
+两条线的设计目的不是节省几条命令，而是把训练入口、材料目录、formal summary、best checkpoint 选取逻辑全部显式化，避免以后再出现“同一仓库里有多个入口但没人能说清哪个是正式”的问题。
+
+\subsection{formal 材料与结果目录}
+从 formalization 开始，stage-1 的目录边界被明确固定为：
+\begin{itemize}
+    \item \texttt{research/materials/stage1\_formal/}
+    \item \texttt{research/results/stage1\_formal/}
+\end{itemize}
+其中，\texttt{materials} 负责存每个模型的结构化原材料，如 \texttt{run\_manifest.json}、\texttt{dataset\_manifest.json}、\texttt{epoch\_gate\_summary.csv/json/md}、\texttt{best\_epoch\_manifest.json} 和 \texttt{all\_checkpoints\_index.csv}；\texttt{results} 负责存跨模型总表、comparison 图和 best checkpoint registry。训练机上的 \texttt{YOLOv11/runs/} 与 \texttt{per\_epoch\_gate/} 细粒度目录只做本地保留，不直接进入 git。
+
+\subsection{formal best checkpoint 的保存原则}
+截至当前，已经明确立下三条保存规则。第一，stage-1 正式 best 不能只信 trainer 自动写出的 \texttt{best.pt}，必须以 \texttt{best\_epoch\_manifest.json} 指向的 checkpoint 为准。第二，formal capacity scan 至少要保住每个模型 1 个 formal best checkpoint，尤其是最终 leader 和第二对照模型。第三，导出到网盘或桌面时，文件名必须包含任务、模型和 best epoch，例如 \texttt{yolo11m\_gate2\_formal\_best\_epoch078.pt}，不能笼统写成“gate best.pt”，否则后续论文回填和复核会完全失去可追溯性。
+
+\section{与论文的关系}
+本报告的最终用途不是替代论文，而是保证论文可以干净地写成“问题—方法—正式协议—正式结果—结论”的结构。凡是“今天做了什么、为什么改这个脚本、哪个入口炸了又怎么修”的内容，都放在这里；凡是要进入答辩和定稿的章节、表格与图件，则只保留在 \texttt{essay.tex}。
+
+\end{document}
