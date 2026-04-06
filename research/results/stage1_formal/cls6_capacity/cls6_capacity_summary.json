@@ -1,0 +1,93 @@
+{
+  "ranking_rule": [
+    "Accuracy descending",
+    "AUROC descending",
+    "AUPRC descending"
+  ],
+  "best_row": {
+    "model": "yolo11x-cls",
+    "run_name": "yolo11x_cls6_formal_200ep",
+    "best_epoch": 161,
+    "best_checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11x_cls6_formal_200ep\\weights\\epoch_161.pt",
+    "accuracy": 0.7,
+    "auroc": 0.948375,
+    "auprc": 0.988497,
+    "run_dir": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11x_cls6_formal_200ep",
+    "summary_dir": "C:\\GitHub\\YOLO-CV\\research\\materials\\stage1_formal\\cls6_capacity\\yolo11x_cls6_formal",
+    "commit_hash": "",
+    "machine_name": "DESKTOP-DGQTJ9O",
+    "dataset_manifest_path": "C:\\GitHub\\YOLO-CV\\research\\materials\\stage1_formal\\cls6_capacity\\yolo11x_cls6_formal\\dataset_manifest.json"
+  },
+  "rows": [
+    {
+      "model": "yolo11l-cls",
+      "run_name": "yolo11l_cls6_formal_200ep",
+      "best_epoch": 104,
+      "best_checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11l_cls6_formal_200ep\\weights\\epoch_104.pt",
+      "accuracy": 0.694444,
+      "auroc": 0.939951,
+      "auprc": 0.986201,
+      "run_dir": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11l_cls6_formal_200ep",
+      "summary_dir": "C:\\GitHub\\YOLO-CV\\research\\materials\\stage1_formal\\cls6_capacity\\yolo11l_cls6_formal",
+      "commit_hash": "",
+      "machine_name": "DESKTOP-DGQTJ9O",
+      "dataset_manifest_path": "C:\\GitHub\\YOLO-CV\\research\\materials\\stage1_formal\\cls6_capacity\\yolo11l_cls6_formal\\dataset_manifest.json"
+    },
+    {
+      "model": "yolo11m-cls",
+      "run_name": "yolo11m_cls6_formal_200ep",
+      "best_epoch": 130,
+      "best_checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11m_cls6_formal_200ep\\weights\\epoch_130.pt",
+      "accuracy": 0.695833,
+      "auroc": 0.938681,
+      "auprc": 0.984783,
+      "run_dir": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11m_cls6_formal_200ep",
+      "summary_dir": "C:\\GitHub\\YOLO-CV\\research\\materials\\stage1_formal\\cls6_capacity\\yolo11m_cls6_formal",
+      "commit_hash": "",
+      "machine_name": "DESKTOP-DGQTJ9O",
+      "dataset_manifest_path": "C:\\GitHub\\YOLO-CV\\research\\materials\\stage1_formal\\cls6_capacity\\yolo11m_cls6_formal\\dataset_manifest.json"
+    },
+    {
+      "model": "yolo11n-cls",
+      "run_name": "yolo11n_cls6_formal_200ep",
+      "best_epoch": 117,
+      "best_checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_117.pt",
+      "accuracy": 0.683333,
+      "auroc": 0.942063,
+      "auprc": 0.987027,
+      "run_dir": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep",
+      "summary_dir": "C:\\GitHub\\YOLO-CV\\research\\materials\\stage1_formal\\cls6_capacity\\yolo11n_cls6_formal",
+      "commit_hash": "",
+      "machine_name": "DESKTOP-DGQTJ9O",
+      "dataset_manifest_path": "C:\\GitHub\\YOLO-CV\\research\\materials\\stage1_formal\\cls6_capacity\\yolo11n_cls6_formal\\dataset_manifest.json"
+    },
+    {
+      "model": "yolo11s-cls",
+      "run_name": "yolo11s_cls6_formal_200ep",
+      "best_epoch": 167,
+      "best_checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11s_cls6_formal_200ep\\weights\\epoch_167.pt",
+      "accuracy": 0.691667,
+      "auroc": 0.940646,
+      "auprc": 0.98543,
+      "run_dir": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11s_cls6_formal_200ep",
+      "summary_dir": "C:\\GitHub\\YOLO-CV\\research\\materials\\stage1_formal\\cls6_capacity\\yolo11s_cls6_formal",
+      "commit_hash": "",
+      "machine_name": "DESKTOP-DGQTJ9O",
+      "dataset_manifest_path": "C:\\GitHub\\YOLO-CV\\research\\materials\\stage1_formal\\cls6_capacity\\yolo11s_cls6_formal\\dataset_manifest.json"
+    },
+    {
+      "model": "yolo11x-cls",
+      "run_name": "yolo11x_cls6_formal_200ep",
+      "best_epoch": 161,
+      "best_checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11x_cls6_formal_200ep\\weights\\epoch_161.pt",
+      "accuracy": 0.7,
+      "auroc": 0.948375,
+      "auprc": 0.988497,
+      "run_dir": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11x_cls6_formal_200ep",
+      "summary_dir": "C:\\GitHub\\YOLO-CV\\research\\materials\\stage1_formal\\cls6_capacity\\yolo11x_cls6_formal",
+      "commit_hash": "",
+      "machine_name": "DESKTOP-DGQTJ9O",
+      "dataset_manifest_path": "C:\\GitHub\\YOLO-CV\\research\\materials\\stage1_formal\\cls6_capacity\\yolo11x_cls6_formal\\dataset_manifest.json"
+    }
+  ]
+}

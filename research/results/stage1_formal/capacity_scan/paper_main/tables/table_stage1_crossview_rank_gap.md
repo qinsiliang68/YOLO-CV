@@ -1,0 +1,12 @@
+# Table: Cross-View Rank Gap
+
+| Model | Rank in CLS6 | Rank in Binary Gate | Rank Gap | Interpretation |
+| --- | ---: | ---: | ---: | --- |
+| yolo11l-cls | 3 | 3 | 0 | Both views agree on this model's relative position. |
+| yolo11m-cls | 2 | 1 | 1 | The auxiliary cls6 view ranks this model lower than the gate-aware view. |
+| yolo11n-cls | 5 | 5 | 0 | Both views agree on this model's relative position. |
+| yolo11s-cls | 4 | 4 | 0 | Both views agree on this model's relative position. |
+| yolo11x-cls | 1 | 2 | -1 | The auxiliary cls6 view ranks this model higher than the gate-aware view. |
+
+Note:
+The source-side six-class ranking cannot replace direct binary-gate selection.

@@ -1,0 +1,44 @@
+{
+  "rows": [
+    {
+      "model": "yolo11n",
+      "top1_best_epoch": 120,
+      "top1_best_value": 0.925,
+      "gate_best_epoch": 76,
+      "same_as_gate_best": false
+    },
+    {
+      "model": "yolo11s",
+      "top1_best_epoch": 88,
+      "top1_best_value": 0.92083,
+      "gate_best_epoch": 77,
+      "same_as_gate_best": false
+    },
+    {
+      "model": "yolo11m",
+      "top1_best_epoch": 197,
+      "top1_best_value": 0.93472,
+      "gate_best_epoch": 78,
+      "same_as_gate_best": false
+    },
+    {
+      "model": "yolo11l",
+      "top1_best_epoch": 103,
+      "top1_best_value": 0.93056,
+      "gate_best_epoch": 54,
+      "same_as_gate_best": false
+    },
+    {
+      "model": "yolo11x",
+      "top1_best_epoch": 120,
+      "top1_best_value": 0.93194,
+      "gate_best_epoch": 125,
+      "same_as_gate_best": false
+    }
+  ],
+  "summary": {
+    "all_models_same_as_gate_best": false,
+    "same_count": 0,
+    "different_count": 5
+  }
+}

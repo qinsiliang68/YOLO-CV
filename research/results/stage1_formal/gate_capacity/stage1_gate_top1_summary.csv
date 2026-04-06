@@ -1,0 +1,6 @@
+model,top1_best_epoch,top1_best_value,gate_best_epoch,same_as_gate_best
+yolo11n,120,0.92500,76,no
+yolo11s,88,0.92083,77,no
+yolo11m,197,0.93472,78,no
+yolo11l,103,0.93056,54,no
+yolo11x,120,0.93194,125,no

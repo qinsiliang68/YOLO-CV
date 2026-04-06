@@ -1,0 +1,22 @@
+{
+  "task_kind": "cls6",
+  "task_name": "stage1_formal_cls6_capacity",
+  "config_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\$out\\generated_configs\\stage1_formal\\cls6_capacity\\yolo11m_cls6_formal_200ep.json",
+  "dataset_root": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\datasets\\sewerml_cls6_train7200",
+  "run_dir": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11m_cls6_formal_200ep",
+  "summary_dir": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\research\\materials\\stage1_formal\\cls6_capacity\\yolo11m_cls6_formal",
+  "split_manifest": "",
+  "formal_batch": 24,
+  "target_epochs": 200,
+  "machine_name": "DESKTOP-DGQTJ9O",
+  "commit_hash": "",
+  "python_executable": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\.venv\\Scripts\\python.exe",
+  "status": "evaluation_completed",
+  "epochs_indexed": 200,
+  "created_at": "2026-04-05 21:52:25",
+  "updated_at": "2026-04-06 02:02:10",
+  "training_started_at": "2026-04-05 21:52:29",
+  "training_completed_at": "2026-04-06 01:28:07",
+  "evaluation_completed_at": "2026-04-06 02:02:10",
+  "platform": "Windows-10-10.0.26200-SP0"
+}
