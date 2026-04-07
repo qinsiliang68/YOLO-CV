@@ -16,6 +16,7 @@
 \usepackage{hyperref}
 \usepackage{setspace}
 \usepackage{xcolor}
+\usepackage[numbers,sort&compress]{natbib}
 
 \geometry{
     top=2.54cm,
@@ -64,53 +65,38 @@
     }
 }
 
-\newcommand{\TODO}[1]{\textcolor{red}{[待补：#1]}}
 \newcommand{\keywords}[1]{\par\noindent{\heiti 关键词：}#1}
 \newcommand{\engkeywords}[1]{\par\noindent{\bfseries Key words:}#1}
-\newcommand{\fieldline}[1]{\underline{\makebox[#1][c]{}}}
 \newcommand{\formalmetric}[1]{\texttt{#1}}
 
-\title{基于改进 YOLOv11 的地下排水管道缺陷智能检测方法研究}
-\author{\TODO{填写作者姓名}}
-\date{\TODO{填写提交日期}}
+\title{面向高召回门控的地下排水管道缺陷 Stage-1 正式容量扫描与选模研究}
+\author{}
+\date{2026年4月}
 
 \begin{document}
 \zihao{-4}\songti
 
 \frontmatter
-\pagestyle{plain}
-
-\begin{titlepage}
-    \centering
-    \vspace*{3.5cm}
-    {\heiti\zihao{-1} 基于改进 YOLOv11 的地下排水管道缺陷智能检测方法研究\par}
-    \vspace{2.4cm}
-    {\songti\zihao{3} 论文主稿\par}
-    \vspace{2.8cm}
-    \begin{tabular}{rl}
-        作者姓名： & \fieldline{6cm} \\[1.0em]
-        学科专业： & \fieldline{6cm} \\[1.0em]
-        导师姓名： & \fieldline{6cm} \\[1.0em]
-        完成时间： & \fieldline{6cm}
-    \end{tabular}
-    \vfill
-\end{titlepage}
 
 \chapter*{摘要}
 \addcontentsline{toc}{chapter}{摘要}
-本文围绕地下排水管道 CCTV 图像中的缺陷检测问题，构建一条“前级高召回预筛 + 后级缺陷检测 + 跨域迁移”的两阶段研究主线。与早期 exploratory 阶段不同，当前论文主稿仅保留 thesis-facing 的问题定义、方法设计、formal 协议、formal 实验与论文级结论；阶段性试错、脚本改造、训练事故和方法演进过程则独立记录在 \texttt{report.tex} 中。
+地下排水管道缺陷识别在工程部署中同时面临三类约束：正常帧远多于缺陷帧、小样本和细粒度异常容易被背景纹理淹没，以及默认阈值下的分类指标并不能直接反映系统在高召回筛查中的减负收益。针对这一问题，本文将当前研究范围严格限定在 stage-1，并把第一阶段重新定义为 recall-constrained 的 Normal/Abnormal gate，而不是默认阈值二分类任务。本文的核心目标不是提出新的 detector，而是在已完成的 formal capacity scan 证据基础上，建立一套可复现、可审计的 stage-1 正式选模协议。
 
-针对 sewer 场景中正常帧数量远高于缺陷帧、背景纹理复杂、误报极易累积的现实约束，本文首先将第一阶段重新定义为高召回 Normal/Abnormal gate，而不是普通默认阈值二分类器。第一阶段的正式目标不再是训练器中的 \texttt{acc/top1}，而是在 \formalmetric{Recall$\geq$99.5\%} 与 \formalmetric{Recall$\geq$99.0\%} 约束下，尽可能提高正常样本过滤能力。因此，本文建立了 stage-1 formal protocol：统一 \texttt{batch=24}、统一 \texttt{epochs=200}、每轮保存 checkpoint，并以外部 gate-aware evaluator 对所有 checkpoint 做温度校准与 operating point 排序。direct binary gate formal capacity scan 表明，\texttt{yolo11m-cls} 在 \formalmetric{Spec@R99.5}、\formalmetric{Spec@R99.0}、\formalmetric{Prec@R99.0} 和 \formalmetric{PTR@R99.0} 的综合排序下成为当前 formal high-recall leader，\texttt{yolo11x-cls} 为第二对照模型。
+在统一的 formal protocol 下，本文分别完成了两套容量扫描：其一是 direct binary gate five-model capacity scan，其二是 source-side six-class capacity scan。前者使用 \formalmetric{Spec@R99.5}、\formalmetric{Spec@R99.0}、\formalmetric{Prec@R99.0} 与 \formalmetric{PTR@R99.0} 作为正式排序准则，并对每个 epoch checkpoint 执行温度校准与 operating-point 评估；后者仅作为 source-side representation 的辅助参考，按 Accuracy、AUROC 与 AUPRC 排序。实验结果表明，在 direct binary gate 的正式视图下，\texttt{yolo11m-cls} 取得最优综合表现，\texttt{yolo11x-cls} 为第二对照模型，而 \texttt{yolo11l-cls} 退居第三。与此同时，source six-class 视图得到的排序为 \texttt{x > m > l > s > n}，与 binary gate 视图的 \texttt{m > x > l > s > n} 并不一致。
 
-在此基础上，本文进一步将第二阶段定位为整篇工作的主创新承载区，围绕改进 YOLOv11 检测器、源域到目标域的跨域迁移训练、以及低标注约束下的弱监督候选区域构建展开研究。当前主稿已经完成两个 stage-1 formal capacity scan 的正式回填，并按 legacy 框架重组为“绪论—理论基础—数据与总体框架—前级高召回预筛—改进 YOLOv11 检测与迁移—实验结果与分析—结论与展望”的七章结构。待 formal HN / HardMix / RCIS 以及 detector 相关 formal 结果陆续回填后，即可进入最终定稿阶段。
-\keywords{地下排水管道；YOLOv11；高召回门控；两阶段级联；跨域迁移；formal protocol}
+进一步地，五个 binary gate 模型全部表现出 trainer \formalmetric{top1-best} 与 formal gate-best 的错位，说明 \formalmetric{top1} 虽然仍可作为训练健康信号，但并不对应高召回门控真正关心的 operating-point 目标，因而不应再被用作 stage-1 的正式 early-stop 或 checkpoint-selection 依据。当前结果由此建立了三点正式证据：direct binary gate 是第一阶段主裁判视图；source six-class 只承担辅助参考角色；后续 stage-1 增强实验应以 \texttt{yolo11m-cls} 为主模型，并以 \texttt{yolo11x-cls} 作为容量对照模型。基于这些结果，本文为后续的 hard-negative 回流、训练侧样本组织优化以及后续系统级研究奠定了统一的 stage-1 证据基础。
+
+\keywords{地下排水管道；高召回门控；容量扫描；温度校准；检查点选模；CCTV 图像}
 
 \chapter*{Abstract}
 \addcontentsline{toc}{chapter}{Abstract}
-This thesis studies intelligent defect detection for underground drainage pipeline CCTV imagery under a two-stage cascade with cross-domain transfer. The current manuscript is thesis-facing: it keeps only formal problem definition, formal protocol, formal experiments, and thesis-level conclusions, while chronological trial-and-error records are moved to \texttt{report.tex}.
+This manuscript focuses exclusively on stage-1 model selection for sewer-defect screening under a high-recall operating regime. Rather than treating stage-1 as a default-threshold binary classifier, the study formalizes it as a recall-constrained Normal/Abnormal gate whose primary objective is normal filtering under fixed recall anchors. The contribution of the present manuscript is therefore not a new detector, but a reproducible and auditable stage-1 protocol built on completed formal capacity scans.
 
-Stage-1 is explicitly redefined as a high-recall Normal/Abnormal gate rather than a default-threshold classifier. Its formal objective is no longer trainer-side \texttt{acc/top1}, but normal filtering under fixed high-recall operating points. A unified formal protocol is therefore established: \texttt{batch=24}, \texttt{epochs=200}, checkpoint saved every epoch, and external gate-aware evaluation with temperature scaling and operating-point ranking. The direct binary gate formal capacity scan shows that \texttt{yolo11m-cls} is the current high-recall leader, while \texttt{yolo11x-cls} serves as the second control model. Based on this gate front-end, stage-2 remains the main innovation carrier of the thesis, focusing on an improved YOLOv11 detector, source-to-target transfer, and weakly supervised candidate-region generation under limited annotation cost.
-\engkeywords{underground drainage pipeline; YOLOv11; high-recall gate; two-stage cascade; cross-domain transfer; formal protocol}
+Two formal capacity scans are reported. The primary view is a direct binary-gate scan over five YOLO11 classification backbones, ranked by \formalmetric{Spec@R99.5}, \formalmetric{Spec@R99.0}, \formalmetric{Prec@R99.0}, and \formalmetric{PTR@R99.0}, with temperature scaling and operating-point evaluation applied to every epoch checkpoint. The auxiliary view is a six-class source-side scan ranked by Accuracy, AUROC, and AUPRC. The results show that \texttt{yolo11m-cls} is the formal leader under the binary gate objective, followed by \texttt{yolo11x-cls}, whereas the auxiliary six-class view ranks the models as \texttt{x > m > l > s > n}. This mismatch indicates that source-side representation quality cannot replace gate-aware checkpoint selection for stage-1.
+
+The experiments further show that trainer-selected \formalmetric{top1-best} checkpoints do not align with gate-selected checkpoints for any of the five binary-gate models. This evidence supports a key methodological claim of the paper: trainer-side \formalmetric{top1} remains useful for monitoring optimization health, but it should not be used as the official early-stopping or model-selection criterion for a high-recall gate. The completed capacity scans therefore establish a formal stage-1 mainline centered on \texttt{yolo11m-cls}, with \texttt{yolo11x-cls} as the second control model, and provide the evidence base for subsequent hard-negative and training-side enhancement experiments.
+
+\engkeywords{sewer inspection, high-recall gate, capacity scan, temperature scaling, checkpoint selection, CCTV imagery}
 
 \tableofcontents
 
@@ -118,90 +104,88 @@ Stage-1 is explicitly redefined as a high-recall Normal/Abnormal gate rather tha
 
 \chapter{绪论}
 
-\section{研究背景与意义}
-地下排水管道的日常巡检高度依赖 CCTV 视频。与通用视觉任务不同，排水管道图像存在水膜反光、污渍附着、压缩噪声、局部遮挡、光照波动和类间纹理相似等问题，导致正常背景与真实缺陷之间存在强混淆。如果把全部帧直接交给后级检测器处理，一方面会浪费大量算力与人工复核资源，另一方面也会让误报在长视频中持续累积。因此，本文并不把“分类”“伪框”“检测”“迁移”视为彼此分离的独立任务，而是将其组织为一条以工程约束为驱动的两阶段识别链：前级负责高召回预筛，后级负责精细检测，跨域迁移负责把公开 sewer 数据上的表征能力迁移到本地目标域。
+\section{研究背景与问题提出}
+地下排水管网是城市基础设施体系中的关键组成部分，其运行状态直接关系到城市防涝、道路安全以及水环境治理 \cite{moradi2019review,haurum2020survey,ma2026stateoftheart}。当前工程实践仍主要依赖 CCTV 巡检和人工复核，但海量正常帧、复杂背景纹理以及跨设备成像差异，使人工判读在效率、一致性和误报控制方面面临明显瓶颈 \cite{haurum2020survey,cheng2018deep}。因此，如何在保持缺陷高召回的前提下尽可能减少进入后续人工复核或后级检测的正常样本，已经成为 sewer inspection 智能化中的核心问题之一。
 
-\section{国内外研究现状}
-现有研究大致可以分为四条线。第一条是排水管道缺陷的直接分类与检测研究，重点回答公开 sewer 数据上的缺陷识别效果。第二条是基于 YOLO 系列检测器的工程落地研究，强调在复杂背景下的实时性与精度平衡。第三条是 CAM / Grad-CAM、伪框生成和低标注增强研究，用于在标注稀缺时降低 detector 启动成本。第四条是迁移学习与跨域适应研究，用于缓解源域公开数据与本地目标域之间的分布差异。总体来看，现有工作通常会分别讨论这些模块，但较少把“高召回 gate + detector + transfer”作为同一条工程主线统一组织。
+传统研究通常把第一阶段视作普通分类任务，默认以 Accuracy 或 \formalmetric{top1} 作为早停和选模依据。然而，在实际两阶段工作流中，stage-1 的职责并不是在默认阈值下取得最高整体分类分数，而是在固定高召回约束下最大化正常样本拦截。因此，默认阈值分类语义与高召回门控语义之间存在明显错位。本文据此将 stage-1 明确重定义为 recall-constrained gate，并围绕这一目标重新组织容量扫描、校准评估和 checkpoint 选择规则。
 
-\section{现有研究存在的问题}
-从本文任务出发，当前研究至少存在三个不足。其一，许多工作把第一阶段分类器仍按普通默认阈值 accuracy 任务处理，没有把它明确提升为高召回门控问题，导致选模准则与真实工程目标脱节。其二，低标注 detector 链路往往把 CAM、伪框、迁移和 detector 本身分开讨论，缺少统一的证据链。其三，研究过程与论文定稿口径经常混在一起，训练日志里的 \texttt{best.pt}、临时 exploratory 结果和最终结论彼此污染，造成后期材料难以统一。
+\section{相关研究现状}
+\subsection{排水管道缺陷视觉识别}
+排水管道缺陷识别经历了由人工特征到深度视觉模型的技术演进。早期工作以 HOG、SVM 和规则驱动候选区域为主，已经证明 CCTV 图像中的管道异常具有一定可计算性，但方法对场景变化较为敏感 \cite{halfawy2014hogsvm}。随着深度学习的发展，研究开始转向图像级分类与目标检测。Kumar 等利用深度卷积网络完成 sewer CCTV 缺陷分类，Cheng 等进一步将深度模型用于管道缺陷检测，表明数据驱动表征能够显著提升识别性能 \cite{kumar2018cnn,cheng2018deep}。
 
-\section{研究内容与技术路线}
-本文围绕上述问题组织四项研究内容：
+\subsection{YOLO 路线与 sewer 任务适配}
+YOLO 系列因具备较好的实时性和工程成熟度，已成为管道缺陷检测中的常见基础路线 \cite{redmon2016yolo}。在 sewer 场景中，研究者围绕特征增强、轻量化部署与场景适配提出了多种改进策略，例如改进 YOLOv5 的管道缺陷检测模型以及轻量化 YOLOv5-Sewer 等 \cite{wang2023improvedyolov5,zhao2024yolov5sewer}。这些工作证明，YOLO 路线具有良好的工程基础，但也表明不同任务目标之间不能简单共用同一评价口径：用于目标检测的 detector 精度并不直接回答高召回门控下的 normal filtering 问题。
+
+\subsection{公开数据、校准与迁移视角}
+Sewer-ML 数据集的发布为 sewer defect classification 提供了更统一的 benchmark 条件，也使多尺度容量比较与 source-side representation 分析成为可能 \cite{haurum2021sewerml}。另一方面，温度校准已被证明是改善神经网络输出分数可信度的低成本方式，在不改变样本排序的前提下，有助于建立更稳定的 operating-point 比较基础 \cite{guo2017calibration}。此外，迁移学习在 sewer defect detection 中也已显示出缓解目标域标注不足的价值 \cite{situ2023transfer}。然而，就当前已完成证据而言，最需要优先解决的问题并不是 detector 结构本身，而是 stage-1 的正式任务边界与正式选模规则。
+
+\section{研究目标与论文贡献}
+本文当前版本只回答一个问题：在统一的 stage-1 formal protocol 下，哪一种 YOLO11-cls 容量更适合作为高召回 gate 的正式起点。围绕这一目标，本文形成以下三点贡献：
 \begin{enumerate}[label=\arabic*.]
-    \item 将第一阶段重定义为高召回 Normal/Abnormal gate，并建立统一的 formal protocol，使其 best checkpoint 由外部 gate-aware evaluator 决定，而不是由 trainer 的 \texttt{acc/top1} 决定。
-    \item 在统一 protocol 下重新完成 direct binary gate 五模型容量扫描，确认 formal high-recall leader 与第二对照模型，为后续 calibration、HN、HardMix 和信息量采样提供统一起点。
-    \item 以改进 YOLOv11 为主体，组织 detector 的结构改进、损失优化与 source-to-target 迁移训练，并把弱监督候选区域构建纳入 detector 链路。
-    \item 从系统级角度评估两阶段方案在误报控制、复核效率和跨域适应性上的综合收益。
+    \item 将 stage-1 重新界定为 recall-constrained high-recall gate，并给出一套可复现的 formal checkpoint-selection 协议，即对每个 epoch checkpoint 执行温度校准、阈值扫描和 operating-point 排序，而不再依赖 trainer-side \formalmetric{top1}。
+    \item 完成两套 formal capacity scan，并用 direct binary gate 与 source six-class 的排序差异，说明 source-side representation 视图不能替代 stage-1 gate-aware 选模视图。
+    \item 基于完整的 checkpoint 级证据表明，五个 binary gate 模型全部存在 \formalmetric{top1-best} 与 gate-best 的系统性错位，从而支持“\formalmetric{top1} 不应作为 stage-1 正式选模标准”这一结论。
 \end{enumerate}
 
-\section{本文主要创新点}
-当前主稿阶段可稳定保留的创新表述包括：
+\section{论文组织}
+全文围绕已完成的 stage-1 容量扫描结果展开。第 2 章定义 formal 指标与 checkpoint-selection 协议；第 3 章介绍数据集、容量扫描设置与评估流程；第 4 章报告 direct binary gate formal capacity scan 结果；第 5 章报告 six-class source formal capacity scan 及 cross-view rank mismatch；第 6 章讨论这些结果对 stage-1 主线选择的含义及当前边界；第 7 章总结全文并说明后续工作。
+
+\chapter{理论基础与正式协议}
+
+\section{stage-1 高召回门控的目标定义}
+设 stage-1 的输入样本总数为 $N$，其中 abnormal 样本需要尽可能完整地保留给后续人工复核或后级处理，而 normal 样本应在尽可能不牺牲召回的前提下被前级拦截。由此，stage-1 的核心目标不是默认阈值下的总体分类正确率，而是高召回约束下的 normal filtering ability。
+
+本文采用两个固定工作点作为正式锚点：\formalmetric{Recall$\geq$99.5\%} 与 \formalmetric{Recall$\geq$99.0\%}。在这两个约束下，正式排序规则定义为：
+\begin{equation}
+\formalmetric{Spec@R99.5} \succ \formalmetric{Spec@R99.0} \succ \formalmetric{Prec@R99.0} \succ \formalmetric{PTR@R99.0},
+\end{equation}
+其中符号“$\succ$”表示先后优先级，而非加权求和。
+
+\section{正式指标定义}
+在二分类 gate 语境中，\formalmetric{Spec@R99.5} 与 \formalmetric{Spec@R99.0} 分别表示在满足相应召回约束时的 specificity；\formalmetric{Prec@R99.0} 表示在 \formalmetric{Recall$\geq$99.0\%} 约束下的 precision。本文特别采用 \formalmetric{PTR@R99.0} 作为第四排序准则，其含义为在 \formalmetric{Recall$\geq$99.0\%} 对应阈值下的 pass-through rate，即仍被送往下一阶段的样本占全部样本的比例：
+\begin{equation}
+\formalmetric{PTR@R99.0} = \frac{TP + FP}{N}.
+\end{equation}
+其中 $TP$ 与 $FP$ 分别为进入下一阶段的 abnormal 与 normal 样本数。由于 stage-1 的目标是尽可能在不损害高召回的前提下减轻后续负担，因此 \formalmetric{PTR@R99.0} 越低越好。
+
+\section{温度校准与 gate-aware checkpoint selection}
+为避免不同 checkpoint 的分数尺度不可比，本文对每个 epoch checkpoint 采用单标量 temperature scaling \cite{guo2017calibration}。具体流程如下：
 \begin{enumerate}[label=\arabic*.]
-    \item 将第一阶段从普通二分类重新定义为高召回 gate，并建立了外部 gate-aware 的 formal 选模协议；
-    \item 构建以两阶段级联为主线的 sewer 缺陷识别体系，使前级预筛、弱监督候选区域与后级 detector 形成统一链路；
-    \item 围绕改进 YOLOv11 与跨域迁移训练构建后级检测主创新框架。
+    \item 在固定的 val-cal 子集上拟合温度参数 $T$；
+    \item 将该温度应用于 val-op 子集，得到 calibrated score；
+    \item 在 val-op 上执行 threshold sweep，计算各候选阈值下的 recall、specificity、precision 与 pass-through rate；
+    \item 按照正式排序规则选出 gate-best checkpoint，而不是直接使用 trainer 自动保存的 \texttt{best.pt}。
 \end{enumerate}
-其中，第一点已经由 formal capacity scan 启动并产生正式结果；后两点将在 detector 与 transfer 正式实验全部回填后进一步收束。
 
-\section{论文结构安排}
-本文结构沿用 legacy 论文框架组织为七章。第 1 章说明研究背景、现状、不足与总体路线；第 2 章给出理论基础与关键技术；第 3 章说明数据集构建、任务定义与总体框架；第 4 章聚焦前级高召回预筛与弱监督标注增强；第 5 章聚焦改进 YOLOv11 检测器与跨域迁移策略；第 6 章给出实验结果与分析；第 7 章总结全文并展望后续工作。
+这一协议意味着 calibration 已经内嵌为 formal evaluation 的组成部分，而不是独立于容量扫描之外的附加训练阶段。trainer-side 的 \formalmetric{acc/top1/loss} 仍然保留，但它们只承担训练健康监控功能，不承担正文正式选模功能。
 
-\chapter{理论基础与关键技术}
+\section{six-class source 视图的辅助地位}
+除 direct binary gate 外，本文还组织了一条 six-class source 容量扫描，用于观察不同容量模型在 source-side representation 任务上的相对位置。该视图的正式排序规则为 Accuracy、AUROC 与 AUPRC。然而，这一视图只承担辅助参考角色，不应替代 direct binary gate 的正式 backbone 选择。后续章节将用实证结果说明，source six-class 排序与 direct binary gate 排序确实存在错位。
 
-\section{地下排水管道缺陷类型与图像特征}
-地下排水管道缺陷既包括结构性异常，也包括表面性异常。不同缺陷在 CCTV 图像中的表现形式差异明显，例如裂缝与破裂更依赖细粒度边缘与纹理突变，渗漏与侵入则往往伴随局部形态与上下文环境共同变化。与此同时，大量正常图像仍可能因为水膜、污渍、反光和接缝纹理而表现出近似缺陷的局部模式。这一特征决定了本文必须区分“高召回 gate 的误报控制问题”和“后级 detector 的精细定位问题”。
+\chapter{数据集、实验设置与 formal capacity scan 设计}
 
-\section{图像分类与目标检测评价指标}
-本文涉及三类评价语义。第一类是第一阶段 gate 评价，其正式主排序固定为：\formalmetric{Spec@R99.5}、\formalmetric{Spec@R99.0}、\formalmetric{Prec@R99.0} 和 \formalmetric{PTR@R99.0}。第二类是 six-class source 的辅助参考排序，按 Accuracy、AUROC、AUPRC 组织。第三类是第二阶段检测评价，包括 Precision、Recall、F1、AP50 和 AP50-95 等。需要特别强调的是，第一阶段训练日志中的 \formalmetric{acc/top1/loss} 只承担训练健康监控功能，不承担正文正式选模功能。
+\section{数据集组织}
+本文使用两套 source-side 数据集来支撑当前 stage-1 研究。第一套是 direct binary gate 数据集 \texttt{sewerml\_gate2\_train7200}，共 7200 张图像，其中训练集 6480 张、验证集 720 张；类别分布为 abnormal 6000 张、normal 1200 张，训练集与验证集均保持 5:1 的类间比例。第二套是 six-class source 数据集 \texttt{sewerml\_cls6\_train7200}，同样包含 7200 张图像，并被均衡组织为六个类别，每类 1200 张，训练集与验证集分别为 6480 与 720 张。
 
-\section{YOLO 系列与 YOLOv11 原理}
-YOLO 系列方法强调一阶段端到端检测，在工程应用中具有较强的效率优势。YOLOv11 在结构表达能力、工程成熟度和推理效率之间提供了稳定的平台，适合作为本文两阶段体系中的分类与检测基础模型。本文并非简单替换 YOLOv11，而是在 stage-1 中把其分类能力改造为高召回 gate，在 stage-2 中围绕 detector 结构和迁移策略进行针对性增强。
+对于 binary gate formal protocol，全部 720 张验证图像进一步按类别分层拆分为 val-cal 与 val-op 两部分，其中 val-cal 为 216 张，val-op 为 504 张；对应 abnormal/normal 的划分分别为 180/36 与 420/84。该拆分仅用于温度参数拟合与 operating-point 报告，不参与训练。
 
-\section{注意力机制、损失函数与框回归基础}
-后级 detector 的结构增强将主要围绕三条线展开：注意力机制提高复杂背景下的判别聚焦能力，检测头改进改善小目标与细粒度结构异常的表达组织，损失函数设计则在类别不均衡与难样本学习之间实现更合理的优化折中。这些内容构成第 5 章 detector 改进的理论基础。
+\section{模型族与统一训练设置}
+所有容量扫描均以 YOLO11-cls 五个尺度模型为候选，即 \texttt{yolo11n-cls}、\texttt{yolo11s-cls}、\texttt{yolo11m-cls}、\texttt{yolo11l-cls} 和 \texttt{yolo11x-cls}。统一训练协议如下：
+\begin{itemize}
+    \item batch size 固定为 24；
+    \item 训练轮数固定为 200；
+    \item 每轮保存 checkpoint；
+    \item 不使用 trainer-side \formalmetric{top1} 作为早停准则；
+    \item 所有 formal 结果均由外部 evaluator 汇总。
+\end{itemize}
+该统一设置的目的，是把容量差异与 checkpoint-selection 规则显式分离，从而避免因为不同早停行为而掩盖真实的 gate-aware 排序。
 
-\section{迁移学习与弱监督定位基础}
-本文同时采用源域预训练、目标域微调与弱监督候选区域生成。源域分类帮助模型学习 sewer-specific representation，目标域分类与 detector 微调缩小本地任务域差，CAM / Grad-CAM 则在低标注条件下生成 detector 所需的初始候选区域。三者并非平行实验，而是 detector 训练链中的前序支撑能力。
+\section{容量扫描输出材料}
+为保证结果可追溯，本文对每个模型保留 run manifest、dataset manifest、best epoch manifest、all checkpoints index 以及 epoch-level summary，并在统一结果目录中生成主表、主图、附录表和 supplementary source-of-truth。由此，当前 manuscript 中的所有数字都可以追溯到对应的 formal summary，而不依赖训练日志中的零散截图或经验性口径。
 
-\section{本章小结}
-本章统一了后文所需的理论口径：一是第一阶段的高召回 gate 评价语义，二是第二阶段 detector 与系统级评价语义，三是 YOLOv11、迁移学习与弱监督定位等关键技术的角色定位。这些基础内容共同支撑后续的数据组织、第一阶段 formal protocol 和第二阶段 detector 改进。
+\chapter{direct binary gate formal capacity scan 结果}
 
-\chapter{数据集构建与总体研究框架}
-
-\section{数据来源与总体说明}
-本文当前涉及两类核心数据。第一类是 source 侧 sewer 分类数据，用于 six-class source 分类与 direct binary gate capacity scan；第二类是目标域结构化缺陷数据，用于 detector 训练、伪框增强与最终系统验证。为避免一个数据目录承担多种不兼容任务，本文分别构造 source six-class 视图和 direct binary gate 视图，并将 target-domain detector 数据单独组织。
-
-\section{源域分类数据集构建}
-第一阶段二分类 gate 并未引入新的图像来源，而是在 source 侧单标签六类分类数据上做任务重映射：将 \textrm{Normal} 保留为负类，其余五类统一映射为 \textrm{Abnormal} 正类。这样既保证了 source six-class 和 direct binary gate 的图像来源一致，又便于后续把 stage-1 表征能力与 detector 初始化、CAM 伪框生成和 target fine-tune 链接起来。
-
-\section{目标域任务定义与标签映射}
-目标域部分围绕最终检测类别组织。对于 detector 而言，本文最终关心的是结构性缺陷在目标域上的检测能力，而不是 source 侧 coarse gate 自身。因此，第一阶段和第二阶段在任务角色上严格区分：前者只负责高召回预筛，后者承担最终定位与类别识别。
-
-\section{数据划分协议与 formal / exploratory 边界}
-从 formalization 开始，第一阶段所有论文可引用材料都必须进入 \texttt{research/materials/stage1\_formal/} 与 \texttt{research/results/stage1\_formal/}。旧 exploratory 材料不再直接进入正文，只保留在 \texttt{research/archive/stage1\_preformal\_legacy/} 中作为方法演进痕迹。正式 gate capacity scan 进一步采用统一的 val-cal / val-op 口径：先在 val-cal 上拟合温度参数，再在 val-op 上执行 threshold sweep 和 operating point 排序。
-
-\section{总体系统框架设计}
-总体框架由前级高召回 gate、后级 detector 和 source-to-target transfer 三部分构成。第一阶段在高召回约束下尽可能过滤掉可以安全排除的 normal 帧；第二阶段对剩余高风险图像完成检测；迁移学习与弱监督候选区域生成则共同服务于 detector 的训练效率与目标域适配。
-
-\section{评价协议与实验规范}
-当前正式协议可概括为两条。对 direct binary gate，统一 \texttt{batch=24}、\texttt{epochs=200}、每轮保存 checkpoint，并以外部 gate-aware evaluator 统一排序；对 six-class source，同样统一 \texttt{batch=24} 和 \texttt{epochs=200}，但排序规则改为 Accuracy、AUROC、AUPRC。formal best checkpoint 一律不再由 trainer 内部 \texttt{best.pt} 决定，而由对应任务的外部 summary 选出。
-
-\section{本章小结}
-本章将数据来源、任务重映射、formal / exploratory 边界和两阶段总体框架统一到同一套研究语义下，为后续第 4 章的高召回 gate 与第 5 章的 detector / transfer 链路提供了共同的数据与协议基础。
-
-\chapter{前级高召回预筛与弱监督标注增强策略}
-
-\section{前级高召回预筛问题定义}
-第一阶段的任务不是“尽量提高默认阈值 accuracy”的普通二分类，而是“在尽量不过漏异常图像的约束下，最大化对正常图像的过滤能力”的高召回 gate。也正因为如此，早期 exploratory 阶段习惯沿用的 \formalmetric{acc/top1} 停止与选模逻辑，在 formal 口径下被正式废止：\formalmetric{acc/top1/loss} 仅保留为训练健康信息，而 stage-1 的正文 best checkpoint 必须由外部 gate-aware summary 决定。
-
-\section{基于同源图像重标注的二分类 gate 构建}
-direct binary gate 建立在与 six-class source 相同的图像来源上，但任务语义不同。本文将 \textrm{Normal} 映射为负类，其余缺陷类别统一映射为正类，使第一阶段可以直接回答“哪些图像应该继续送入 detector，哪些图像可以被安全挡掉”。这一重定义的价值在于：它既保留了 source 侧表征学习的连续性，又让第一阶段与最终系统目标紧密对齐。
-
-\section{direct binary gate formal capacity scan}
-为正式确认第一阶段 backbone 的容量选择，本文在统一 formal protocol 下，对 \texttt{yolo11n-cls}、\texttt{yolo11s-cls}、\texttt{yolo11m-cls}、\texttt{yolo11l-cls} 和 \texttt{yolo11x-cls} 完成了 direct binary gate 五模型容量扫描。该轮实验统一采用 \texttt{batch=24}、\texttt{epochs=200}、每轮保存 checkpoint，并对每个 checkpoint 执行外部 gate-aware 评估：先在 val-cal 上拟合温度参数，再在 val-op 上完成 calibrated score、threshold sweep 与 operating point 排序。因此，本文报告的 best epoch 并不等同于 trainer 自动生成的 \texttt{best.pt}，而是按照 \formalmetric{Spec@R99.5 $\rightarrow$ Spec@R99.0 $\rightarrow$ Prec@R99.0 $\rightarrow$ PTR@R99.0} 这一正式规则重新选出的 gate-best checkpoint。
-
+\section{主结果表}
 \begin{table}[H]
     \centering
     \caption{direct binary gate formal capacity scan 主表}
@@ -220,10 +204,38 @@ direct binary gate 建立在与 six-class source 相同的图像来源上，但�
     \end{tabular}
     }
 \end{table}
+\noindent\parbox{\textwidth}{\footnotesize 注：direct binary gate 是 stage-1 的正式选模视图；排序遵循 \formalmetric{Spec@R99.5 > Spec@R99.0 > Prec@R99.0 > PTR@R99.0}。}
 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.92\textwidth]{../../../research/results/stage1_formal/capacity_scan/paper_main/figures/fig_stage1_gate_capacity_bar.png}
+    \caption{direct binary gate formal capacity scan 的主指标比较}
+    \label{fig:stage1-formal-gate-bar}
+\end{figure}
+
+表 \ref{tab:stage1-formal-gate-capacity} 表明，在统一的 recall-constrained 排序规则下，\texttt{yolo11m-cls} 在 \formalmetric{Spec@R99.5} 与 \formalmetric{Spec@R99.0} 两个主排序锚点上同时取得最优，并在 \formalmetric{Prec@R99.0} 与 \formalmetric{PTR@R99.0} 上保持最优综合表现。因此，当前 stage-1 formal binary gate 的主模型应固定为 \texttt{yolo11m-cls}，第二对照模型则应固定为 \texttt{yolo11x-cls}。这一结果与早期基于默认阈值印象形成的容量偏好不同，说明 stage-1 的 backbone 选择必须回到 high-recall gate objective 本身。
+
+\section{Spec@R99.5 的 checkpoint dynamics}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.90\textwidth]{../../../research/results/stage1_formal/capacity_scan/paper_main/figures/fig_stage1_gate_spec_r995_curve.png}
+    \caption{五模型 \formalmetric{Spec@R99.5} 随 epoch 的演化曲线}
+    \label{fig:stage1-formal-gate-spec995}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.90\textwidth]{../../../research/results/stage1_formal/capacity_scan/paper_main/figures/fig_stage1_gate_spec_r990_curve.png}
+    \caption{五模型 \formalmetric{Spec@R99.0} 随 epoch 的演化曲线}
+    \label{fig:stage1-formal-gate-spec990}
+\end{figure}
+
+图 \ref{fig:stage1-formal-gate-spec995} 与图 \ref{fig:stage1-formal-gate-spec990} 展示了 formal gate 指标随 checkpoint 变化的整体趋势。五个模型的 gate-best epoch 分别为 \texttt{76/77/78/54/125}（对应 \texttt{n/s/m/l/x}），说明 formal 最优点通常出现在训练中期或后中期，而不是默认意义上的“最后一轮”或“trainer 自动 best”。其中，\texttt{yolo11l-cls} 在较早 epoch 达到峰值，而 \texttt{yolo11x-cls} 需要更长优化轨迹才达到最优，但即便如此，\texttt{yolo11x-cls} 仍未在正式排序下超过 \texttt{yolo11m-cls}。因此，capacity 增大并不自动等价于 recall-constrained filtering 能力的稳定提升。
+
+\section{trainer \formalmetric{top1-best} 与 gate-best 的错位}
 \begin{table}[H]
     \centering
-    \caption{trainer \formalmetric{top1-best} 与 gate-best 的错位对照}
+    \caption{trainer \formalmetric{top1-best} 与 gate-best 的对照}
     \label{tab:stage1-formal-top1-vs-gatebest}
     \resizebox{\textwidth}{!}{%
     \begin{tabular}{lccccccc}
@@ -239,41 +251,23 @@ direct binary gate 建立在与 six-class source 相同的图像来源上，但�
     \end{tabular}
     }
 \end{table}
+\noindent\parbox{\textwidth}{\footnotesize 注：五个模型全部出现 \formalmetric{top1-best} 与 gate-best 不一致；\formalmetric{top1} 可作为训练健康信号，但不应作为 stage-1 的正式早停或检查点选择标准。}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.92\textwidth]{../../../research/results/stage1_formal/capacity_scan/paper_main/figures/fig_stage1_gate_capacity_bar.png}
-    \caption{direct binary gate formal capacity scan 的五模型主指标比较}
-    \label{fig:stage1-formal-gate-bar}
-\end{figure}
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.48\textwidth]{../../../research/results/stage1_formal/capacity_scan/paper_main/figures/fig_stage1_gate_spec_r995_yolo11n.png}\hfill
-    \includegraphics[width=0.48\textwidth]{../../../research/results/stage1_formal/capacity_scan/paper_main/figures/fig_stage1_gate_spec_r995_yolo11s.png}\\[0.5em]
-    \includegraphics[width=0.48\textwidth]{../../../research/results/stage1_formal/capacity_scan/paper_main/figures/fig_stage1_gate_spec_r995_yolo11m.png}\hfill
-    \includegraphics[width=0.48\textwidth]{../../../research/results/stage1_formal/capacity_scan/paper_main/figures/fig_stage1_gate_spec_r995_yolo11l.png}\\[0.5em]
-    \includegraphics[width=0.48\textwidth]{../../../research/results/stage1_formal/capacity_scan/paper_main/figures/fig_stage1_gate_spec_r995_yolo11x.png}
-    \caption{五模型 \formalmetric{Spec@R99.5} 的单模型演化曲线}
-    \label{fig:stage1-formal-gate-spec995}
-\end{figure}
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.90\textwidth]{../../../research/results/stage1_formal/capacity_scan/paper_main/figures/fig_stage1_gate_top1_vs_spec_dualaxis.png}
-    \caption{以 \texttt{yolo11m-cls} 与 \texttt{yolo11l-cls} 为例的 trainer \formalmetric{top1-best} 与 gate-best 错位示意}
+    \includegraphics[width=0.92\textwidth]{../../../research/results/stage1_formal/capacity_scan/paper_main/figures/fig_stage1_gate_top1_vs_spec_dualaxis.png}
+    \caption{以 \texttt{yolo11m-cls} 与 \texttt{yolo11l-cls} 为例的 \formalmetric{top1} 与 gate 指标错位}
     \label{fig:stage1-formal-gate-top1-mismatch}
 \end{figure}
 
-表 \ref{tab:stage1-formal-gate-capacity} 表明，当前 formal high-recall leader 已经从 exploratory 阶段常被沿用的 \texttt{yolo11l-cls} 改写为 \texttt{yolo11m-cls}。其中，\texttt{yolo11m-cls} 在两个主排序锚点 \formalmetric{Spec@R99.5} 与 \formalmetric{Spec@R99.0} 上同时取得最优，并在 \formalmetric{Prec@R99.0} 与 \formalmetric{PTR@R99.0} 上保持最优综合表现，因此构成后续 stage-1 正式主线的统一起点。按照相同的 formal 规则，第二对照模型应固定为 \texttt{yolo11x-cls}，而 \texttt{yolo11l-cls} 退居第三顺位。
+表 \ref{tab:stage1-formal-top1-vs-gatebest} 与图 \ref{fig:stage1-formal-gate-top1-mismatch} 共同揭示了一个关键结论：五个模型中没有任何一个满足 trainer \formalmetric{top1-best} 与 formal gate-best 一致。尤其是 \texttt{yolo11m-cls}，其 trainer 侧 \formalmetric{top1-best} 出现在第 197 轮，而 formal gate-best 出现在第 78 轮，两者相差 119 个 epoch；\texttt{yolo11l-cls} 也表现出类似错位。这一结果说明，trainer 侧的 \formalmetric{top1} 虽然仍能反映分类优化是否正常进行，但并不与 recall-constrained gate objective 对齐。因此，若仍以 \formalmetric{acc/top1} 作为 stage-1 的正式早停或选模准则，将系统性偏离高召回门控真正关心的工作点目标。
 
-表 \ref{tab:stage1-formal-top1-vs-gatebest} 进一步揭示了 trainer \formalmetric{top1-best} 与 formal gate-best 的系统性错位：五个模型中没有任何一个模型满足二者一致。尤其是 \texttt{yolo11m-cls}，其 trainer 侧 \formalmetric{top1-best} 出现在第 197 轮，而 formal gate-best 出现在第 78 轮，二者相差 119 个 epoch。这一现象直接说明，若仍以分类任务内部的 \formalmetric{acc/top1} 作为第一阶段的停止与选模准则，将系统性偏离高召回 gate 真正关心的 operating point 目标。
+\section{对 stage-1 主线选择的含义}
+从 operating-point 计数看，\texttt{yolo11m-cls} 在 \formalmetric{R99.5} 下达到 \texttt{TN/FN = 50/2}，在 \formalmetric{R99.0} 下达到 \texttt{TN/FN = 55/4}；\texttt{yolo11x-cls} 对应为 \texttt{46/2} 与 \texttt{50/4}；\texttt{yolo11l-cls} 对应为 \texttt{44/2} 与 \texttt{48/3}。这些结果表明，当前主模型切换并非由单个 checkpoint 的偶然波动导致，而是不同容量模型在 recall-constrained filtering setting 下的稳定差异。由此，后续所有 stage-1 增强实验都应围绕 \texttt{yolo11m-cls} 展开，并以 \texttt{yolo11x-cls} 作为容量对照模型。
 
-从 operating point 计数看，\texttt{yolo11m-cls} 在 \formalmetric{R99.5} 下实现 \texttt{TN/FN = 50/2}，在 \formalmetric{R99.0} 下实现 \texttt{TN/FN = 55/4}；\texttt{yolo11x-cls} 对应为 \texttt{46/2} 与 \texttt{50/4}；\texttt{yolo11l-cls} 对应为 \texttt{44/2} 与 \texttt{48/3}。图 \ref{fig:stage1-formal-gate-bar}--图 \ref{fig:stage1-formal-gate-top1-mismatch} 共同表明，当前主模型切换并非来自单一 checkpoint 的偶然波动，而是来自不同容量模型在高召回过滤目标下的稳定差异。因此，后续第一阶段增强实验应围绕 \texttt{yolo11m-cls} 与 \texttt{yolo11x-cls} 展开，而不应继续沿用早期 exploratory 阶段基于默认阈值分类表现形成的容量直觉。
+\chapter{six-class source formal capacity scan 与 cross-view 分析}
 
-\section{six-class source formal capacity scan}
-作为 source-side representation 的辅助参考，本文同步完成了 six-class source 的五模型 formal capacity scan。该任务与 direct binary gate 共享图像来源，但不共享正式选模语义。其排序规则固定为 Accuracy、AUROC 与 AUPRC，而不承担第一阶段主模型选择功能。对应结果见表 \ref{tab:stage1-formal-cls6-capacity} 与图 \ref{fig:stage1-formal-cls6-bar}。
-
+\section{six-class source 主结果}
 \begin{table}[H]
     \centering
     \caption{six-class source formal capacity scan 主表}
@@ -290,6 +284,7 @@ direct binary gate 建立在与 six-class source 相同的图像来源上，但�
         \bottomrule
     \end{tabular}
 \end{table}
+\noindent\parbox{\textwidth}{\footnotesize 注：six-class source 视图只用于 source-side representation 参考，不承担 stage-1 的正式选模功能。}
 
 \begin{figure}[H]
     \centering
@@ -298,11 +293,9 @@ direct binary gate 建立在与 six-class source 相同的图像来源上，但�
     \label{fig:stage1-formal-cls6-bar}
 \end{figure}
 
-表 \ref{tab:stage1-formal-cls6-capacity} 表明，在 source-side 六分类视角下，\texttt{yolo11x-cls} 为当前辅助参考 leader，\texttt{yolo11m-cls} 位居第二。这一结果说明，较大容量模型在 source-side representation 任务上仍具有优势；但这并不等同于它在第一阶段 high-recall gate 目标下必然最优。因此，six-class source 结果应被解释为表示能力的辅助参考，而不是 direct binary gate 的替代裁判。
+在 source-side six-class 任务下，\texttt{yolo11x-cls} 为辅助参考 leader，\texttt{yolo11m-cls} 位居第二。这一结果说明，更大容量模型在源域六类表示任务上仍具有优势；但该优势并不能直接转译为 recall-constrained binary gate 下的正式最优。因此，six-class source 结果应被解释为 source-side representation 的辅助视图，而不是 direct binary gate 的替代裁判。
 
 \section{cross-view rank mismatch}
-为了进一步阐明 source-side 表示能力与 direct binary gate 之间的任务边界，本文比较了两个 formal capacity scan 的最终排序。结果见表 \ref{tab:stage1-formal-crossview-rank-gap} 与图 \ref{fig:stage1-formal-crossview-gap}。
-
 \begin{table}[H]
     \centering
     \caption{six-class source 与 direct binary gate 的跨视图排序差异}
@@ -324,116 +317,100 @@ direct binary gate 建立在与 six-class source 相同的图像来源上，但�
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.80\textwidth]{../../../research/results/stage1_formal/capacity_scan/paper_main/figures/fig_stage1_crossview_rank_gap.png}
-    \caption{six-class source 与 direct binary gate 的排序差异可视化}
+    \includegraphics[width=0.88\textwidth]{../../../research/results/stage1_formal/capacity_scan/paper_main/figures/fig_stage1_crossview_rank_gap.png}
+    \caption{six-class source 与 direct binary gate 的排序错位可视化}
     \label{fig:stage1-formal-crossview-gap}
 \end{figure}
 
-表 \ref{tab:stage1-formal-crossview-rank-gap} 表明，source six-class 排序不能替代 direct binary gate 排序。最典型的差异集中在 \texttt{yolo11m-cls} 与 \texttt{yolo11x-cls}：前者在辅助 cls6 视图中位居第二，但在高召回 gate 视图中成为正式主模型；后者在辅助 cls6 视图中位居第一，但在 direct binary gate 中退居第二。这一结果进一步支持本文的任务划分：source six-class 是辅助参考，direct binary gate 才是第一阶段的正式选模视图。
+表 \ref{tab:stage1-formal-crossview-rank-gap} 与图 \ref{fig:stage1-formal-crossview-gap} 表明，source six-class 排序不能替代 direct binary gate 排序。最关键的差异集中在 \texttt{yolo11m-cls} 与 \texttt{yolo11x-cls}：前者在 source six-class 中位居第二，却在 binary gate 中成为正式主模型；后者在 source six-class 中位居第一，却在 binary gate 中退居第二。这一错位说明，source-side representation quality 虽具有参考意义，但第一阶段的正式 backbone 选择必须始终回到 recall-constrained gate objective 本身。
 
-\section{阈值校准与 operating point 选择}
-第一阶段 gate 的有效性不能只依赖默认阈值分类结果，而必须建立在统一的 calibration 与 operating point 协议之上。当前 formal capacity scan 已经把这一步内置到每个 checkpoint 的外部评估流程中：先在 val-cal 上拟合温度参数 $T$，再在 val-op 上完成 calibrated score、threshold sweep 与 operating point 排序。因此，从这一阶段开始，calibration 不再被视为独立的训练任务，而是后续 HN、HardMix 与信息量采样共同继承的 formal 评估协议。
+\chapter{讨论：capacity scan 已建立的结论与当前边界}
 
-\section{Hard Negative Mining、HardMix 与信息量采样路线}
-既然 formal capacity scan 已经将 stage-1 主模型固定为 \texttt{yolo11m-cls}，后续增强路线就不应再围绕旧的 exploratory 主线展开。更合理的顺序是：首先在 \texttt{yolo11m-cls} 上完成完整的 HN 比例扫描，并用 \texttt{yolo11x-cls} 做轻量 cross-capacity 验证；随后在新的 best HN ratio 上继续评估 HardMix、通用难样本损失与 RCIS 等信息量采样路线。换言之，capacity scan 在本文中的价值不仅是选择 backbone，更在于为后续所有训练侧增强提供统一且可追溯的起点。
+\section{已建立的正式证据}
+截至当前版本，本文已经建立了三条正式证据链。第一，direct binary gate 是 stage-1 的正式选模视图，而不是默认阈值分类任务的延伸。第二，formal binary gate capacity scan 已经明确给出当前主模型与第二对照模型，即 \texttt{yolo11m-cls} 与 \texttt{yolo11x-cls}。第三，five-model \formalmetric{top1-best} 与 gate-best 的全不一致，证明 trainer-side \formalmetric{top1} 不应再作为 stage-1 的正式选模依据。这三点共同构成了当前 stage-1 主线切换的全部证据基础。
 
-\section{CAM 与 Grad-CAM 伪框生成与质量控制}
-第一阶段分类模型并不直接输出检测框，但其热力图响应可以为 detector 提供弱监督候选区域。本文后续将继续保留 CAM / Grad-CAM 伪框生成链路，用于在低标注条件下为 detector 初始化提供候选框来源。不过，这部分在当前主稿中的角色是“服务 detector”，而不是单独作为第一阶段的最终输出目标。
+\section{为何当前不宣称两阶段整体优于单阶段}
+本文当前只完成了 stage-1 formal capacity scan 与 auxiliary six-class capacity scan。尽管 stage-1 的高召回门控动机来自两阶段系统的工程需求，但当前尚未完成针对单阶段 detector 与两阶段系统的系统级对比实验。因此，本文不对“整体两阶段系统优于单阶段 detector”作出正式结论。当前 manuscript 的有效结论仅限于：若后续系统采用 stage-1 front-end，则其 front-end 主模型应在 direct binary gate 的正式视图下选择，而不能由默认阈值分类指标或 source six-class 结果替代决定。
 
-\section{本章小结}
-本章围绕第一阶段高召回预筛完成了四项关键工作：重新定义任务语义、建立 formal protocol、完成 direct binary gate formal capacity scan，并补齐 six-class source 与 cross-view 的正式对照。当前可以稳定写入正文的阶段性结论是：第一阶段的正式目标不是默认阈值 accuracy，而是高召回工作点下的 normal 过滤能力；direct binary gate formal capacity scan 已正式确认 \texttt{yolo11m-cls} 为 high-recall leader，\texttt{yolo11x-cls} 为第二对照模型；source six-class 排序不能替代 direct binary gate 的正式选模；后续 HN、HardMix 与 RCIS 的正式比较，都应以这一容量扫描结果为统一起点。
-
-\chapter{基于改进 YOLOv11 的管道缺陷检测与跨域迁移策略}
-
-\section{基线检测模型与问题分析}
-第二阶段 detector 是全文主创新的主要承载区。本文以 YOLOv11 为基线模型，不是因为其在所有 sewer 场景下天然最优，而是因为它在结构表达能力、工程成熟度与推理效率之间提供了足够稳定的基线平台。直接使用原始 detector 时，仍会遭遇小目标漏检、局部细裂纹表达不足、复杂背景误报偏高以及跨域迁移不稳定等问题，因此需要围绕结构、训练目标与迁移路径进行针对性改造。
-
-\section{注意力机制改进}
-注意力机制的作用不应被写成“为了加模块而加模块”，而应明确服务于 sewer 场景中局部关键结构的显著性增强与复杂背景抑制。后续正文应围绕一个主注意力模块展开正式实验，其余候选模块作为附录或消融对照保留。
-
-\section{检测头改进}
-检测头改进将聚焦多尺度结构异常、细粒度类别区分与边界表达能力。其作用不只是提高若干百分点的 AP，而是减少 detector 在 sewer 场景 hardest tail 上的漏检与误检。
-
-\section{损失函数改进}
-损失函数改进需要围绕类别不均衡、难样本学习和定位误差组织。本文后续将以 detector 正式实验为准，回填最终采用的损失设计与对照结果。
-
-\section{改进 YOLOv11 总体结构}
-在注意力机制、检测头与损失函数三条线都完成实验后，本文将形成一个面向 sewer 场景的改进 YOLOv11 检测器总体结构，并通过复杂度与性能对照证明其必要性。
-
-\section{跨域迁移适应训练策略}
-本文的 detector 并非从零训练，而是建立在 source-side 分类与 target-side 微调链路上。后续正文将围绕源域预训练、目标域分类微调、伪框辅助 detector 启动和目标域 detector 训练四步组织迁移策略，使其形成闭环。
-
-\section{本章小结}
-本章作为 detector 主创新的框架章，当前先固定问题定义与章节组织方式，具体实验结果将在第 6 章统一回填。
-
-\chapter{实验结果与分析}
-
-\section{实验设置}
-为确保第一阶段容量扫描结果具备可比性与可追溯性，本文对 formal 实验阶段采用统一协议：第一阶段分类任务统一设定为 \texttt{batch=24}、\texttt{epochs=200}，并对全部 checkpoint 执行外部 gate-aware 评估。训练器内部输出的 \formalmetric{acc/top1/loss} 仅用于监控训练健康状态，不参与正文中的正式选模。第二阶段 detector 与系统级实验亦遵循相同的材料留档与 formal summary 管理规范，以保证后续跨阶段比较处于统一协议之下。
-
-\section{第一阶段 direct binary gate formal capacity 结果分析}
-表 \ref{tab:stage1-formal-gate-capacity} 给出了 direct binary gate 五模型在统一 formal protocol 下的容量扫描结果。可以看到，在 \formalmetric{Spec@R99.5}、\formalmetric{Spec@R99.0}、\formalmetric{Prec@R99.0} 和 \formalmetric{PTR@R99.0} 的联合排序规则下，\texttt{yolo11m-cls} 取得了最优综合表现，\texttt{yolo11x-cls} 位居第二，\texttt{yolo11l-cls} 则退居第三。这一排序与 exploratory 阶段基于经验直觉形成的 backbone 偏好并不一致，说明第一阶段主模型选择必须建立在正式 operating point 指标上，而不能继续依赖默认阈值分类印象。
-
-进一步地，表 \ref{tab:stage1-formal-top1-vs-gatebest} 表明，五个模型的 trainer \formalmetric{top1-best} 与 gate-best 全部不一致。其中，\texttt{yolo11m-cls} 的 trainer 侧 \formalmetric{top1-best} 出现在第 197 轮，而 formal gate-best 出现在第 78 轮；\texttt{yolo11l-cls} 与 \texttt{yolo11x-cls} 也呈现出类似错位。这一结果说明，若仍以 \formalmetric{acc/top1} 作为第一阶段 checkpoint 选择依据，将系统性偏离高召回门控真正关心的工作点目标。换言之，第一阶段 formalization 的核心不只是延长训练周期或保存更多 checkpoint，而是把选模准则从训练器内部健康指标切回到高召回 gate 本身。
-
-图 \ref{fig:stage1-formal-gate-bar}--图 \ref{fig:stage1-formal-gate-top1-mismatch} 进一步揭示了不同容量模型在主要工作点上的差异分布。首先，\texttt{yolo11m-cls} 并非仅在单个指标或单个 epoch 上偶然占优，而是在最关键的主排序锚点 \formalmetric{Spec@R99.5} 与 \formalmetric{Spec@R99.0} 上同时取得最优。其次，\texttt{yolo11x-cls} 虽然在长训练区间内表现出较强潜力，但其最终高召回过滤能力仍未超过 \texttt{yolo11m-cls}。最后，\texttt{yolo11n-cls} 与 \texttt{yolo11s-cls} 虽然能够达到可用水平，但在正式指标上与 \texttt{m/x} 之间仍存在明确差距。因此，第一阶段后续的 HN、HardMix 与 RCIS，均应以 \texttt{yolo11m-cls} 为统一主模型，并以 \texttt{yolo11x-cls} 作为容量对照模型。
-
-\section{第一阶段 six-class source formal 结果分析}
-表 \ref{tab:stage1-formal-cls6-capacity} 给出了 six-class source 五模型在统一 formal protocol 下的容量扫描结果。可以看到，\texttt{yolo11x-cls} 在 Accuracy、AUROC 与 AUPRC 的综合排序下成为 source-side six-class leader，\texttt{yolo11m-cls} 位居第二，\texttt{yolo11l-cls} 位居第三。该结果说明，在 source-side 多类分类视角下，较大容量模型仍具有优势；但其解释范围应被严格限定为 auxiliary representation view，而不能直接延伸为 stage-1 gate 的正式 backbone 选择依据。
-
-\section{Cross-view 结果分析}
-表 \ref{tab:stage1-formal-crossview-rank-gap} 与图 \ref{fig:stage1-formal-crossview-gap} 清楚表明，source six-class 排序不能替代 direct binary gate 排序。最关键的差异集中在 \texttt{yolo11m-cls} 与 \texttt{yolo11x-cls}：前者在 source six-class 中位居第二，却在 direct binary gate 中成为正式主模型；后者在 source six-class 中位居第一，却在 direct binary gate 中退居第二。这一错位说明，source-side 表征质量虽具有参考价值，但 stage-1 的正式 backbone 选择必须始终回到 recall-constrained gate objective 本身。
-
-\section{formal HN、HardMix 与 RCIS 结果预留}
-在主模型已经由 formal capacity scan 固定为 \texttt{yolo11m-cls} 之后，后续所有第一阶段增强实验都应在这一统一起点上重新组织。当前章节保留如下回填位置：
-\begin{enumerate}[label=\arabic*.]
-    \item formal HN：在 \texttt{yolo11m-cls} 上完成完整的 hard-negative ratio sweep，并用 \texttt{yolo11x-cls} 做轻量 cross-capacity 验证；
-    \item formal HardMix：比较训练侧 hard positive 与 hard normal 联合暴露是否仍是最有效的净增益来源；
-    \item formal RCIS：验证信息量驱动采样是否能够在统一高召回约束下进一步超过 HardMix。
-\end{enumerate}
-这些实验的共同目标并非再次回答“哪个 backbone 更强”，而是在 backbone 已被正式固定之后，继续评估样本组织与信息量采样能否在相同高召回约束下进一步提升 normal 过滤能力。
-
-\section{第二阶段检测 baseline 对比实验预留}
-本节将回填 detector baseline、改进 detector 与迁移学习的正式结果，包括 baseline 对比、结构消融、迁移对照和目标域检测性能。
-
-\section{系统级结果与错误分析预留}
-系统级结果将用于回答两阶段方案相对单阶段 detector 的误报控制收益、人工复核效率与工程实用价值。本节同时将保留典型误报与漏检案例分析。
-
-\section{本章小结}
-本章已经建立起当前全文最明确的正式证据支点：两个 capacity scan 均已完成，并在统一 protocol 下共同确认了第一阶段的任务边界与主模型选择。具体而言，direct binary gate formal capacity scan 正式确认 \texttt{yolo11m-cls} 为 stage-1 high-recall leader、\texttt{yolo11x-cls} 为第二对照模型；five-model \formalmetric{top1-best} 与 gate-best 的全不一致，进一步证明了 trainer \formalmetric{acc/top1} 不能再承担第一阶段正式选模功能；six-class source 的 formal 排序则表明 auxiliary representation view 与 direct binary gate view 并不等价。其余第一阶段 formal 重跑与第二阶段 detector 结果，将继续按同一材料体系逐步回填。
+\section{当前局限性与后续工作边界}
+本文的边界同样需要明确。其一，当前稿件不包含 hard-negative sweep、HardMix、RCIS 或 detector 实验结果；这些实验仍在统一 formal protocol 下持续推进。其二，本文虽然证明了 \formalmetric{top1-best} 与 gate-best 的错位，但未引入更复杂的统计显著性分析，而是依赖完整 checkpoint trace 的一致性证据。其三，source six-class 视图当前只作为 auxiliary reference，其与 downstream detector initialization 的关系仍需后续实证闭环。基于这些边界，本文把后续工作限定为：先在 \texttt{yolo11m-cls} 上完成 HN sweep，并以 \texttt{yolo11x-cls} 做 cross-capacity 验证，再在新的主模型与比例固定后进入训练侧增强与系统级研究。
 
 \chapter{结论与展望}
 
-\section{研究结论}
-综合当前已经完成的 formal 结果，本文可稳定得到如下结论：
+\section{结论}
+基于当前已经完成的 formal capacity scan，本文可以稳定得到以下结论：
 \begin{enumerate}[label=\arabic*.]
-    \item 地下排水管道缺陷识别更适合组织为“高召回 gate + 精细 detector”的两阶段级联系统，而不是直接对全部图像执行单阶段检测。这一组织方式更符合 sewer 场景中“正常样本占绝大多数、误报易于累积、人工复核成本高”的工程约束。
-    \item 第一阶段必须被正式定义为 operating-point-driven 的高召回 gate，而不能继续视作默认阈值下的普通二分类任务。相应地，trainer 内部的 \formalmetric{acc/top1} 只能作为训练健康信息，而不能再充当 formal best checkpoint 的依据。
-    \item 在统一 \texttt{batch=24}、\texttt{epochs=200}、每轮保存 checkpoint 与外部 gate-aware 评估的 protocol 下，direct binary gate formal capacity scan 已正式确认 \texttt{yolo11m-cls} 为当前 high-recall leader，\texttt{yolo11x-cls} 为第二对照模型；与此同时，source-side six-class formal capacity scan 则确认 \texttt{yolo11x-cls} 为辅助参考 leader。二者之间的排序错位进一步证明了：source six-class 排序不能替代 direct binary gate 的正式选模。
-    \item 第二阶段 detector 与跨域迁移仍是全文主创新的主要承载区；第一阶段 formal capacity scan 的价值，在于为后续 HN、HardMix、RCIS 以及 detector 训练提供了统一且可追溯的前端起点。
+    \item stage-1 应被正式定义为 recall-constrained high-recall gate，而不是默认阈值二分类任务。相应地，trainer 侧的 \formalmetric{acc/top1} 只能作为训练健康信号，而不能再充当 formal best checkpoint 的依据。
+    \item 在统一的 \texttt{batch=24}、\texttt{epochs=200}、每轮保存 checkpoint 与外部 gate-aware evaluation protocol 下，direct binary gate formal capacity scan 已正式确认 \texttt{yolo11m-cls} 为当前 high-recall leader，\texttt{yolo11x-cls} 为第二对照模型，\texttt{yolo11l-cls} 退居第三。
+    \item source-side six-class formal capacity scan 得到的排序为 \texttt{x > m > l > s > n}，而 direct binary gate 的正式排序为 \texttt{m > x > l > s > n}。这一错位表明，source six-class 结果不能替代 direct binary gate 的正式选模。
+    \item 五个 binary gate 模型全部表现出 \formalmetric{top1-best != gate-best}。这一现象直接支持 gate-aware checkpoint selection 的必要性，也说明默认 \formalmetric{top1} 早停并不适用于 stage-1 的正式论文口径。
 \end{enumerate}
 
-\section{不足之处}
-当前主稿的主要不足不在于已有结论不成立，而在于后续 formal 实验尚未全部到齐。具体而言，围绕新 leader \texttt{yolo11m-cls} 的 formal HN、HardMix 与 RCIS 仍未全部重跑完成；第二阶段 detector 与跨域迁移实验也尚未完全按最新 formal 口径统一整理。因此，当前版本应被视为已经建立起正式证据主轴的论文主稿，而非最终定稿。
-
 \section{展望}
-后续工作的重点可概括为三方面。其一，围绕 \texttt{yolo11m-cls} 完成 stage-1 的 formal HN sweep，并以 \texttt{yolo11x-cls} 做轻量 cross-capacity 验证，从而在统一 calibrated protocol 下确认新的最佳 hard-negative 比例。其二，在新的主模型与 HN 比例固定之后，继续比较 HardMix 与 RCIS 等训练侧增强，确认哪些策略能够在统一高召回约束下带来净增益。其三，完成 detector 结构改进、跨域迁移训练与系统级验证的正式回填，使两阶段级联系统的整体贡献在统一证据链下闭环呈现。
+后续工作的重点可概括为三方面。其一，在已固定的主模型 \texttt{yolo11m-cls} 上完成 formal HN sweep，并以 \texttt{yolo11x-cls} 做轻量 cross-capacity 验证，从而在同一 calibrated protocol 下确认新的最佳 hard-negative 比例。其二，在 backbone 与 HN 比例固定后，继续比较 HardMix、RCIS 等训练侧策略，评估样本组织方式是否能够在相同 recall 约束下带来净增益。其三，在 stage-1 证据链闭合后，再进入 detector 结构改进、迁移训练和系统级验证，从而在统一证据体系下讨论完整两阶段系统的整体价值。
 
 \appendix
 
-\chapter{当前 formal 回填清单}
-\begin{enumerate}[label=\arabic*.]
-    \item 回填 \texttt{yolo11m-cls} 主线下的 formal HN / HardMix / RCIS；
-    \item 回填 detector baseline、结构改进、迁移训练与系统级对比结果；
-    \item 用正式图表替换当前少量文字性占位说明。
-\end{enumerate}
+\chapter{附录：Stage-1 formal protocol 摘要}
+\begin{table}[H]
+    \centering
+    \caption{Stage-1 capacity scan 的 formal protocol 摘要}
+    \label{tab:stage1-capacity-protocol}
+    \begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{3.0cm}X}
+        \toprule
+        项目 & 说明 \\
+        \midrule
+        primary selection view & direct binary gate \\
+        auxiliary reference view & source six-class capacity scan \\
+        binary gate ranking rule & \formalmetric{Spec@R99.5 > Spec@R99.0 > Prec@R99.0 > PTR@R99.0} \\
+        six-class ranking rule & Accuracy $>$ AUROC $>$ AUPRC \\
+        shared training protocol & \texttt{batch=24}, \texttt{epochs=200}, checkpoint saved every epoch \\
+        checkpoint policy & every epoch checkpoint is externally evaluated; trainer \formalmetric{top1} does not determine the official winner \\
+        calibration protocol & val-cal temperature fitting followed by val-op threshold sweep \\
+        manuscript scope & only completed capacity-scan evidence is reported in the current paper \\
+        \bottomrule
+    \end{tabularx}
+\end{table}
 
-\chapter{文稿关系说明}
-\noindent 当前目录下主要文稿关系固定如下：
-\begin{itemize}
-    \item \texttt{essay.tex}：论文主稿，采用 legacy 七章框架，只保留 thesis-facing 逻辑与 formal 结果；
-    \item \texttt{report.tex}：过程报告，按日期记录 exploratory 到 formalization 的演进过程；
-    \item \texttt{essay\_legacy\_20260405.tex}：旧框架备份，用于追溯本次重组所依赖的原始章节组织方式。
-\end{itemize}
+本文正文仅保留最关键的 formal 主表与主图。完整的 epoch-level summary、per-model dashboard、Top-3 checkpoint 表以及 source-of-truth manifests 已整理为 supplementary archive，用于后续补图、复核和继续追踪。
+
+\backmatter
+\begin{thebibliography}{99}
+\bibitem{moradi2019review}
+Moradi S, Zayed T, Golkhoo F. Review on Computer Aided Sewer Pipeline Defect Detection and Condition Assessment[J]. Infrastructures, 2019, 4(1): 10.
+
+\bibitem{haurum2020survey}
+Haurum J B, Moeslund T B. A Survey on Image-Based Automation of CCTV and SSET Sewer Inspections[J]. Automation in Construction, 2020, 111: 103061.
+
+\bibitem{ma2026stateoftheart}
+Ma D, Fang H, Wang N, et al. The State-of-the-Art in Pipe Defect Inspection with Computer Vision-Based Methods[J]. Measurement, 2026, 257: 118431.
+
+\bibitem{halfawy2014hogsvm}
+Halfawy M R, Hengmeechai J. Automated Defect Detection in Sewer Closed Circuit Television Images Using Histograms of Oriented Gradients and Support Vector Machine[J]. Automation in Construction, 2014, 38: 1--13.
+
+\bibitem{kumar2018cnn}
+Kumar S S, Abraham D M, Jahanshahi M R, et al. Automated Defect Classification in Sewer Closed Circuit Television Inspections Using Deep Convolutional Neural Networks[J]. Automation in Construction, 2018, 91: 273--283.
+
+\bibitem{cheng2018deep}
+Cheng J C P, Wang M. Automated Detection of Sewer Pipe Defects in CCTV Images Using Deep Learning Techniques[J]. Automation in Construction, 2018, 95: 155--171.
+
+\bibitem{haurum2021sewerml}
+Haurum J B, Moeslund T B. Sewer-ML: A Multi-Label Sewer Defect Classification Dataset and Benchmark[C]//Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition. 2021: 13456--13467.
+
+\bibitem{redmon2016yolo}
+Redmon J, Divvala S, Girshick R, Farhadi A. You Only Look Once: Unified, Real-Time Object Detection[C]//Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition. 2016: 779--788.
+
+\bibitem{guo2017calibration}
+Guo C, Pleiss G, Sun Y, Weinberger K Q. On Calibration of Modern Neural Networks[C]//Proceedings of the 34th International Conference on Machine Learning. 2017: 1321--1330.
+
+\bibitem{situ2023transfer}
+Situ Z, Teng S, Feng W, et al. A Transfer Learning-Based YOLO Network for Sewer Defect Detection in Comparison to Classic Object Detection Methods[J]. Developments in the Built Environment, 2023, 15: 100191.
+
+\bibitem{wang2023improvedyolov5}
+Wang T, Li Y, Zhai Y, et al. A Sewer Pipeline Defect Detection Method Based on Improved YOLOv5[J]. Processes, 2023, 11(8): 2508.
+
+\bibitem{zhao2024yolov5sewer}
+Zhao X, Xiao N, Cai Z, et al. YOLOv5-Sewer: Lightweight Sewer Defect Detection Model[J]. Applied Sciences, 2024, 14(5): 1869.
+\end{thebibliography}
 
 \end{document}
