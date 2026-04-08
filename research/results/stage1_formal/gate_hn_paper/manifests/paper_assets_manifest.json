@@ -6,7 +6,7 @@
         "research/results/stage1_formal/gate_hn_m_sweep/hn_sweep_summary.csv"
       ],
       "rule": "Rows are ranked by Spec@R99.5, Spec@R99.0, Prec@R99.0, and PTR@R99.0.",
-      "finding": "The current formal winner is hn14, indicating a non-monotonic sweet spot rather than a monotonic ratio effect.",
+      "finding": "The current formal winner is hn02, indicating a non-monotonic sweet spot rather than a monotonic ratio effect.",
       "limitation": "This table operates on formal summary rows rather than raw PT checkpoint archives.",
       "outputs": [
         "research/results/stage1_formal/gate_hn_paper/tables/table_hn_m_main_ranking.csv",
@@ -64,7 +64,7 @@
         "research/results/stage1_formal/gate_hn_m_sweep/hn_sweep_summary.csv"
       ],
       "rule": "Formal ranking follows Spec@R99.5 > Spec@R99.0 > Prec@R99.0 > PTR@R99.0.",
-      "finding": "The sweep exhibits a non-monotonic profile with hn14 as the current formal winner.",
+      "finding": "The sweep exhibits a non-monotonic profile with hn02 as the current formal winner.",
       "limitation": "This panel summarizes per-ratio winners and does not visualize per-epoch trajectories.",
       "outputs": [
         "research/results/stage1_formal/gate_hn_paper/figures/fig_hn_m_ratio_metric_curves_panel.csv",
@@ -196,8 +196,8 @@
       "stem": "fig_hn_m_epoch_dynamics_spec995",
       "sources": [
         "research/materials/stage1_formal/gate_hn_m_sweep/hn00/epoch_gate_summary.csv",
-        "research/materials/stage1_formal/gate_hn_m_sweep/hn14/epoch_gate_summary.csv",
-        "research/materials/stage1_formal/gate_hn_m_sweep/hn20/epoch_gate_summary.csv"
+        "research/materials/stage1_formal/gate_hn_m_sweep/hn02/epoch_gate_summary.csv",
+        "research/materials/stage1_formal/gate_hn_m_sweep/hn12/epoch_gate_summary.csv"
       ],
       "rule": "Representative ratios are hn00, the formal winner, and a high-ratio tail setting.",
       "finding": "The epoch dynamics show that HN changes the training trajectory itself rather than only shifting the final selected checkpoint.",
@@ -212,8 +212,8 @@
       "stem": "fig_hn_m_epoch_dynamics_spec990",
       "sources": [
         "research/materials/stage1_formal/gate_hn_m_sweep/hn00/epoch_gate_summary.csv",
-        "research/materials/stage1_formal/gate_hn_m_sweep/hn14/epoch_gate_summary.csv",
-        "research/materials/stage1_formal/gate_hn_m_sweep/hn20/epoch_gate_summary.csv"
+        "research/materials/stage1_formal/gate_hn_m_sweep/hn02/epoch_gate_summary.csv",
+        "research/materials/stage1_formal/gate_hn_m_sweep/hn12/epoch_gate_summary.csv"
       ],
       "rule": "Representative ratios are hn00, the formal winner, and a high-ratio tail setting.",
       "finding": "The epoch dynamics show that HN changes the training trajectory itself rather than only shifting the final selected checkpoint.",
@@ -228,8 +228,8 @@
       "stem": "fig_hn_m_epoch_dynamics_prec990",
       "sources": [
         "research/materials/stage1_formal/gate_hn_m_sweep/hn00/epoch_gate_summary.csv",
-        "research/materials/stage1_formal/gate_hn_m_sweep/hn14/epoch_gate_summary.csv",
-        "research/materials/stage1_formal/gate_hn_m_sweep/hn20/epoch_gate_summary.csv"
+        "research/materials/stage1_formal/gate_hn_m_sweep/hn02/epoch_gate_summary.csv",
+        "research/materials/stage1_formal/gate_hn_m_sweep/hn12/epoch_gate_summary.csv"
       ],
       "rule": "Representative ratios are hn00, the formal winner, and a high-ratio tail setting.",
       "finding": "The epoch dynamics show that HN changes the training trajectory itself rather than only shifting the final selected checkpoint.",
@@ -244,8 +244,8 @@
       "stem": "fig_hn_m_epoch_dynamics_ptr990",
       "sources": [
         "research/materials/stage1_formal/gate_hn_m_sweep/hn00/epoch_gate_summary.csv",
-        "research/materials/stage1_formal/gate_hn_m_sweep/hn14/epoch_gate_summary.csv",
-        "research/materials/stage1_formal/gate_hn_m_sweep/hn20/epoch_gate_summary.csv"
+        "research/materials/stage1_formal/gate_hn_m_sweep/hn02/epoch_gate_summary.csv",
+        "research/materials/stage1_formal/gate_hn_m_sweep/hn12/epoch_gate_summary.csv"
       ],
       "rule": "Representative ratios are hn00, the formal winner, and a high-ratio tail setting.",
       "finding": "The epoch dynamics show that HN changes the training trajectory itself rather than only shifting the final selected checkpoint.",
@@ -260,8 +260,8 @@
       "stem": "fig_hn_m_epoch_dynamics_panel",
       "sources": [
         "research/materials/stage1_formal/gate_hn_m_sweep/hn00/epoch_gate_summary.csv",
-        "research/materials/stage1_formal/gate_hn_m_sweep/hn14/epoch_gate_summary.csv",
-        "research/materials/stage1_formal/gate_hn_m_sweep/hn20/epoch_gate_summary.csv"
+        "research/materials/stage1_formal/gate_hn_m_sweep/hn02/epoch_gate_summary.csv",
+        "research/materials/stage1_formal/gate_hn_m_sweep/hn12/epoch_gate_summary.csv"
       ],
       "rule": "Representative ratios are selected as hn00, the formal winner, and a high-ratio tail condition.",
       "finding": "The representative-ratio panel summarizes how HN affects the training dynamics beyond the final best-epoch snapshot.",
@@ -456,18 +456,17 @@
       ]
     },
     {
-      "stem": "fig_hn_hardest_normal_gallery_panel",
+      "stem": "table_hn_hardest_normal_examples",
       "sources": [
-        "research/materials/stage1_formal/gate_hn_assets/yolo11m_train_normal_scores/hardest_normal_gallery",
         "research/materials/stage1_formal/gate_hn_assets/yolo11m_train_normal_scores/top_false_positive_normals.csv"
       ],
-      "rule": "The panel uses the highest-ranked gallery images already exported by the HN asset builder.",
-      "finding": "The gallery provides visual evidence that the HN source pool is tied to concrete difficult normal cases.",
-      "limitation": "This panel is illustrative and should be interpreted together with the formal score-distribution statistics.",
+      "rule": "Rows are the first 12 entries in the ranked hard-normal candidate CSV.",
+      "finding": "The appendix keeps a reproducible ranked list rather than copied image duplicates.",
+      "limitation": "This table preserves identifiers and scores only; qualitative rendering can be reproduced later from the listed paths if needed.",
       "outputs": [
-        "research/results/stage1_formal/gate_hn_paper/appendix/fig_hn_hardest_normal_gallery_panel.csv",
-        "research/results/stage1_formal/gate_hn_paper/appendix/fig_hn_hardest_normal_gallery_panel.png",
-        "research/results/stage1_formal/gate_hn_paper/captions/fig_hn_hardest_normal_gallery_panel.md"
+        "research/results/stage1_formal/gate_hn_paper/appendix/table_hn_hardest_normal_examples.csv",
+        "research/results/stage1_formal/gate_hn_paper/appendix/table_hn_hardest_normal_examples.md",
+        "research/results/stage1_formal/gate_hn_paper/captions/table_hn_hardest_normal_examples.md"
       ]
     },
     {

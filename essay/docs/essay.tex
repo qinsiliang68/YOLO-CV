@@ -458,7 +458,7 @@ Sewer-ML 数据集的发布为 sewer defect classification 提供了统一的 be
 表 \ref{tab:hn-bridge} 说明，HN 实验与既有 baseline mainline 的衔接方式是“固定 backbone 后做 ratio sweep”，而不是重新开启容量法庭。对于 \texttt{yolo11m-cls}，\texttt{hn14} 相对 \texttt{hn00} 在 \formalmetric{Spec@R99.5} 上取得 0.0476 的绝对提升，并在 \formalmetric{Spec@R99.0} 与 \formalmetric{Prec@R99.0} 上基本保持不变。相比之下，表 \ref{tab:hn-x-crosscheck} 与图 \ref{fig:hn-cross-capacity} 表明，\texttt{yolo11x-cls} 上的 \texttt{hn02} 并未复现相同方向的净增益，四个正式指标均较 \texttt{hn00} 回落。因而，HN 的收益应被理解为与模型容量和训练动力学相关的增强效应，而不是对任意 backbone 都稳定成立的统一规律。
 
 \section{HN 样本来源的可追溯性}
-当前 HN working set 还提供了 hard-normal 来源证据。具体而言，\texttt{yolo11m} 的 HN 候选来自 1080 个训练 normal 样本，其中分数最高的 250 个样本构成回流池，占训练 normal 总量的 23.15\%。这意味着本文所讨论的 HN 并非人工主观挑选，而是直接来自 baseline gate 在训练 normal 集上的高风险尾部分布。相关分布图与 hardest-normal gallery 见附录 B。
+当前 HN working set 还提供了 hard-normal 来源证据。具体而言，\texttt{yolo11m} 的 HN 候选来自 1080 个训练 normal 样本，其中分数最高的 250 个样本构成回流池，占训练 normal 总量的 23.15\%。这意味着本文所讨论的 HN 并非人工主观挑选，而是直接来自 baseline gate 在训练 normal 集上的高风险尾部分布。为控制仓库存储，附录仅保留分布统计与最高分候选名单，而不复制分类图像文件。
 
 \chapter{讨论：capacity scan 与 HN 已建立的证据}
 
@@ -596,12 +596,29 @@ Sewer-ML 数据集的发布为 sewer defect classification 提供了统一的 be
     \label{fig:hn-score-distribution}
 \end{figure}
 
-\begin{figure}[H]
+\begin{table}[H]
     \centering
-    \includegraphics[width=0.92\textwidth]{../../../research/results/stage1_formal/gate_hn_paper/appendix/fig_hn_hardest_normal_gallery_panel.png}
-    \caption{highest-score hard-normal 候选样本可视化}
-    \label{fig:hn-hard-gallery}
-\end{figure}
+    \caption{top-ranked hard-normal candidate list}
+    \label{tab:hn-hard-example-list}
+    \begin{tabular}{ccccc}
+        \toprule
+        Rank & Image Name & Image Stub & Predicted Abnormal Score & Heuristic Group \\
+        \midrule
+        1  & 00467510.png & 00467510 & 0.9780 & 其他 \\
+        2  & 00329365.png & 00329365 & 0.9536 & 其他 \\
+        3  & 00149587.png & 00149587 & 0.9238 & 其他 \\
+        4  & 00130666.png & 00130666 & 0.9043 & 其他 \\
+        5  & 00160652.png & 00160652 & 0.8989 & 反光 \\
+        6  & 00144495.png & 00144495 & 0.8984 & 反光 \\
+        7  & 00323059.png & 00323059 & 0.8921 & 其他 \\
+        8  & 00505638.png & 00505638 & 0.8867 & 其他 \\
+        9  & 00021678.png & 00021678 & 0.8682 & 其他 \\
+        10 & 00022521.png & 00022521 & 0.8545 & 其他 \\
+        11 & 00292889.png & 00292889 & 0.8511 & 其他 \\
+        12 & 00375607.png & 00375607 & 0.8486 & 反光 \\
+        \bottomrule
+    \end{tabular}
+\end{table}
 
 \section{关于 ratio 级 top1-vs-gatebest 的说明}
 当前 HN material level 并不包含可靠的 trainer-side per-ratio \formalmetric{top1} 轨迹字段；因此，本文不构造伪造性的 “ratio-level top1-vs-gatebest” 结论，而仅在附录 source-of-truth 中登记该限制。

@@ -9,7 +9,7 @@
 - Sources:
   - `research/results/stage1_formal/gate_hn_m_sweep/hn_sweep_summary.csv`
 - Rule: Rows are ranked by Spec@R99.5, Spec@R99.0, Prec@R99.0, and PTR@R99.0.
-- Key finding: The current formal winner is hn14, indicating a non-monotonic sweet spot rather than a monotonic ratio effect.
+- Key finding: The current formal winner is hn02, indicating a non-monotonic sweet spot rather than a monotonic ratio effect.
 - Limitation: This table operates on formal summary rows rather than raw PT checkpoint archives.
 
 ## table_hn_m_delta_vs_hn00_compact
@@ -59,7 +59,7 @@
 - Sources:
   - `research/results/stage1_formal/gate_hn_m_sweep/hn_sweep_summary.csv`
 - Rule: Formal ranking follows Spec@R99.5 > Spec@R99.0 > Prec@R99.0 > PTR@R99.0.
-- Key finding: The sweep exhibits a non-monotonic profile with hn14 as the current formal winner.
+- Key finding: The sweep exhibits a non-monotonic profile with hn02 as the current formal winner.
 - Limitation: This panel summarizes per-ratio winners and does not visualize per-epoch trajectories.
 
 ## fig_hn_m_ratio_metric_curves_spec995
@@ -174,8 +174,8 @@
   - `research/results/stage1_formal/gate_hn_paper/captions/fig_hn_m_epoch_dynamics_spec995.md`
 - Sources:
   - `research/materials/stage1_formal/gate_hn_m_sweep/hn00/epoch_gate_summary.csv`
-  - `research/materials/stage1_formal/gate_hn_m_sweep/hn14/epoch_gate_summary.csv`
-  - `research/materials/stage1_formal/gate_hn_m_sweep/hn20/epoch_gate_summary.csv`
+  - `research/materials/stage1_formal/gate_hn_m_sweep/hn02/epoch_gate_summary.csv`
+  - `research/materials/stage1_formal/gate_hn_m_sweep/hn12/epoch_gate_summary.csv`
 - Rule: Representative ratios are hn00, the formal winner, and a high-ratio tail setting.
 - Key finding: The epoch dynamics show that HN changes the training trajectory itself rather than only shifting the final selected checkpoint.
 - Limitation: Only three representative ratios are shown here to keep the comparison interpretable.
@@ -188,8 +188,8 @@
   - `research/results/stage1_formal/gate_hn_paper/captions/fig_hn_m_epoch_dynamics_spec990.md`
 - Sources:
   - `research/materials/stage1_formal/gate_hn_m_sweep/hn00/epoch_gate_summary.csv`
-  - `research/materials/stage1_formal/gate_hn_m_sweep/hn14/epoch_gate_summary.csv`
-  - `research/materials/stage1_formal/gate_hn_m_sweep/hn20/epoch_gate_summary.csv`
+  - `research/materials/stage1_formal/gate_hn_m_sweep/hn02/epoch_gate_summary.csv`
+  - `research/materials/stage1_formal/gate_hn_m_sweep/hn12/epoch_gate_summary.csv`
 - Rule: Representative ratios are hn00, the formal winner, and a high-ratio tail setting.
 - Key finding: The epoch dynamics show that HN changes the training trajectory itself rather than only shifting the final selected checkpoint.
 - Limitation: Only three representative ratios are shown here to keep the comparison interpretable.
@@ -202,8 +202,8 @@
   - `research/results/stage1_formal/gate_hn_paper/captions/fig_hn_m_epoch_dynamics_prec990.md`
 - Sources:
   - `research/materials/stage1_formal/gate_hn_m_sweep/hn00/epoch_gate_summary.csv`
-  - `research/materials/stage1_formal/gate_hn_m_sweep/hn14/epoch_gate_summary.csv`
-  - `research/materials/stage1_formal/gate_hn_m_sweep/hn20/epoch_gate_summary.csv`
+  - `research/materials/stage1_formal/gate_hn_m_sweep/hn02/epoch_gate_summary.csv`
+  - `research/materials/stage1_formal/gate_hn_m_sweep/hn12/epoch_gate_summary.csv`
 - Rule: Representative ratios are hn00, the formal winner, and a high-ratio tail setting.
 - Key finding: The epoch dynamics show that HN changes the training trajectory itself rather than only shifting the final selected checkpoint.
 - Limitation: Only three representative ratios are shown here to keep the comparison interpretable.
@@ -216,8 +216,8 @@
   - `research/results/stage1_formal/gate_hn_paper/captions/fig_hn_m_epoch_dynamics_ptr990.md`
 - Sources:
   - `research/materials/stage1_formal/gate_hn_m_sweep/hn00/epoch_gate_summary.csv`
-  - `research/materials/stage1_formal/gate_hn_m_sweep/hn14/epoch_gate_summary.csv`
-  - `research/materials/stage1_formal/gate_hn_m_sweep/hn20/epoch_gate_summary.csv`
+  - `research/materials/stage1_formal/gate_hn_m_sweep/hn02/epoch_gate_summary.csv`
+  - `research/materials/stage1_formal/gate_hn_m_sweep/hn12/epoch_gate_summary.csv`
 - Rule: Representative ratios are hn00, the formal winner, and a high-ratio tail setting.
 - Key finding: The epoch dynamics show that HN changes the training trajectory itself rather than only shifting the final selected checkpoint.
 - Limitation: Only three representative ratios are shown here to keep the comparison interpretable.
@@ -230,8 +230,8 @@
   - `research/results/stage1_formal/gate_hn_paper/captions/fig_hn_m_epoch_dynamics_panel.md`
 - Sources:
   - `research/materials/stage1_formal/gate_hn_m_sweep/hn00/epoch_gate_summary.csv`
-  - `research/materials/stage1_formal/gate_hn_m_sweep/hn14/epoch_gate_summary.csv`
-  - `research/materials/stage1_formal/gate_hn_m_sweep/hn20/epoch_gate_summary.csv`
+  - `research/materials/stage1_formal/gate_hn_m_sweep/hn02/epoch_gate_summary.csv`
+  - `research/materials/stage1_formal/gate_hn_m_sweep/hn12/epoch_gate_summary.csv`
 - Rule: Representative ratios are selected as hn00, the formal winner, and a high-ratio tail condition.
 - Key finding: The representative-ratio panel summarizes how HN affects the training dynamics beyond the final best-epoch snapshot.
 - Limitation: The panel is limited to representative ratios and does not replace the full ratio-level summaries.
@@ -395,18 +395,17 @@
 - Key finding: The selected HN pool comes from the high-score tail rather than ad hoc manual picking.
 - Limitation: This provenance view does not itself evaluate whether the selected normals are semantically diverse.
 
-## fig_hn_hardest_normal_gallery_panel
+## table_hn_hardest_normal_examples
 
 - Outputs:
-  - `research/results/stage1_formal/gate_hn_paper/appendix/fig_hn_hardest_normal_gallery_panel.csv`
-  - `research/results/stage1_formal/gate_hn_paper/appendix/fig_hn_hardest_normal_gallery_panel.png`
-  - `research/results/stage1_formal/gate_hn_paper/captions/fig_hn_hardest_normal_gallery_panel.md`
+  - `research/results/stage1_formal/gate_hn_paper/appendix/table_hn_hardest_normal_examples.csv`
+  - `research/results/stage1_formal/gate_hn_paper/appendix/table_hn_hardest_normal_examples.md`
+  - `research/results/stage1_formal/gate_hn_paper/captions/table_hn_hardest_normal_examples.md`
 - Sources:
-  - `research/materials/stage1_formal/gate_hn_assets/yolo11m_train_normal_scores/hardest_normal_gallery`
   - `research/materials/stage1_formal/gate_hn_assets/yolo11m_train_normal_scores/top_false_positive_normals.csv`
-- Rule: The panel uses the highest-ranked gallery images already exported by the HN asset builder.
-- Key finding: The gallery provides visual evidence that the HN source pool is tied to concrete difficult normal cases.
-- Limitation: This panel is illustrative and should be interpreted together with the formal score-distribution statistics.
+- Rule: Rows are the first 12 entries in the ranked hard-normal candidate CSV.
+- Key finding: The appendix keeps a reproducible ranked list rather than copied image duplicates.
+- Limitation: This table preserves identifiers and scores only; qualitative rendering can be reproduced later from the listed paths if needed.
 
 ## table_hn_top1_vs_gatebest_by_ratio_unavailable
 

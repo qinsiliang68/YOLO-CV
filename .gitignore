@@ -66,3 +66,5 @@ research/materials/stage1_formal/**/env_snapshot.json
 research/materials/stage1_formal/**/pip_freeze.txt
 research/materials/stage1_formal/**/epoch_gate_dashboard.png
 research/materials/stage1_formal/**/epoch_cls6_dashboard.png
+research/materials/stage1_formal/**/hardest_normal_gallery/
+research/materials/stage1_formal/**/rcd_selected_gallery/

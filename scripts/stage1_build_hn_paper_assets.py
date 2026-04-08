@@ -9,7 +9,6 @@ from typing import Any
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-from PIL import Image
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -839,36 +838,38 @@ def build_appendix_visuals(inputs: dict[str, Any], derived: dict[str, pd.DataFra
         )
     )
 
-    gallery_dir = HN_ASSETS / "hardest_normal_gallery"
-    gallery_paths = sorted(gallery_dir.glob("*.png"))[:12]
-    if gallery_paths:
-        fig, axes = plt.subplots(3, 4, figsize=(12, 9))
-        for ax, img_path in zip(axes.flat, gallery_paths):
-            with Image.open(img_path) as img:
-                ax.imshow(img)
-            ax.axis("off")
-            parts = img_path.stem.split("_")
-            rank = parts[0]
-            score = parts[1] if len(parts) > 1 else ""
-            short_id = parts[-1] if len(parts) > 2 else img_path.stem
-            ax.set_title(f"#{rank} | {score}\\n{short_id}", fontsize=8)
-        for ax in axes.flat[len(gallery_paths) :]:
-            ax.axis("off")
-        fig.tight_layout()
-        fig.savefig(APPENDIX_DIR / "fig_hn_hardest_normal_gallery_panel.png", dpi=220, bbox_inches="tight")
-        plt.close(fig)
-        gallery_rows = pd.DataFrame([{"image_name": p.name, "rank": i + 1, "score_stub": p.stem.split('_')[1] if len(p.stem.split('_')) > 1 else ''} for i, p in enumerate(gallery_paths)])
-        save_csv(APPENDIX_DIR / "fig_hn_hardest_normal_gallery_panel.csv", gallery_rows)
-        captions.append(
-            CaptionSpec(
-                "fig_hn_hardest_normal_gallery_panel",
-                "What the top-ranked hard-normal candidates look like qualitatively.",
-                [rel(gallery_dir), rel(HN_ASSETS / "top_false_positive_normals.csv")],
-                "The panel uses the highest-ranked gallery images already exported by the HN asset builder.",
-                "The gallery provides visual evidence that the HN source pool is tied to concrete difficult normal cases.",
-                "This panel is illustrative and should be interpreted together with the formal score-distribution statistics.",
-            )
+    top_examples = top_df.head(12).copy()
+    top_examples["rank"] = np.arange(1, len(top_examples) + 1)
+    top_examples["image_name"] = top_examples["img_rel_path"].map(lambda value: Path(str(value)).name)
+    top_examples["image_stub"] = top_examples["image_name"].map(lambda value: Path(str(value)).stem)
+    top_examples_table = top_examples[
+        ["rank", "image_name", "image_stub", "p_abnormal", "heuristic_group"]
+    ].rename(
+        columns={
+            "p_abnormal": "Predicted Abnormal Score",
+            "heuristic_group": "Heuristic Group",
+        }
+    )
+    save_csv(APPENDIX_DIR / "table_hn_hardest_normal_examples.csv", top_examples_table)
+    save_md_table(
+        APPENDIX_DIR / "table_hn_hardest_normal_examples.md",
+        "table_hn_hardest_normal_examples",
+        top_examples_table,
+        notes=[
+            "This table keeps only ranked file identities and scores.",
+            "The repo working set intentionally does not store copied hard-normal image files.",
+        ],
+    )
+    captions.append(
+        CaptionSpec(
+            "table_hn_hardest_normal_examples",
+            "Which train-normal samples form the top-ranked hard-normal candidate list.",
+            [rel(HN_ASSETS / "top_false_positive_normals.csv")],
+            "Rows are the first 12 entries in the ranked hard-normal candidate CSV.",
+            "The appendix keeps a reproducible ranked list rather than copied image duplicates.",
+            "This table preserves identifiers and scores only; qualitative rendering can be reproduced later from the listed paths if needed.",
         )
+    )
 
     unavailable_path = APPENDIX_DIR / "table_hn_top1_vs_gatebest_by_ratio_unavailable.md"
     unavailable_path.write_text(

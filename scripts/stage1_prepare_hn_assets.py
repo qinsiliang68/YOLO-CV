@@ -3,7 +3,6 @@ from __future__ import annotations
 import argparse
 import csv
 import json
-import shutil
 from pathlib import Path
 
 import numpy as np
@@ -54,16 +53,6 @@ def heuristic_group(image_path: Path) -> tuple[str, str]:
     return "其他", "未命中显著启发式模式。"
 
 
-def export_gallery(rows: list[dict], output_dir: Path) -> None:
-    output_dir.mkdir(parents=True, exist_ok=True)
-    for index, row in enumerate(rows, start=1):
-        source = Path(row["img_path"])
-        if not source.exists():
-            continue
-        target = output_dir / f"{index:03d}_{float(row['score']):.4f}_{row['heuristic_group']}_{source.name}"
-        shutil.copy2(source, target)
-
-
 def process_run(materials_root: Path, run_name: str, output_root: Path, top_k: int) -> dict:
     run_dir = materials_root / run_name
     fp_path = run_dir / "fp_normal.csv"
@@ -105,7 +94,6 @@ def process_run(materials_root: Path, run_name: str, output_root: Path, top_k: i
             writer = csv.DictWriter(handle, fieldnames=list(top_rows[0].keys()))
             writer.writeheader()
             writer.writerows(top_rows)
-        export_gallery(top_rows[:24], output_dir / "hardest_normal_gallery")
 
     train_normal_rows: list[dict] = []
     with split_train_path.open("r", encoding="utf-8-sig", newline="") as handle:
@@ -138,30 +126,30 @@ def write_plan(output_root: Path, summaries: list[dict]) -> None:
     lines = [
         "# Stage-1 Hard Negative Plan",
         "",
-        "## 原则",
-        "- 本目录下的 `top_false_positive_normals.csv` 与 `hardest_normal_gallery/` 来自现有验证侧误报 normal，仅用于展示、分析与误报模式归纳。",
-        "- 验证侧误报样本不得直接回流训练，避免污染 val-op。",
-        "- 真正可回流的 hard negative 必须来自训练侧 normal 池或额外 normal 池；后续统一通过 `stage1_score_train_normals.py` 在 `train/Normal` 上重新打分生成。",
+        "## Principles",
+        "- Keep ranked CSV manifests such as `top_false_positive_normals.csv`; do not copy classification images into the repo by default.",
+        "- Validation-side false-positive normals are for analysis only and must not be mixed back into training.",
+        "- Reusable hard negatives must be regenerated from `train/Normal` using the formal scoring pipeline.",
         "",
-        "## 当前已准备材料",
+        "## Prepared Materials",
     ]
     for summary in summaries:
         lines.append(
-            f"- `{summary['run_name']}`：导出验证侧误报 normal {summary['top_k_exported']} 张，训练侧 normal 池 {summary['train_normal_pool']} 张。"
+            f"- `{summary['run_name']}`: exported {summary['top_k_exported']} ranked false-positive normals and indexed {summary['train_normal_pool']} train normals."
         )
     lines.extend(
         [
             "",
-            "## 回流建议",
-            "- 可回流：后续在 `train/Normal` 中重新打分后选出的高置信 normal 误报样本。",
-            "- 仅展示或分析：当前 `fp_normal.csv` 导出的验证侧 hardest normal 画廊。",
-            "- 若本地工作区缺少原始图像，当前 gallery 可能为空；不影响数值筛选与训练机上的正式构建。",
+            "## Backflow Guidance",
+            "- Use only re-scored train-normal candidates for formal hard-negative replay.",
+            "- Keep image paths and scores in CSV form; render qualitative panels only on demand outside the repo.",
+            "- Missing local image files do not affect the ranked manifests or formal training preparation.",
             "",
-            "## 后续执行顺序",
-            "1. 用确定的主模型和第二模型在 `train/Normal` 上重新打分。",
-            "2. 按分数排序选择 top-k 训练侧 hard negatives。",
-            "3. 通过 `stage1_build_hn_dataset.py` 生成带 HN 重复样本的新数据集。",
-            "4. 再启动 HN、Weighted BCE 和 Focal 版本训练。",
+            "## Next Steps",
+            "1. Rescore `train/Normal` with the selected formal backbone.",
+            "2. Select high-risk train normals by ranked score rather than copied image galleries.",
+            "3. Build the HN dataset view from the ranked manifests.",
+            "4. Launch the formal HN training variants.",
         ]
     )
     (output_root / "stage1_hn_plan.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
