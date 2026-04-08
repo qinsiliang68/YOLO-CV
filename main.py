@@ -54,6 +54,7 @@ BUILTIN_STAGE1_ENTRY_CONFIG = {
     "stage1_formal_cls6_capacity_config": r"YOLOv11\configs\runtime\stage1_formal_cls6_capacity.json",
     "stage1_formal_gate_hn_m_sweep_config": r"YOLOv11\configs\runtime\stage1_formal_gate_hn_m_sweep.json",
     "stage1_formal_gate_hn_x_crosscheck_config": r"YOLOv11\configs\runtime\stage1_formal_gate_hn_x_crosscheck.json",
+    "stage1_formal_gate_info_sampling_lite_config": r"YOLOv11\configs\runtime\stage1_formal_gate_info_sampling_lite.json",
 }
 STAGE1_HN_TASKS = {
     "stage1_gate_l_hn": {
@@ -101,12 +102,16 @@ def parse_args() -> argparse.Namespace:
             "stage1_formal_gate_hn_m_sweep",
             "stage1_formal_gate_hn_x_crosscheck",
             "stage1_formal_gate_hn_all",
+            "stage1_formal_gate_info_sampling_lite",
         ),
         default="auto",
         help="Task to run. 'auto' reads YOLOv11/configs/runtime/main_entry.json.",
     )
     parser.add_argument("--dry-run", action="store_true", help="Print planned actions without training.")
     parser.add_argument("--rerun", action="store_true", help="Archive existing runs and rerun all configured models.")
+    parser.add_argument("--preflight-only", action="store_true", help="Run preflight validation for task pipelines that support it.")
+    parser.add_argument("--smoke-epochs", type=int, default=0, help="Run an isolated smoke test with a short epoch count for supported tasks.")
+    parser.add_argument("--smoke-setting", default="", help="Optional setting id for smoke tests, e.g. A4.")
     return parser.parse_args()
 
 
@@ -992,6 +997,32 @@ def run_stage1_formal_hn_all(entry_cfg: dict, *, dry_run: bool, rerun: bool) -> 
     run_stage1_formal_hn_suite(entry_cfg, variant="x", dry_run=dry_run, rerun=rerun)
 
 
+def run_stage1_formal_gate_info_sampling_lite(
+    entry_cfg: dict,
+    *,
+    dry_run: bool,
+    rerun: bool,
+    preflight_only: bool,
+    smoke_epochs: int,
+    smoke_setting: str,
+) -> None:
+    config_path = resolve_path(
+        entry_cfg.get("stage1_formal_gate_info_sampling_lite_config"),
+        base=YOLOV11_ROOT / "configs" / "runtime" / "stage1_formal_gate_info_sampling_lite.json",
+    )
+    run_python(
+        "scripts/stage1_formal_gate_info_sampling_lite.py",
+        [
+            "--config",
+            str(config_path),
+            *(["--dry-run"] if dry_run else []),
+            *(["--rerun"] if rerun else []),
+            *(["--preflight-only"] if preflight_only else []),
+            *(["--smoke-epochs", str(int(smoke_epochs))] if int(smoke_epochs) > 0 else []),
+            *(["--smoke-setting", smoke_setting] if str(smoke_setting).strip() else []),
+        ],
+        dry_run=False,
+    )
 def run_stage1_embed_supcon(entry_cfg: dict, dry_run: bool) -> None:
     config_path = resolve_path(
         entry_cfg.get("stage1_embed_supcon_config"),
@@ -1117,6 +1148,16 @@ def main() -> None:
         run_stage1_formal_hn_all(entry_cfg, dry_run=args.dry_run, rerun=args.rerun)
         return
 
+    if task_name == "stage1_formal_gate_info_sampling_lite":
+        run_stage1_formal_gate_info_sampling_lite(
+            entry_cfg,
+            dry_run=args.dry_run,
+            rerun=args.rerun,
+            preflight_only=args.preflight_only,
+            smoke_epochs=args.smoke_epochs,
+            smoke_setting=args.smoke_setting,
+        )
+        return
     run_stage1_hn(task_name, entry_cfg, dry_run=args.dry_run)
 
 
