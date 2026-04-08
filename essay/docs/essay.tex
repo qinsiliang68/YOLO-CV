@@ -166,9 +166,12 @@ Sewer-ML 数据集的发布为 sewer defect classification 提供了统一的 be
 \end{enumerate}
 
 \section{论文组织}
-全文围绕 stage-1 主线的 formal 选模、训练侧增强和样本重加权展开。第 2 章介绍高召回门控的理论基础、指标定义和样本效用建模动机；第 3 章说明数据集、实验平台和 formal working set 的组织方式；第 4 章报告 direct binary gate formal capacity scan 结果；第 5 章报告 six-class source 视图及其与 binary gate 的 cross-view mismatch；第 6 章报告主模型上的 HN ratio sweep 与 cross-capacity validation；第 7 章给出基于有效信息量的非线性样本重加权方法设计与 lite 消融框架；第 8 章总结当前已建立的 stage-1 证据链及其工程启示；第 9 章给出全文结论与后续研究方向。
+全文围绕 stage-1 主线的 formal 选模、训练侧增强和样本重加权展开。第 2 章介绍高召回门控的理论基础、指标定义和样本效用建模动机；第 3 章说明数据集、实验平台和 formal working set 的组织方式；第 4 章集中报告 direct binary gate capacity scan、six-class source 辅助视图以及 cross-view rank mismatch；第 5 章报告主模型上的 HN ratio sweep 与 cross-capacity validation；第 6 章给出基于有效信息量的非线性样本重加权方法及 lite 消融设计；第 7 章总结当前已建立的 stage-1 证据链及其工程启示；第 8 章给出全文结论与后续研究方向；附录部分进一步补充 formal protocol、HN provenance 以及信息量重加权的复现接口与 source-of-truth 清单。
 
-\chapter{理论基础与正式协议}
+\section{本章小结}
+本章从工程需求、任务边界、研究问题与技术路线四个层面明确了本文的写作中心：当前工作不是 detector 结构论文，也不是系统级两阶段优劣比较论文，而是一篇围绕 stage-1 高召回门控 formal 化、HN 训练侧增强以及固定预算样本重加权展开的主线论文。后续章节的全部理论、图表和结论，均围绕这一主线组织。
+
+\chapter{理论基础与关键技术}
 
 \section{stage-1 高召回门控的目标定义}
 设 stage-1 的输入样本总数为 $N$。其中 abnormal 样本需要尽可能完整地保留给后续人工复核或后级处理，而 normal 样本应在尽可能不牺牲召回的前提下被前级拦截。由此，stage-1 的核心目标并不是默认阈值下的总体分类正确率，而是高召回约束下的 normal filtering ability。
@@ -224,14 +227,17 @@ HN 回流的直接动机是：训练阶段存在一批被当前 gate 赋予较�
 \section{six-class source 视图的辅助地位}
 除 direct binary gate 外，本文还组织了一条 six-class source 容量扫描，用于观察不同容量模型在 source-side representation 任务上的相对位置。该视图的正式排序规则为 Accuracy、AUROC 与 AUPRC。然而，这一视图只承担辅助参考角色，不应替代 direct binary gate 的正式 backbone 选择。
 
-\chapter{数据集、实验设置与 formal 工作流}
+\section{本章小结}
+本章从任务定义、指标体系、温度校准、固定召回约束优化以及样本效用建模动机五个方面，为后续实验章节提供了统一理论基础。尤其是 PTR 的工程含义、trainer-side 指标与 formal objective 的错位来源，以及样本价值不应由单一 loss 或 raw uncertainty 决定的判断，共同构成了本文 stage-1 主线的理论支点。
 
-\section{数据集组织}
+\chapter{数据集构建、实验平台与 formal 工作流}
+
+\section{数据来源与数据组织}
 本文使用两套 source-side 数据集来支撑当前 stage-1 研究。第一套是 direct binary gate 数据集 \texttt{sewerml\_gate2\_train7200}，共 7200 张图像，其中训练集 6480 张、验证集 720 张；类别分布为 abnormal 6000 张、normal 1200 张。第二套是 six-class source 数据集 \texttt{sewerml\_cls6\_train7200}，同样包含 7200 张图像，并被均衡组织为六个类别，每类 1200 张，训练集与验证集分别为 6480 与 720 张。
 
 对于 binary gate formal protocol，全部 720 张验证图像进一步按类别分层拆分为 val-cal 与 val-op 两部分，其中 val-cal 为 216 张，val-op 为 504 张；对应 abnormal/normal 的划分分别为 180/36 与 420/84。该拆分仅用于温度参数拟合与 operating-point 报告，不参与训练。
 
-\section{容量扫描设置}
+\section{容量扫描设置与统一训练协议}
 全部 capacity scan 均以 YOLO11-cls 五个尺度模型为候选，即 \texttt{yolo11n-cls}、\texttt{yolo11s-cls}、\texttt{yolo11m-cls}、\texttt{yolo11l-cls} 与 \texttt{yolo11x-cls}。统一训练协议如下：
 \begin{itemize}
     \item batch size 固定为 24；
@@ -241,7 +247,7 @@ HN 回流的直接动机是：训练阶段存在一批被当前 gate 赋予较�
     \item 所有 formal 结果均由外部 evaluator 汇总。
 \end{itemize}
 
-\section{HN 设置}
+\section{HN 回流设置与候选池来源}
 在 baseline capacity scan 完成后，本文不再重新开启 backbone 选择问题，而是在已固定的主模型上组织 HN 增强。具体地：
 \begin{itemize}
     \item 主模型 \texttt{yolo11m-cls} 上执行完整 HN ratio sweep：\texttt{hn00, hn02, hn04, \ldots, hn20}；
@@ -251,12 +257,15 @@ HN 回流的直接动机是：训练阶段存在一批被当前 gate 赋予较�
 
 当前 working set 记录显示，\texttt{yolo11m} 的 HN 资产来自 1080 个训练 normal 样本，其中得分最高的 250 个样本构成 hard-normal candidate pool，占训练 normal 总量的 23.15\%。
 
-\section{结果留档与 source-of-truth}
+\section{formal 工作流与结果留档}
 为保证结果可追溯，本文对每个模型与每个 HN ratio 保留 run manifest、dataset manifest、best epoch manifest、all checkpoints index 以及 epoch-level summary，并在统一结果目录中生成主表、主图、附录表和 supplementary source-of-truth。
+
+\section{本章小结}
+本章给出了本文全部正式实验的工作流地基，包括数据来源、val-cal/val-op 划分、统一训练协议以及 manifest-first 的结果留档机制。由此，后续容量扫描、HN sweep 与样本重加权相关实验都可以在同一 formal protocol 下进行比较，而不再依赖零散日志或 trainer 默认输出。
 
 \chapter{高召回门控的 formal 选模与容量扫描}
 
-\section{主结果表}
+\section{direct binary gate formal capacity scan}
 \begin{table}[H]
     \centering
     \caption{direct binary gate formal capacity scan 主表}
@@ -286,7 +295,7 @@ HN 回流的直接动机是：训练阶段存在一批被当前 gate 赋予较�
 
 表 \ref{tab:stage1-formal-gate-capacity} 表明，在统一的 recall-constrained 排序规则下，\texttt{yolo11m-cls} 在两个主排序锚点 \formalmetric{Spec@R99.5} 与 \formalmetric{Spec@R99.0} 上同时取得最优，并在 \formalmetric{Prec@R99.0} 与 \formalmetric{PTR@R99.0} 上保持最优综合表现。因此，当前 stage-1 formal binary gate 的主模型应固定为 \texttt{yolo11m-cls}，第二对照模型则应固定为 \texttt{yolo11x-cls}。
 
-\section{checkpoint dynamics}
+\section{gate-best checkpoint dynamics}
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.90\textwidth]{../../../research/results/stage1_formal/capacity_scan/paper_main/figures/fig_stage1_gate_spec_r995_curve.png}
@@ -303,7 +312,7 @@ HN 回流的直接动机是：训练阶段存在一批被当前 gate 赋予较�
 
 图 \ref{fig:stage1-formal-gate-spec995} 与图 \ref{fig:stage1-formal-gate-spec990} 展示了 formal gate 指标随 checkpoint 变化的整体趋势。五个模型的 gate-best epoch 分别为 \texttt{76/77/78/54/125}（对应 \texttt{n/s/m/l/x}），说明 formal 最优点通常出现在训练中期或后中期，而不是默认意义上的“最后一轮”或“trainer 自动 best”。其中，\texttt{yolo11l-cls} 在较早 epoch 达到峰值，而 \texttt{yolo11x-cls} 需要更长优化轨迹才达到最优，但即便如此，\texttt{yolo11x-cls} 仍未在正式排序下超过 \texttt{yolo11m-cls}。
 
-\section{trainer \formalmetric{top1-best} 与 gate-best 的错位}
+\section{trainer \formalmetric{top1-best} 与 gate-best 的系统性错位}
 \begin{table}[H]
     \centering
     \caption{trainer \formalmetric{top1-best} 与 gate-best 的对照}
@@ -333,9 +342,9 @@ HN 回流的直接动机是：训练阶段存在一批被当前 gate 赋予较�
 
 表 \ref{tab:stage1-formal-top1-vs-gatebest} 与图 \ref{fig:stage1-formal-gate-top1-mismatch} 共同揭示了一个关键结论：五个模型中没有任何一个满足 trainer \formalmetric{top1-best} 与 formal gate-best 一致。尤其是 \texttt{yolo11m-cls}，其 trainer 侧 \formalmetric{top1-best} 出现在第 197 轮，而 formal gate-best 出现在第 78 轮，两者相差 119 个 epoch；\texttt{yolo11l-cls} 也表现出类似错位。这一结果说明，trainer 侧的 \formalmetric{top1} 虽然仍能反映分类优化是否正常进行，但并不与 recall-constrained gate objective 对齐。
 
-\chapter{source-side 辅助视图与 cross-view 分析}
+\section{six-class source formal capacity scan}
 
-\section{six-class source 主结果}
+\subsection{six-class source 主结果}
 \begin{table}[H]
     \centering
     \caption{six-class source formal capacity scan 主表}
@@ -363,7 +372,7 @@ HN 回流的直接动机是：训练阶段存在一批被当前 gate 赋予较�
 
 在 source-side six-class 任务下，\texttt{yolo11x-cls} 为辅助参考 leader，\texttt{yolo11m-cls} 位居第二。这一结果说明，更大容量模型在源域六类表示任务上仍具有优势；但该优势并不能直接转译为 recall-constrained binary gate 下的正式最优。
 
-\section{cross-view rank mismatch}
+\section{cross-view rank mismatch 分析}
 \begin{table}[H]
     \centering
     \caption{six-class source 与 direct binary gate 的跨视图排序差异}
@@ -391,6 +400,12 @@ HN 回流的直接动机是：训练阶段存在一批被当前 gate 赋予较�
 \end{figure}
 
 表 \ref{tab:stage1-formal-crossview-rank-gap} 与图 \ref{fig:stage1-formal-crossview-gap} 表明，source six-class 排序不能替代 direct binary gate 排序。最关键的差异集中在 \texttt{yolo11m-cls} 与 \texttt{yolo11x-cls}：前者在 source six-class 中位居第二，却在 binary gate 中成为正式主模型；后者在 source six-class 中位居第一，却在 binary gate 中退居第二。
+
+\section{stage-1 主模型与第二对照模型的确定}
+综合 binary gate 主表、checkpoint dynamics、top1-best 与 gate-best 错位表以及 cross-view rank mismatch，可得到一个稳定且不依赖单一辅助视图的结论：\texttt{yolo11m-cls} 是当前 stage-1 formal mainline 的唯一合理主模型，\texttt{yolo11x-cls} 则应作为容量更大的第二对照模型保留。相较之下，\texttt{yolo11l-cls} 虽然在早期 exploratory 阶段具有吸引力，但在当前统一 formal protocol 下已不再承担主线角色。
+
+\section{本章小结}
+本章完成了 stage-1 backbone 选择问题的正式闭环。通过把 direct binary gate 与 six-class source 明确区分为 primary view 与 auxiliary view，本文不仅确定了 \texttt{yolo11m-cls} 和 \texttt{yolo11x-cls} 的 mainline 角色，也证明了 trainer-side \formalmetric{top1} 与 source-side capacity 排名都不能替代 formal gate-aware 选模。
 
 \chapter{基于 HN 回流的 stage-1 训练侧增强}
 
@@ -519,10 +534,16 @@ HN 回流的直接动机是：训练阶段存在一批被当前 gate 赋予较�
 \section{HN 样本来源的可追溯性}
 当前 HN working set 还提供了 hard-normal 来源证据。具体而言，\texttt{yolo11m} 的 HN 候选来自 1080 个训练 normal 样本，其中分数最高的 250 个样本构成回流池，占训练 normal 总量的 23.15\%。这意味着本文所讨论的 HN 并非人工主观挑选，而是直接来自 baseline gate 在训练 normal 集上的高风险尾部分布。为控制仓库存储，附录仅保留分布统计与最高分候选名单，而不复制分类图像文件。
 
-\chapter{基于有效信息量的非线性样本重加权方法设计}
+\section{HN 回流的已知边界}
+尽管 \texttt{yolo11m-cls} 上的 HN sweep 已经证明 uniform hard replay 可以带来正式指标上的可观测净增益，但这一增益具有三条明确边界。第一，收益不是单调随 ratio 增加而增长，而是存在窄 sweet spot。第二，收益不具备 backbone 无关性，\texttt{yolo11x-cls} 的 light validation 已经表明小比例 HN 并不必然复现相同方向的净增益。第三，uniform replay 只能说明 hard pool 作为整体具有训练价值，并不能说明 pool 内部样本价值近似同质；这恰恰构成了后续样本效用重加权方法的直接动机。
+
+\section{本章小结}
+本章把 HN 回流从“是否有用”的经验判断推进为“在统一 formal 规则下可排序、可审计、可复核”的训练侧增强问题。当前证据表明，\texttt{yolo11m-cls + hn14} 是主模型上的正式 sweet spot，而 HN 收益同时呈现出非单调、模型相关和候选池内部异质性的特征，这为下一章从比例扫描转向样本价值重分配奠定了经验基础。
+
+\chapter{基于有效信息量的非线性样本重加权方法}
 
 \section{问题提出：从 HN 比例扫描到样本价值建模}
-第 6 章已经表明，uniform HN replay 的收益既不是单调的，也不是 backbone 无关的。对于当前主模型 \texttt{yolo11m-cls}，\texttt{hn14} 是固定 formal protocol 下的 sweet spot；但同一方向的收益并未在 \texttt{yolo11x-cls} 上自动复现。由此可见，当前尚未解决的关键变量，已经不再是“HN 要不要加、加多少”，而是“在 fixed-budget 的 hard-normal pool 内，哪些样本更值得被重复学习”。因此，本文将下一步训练侧增强问题形式化为固定预算下的样本价值重分配，而不是重新开启新的 HN ratio sweep。
+第 5 章已经表明，uniform HN replay 的收益既不是单调的，也不是 backbone 无关的。对于当前主模型 \texttt{yolo11m-cls}，\texttt{hn14} 是固定 formal protocol 下的 sweet spot；但同一方向的收益并未在 \texttt{yolo11x-cls} 上自动复现。由此可见，当前尚未解决的关键变量，已经不再是“HN 要不要加、加多少”，而是“在 fixed-budget 的 hard-normal pool 内，哪些样本更值得被重复学习”。因此，本文将下一步训练侧增强问题形式化为固定预算下的样本价值重分配，而不是重新开启新的 HN ratio sweep。
 
 \section{固定预算样本重分配问题的形式化定义}
 设由现有 working set 导出的 hard-normal candidate pool 为
@@ -602,7 +623,7 @@ S_i^{(A4)} = (R_i C_i D_i)^{1/3}.
 \section{已建立的 stage-1 正式证据链}
 截至当前版本，本文已经建立了四条相互衔接的正式证据链。第一，direct binary gate 是 stage-1 的正式选模视图，而不是默认阈值分类任务的延伸。第二，formal binary gate capacity scan 已经明确给出当前主模型与第二对照模型，即 \texttt{yolo11m-cls} 与 \texttt{yolo11x-cls}。第三，five-model \formalmetric{top1-best} 与 gate-best 的全不一致，证明 trainer-side \formalmetric{top1} 不应再作为 stage-1 的正式选模依据。第四，在主模型已固定的前提下，HN 确实能够在 formal 指标上形成可观测增益，但该增益是非单调、存在 sweet spot 且具有模型相关性的。
 
-\section{对完整系统的工程启示}
+\section{对后续两阶段系统的工程启示}
 当前结果不支持将 HN 解读为“重新改变全局 backbone 排序”的因素。相反，HN 的合理定位应是：在已完成 capacity scan 的主线上，进一步组织训练样本以提升 recall-constrained filtering 能力。对于 \texttt{yolo11m-cls}，这一增强在 \texttt{hn14} 达到正式最优；对于 \texttt{yolo11x-cls}，当前 light validation 并未提供同方向的净增益。因此，HN 更适合被表述为建立在主模型上的训练侧优化，而不是容量无关的普适策略。
 
 从工程实现角度看，本文对后续两阶段系统至少提供了三点启示。首先，front-end 若要承担减负功能，就必须先 formalize 自身的任务边界、checkpoint 选择和 operating-point 评估方式，否则 stage-2 的输入质量会随 trainer-side proxy 漂移。其次，HN 与未来的样本效用重加权都不应被理解为 detector 替代物，而应被理解为向后级 detector 提供更干净、更稳定前端输入的训练侧机制。最后，即便未来进入 detector 与系统级闭环比较，stage-1 的评价仍应保持独立，因为 source-side classification、default-threshold top1 与 recall-constrained gate objective 并不等价。
@@ -610,7 +631,10 @@ S_i^{(A4)} = (R_i C_i D_i)^{1/3}.
 \section{本文的局限性与不作出的结论}
 尽管 stage-1 的高召回门控动机来自两阶段系统的工程需求，但当前尚未完成针对单阶段 detector 与两阶段系统的系统级对比实验。因此，本文不对“整体两阶段系统优于单阶段 detector”作出正式结论。当前 manuscript 的有效结论仅限于：若后续系统采用 stage-1 front-end，则其 front-end backbone 与训练侧增强都必须在 direct binary gate 的正式视图下确定，而不能由默认阈值分类指标或 source six-class 结果替代决定。
 
-此外，本文当前尚未报告 Gate-Aligned Effective Information Score lite 的 full-run 结果。第 7 章给出的内容是建立在已完成 stage-1 证据基础上的方法设计与实验框架，而不是新的 completed performance claim。对于 split 尺度、整数步长对阈值定位的影响，以及更大规模跨设备数据条件下的稳定性问题，本文也仅在现有工作流范围内讨论，不对其外推结论作正式声明。
+此外，本文当前尚未报告 Gate-Aligned Effective Information Score lite 的 full-run 结果。第 6 章给出的内容是建立在已完成 stage-1 证据基础上的方法设计与实验框架，而不是新的 completed performance claim。对于 split 尺度、整数步长对阈值定位的影响，以及更大规模跨设备数据条件下的稳定性问题，本文也仅在现有工作流范围内讨论，不对其外推结论作正式声明。
+
+\section{本章小结}
+本章的核心作用在于把 capacity scan、HN sweep 与后续样本重加权重新组织为一条闭合的 stage-1 证据链，并明确它对未来两阶段系统研究的意义与边界。换言之，本文已经完成的是 front-end 的 formal 化、选模与训练侧增强，而尚未完成的是 detector 及系统级闭环；这一边界的保留既保证了论证严谨，也为后续工作留出了清晰接口。
 
 \chapter{结论与展望}
 
@@ -632,7 +656,7 @@ S_i^{(A4)} = (R_i C_i D_i)^{1/3}.
 
 \appendix
 
-\chapter{Stage-1 formal protocol 摘要}
+\chapter{Stage-1 formal protocol 与符号表}
 \begin{table}[H]
     \centering
     \caption{Stage-1 formal protocol 摘要}
@@ -654,7 +678,7 @@ S_i^{(A4)} = (R_i C_i D_i)^{1/3}.
     \end{tabularx}
 \end{table}
 
-\chapter{HN 附录材料}
+\chapter{HN sweep 与 hard-normal 来源补充材料}
 
 \section{HN 检查点与材料覆盖}
 \begin{table}[H]
@@ -766,6 +790,38 @@ S_i^{(A4)} = (R_i C_i D_i)^{1/3}.
 
 \section{关于 ratio 级 top1-vs-gatebest 的说明}
 当前 HN material level 并不包含可靠的 trainer-side per-ratio \formalmetric{top1} 轨迹字段；因此，本文不构造伪造性的 “ratio-level top1-vs-gatebest” 结论，而仅在附录 source-of-truth 中登记该限制。
+
+\chapter{有效信息量评分函数、消融接口与样本清单}
+
+\section{Lite 版评分函数摘要}
+为便于后续复现实验，本文将 Gate-Aligned Effective Information Score lite 的最终表达统一记为
+\begin{equation}
+S_i^{(A2)} = R_i,\qquad
+S_i^{(A3)} = (R_i C_i)^{1/2},\qquad
+S_i^{(A4)} = (R_i C_i D_i)^{1/3},
+\end{equation}
+其中风险项 $R_i$、一致性项 $C_i$ 与结构支撑项 $D_i$ 的定义见第 6 章。三组实验共享同一 hard-normal candidate pool、同一 \texttt{hn14} 预算锚点以及同一 formal evaluator，不改变 backbone、batch、epochs 或 checkpoint policy。
+
+\section{样本清单与固定预算接口}
+对于 lite 版重加权实验，本文保留的最小可复现 working set 包括候选池 score 清单、采样概率清单、weighted replay 清单与 suite-level summary，而不要求在论文仓库内长期保留全量中间张量或分类图片副本。更具体地说，\texttt{candidate\_pool\_scores.csv}、\texttt{score\_stats.json/md}、\texttt{weighted\_replay\_summary.json} 以及相应 manifest 共同构成了从 fixed top250 pool 到固定预算 replay 分配的可追溯接口。
+
+\chapter{复现实验命令、目录结构与 source-of-truth 清单}
+
+\section{训练脚本与运行入口}
+当前 lite 版重加权实验的训练入口统一为 \texttt{main.py} 中的 \texttt{stage1\_formal\_gate\_info\_sampling\_lite} 任务。其脚本组织如下：
+\begin{enumerate}[label=\arabic*.]
+    \item \texttt{stage1\_prepare\_info\_sampling\_lite\_scores.py}：生成 top250 pool 的 one-shot score、采样概率与 score statistics；
+    \item \texttt{stage1\_build\_info\_sampling\_lite\_dataset.py}：在固定 \texttt{hn14} 预算下构建 weighted replay 数据集视图；
+    \item \texttt{stage1\_formal\_gate\_info\_sampling\_lite.py}：组织 preflight、smoke、full-run 和 suite-level summary；
+    \item \texttt{stage1\_build\_info\_sampling\_lite\_paper\_assets.py}：生成 tables、figures、summary 与 manifests。
+\end{enumerate}
+为避免误用，teacher 固定为 \texttt{yolo11m-cls + hn00} 的 gate-best checkpoint，hard pool 固定为既有 \texttt{top\_false\_positive\_normals.csv}，budget 固定为 151。若 preflight 或 smoke 未通过，本文不建议直接启动 full-run。
+
+\section{目录结构与 source-of-truth 清单}
+与 lite 版实验直接相关的正式目录可概括为三层：其一，\texttt{research/materials/stage1\_formal/gate\_info\_sampling\_lite} 用于保留候选池打分、dataset manifest 与 run manifest；其二，\texttt{research/results/stage1\_formal/gate\_info\_sampling\_lite} 用于保留 PREFLIGHT、SMOKE、SUMMARY、REPRODUCE 与 ARTIFACTS 等汇总文件；其三，\texttt{YOLOv11/datasets/stage1\_formal\_gate\_info\_sampling\_lite} 与 \texttt{YOLOv11/runs/stage1\_formal\_gate\_info\_sampling\_lite} 则分别保存 weighted dataset view 和训练运行目录。三层目录之间通过 manifest 与 path pointer 关联，而不依赖人工整理。
+
+\section{artifacts 保留与清理规则}
+考虑到训练侧工作流会产生大量中间文件，本文对 lite 版 artifacts 的保留规则作如下约定：保留 \texttt{candidate\_pool\_scores.csv}、\texttt{score\_stats.json/md}、\texttt{dataset\_manifest.json}、\texttt{run\_manifest.json}、\texttt{epoch\_gate\_summary.*}、\texttt{best\_epoch\_manifest.json} 与 suite-level 主表主图；不将全量 checkpoint 复制到 \texttt{research/materials}，也不默认复制分类图片副本。若临时生成 feature tensor、TTA raw array 或 gallery 中间件，应用后即清理，并在相应 manifest 中登记“已清理”状态。
 
 \backmatter
 \begin{thebibliography}{99}
