@@ -1,0 +1,90 @@
+{
+  "label": "formal yolo11m gate HN sweep",
+  "base_model": "yolo11m-cls",
+  "base_checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_gate\\yolo11m_gate2_formal_200ep\\weights\\epoch_078.pt",
+  "source_dataset": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\datasets\\sewerml_gate2_train7200",
+  "materials_root": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\research\\materials\\stage1_formal\\gate_hn_m_sweep",
+  "results_dir": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\research\\results\\stage1_formal\\gate_hn_m_sweep",
+  "project_root": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_gate_hn",
+  "scoring_output_dir": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\research\\materials\\stage1_formal\\gate_hn_assets\\yolo11m_train_normal_scores",
+  "dataset_view_root": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\datasets\\stage1_formal_gate_hn",
+  "ratios": [
+    {
+      "ratio_id": "hn00",
+      "ratio_percent": 0,
+      "backflow_count": 0,
+      "summary_dir": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\research\\materials\\stage1_formal\\gate_hn_m_sweep\\hn00",
+      "reuse_existing": true
+    },
+    {
+      "ratio_id": "hn02",
+      "ratio_percent": 2,
+      "backflow_count": 22,
+      "summary_dir": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\research\\materials\\stage1_formal\\gate_hn_m_sweep\\hn02",
+      "reuse_existing": false
+    },
+    {
+      "ratio_id": "hn04",
+      "ratio_percent": 4,
+      "backflow_count": 43,
+      "summary_dir": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\research\\materials\\stage1_formal\\gate_hn_m_sweep\\hn04",
+      "reuse_existing": false
+    },
+    {
+      "ratio_id": "hn06",
+      "ratio_percent": 6,
+      "backflow_count": 65,
+      "summary_dir": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\research\\materials\\stage1_formal\\gate_hn_m_sweep\\hn06",
+      "reuse_existing": false
+    },
+    {
+      "ratio_id": "hn08",
+      "ratio_percent": 8,
+      "backflow_count": 86,
+      "summary_dir": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\research\\materials\\stage1_formal\\gate_hn_m_sweep\\hn08",
+      "reuse_existing": false
+    },
+    {
+      "ratio_id": "hn10",
+      "ratio_percent": 10,
+      "backflow_count": 108,
+      "summary_dir": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\research\\materials\\stage1_formal\\gate_hn_m_sweep\\hn10",
+      "reuse_existing": false
+    },
+    {
+      "ratio_id": "hn12",
+      "ratio_percent": 12,
+      "backflow_count": 130,
+      "summary_dir": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\research\\materials\\stage1_formal\\gate_hn_m_sweep\\hn12",
+      "reuse_existing": false
+    },
+    {
+      "ratio_id": "hn14",
+      "ratio_percent": 14,
+      "backflow_count": 151,
+      "summary_dir": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\research\\materials\\stage1_formal\\gate_hn_m_sweep\\hn14",
+      "reuse_existing": false
+    },
+    {
+      "ratio_id": "hn16",
+      "ratio_percent": 16,
+      "backflow_count": 173,
+      "summary_dir": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\research\\materials\\stage1_formal\\gate_hn_m_sweep\\hn16",
+      "reuse_existing": false
+    },
+    {
+      "ratio_id": "hn18",
+      "ratio_percent": 18,
+      "backflow_count": 194,
+      "summary_dir": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\research\\materials\\stage1_formal\\gate_hn_m_sweep\\hn18",
+      "reuse_existing": false
+    },
+    {
+      "ratio_id": "hn20",
+      "ratio_percent": 20,
+      "backflow_count": 216,
+      "summary_dir": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\research\\materials\\stage1_formal\\gate_hn_m_sweep\\hn20",
+      "reuse_existing": false
+    }
+  ]
+}

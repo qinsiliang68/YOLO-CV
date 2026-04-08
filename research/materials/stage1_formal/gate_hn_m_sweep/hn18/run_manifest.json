@@ -1,0 +1,22 @@
+{
+  "task_kind": "gate",
+  "task_name": "stage1_formal_gate_hn_m_sweep",
+  "config_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\$out\\generated_configs\\stage1_formal\\gate_hn_m_sweep\\yolo11m_gate2_formal_hn18_200ep.json",
+  "dataset_root": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\datasets\\stage1_formal_gate_hn\\yolo11m_gate2_formal_hn18",
+  "run_dir": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_gate_hn\\yolo11m_gate2_formal_hn18_200ep",
+  "summary_dir": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\research\\materials\\stage1_formal\\gate_hn_m_sweep\\hn18",
+  "split_manifest": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\research\\materials\\stage1_formal\\manifests\\val_cal_op_split.csv",
+  "formal_batch": 24,
+  "target_epochs": 200,
+  "machine_name": "DESKTOP-DGQTJ9O",
+  "commit_hash": "7766de59e3e71c0688e86d37be1287c33a8565d8",
+  "python_executable": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\.venv\\Scripts\\python.exe",
+  "status": "evaluation_completed",
+  "epochs_indexed": 200,
+  "created_at": "2026-04-07 11:29:16",
+  "updated_at": "2026-04-07 15:40:54",
+  "training_started_at": "2026-04-07 11:29:20",
+  "training_completed_at": "2026-04-07 14:59:28",
+  "evaluation_completed_at": "2026-04-07 15:40:54",
+  "platform": "Windows-10-10.0.26200-SP0"
+}

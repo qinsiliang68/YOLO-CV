@@ -1,0 +1,16 @@
+{
+  "epoch": 115,
+  "checkpoint_file": "epoch_115.pt",
+  "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_gate_hn\\yolo11m_gate2_formal_hn12_200ep\\weights\\epoch_115.pt",
+  "temperature_T": 3.2173,
+  "tau_r995": 0.3,
+  "tau_r990": 0.34,
+  "spec_at_r995": 0.535714,
+  "spec_at_r990": 0.571429,
+  "prec_at_r990": 0.920354,
+  "ptr_at_r990": 0.896825,
+  "tn_at_r995": 45,
+  "fn_at_r995": 2,
+  "tn_at_r990": 48,
+  "fn_at_r990": 4
+}
