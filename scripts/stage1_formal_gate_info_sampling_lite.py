@@ -41,9 +41,21 @@ def load_json(path: Path) -> dict[str, Any]:
     return payload
 
 
+def load_json_if_exists(path: Path) -> dict[str, Any]:
+    if not path.exists():
+        return {}
+    return load_json(path)
+
+
 def load_csv_rows(path: Path) -> list[dict[str, str]]:
     with path.open("r", encoding="utf-8-sig", newline="") as handle:
         return list(csv.DictReader(handle))
+
+
+def load_csv_rows_if_exists(path: Path) -> list[dict[str, str]]:
+    if not path.exists():
+        return []
+    return load_csv_rows(path)
 
 
 def write_csv(path: Path, fieldnames: list[str], rows: list[dict[str, Any]]) -> None:
@@ -73,6 +85,13 @@ def resolve_ratio_row(summary_csv: Path, ratio_id: str) -> dict[str, str]:
     if match is None:
         raise SystemExit(f"Missing ratio `{ratio_id}` in {summary_csv}")
     return match
+
+
+def try_resolve_ratio_row(summary_csv: Path, ratio_id: str) -> dict[str, str]:
+    try:
+        return resolve_ratio_row(summary_csv, ratio_id)
+    except SystemExit:
+        return {}
 
 
 def is_setting_complete(summary_dir: Path) -> bool:
@@ -141,21 +160,32 @@ def build_setup_audit(
     results_dir: Path,
     dry_run: bool,
 ) -> tuple[dict[str, Any], dict[str, Any], int]:
-    teacher_best = load_json(teacher_summary_dir / "best_epoch_manifest.json")
-    uniform_best = load_json(uniform_anchor_summary_dir / "best_epoch_manifest.json")
-    pool_summary = load_json(pool_summary_json)
-    pool_top_rows = load_csv_rows(pool_top_csv)
-    fixed_budget_row = resolve_ratio_row(hn_summary_csv, resolve_str(cfg.get("budget_anchor_ratio_id"), "hn14"))
-    teacher_row = resolve_ratio_row(hn_summary_csv, resolve_str(cfg.get("teacher_ratio_id"), "hn00"))
+    teacher_manifest_path = teacher_summary_dir / "best_epoch_manifest.json"
+    uniform_manifest_path = uniform_anchor_summary_dir / "best_epoch_manifest.json"
+    teacher_best = load_json_if_exists(teacher_manifest_path)
+    uniform_best = load_json_if_exists(uniform_manifest_path)
+    pool_summary = load_json_if_exists(pool_summary_json)
+    pool_top_rows = load_csv_rows_if_exists(pool_top_csv)
+    fixed_budget_row = try_resolve_ratio_row(hn_summary_csv, resolve_str(cfg.get("budget_anchor_ratio_id"), "hn14")) if hn_summary_csv.exists() else {}
+    teacher_row = try_resolve_ratio_row(hn_summary_csv, resolve_str(cfg.get("teacher_ratio_id"), "hn00")) if hn_summary_csv.exists() else {}
     total_train_normals = int(pool_summary.get("total_train_normals", 0))
     fixed_budget_count = (
         int(fixed_budget_row["backflow_count"])
         if "backflow_count" in fixed_budget_row
-        else int(round(total_train_normals * float(fixed_budget_row["ratio_percent"]) / 100.0))
+        else int(round(total_train_normals * float(fixed_budget_row.get("ratio_percent", 0.0) or 0.0) / 100.0))
     )
 
-    teacher_checkpoint = str(teacher_best["checkpoint_path"])
+    teacher_checkpoint = str(teacher_best.get("checkpoint_path", ""))
     pool_teacher_checkpoint = str(pool_summary.get("weights", ""))
+    required_inputs = {
+        "hn_summary_csv": hn_summary_csv.exists(),
+        "teacher_best_manifest": teacher_manifest_path.exists(),
+        "uniform_best_manifest": uniform_manifest_path.exists(),
+        "pool_top_csv": pool_top_csv.exists(),
+        "pool_scores_csv": pool_scores_csv.exists(),
+        "pool_summary_json": pool_summary_json.exists(),
+        "source_dataset": source_dataset.exists(),
+    }
     audit = {
         "task_name": resolve_str(cfg.get("task_name"), "stage1_formal_gate_info_sampling_lite"),
         "config_path": str(config_path),
@@ -166,13 +196,13 @@ def build_setup_audit(
         "uniform_anchor_ratio_id": resolve_str(cfg.get("uniform_anchor_ratio_id"), "hn14"),
         "budget_anchor_ratio_id": resolve_str(cfg.get("budget_anchor_ratio_id"), "hn14"),
         "teacher_checkpoint_path": teacher_checkpoint,
-        "teacher_checkpoint_exists": Path(teacher_checkpoint).exists(),
+        "teacher_checkpoint_exists": Path(teacher_checkpoint).exists() if teacher_checkpoint else False,
         "teacher_summary_dir": str(teacher_summary_dir),
         "uniform_anchor_summary_dir": str(uniform_anchor_summary_dir),
-        "teacher_best_epoch": int(teacher_best["epoch"]),
-        "teacher_best_spec_at_r995": float(teacher_best["spec_at_r995"]),
-        "uniform_anchor_epoch": int(uniform_best["epoch"]),
-        "uniform_anchor_spec_at_r995": float(uniform_best["spec_at_r995"]),
+        "teacher_best_epoch": int(teacher_best.get("epoch", -1)) if teacher_best else None,
+        "teacher_best_spec_at_r995": float(teacher_best.get("spec_at_r995", 0.0)) if teacher_best else None,
+        "uniform_anchor_epoch": int(uniform_best.get("epoch", -1)) if uniform_best else None,
+        "uniform_anchor_spec_at_r995": float(uniform_best.get("spec_at_r995", 0.0)) if uniform_best else None,
         "pool_top_csv": str(pool_top_csv),
         "pool_scores_csv": str(pool_scores_csv),
         "pool_summary_json": str(pool_summary_json),
@@ -180,12 +210,14 @@ def build_setup_audit(
         "pool_summary_top_k": int(pool_summary.get("top_k", len(pool_top_rows))),
         "pool_total_train_normals": total_train_normals,
         "pool_teacher_checkpoint_path": pool_teacher_checkpoint,
-        "pool_teacher_matches_hn00_teacher": normalize_path_token(pool_teacher_checkpoint) == normalize_path_token(teacher_checkpoint),
+        "pool_teacher_matches_hn00_teacher": bool(pool_teacher_checkpoint and teacher_checkpoint) and normalize_path_token(pool_teacher_checkpoint) == normalize_path_token(teacher_checkpoint),
         "teacher_summary_row": teacher_row,
         "budget_anchor_summary_row": fixed_budget_row,
         "fixed_budget_count": fixed_budget_count,
         "candidate_top_k": int(cfg.get("candidate_top_k", 250) or 250),
         "dry_run": bool(dry_run),
+        "required_inputs": required_inputs,
+        "core_inputs_ready": all(required_inputs.values()),
     }
     audit["notes"] = [
         "Teacher defaults to hn00 unless the existing hard-normal pool provenance contradicts this assumption.",
@@ -210,6 +242,10 @@ def build_setup_audit(
                 f"- fixed pool size: `{audit['pool_top_count']}`",
                 f"- pool provenance matches hn00 teacher: `{audit['pool_teacher_matches_hn00_teacher']}`",
                 f"- source dataset exists: `{audit['source_dataset_exists']}`",
+                f"- core inputs ready: `{audit['core_inputs_ready']}`",
+                "",
+                "Required inputs:",
+                *[f"- {key}: `{value}`" for key, value in required_inputs.items()],
                 "",
                 "Notes:",
                 *[f"- {note}" for note in audit["notes"]],
@@ -274,7 +310,7 @@ def build_preflight_report(
     smoke_epochs: int,
     smoke_setting: str,
 ) -> dict[str, Any]:
-    pool_top_rows = load_csv_rows(resolve_path(cfg.get("pool_top_csv"), base=REPO_ROOT))
+    pool_top_rows = load_csv_rows_if_exists(resolve_path(cfg.get("pool_top_csv"), base=REPO_ROOT))
     top250_paths = [normalize_path_token(row["img_rel_path"]) for row in pool_top_rows[: int(cfg.get("candidate_top_k", 250) or 250)]]
     preflight: dict[str, Any] = {
         "task_name": resolve_str(cfg.get("task_name"), "stage1_formal_gate_info_sampling_lite"),
@@ -483,7 +519,8 @@ def build_preflight_report(
     }
 
     preflight["ready_for_full_train"] = bool(
-        audit["teacher_checkpoint_exists"]
+        audit["core_inputs_ready"]
+        and audit["teacher_checkpoint_exists"]
         and audit["source_dataset_exists"]
         and audit["pool_teacher_matches_hn00_teacher"]
         and int(audit["pool_top_count"]) == int(cfg.get("candidate_top_k", 250) or 250)
@@ -508,8 +545,12 @@ def build_preflight_report(
         f"- pool exact reuse source: `{preflight['pool']['pool_source_csv']}`",
         f"- fixed budget count: `{preflight['budget']['fixed_budget_count']}`",
         f"- pool provenance matches hn00 teacher: `{preflight['teacher']['pool_teacher_matches_hn00_teacher']}`",
+        f"- core inputs ready: `{audit['core_inputs_ready']}`",
         f"- rerun cleanup scope safe: `{preflight['rerun_scope']['safe']}`",
         f"- ready_for_full_train: `{preflight['ready_for_full_train']}`",
+        "",
+        "## Required inputs",
+        *[f"- {key}: `{value}`" for key, value in audit["required_inputs"].items()],
         "",
         "## Per-setting score checks",
     ]
@@ -953,37 +994,40 @@ def main() -> None:
         results_dir=results_dir,
         dry_run=args.dry_run,
     )
-    uniform_anchor_best = load_json(uniform_anchor_summary_dir / "best_epoch_manifest.json")
+    uniform_anchor_best = load_json_if_exists(uniform_anchor_summary_dir / "best_epoch_manifest.json")
 
-    maybe_prepare_scores(
-        cfg=cfg,
-        source_dataset=source_dataset,
-        score_output_dir=score_output_dir,
-        scratch_root=scratch_root,
-        teacher_best=teacher_best,
-        fixed_budget_count=fixed_budget_count,
-        pool_top_csv=pool_top_csv,
-        pool_scores_csv=pool_scores_csv,
-        results_dir=results_dir,
-        dry_run=args.dry_run,
-        rerun=args.rerun,
-        recycle_root=recycle_root,
-    )
+    if audit["core_inputs_ready"] or args.dry_run:
+        maybe_prepare_scores(
+            cfg=cfg,
+            source_dataset=source_dataset,
+            score_output_dir=score_output_dir,
+            scratch_root=scratch_root,
+            teacher_best=teacher_best,
+            fixed_budget_count=fixed_budget_count,
+            pool_top_csv=pool_top_csv,
+            pool_scores_csv=pool_scores_csv,
+            results_dir=results_dir,
+            dry_run=args.dry_run,
+            rerun=args.rerun,
+            recycle_root=recycle_root,
+        )
+    else:
+        print_step("preflight", "skip score preparation because required input files are missing")
 
     suite_rows: list[dict[str, Any]] = [
         {
             "setting_id": "A0",
             "setting_name": "hn00",
-            "run_name": str(resolve_ratio_row(hn_summary_csv, "hn00").get("run_name", "yolo11m_gate2_formal_200ep")),
-            "run_dir": str(teacher_best["checkpoint_path"]),
+            "run_name": str(try_resolve_ratio_row(hn_summary_csv, "hn00").get("run_name", "yolo11m_gate2_formal_200ep")),
+            "run_dir": str(teacher_best.get("checkpoint_path", "")),
             "summary_dir": str(teacher_summary_dir),
             "status": "reused",
         },
         {
             "setting_id": "A1",
             "setting_name": "uniform_hn14",
-            "run_name": str(resolve_ratio_row(hn_summary_csv, resolve_str(cfg.get("uniform_anchor_ratio_id"), "hn14")).get("run_name", "yolo11m_gate2_formal_hn14_200ep")),
-            "run_dir": str(uniform_anchor_best["checkpoint_path"]),
+            "run_name": str(try_resolve_ratio_row(hn_summary_csv, resolve_str(cfg.get("uniform_anchor_ratio_id"), "hn14")).get("run_name", "yolo11m_gate2_formal_hn14_200ep")),
+            "run_dir": str(uniform_anchor_best.get("checkpoint_path", "")),
             "summary_dir": str(uniform_anchor_summary_dir),
             "status": "reused",
         },
@@ -1004,18 +1048,21 @@ def main() -> None:
         score_csv = score_output_dir / f"{setting_id}_candidate_pool_scores.csv"
         summary_dir = materials_root / setting_name
 
-        maybe_build_dataset(
-            source_dataset=source_dataset,
-            dataset_root=dataset_root,
-            score_csv=score_csv,
-            setting_id=setting_id,
-            setting_name=setting_name,
-            expected_duplication_total=fixed_budget_count,
-            link_mode=resolve_str(cfg.get("link_mode"), "hardlink"),
-            dry_run=args.dry_run,
-            rerun=args.rerun,
-            recycle_root=recycle_root,
-        )
+        if audit["core_inputs_ready"] or args.dry_run:
+            maybe_build_dataset(
+                source_dataset=source_dataset,
+                dataset_root=dataset_root,
+                score_csv=score_csv,
+                setting_id=setting_id,
+                setting_name=setting_name,
+                expected_duplication_total=fixed_budget_count,
+                link_mode=resolve_str(cfg.get("link_mode"), "hardlink"),
+                dry_run=args.dry_run,
+                rerun=args.rerun,
+                recycle_root=recycle_root,
+            )
+        else:
+            print_step("preflight", f"skip dataset build for {setting_id} because required input files are missing")
 
     preflight_mode = "dry_run" if args.dry_run else ("preflight_only" if args.preflight_only else ("smoke" if args.smoke_epochs > 0 else "full_run"))
     preflight = build_preflight_report(
@@ -1040,6 +1087,12 @@ def main() -> None:
 
     if args.preflight_only:
         return
+
+    if not preflight["ready_for_full_train"] and not args.dry_run:
+        raise SystemExit(
+            "Preflight failed. Inspect research/results/stage1_formal/gate_info_sampling_lite/"
+            "PREFLIGHT_gate_info_sampling_lite.md before smoke/full runs."
+        )
 
     epochs_override = int(args.smoke_epochs) if args.smoke_epochs > 0 else None
 
