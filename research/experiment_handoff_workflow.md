@@ -41,18 +41,15 @@ Before changing defaults or deciding the next experiment, read:
 powershell -ExecutionPolicy Bypass -File .\scripts\git_sync_main.ps1
 ```
 
-### Start formal capacity scan
-
-Computer A:
+### Start a formal stage-1 task
 
 ```powershell
-uv run main_A.py
-```
-
-Computer B:
-
-```powershell
-uv run main_B.py
+uv run main.py --task stage1_formal_gate_capacity
+uv run main.py --task stage1_formal_cls6_capacity
+uv run main.py --task stage1_formal_gate_hn_m_sweep
+uv run main.py --task stage1_formal_gate_hn_x_crosscheck
+uv run main.py --task stage1_formal_gate_hn_all
+uv run main.py --task stage1_formal_gate_rcd_lite
 ```
 
 ### Push results after training

@@ -12,27 +12,25 @@ powershell -ExecutionPolicy Bypass -File .\scripts\git_sync_main.ps1
 .\scripts\check.ps1
 ```
 
-Current formal dual-machine entrypoints:
+Current formal single-launcher entrypoint:
 
 ```powershell
-uv run main_A.py
-uv run main_B.py
+uv run main.py --task <task_name>
 ```
 
-`main_A.py` launches the formal direct binary gate capacity scan.
-`main_B.py` launches the formal six-class source capacity scan.
-
-`main.py` remains the shared explicit-task entrypoint.
+`main.py` is the only maintained training entrypoint.
 The active task selector is controlled by:
 
 - `YOLOv11/configs/runtime/main_entry.json`
 
-The formal launch pair is:
+The current formal tasks are:
 
-- `uv run main_A.py`
-  - `stage1_formal_gate_capacity`
-- `uv run main_B.py`
-  - `stage1_formal_cls6_capacity`
+- `uv run main.py --task stage1_formal_gate_capacity`
+- `uv run main.py --task stage1_formal_cls6_capacity`
+- `uv run main.py --task stage1_formal_gate_hn_m_sweep`
+- `uv run main.py --task stage1_formal_gate_hn_x_crosscheck`
+- `uv run main.py --task stage1_formal_gate_hn_all`
+- `uv run main.py --task stage1_formal_gate_rcd_lite`
 
 Both formal tasks:
 
@@ -42,7 +40,21 @@ Both formal tasks:
 - ignore trainer `top1/acc` for formal selection
 - use external summaries to choose the final formal best checkpoint
 
-`main_cls6_sweep.py` is kept only as a compatibility wrapper for the six-class sweep.
+Recommended HN commands:
+
+- `uv run main.py --task stage1_formal_gate_hn_m_sweep`
+  - full `yolo11m` HN sweep
+- `uv run main.py --task stage1_formal_gate_hn_x_crosscheck`
+  - light `yolo11x` cross-capacity validation
+- `uv run main.py --task stage1_formal_gate_hn_all`
+  - serial launcher for both HN tasks
+
+Recommended post-HN innovation command:
+
+- `uv run main.py --task stage1_formal_gate_rcd_lite`
+  - one-click RCD-Lite pipeline from the committed `yolo11m + hn14` anchor
+  - automatically runs train-normal scoring, train feature export, fixed-budget dataset build,
+    anchor-based training, formal external gate evaluation, and comparison report generation
 
 Available `-Backend` values:
 

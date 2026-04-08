@@ -39,6 +39,7 @@ essay/docs/build/*.lot
 essay/docs/build/*.out
 essay/docs/build/*.toc
 essay/reference/
+essay/docs/essay_legacy_*.tex
 
 # Local clone cache
 _upstream_git_cache/

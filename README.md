@@ -49,19 +49,20 @@ Helper scripts:
 2. `.\scripts\setup.ps1 -Backend cu128`
 3. `.\scripts\check.ps1`
 4. Move datasets into the fixed local-only paths described in `research/training_machine_runbook.md`
-5. Run `uv run main_A.py` on the gate machine or `uv run main_B.py` on the cls6 machine
+5. Run `uv run main.py --task ...` for the required formal task
 
 ## Main Entry Points
 
-- Computer A formal binary gate entrypoint: `uv run main_A.py`
-- Computer B formal cls6 entrypoint: `uv run main_B.py`
-- Explicit formal gate task: `uv run main.py --task stage1_formal_gate_capacity`
-- Explicit formal cls6 task: `uv run main.py --task stage1_formal_cls6_capacity`
-- Shared exploratory/default entrypoint: `uv run main.py`
-- Active task selector: `YOLOv11/configs/runtime/main_entry.json`
-- Current committed exploratory default task: `stage1_gate_rcis_suite`
+- Unified launcher: `uv run main.py`
+- Formal binary gate capacity scan: `uv run main.py --task stage1_formal_gate_capacity`
+- Formal six-class source capacity scan: `uv run main.py --task stage1_formal_cls6_capacity`
+- Formal HN sweep on `yolo11m`: `uv run main.py --task stage1_formal_gate_hn_m_sweep`
+- Formal HN cross-check on `yolo11x`: `uv run main.py --task stage1_formal_gate_hn_x_crosscheck`
+- Combined formal HN launcher: `uv run main.py --task stage1_formal_gate_hn_all`
+- Formal RCD-Lite from the `yolo11m + hn14` anchor: `uv run main.py --task stage1_formal_gate_rcd_lite`
 - Run the uniform five-scale CLS6 sweep explicitly: `uv run main.py --task cls6_sweep --rerun`
-- Compatibility wrapper for the same sweep: `uv run main_cls6_sweep.py --rerun`
+- Active task selector: `YOLOv11/configs/runtime/main_entry.json`
+- Current committed default task: `stage1_formal_gate_rcd_lite`
 - Source classification pretraining: `.\scripts\cls_pretrain.ps1`
 - Extract the only active 3000-image source set directly from raw SewerML: `.\scripts\extract_sewerml_cls6_train3000.ps1 -Clean`
 - Target classification fine-tuning: `.\scripts\cls_finetune_target.ps1`

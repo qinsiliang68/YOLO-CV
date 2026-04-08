@@ -40,7 +40,7 @@ BUILTIN_DEFAULT_CONFIG = {
     "run_name_suffix": "cls6_train7200_uniform",
 }
 BUILTIN_STAGE1_ENTRY_CONFIG = {
-    "task": "stage1_gate_rcis_suite",
+    "task": "stage1_formal_gate_rcd_lite",
     "score_device": "0",
     "top_k": 22,
     "score_batch": 1,
@@ -54,6 +54,7 @@ BUILTIN_STAGE1_ENTRY_CONFIG = {
     "stage1_formal_cls6_capacity_config": r"YOLOv11\configs\runtime\stage1_formal_cls6_capacity.json",
     "stage1_formal_gate_hn_m_sweep_config": r"YOLOv11\configs\runtime\stage1_formal_gate_hn_m_sweep.json",
     "stage1_formal_gate_hn_x_crosscheck_config": r"YOLOv11\configs\runtime\stage1_formal_gate_hn_x_crosscheck.json",
+    "stage1_formal_gate_rcd_lite_config": r"YOLOv11\configs\runtime\stage1_formal_gate_rcd_lite.json",
 }
 STAGE1_HN_TASKS = {
     "stage1_gate_l_hn": {
@@ -101,6 +102,7 @@ def parse_args() -> argparse.Namespace:
             "stage1_formal_gate_hn_m_sweep",
             "stage1_formal_gate_hn_x_crosscheck",
             "stage1_formal_gate_hn_all",
+            "stage1_formal_gate_rcd_lite",
         ),
         default="auto",
         help="Task to run. 'auto' reads YOLOv11/configs/runtime/main_entry.json.",
@@ -992,6 +994,23 @@ def run_stage1_formal_hn_all(entry_cfg: dict, *, dry_run: bool, rerun: bool) -> 
     run_stage1_formal_hn_suite(entry_cfg, variant="x", dry_run=dry_run, rerun=rerun)
 
 
+def run_stage1_formal_rcd_lite(entry_cfg: dict, *, dry_run: bool, rerun: bool) -> None:
+    config_path = resolve_path(
+        entry_cfg.get("stage1_formal_gate_rcd_lite_config"),
+        base=YOLOV11_ROOT / "configs" / "runtime" / "stage1_formal_gate_rcd_lite.json",
+    )
+    run_python(
+        "scripts/stage1_formal_rcd_lite.py",
+        [
+            "--config",
+            str(config_path),
+            *(["--dry-run"] if dry_run else []),
+            *(["--rerun"] if rerun else []),
+        ],
+        dry_run=False,
+    )
+
+
 def run_stage1_embed_supcon(entry_cfg: dict, dry_run: bool) -> None:
     config_path = resolve_path(
         entry_cfg.get("stage1_embed_supcon_config"),
@@ -1115,6 +1134,10 @@ def main() -> None:
 
     if task_name == "stage1_formal_gate_hn_all":
         run_stage1_formal_hn_all(entry_cfg, dry_run=args.dry_run, rerun=args.rerun)
+        return
+
+    if task_name == "stage1_formal_gate_rcd_lite":
+        run_stage1_formal_rcd_lite(entry_cfg, dry_run=args.dry_run, rerun=args.rerun)
         return
 
     run_stage1_hn(task_name, entry_cfg, dry_run=args.dry_run)

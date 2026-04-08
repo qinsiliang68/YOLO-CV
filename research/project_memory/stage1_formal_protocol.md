@@ -8,11 +8,14 @@ It applies to:
 
 - `stage1_formal_gate_capacity`
 - `stage1_formal_cls6_capacity`
+- `stage1_formal_gate_hn_m_sweep`
+- `stage1_formal_gate_hn_x_crosscheck`
+- `stage1_formal_gate_hn_all`
+- `stage1_formal_gate_rcd_lite`
 
-It also governs the fixed dual-machine launchers:
+It also governs the unified launcher:
 
-- `main_A.py`
-- `main_B.py`
+- `main.py`
 
 ## Formal Objective
 
@@ -107,6 +110,16 @@ This means:
 - `calibration` is no longer treated as a separate training phase
 - later HN / HardMix / information-sampling experiments are evaluated under the same `val-cal -> temperature fit -> val-op threshold scan` pipeline
 - trainer `acc/top1` still remains a health-only signal and cannot replace gate-aware selection
+
+The first post-HN innovation task is:
+
+- `stage1_formal_gate_rcd_lite`
+
+This task must:
+
+- keep the extra-normal budget fixed to the chosen HN anchor budget
+- redistribute oversampling probability only inside the train-normal risky pool
+- reuse the same calibrated formal gate evaluation protocol
 
 ## Directory Rule
 
@@ -243,21 +256,12 @@ Every moved document must be traceable through:
 
 ## Human-Facing Launch Commands
 
-Computer A:
-
-```powershell
-uv run main_A.py
-```
-
-Computer B:
-
-```powershell
-uv run main_B.py
-```
-
-Explicit task entrypoints remain available:
+Explicit task entrypoints are:
 
 ```powershell
 uv run main.py --task stage1_formal_gate_capacity
 uv run main.py --task stage1_formal_cls6_capacity
+uv run main.py --task stage1_formal_gate_hn_m_sweep
+uv run main.py --task stage1_formal_gate_hn_x_crosscheck
+uv run main.py --task stage1_formal_gate_hn_all
 ```

@@ -19,12 +19,13 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Score train-side normal images using an existing stage-1 gate model.")
     parser.add_argument("--weights", required=True, help="Path to trained stage-1 gate weights.")
     parser.add_argument("--data-root", required=True, help="Binary gate dataset root containing train/Normal.")
-    parser.add_argument("--output-dir", required=True, help="Directory for exported scores and gallery.")
+    parser.add_argument("--output-dir", required=True, help="Directory for exported scores and optional gallery.")
     parser.add_argument("--device", default="0", help="Inference device.")
     parser.add_argument("--imgsz", type=int, default=640, help="Inference image size.")
     parser.add_argument("--batch", type=int, default=1, help="Inference batch size.")
     parser.add_argument("--chunk-size", type=int, default=32, help="How many image paths to process per predict call.")
     parser.add_argument("--top-k", type=int, default=200, help="Top-K train-side hard negatives to keep.")
+    parser.add_argument("--gallery-top-n", type=int, default=0, help="Optional number of top risky normals to copy into a gallery. Default 0 keeps only CSV/JSON paths.")
     return parser.parse_args()
 
 
@@ -179,7 +180,9 @@ def main() -> None:
         writer = csv.DictWriter(handle, fieldnames=fieldnames)
         writer.writeheader()
         writer.writerows(top_rows)
-    copy_gallery(top_rows[: min(len(top_rows), 24)], output_dir / "hardest_normal_gallery")
+    gallery_top_n = max(int(args.gallery_top_n), 0)
+    if gallery_top_n > 0:
+        copy_gallery(top_rows[: min(len(top_rows), gallery_top_n)], output_dir / "hardest_normal_gallery")
     (output_dir / "summary.json").write_text(
         json.dumps(
             {
@@ -188,6 +191,7 @@ def main() -> None:
                 "score_device": score_device,
                 "total_train_normals": len(rows_sorted),
                 "top_k": args.top_k,
+                "gallery_top_n": gallery_top_n,
             },
             indent=2,
             ensure_ascii=False,
