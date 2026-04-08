@@ -1,0 +1,645 @@
+Ultralytics 8.3.0 🚀 Python-3.11.15 torch-2.11.0+cu128 CUDA:0 (NVIDIA GeForce RTX 3090, 24576MiB)
+[34m[1mengine\trainer: [0mtask=classify, mode=train, model=yolo11s-cls.pt, data=C:\Users\ASUS\Desktop\YOLOv11\YOLO-CV\YOLOv11\datasets\sewerml_gate2_train7200, epochs=200, time=None, patience=0, batch=24, imgsz=640, save=True, save_period=1, cache=False, device=0, workers=4, project=C:\Users\ASUS\Desktop\YOLOv11\YOLO-CV\YOLOv11\runs\stage1_formal_gate, name=yolo11s_gate2_formal_200ep, exist_ok=True, pretrained=True, optimizer=auto, verbose=True, seed=20260330, deterministic=True, single_cls=False, rect=False, cos_lr=False, close_mosaic=10, resume=False, amp=True, fraction=1.0, profile=False, freeze=None, multi_scale=False, overlap_mask=True, mask_ratio=4, dropout=0.0, val=True, split=val, save_json=False, save_hybrid=False, conf=None, iou=0.7, max_det=300, half=False, dnn=False, plots=True, source=None, vid_stride=1, stream_buffer=False, visualize=False, augment=False, agnostic_nms=False, classes=None, retina_masks=False, embed=None, show=False, save_frames=False, save_txt=False, save_conf=False, save_crop=False, show_labels=True, show_conf=True, show_boxes=True, line_width=None, format=torchscript, keras=False, optimize=False, int8=False, dynamic=False, simplify=True, opset=None, workspace=4, nms=False, lr0=0.01, lrf=0.01, momentum=0.937, weight_decay=0.0005, warmup_epochs=3.0, warmup_momentum=0.8, warmup_bias_lr=0.1, box=7.5, cls=0.5, dfl=1.5, pose=12.0, kobj=1.0, label_smoothing=0.0, nbs=64, hsv_h=0.015, hsv_s=0.7, hsv_v=0.4, degrees=0.0, translate=0.1, scale=0.5, shear=0.0, perspective=0.0, flipud=0.0, fliplr=0.5, bgr=0.0, mosaic=1.0, mixup=0.0, copy_paste=0.0, copy_paste_mode=flip, auto_augment=randaugment, erasing=0.4, crop_fraction=1.0, cfg=None, tracker=botsort.yaml, save_dir=C:\Users\ASUS\Desktop\YOLOv11\YOLO-CV\YOLOv11\runs\stage1_formal_gate\yolo11s_gate2_formal_200ep
+[34m[1mtrain:[0m C:\Users\ASUS\Desktop\YOLOv11\YOLO-CV\YOLOv11\datasets\sewerml_gate2_train7200\train... found 6480 images in 2 classes ✅ 
+[34m[1mval:[0m C:\Users\ASUS\Desktop\YOLOv11\YOLO-CV\YOLOv11\datasets\sewerml_gate2_train7200\val... found 720 images in 2 classes ✅ 
+[34m[1mtest:[0m None...
+Downloading https://github.com/ultralytics/assets/releases/download/v8.3.0/yolo11s-cls.pt to 'yolo11s-cls.pt'...
+Overriding model.yaml nc=80 with nc=2
+
+                   from  n    params  module                                       arguments                     
+  0                  -1  1       928  ultralytics.nn.modules.conv.Conv             [3, 32, 3, 2]                 
+  1                  -1  1     18560  ultralytics.nn.modules.conv.Conv             [32, 64, 3, 2]                
+  2                  -1  1     26080  ultralytics.nn.modules.block.C3k2            [64, 128, 1, False, 0.25]     
+  3                  -1  1    147712  ultralytics.nn.modules.conv.Conv             [128, 128, 3, 2]              
+  4                  -1  1    103360  ultralytics.nn.modules.block.C3k2            [128, 256, 1, False, 0.25]    
+  5                  -1  1    590336  ultralytics.nn.modules.conv.Conv             [256, 256, 3, 2]              
+  6                  -1  1    346112  ultralytics.nn.modules.block.C3k2            [256, 256, 1, True]           
+  7                  -1  1   1180672  ultralytics.nn.modules.conv.Conv             [256, 512, 3, 2]              
+  8                  -1  1   1380352  ultralytics.nn.modules.block.C3k2            [512, 512, 1, True]           
+  9                  -1  1    990976  ultralytics.nn.modules.block.C2PSA           [512, 512, 1]                 
+ 10                  -1  1    660482  ultralytics.nn.modules.head.Classify         [512, 2]                      
+YOLO11s-cls summary: 151 layers, 5,445,570 parameters, 5,445,570 gradients, 12.1 GFLOPs
+Transferred 234/236 items from pretrained weights
+[34m[1mAMP: [0mrunning Automatic Mixed Precision (AMP) checks with YOLOv8n...
+[34m[1mAMP: [0mchecks passed ✅
+[34m[1moptimizer:[0m 'optimizer=auto' found, ignoring 'lr0=0.01' and 'momentum=0.937' and determining best 'optimizer', 'lr0' and 'momentum' automatically... 
+[34m[1moptimizer:[0m SGD(lr=0.01, momentum=0.9) with parameter groups 39 weight(decay=0.0), 40 weight(decay=0.0005625000000000001), 40 bias(decay=0.0)
+Image sizes 640 train, 640 val
+Using 4 dataloader workers
+Logging results to [1mC:\Users\ASUS\Desktop\YOLOv11\YOLO-CV\YOLOv11\runs\stage1_formal_gate\yolo11s_gate2_formal_200ep[0m
+Starting training for 200 epochs...
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.868          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.835          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.856          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.854          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all       0.86          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.864          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.847          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.833          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all       0.86          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.864          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.858          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.865          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.843          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.872          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.872          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.861          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.879          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.865          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.876          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.881          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.881          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.871          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.869          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.864          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.863          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.878          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.871          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.887          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.882          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.896          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.893          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.886          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.887          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all       0.89          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.896          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.882          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.879          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.899          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.885          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.885          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all        0.9          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.893          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.911          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all        0.9          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.907          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.889          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.906          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.899          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.908          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.908          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.896          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.894          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.913          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.904          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all       0.91          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.908          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.904          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.897          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.904          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.903          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.913          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.913          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.903          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.908          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.913          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.908          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all       0.91          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.903          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.914          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.901          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.903          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.914          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.915          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.908          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.911          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.911          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.906          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.917          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.913          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.917          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.911          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.911          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.908          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.917          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.915          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.911          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.907          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.921          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.919          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all       0.91          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.907          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.911          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.913          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.913          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.904          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.915          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.908          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.911          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.907          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.917          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.919          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.919          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.914          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.915          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.908          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.915          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all       0.91          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.914          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.915          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.914          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.914          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.914          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.908          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.913          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.913          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.911          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.911          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all       0.91          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.911          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.908          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all       0.91          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.911          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all       0.91          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.911          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.908          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.908          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.913          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.913          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.915          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.914          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.913          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.915          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.914          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.913          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.918          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.911          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.911          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.915          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.914          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.913          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.911          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.914          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.914          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.913          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.914          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.917          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.917          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.917          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.915          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.917          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.918          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.919          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.919          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.917          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.914          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.914          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.915          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.915          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.915          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.914          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.913          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.913          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.913          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.914          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.914          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.914          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.913          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.913          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.914          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.915          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.915          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.915          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.915          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.917          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.917          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.917          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.918          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.917          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.917          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.917          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.918          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.919          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.919          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.919          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.919          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.919          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.918          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.918          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.918          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.918          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.918          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.918          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.918          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.918          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.918          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.919          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.919          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.919          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.919          1
+
+      Epoch    GPU_mem       loss  Instances       Size
+                   all      0.919          1
+
+200 epochs completed in 2.392 hours.
+Optimizer stripped from C:\Users\ASUS\Desktop\YOLOv11\YOLO-CV\YOLOv11\runs\stage1_formal_gate\yolo11s_gate2_formal_200ep\weights\last.pt, 11.0MB
+Optimizer stripped from C:\Users\ASUS\Desktop\YOLOv11\YOLO-CV\YOLOv11\runs\stage1_formal_gate\yolo11s_gate2_formal_200ep\weights\best.pt, 11.0MB
+
+Validating C:\Users\ASUS\Desktop\YOLOv11\YOLO-CV\YOLOv11\runs\stage1_formal_gate\yolo11s_gate2_formal_200ep\weights\best.pt...
+Ultralytics 8.3.0 🚀 Python-3.11.15 torch-2.11.0+cu128 CUDA:0 (NVIDIA GeForce RTX 3090, 24576MiB)
+YOLO11s-cls summary (fused): 112 layers, 5,436,690 parameters, 0 gradients, 12.0 GFLOPs
+[34m[1mtrain:[0m C:\Users\ASUS\Desktop\YOLOv11\YOLO-CV\YOLOv11\datasets\sewerml_gate2_train7200\train... found 6480 images in 2 classes ✅ 
+[34m[1mval:[0m C:\Users\ASUS\Desktop\YOLOv11\YOLO-CV\YOLOv11\datasets\sewerml_gate2_train7200\val... found 720 images in 2 classes ✅ 
+[34m[1mtest:[0m None...
+                   all      0.921          1
+Speed: 3.6ms preprocess, 1.2ms inference, 0.0ms loss, 0.0ms postprocess per image
+Results saved to [1mC:\Users\ASUS\Desktop\YOLOv11\YOLO-CV\YOLOv11\runs\stage1_formal_gate\yolo11s_gate2_formal_200ep[0m
+Results saved to [1mC:\Users\ASUS\Desktop\YOLOv11\YOLO-CV\YOLOv11\runs\stage1_formal_gate\yolo11s_gate2_formal_200ep[0m

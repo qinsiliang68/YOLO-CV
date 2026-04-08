@@ -294,6 +294,7 @@ def check_cleanup_scope(cleanup_roots: list[Path], protected_roots: list[Path]) 
 def build_preflight_report(
     *,
     cfg: dict[str, Any],
+    settings: list[dict[str, Any]],
     audit: dict[str, Any],
     hn_summary_csv: Path,
     teacher_summary_dir: Path,
@@ -399,7 +400,6 @@ def build_preflight_report(
         "uniform_best_manifest_missing": uniform_missing,
     }
 
-    settings = cfg.get("settings") or []
     settings_ok = True
     for setting in settings:
         setting_id = resolve_str(setting.get("setting_id"), "")
@@ -530,6 +530,7 @@ def build_preflight_report(
         and teacher_schema_ok
         and uniform_schema_ok
     )
+    preflight["checked_settings"] = [resolve_str(item.get("setting_id"), "") for item in settings]
 
     json_path = results_dir / "PREFLIGHT_gate_info_sampling_lite.json"
     md_path = results_dir / "PREFLIGHT_gate_info_sampling_lite.md"
@@ -544,6 +545,7 @@ def build_preflight_report(
         f"- teacher checkpoint exists: `{preflight['teacher']['checkpoint_exists']}`",
         f"- pool exact reuse source: `{preflight['pool']['pool_source_csv']}`",
         f"- fixed budget count: `{preflight['budget']['fixed_budget_count']}`",
+        f"- checked settings: `{', '.join(preflight['checked_settings']) or 'none'}`",
         f"- pool provenance matches hn00 teacher: `{preflight['teacher']['pool_teacher_matches_hn00_teacher']}`",
         f"- core inputs ready: `{audit['core_inputs_ready']}`",
         f"- rerun cleanup scope safe: `{preflight['rerun_scope']['safe']}`",
@@ -1067,6 +1069,7 @@ def main() -> None:
     preflight_mode = "dry_run" if args.dry_run else ("preflight_only" if args.preflight_only else ("smoke" if args.smoke_epochs > 0 else "full_run"))
     preflight = build_preflight_report(
         cfg=cfg,
+        settings=settings,
         audit=audit,
         hn_summary_csv=hn_summary_csv,
         teacher_summary_dir=teacher_summary_dir,

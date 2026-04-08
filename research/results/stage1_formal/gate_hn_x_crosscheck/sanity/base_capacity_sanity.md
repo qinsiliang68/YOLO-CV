@@ -7,5 +7,5 @@
 - PTR@R99.0 match: `True`
 - tau_R99.5 match: `True`
 - tau_R99.0 match: `True`
-- checkpoint exists: `True`
+- checkpoint exists: `False`
 - overall passed: `True`

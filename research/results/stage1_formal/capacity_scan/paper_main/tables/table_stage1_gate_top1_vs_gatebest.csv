@@ -1,0 +1,6 @@
+Model,Top1-Best Epoch,Top1-Best Top1,Gate-Best Epoch,Gate-Best Spec@R99.5,Gate-Best Spec@R99.0,Delta Epoch,Same Checkpoint?
+yolo11l-cls,103,0.9306,54,0.5238,0.5714,49,No
+yolo11n-cls,120,0.9250,76,0.5119,0.5833,44,No
+yolo11s-cls,88,0.9208,77,0.5238,0.5357,11,No
+yolo11m-cls,197,0.9347,78,0.5952,0.6548,119,No
+yolo11x-cls,120,0.9319,125,0.5476,0.5952,-5,No

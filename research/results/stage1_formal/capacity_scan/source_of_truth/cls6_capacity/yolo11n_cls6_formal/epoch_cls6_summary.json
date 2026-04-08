@@ -1,0 +1,1609 @@
+{
+  "ranking_rule": [
+    "Accuracy descending",
+    "AUROC descending",
+    "AUPRC descending"
+  ],
+  "rows": [
+    {
+      "epoch": 1,
+      "checkpoint_file": "epoch0.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_001.pt",
+      "accuracy": 0.519444,
+      "auroc": 0.856556,
+      "auprc": 0.964945
+    },
+    {
+      "epoch": 2,
+      "checkpoint_file": "epoch1.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_002.pt",
+      "accuracy": 0.445833,
+      "auroc": 0.792917,
+      "auprc": 0.938588
+    },
+    {
+      "epoch": 3,
+      "checkpoint_file": "epoch2.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_003.pt",
+      "accuracy": 0.458333,
+      "auroc": 0.812569,
+      "auprc": 0.953729
+    },
+    {
+      "epoch": 4,
+      "checkpoint_file": "epoch3.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_004.pt",
+      "accuracy": 0.501389,
+      "auroc": 0.848472,
+      "auprc": 0.958702
+    },
+    {
+      "epoch": 5,
+      "checkpoint_file": "epoch4.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_005.pt",
+      "accuracy": 0.484722,
+      "auroc": 0.837167,
+      "auprc": 0.96036
+    },
+    {
+      "epoch": 6,
+      "checkpoint_file": "epoch5.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_006.pt",
+      "accuracy": 0.520833,
+      "auroc": 0.852972,
+      "auprc": 0.963686
+    },
+    {
+      "epoch": 7,
+      "checkpoint_file": "epoch6.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_007.pt",
+      "accuracy": 0.536111,
+      "auroc": 0.872542,
+      "auprc": 0.969517
+    },
+    {
+      "epoch": 8,
+      "checkpoint_file": "epoch7.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_008.pt",
+      "accuracy": 0.488889,
+      "auroc": 0.863083,
+      "auprc": 0.966327
+    },
+    {
+      "epoch": 9,
+      "checkpoint_file": "epoch8.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_009.pt",
+      "accuracy": 0.509722,
+      "auroc": 0.872333,
+      "auprc": 0.968773
+    },
+    {
+      "epoch": 10,
+      "checkpoint_file": "epoch9.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_010.pt",
+      "accuracy": 0.554167,
+      "auroc": 0.880639,
+      "auprc": 0.971917
+    },
+    {
+      "epoch": 11,
+      "checkpoint_file": "epoch10.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_011.pt",
+      "accuracy": 0.570833,
+      "auroc": 0.893042,
+      "auprc": 0.973667
+    },
+    {
+      "epoch": 12,
+      "checkpoint_file": "epoch11.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_012.pt",
+      "accuracy": 0.586111,
+      "auroc": 0.891528,
+      "auprc": 0.974142
+    },
+    {
+      "epoch": 13,
+      "checkpoint_file": "epoch12.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_013.pt",
+      "accuracy": 0.556944,
+      "auroc": 0.896333,
+      "auprc": 0.974438
+    },
+    {
+      "epoch": 14,
+      "checkpoint_file": "epoch13.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_014.pt",
+      "accuracy": 0.576389,
+      "auroc": 0.900833,
+      "auprc": 0.976328
+    },
+    {
+      "epoch": 15,
+      "checkpoint_file": "epoch14.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_015.pt",
+      "accuracy": 0.569444,
+      "auroc": 0.903389,
+      "auprc": 0.975346
+    },
+    {
+      "epoch": 16,
+      "checkpoint_file": "epoch15.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_016.pt",
+      "accuracy": 0.573611,
+      "auroc": 0.908264,
+      "auprc": 0.977773
+    },
+    {
+      "epoch": 17,
+      "checkpoint_file": "epoch16.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_017.pt",
+      "accuracy": 0.602778,
+      "auroc": 0.918417,
+      "auprc": 0.98087
+    },
+    {
+      "epoch": 18,
+      "checkpoint_file": "epoch17.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_018.pt",
+      "accuracy": 0.586111,
+      "auroc": 0.924486,
+      "auprc": 0.982597
+    },
+    {
+      "epoch": 19,
+      "checkpoint_file": "epoch18.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_019.pt",
+      "accuracy": 0.586111,
+      "auroc": 0.914806,
+      "auprc": 0.980496
+    },
+    {
+      "epoch": 20,
+      "checkpoint_file": "epoch19.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_020.pt",
+      "accuracy": 0.606944,
+      "auroc": 0.917833,
+      "auprc": 0.980146
+    },
+    {
+      "epoch": 21,
+      "checkpoint_file": "epoch20.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_021.pt",
+      "accuracy": 0.606944,
+      "auroc": 0.928889,
+      "auprc": 0.982903
+    },
+    {
+      "epoch": 22,
+      "checkpoint_file": "epoch21.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_022.pt",
+      "accuracy": 0.618056,
+      "auroc": 0.919389,
+      "auprc": 0.980791
+    },
+    {
+      "epoch": 23,
+      "checkpoint_file": "epoch22.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_023.pt",
+      "accuracy": 0.605556,
+      "auroc": 0.920069,
+      "auprc": 0.981169
+    },
+    {
+      "epoch": 24,
+      "checkpoint_file": "epoch23.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_024.pt",
+      "accuracy": 0.630556,
+      "auroc": 0.918389,
+      "auprc": 0.978836
+    },
+    {
+      "epoch": 25,
+      "checkpoint_file": "epoch24.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_025.pt",
+      "accuracy": 0.608333,
+      "auroc": 0.932625,
+      "auprc": 0.984185
+    },
+    {
+      "epoch": 26,
+      "checkpoint_file": "epoch25.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_026.pt",
+      "accuracy": 0.609722,
+      "auroc": 0.922653,
+      "auprc": 0.980565
+    },
+    {
+      "epoch": 27,
+      "checkpoint_file": "epoch26.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_027.pt",
+      "accuracy": 0.606944,
+      "auroc": 0.928569,
+      "auprc": 0.984252
+    },
+    {
+      "epoch": 28,
+      "checkpoint_file": "epoch27.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_028.pt",
+      "accuracy": 0.591667,
+      "auroc": 0.943653,
+      "auprc": 0.987212
+    },
+    {
+      "epoch": 29,
+      "checkpoint_file": "epoch28.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_029.pt",
+      "accuracy": 0.597222,
+      "auroc": 0.924889,
+      "auprc": 0.981558
+    },
+    {
+      "epoch": 30,
+      "checkpoint_file": "epoch29.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_030.pt",
+      "accuracy": 0.608333,
+      "auroc": 0.928625,
+      "auprc": 0.982297
+    },
+    {
+      "epoch": 31,
+      "checkpoint_file": "epoch30.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_031.pt",
+      "accuracy": 0.609722,
+      "auroc": 0.928458,
+      "auprc": 0.983129
+    },
+    {
+      "epoch": 32,
+      "checkpoint_file": "epoch31.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_032.pt",
+      "accuracy": 0.616667,
+      "auroc": 0.933694,
+      "auprc": 0.98462
+    },
+    {
+      "epoch": 33,
+      "checkpoint_file": "epoch32.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_033.pt",
+      "accuracy": 0.6125,
+      "auroc": 0.928597,
+      "auprc": 0.982396
+    },
+    {
+      "epoch": 34,
+      "checkpoint_file": "epoch33.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_034.pt",
+      "accuracy": 0.597222,
+      "auroc": 0.924861,
+      "auprc": 0.981619
+    },
+    {
+      "epoch": 35,
+      "checkpoint_file": "epoch34.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_035.pt",
+      "accuracy": 0.622222,
+      "auroc": 0.928236,
+      "auprc": 0.98348
+    },
+    {
+      "epoch": 36,
+      "checkpoint_file": "epoch35.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_036.pt",
+      "accuracy": 0.625,
+      "auroc": 0.931361,
+      "auprc": 0.984516
+    },
+    {
+      "epoch": 37,
+      "checkpoint_file": "epoch36.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_037.pt",
+      "accuracy": 0.655556,
+      "auroc": 0.937,
+      "auprc": 0.985652
+    },
+    {
+      "epoch": 38,
+      "checkpoint_file": "epoch37.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_038.pt",
+      "accuracy": 0.630556,
+      "auroc": 0.932708,
+      "auprc": 0.984102
+    },
+    {
+      "epoch": 39,
+      "checkpoint_file": "epoch38.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_039.pt",
+      "accuracy": 0.640278,
+      "auroc": 0.940736,
+      "auprc": 0.986097
+    },
+    {
+      "epoch": 40,
+      "checkpoint_file": "epoch39.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_040.pt",
+      "accuracy": 0.643056,
+      "auroc": 0.933778,
+      "auprc": 0.984205
+    },
+    {
+      "epoch": 41,
+      "checkpoint_file": "epoch40.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_041.pt",
+      "accuracy": 0.625,
+      "auroc": 0.935556,
+      "auprc": 0.984753
+    },
+    {
+      "epoch": 42,
+      "checkpoint_file": "epoch41.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_042.pt",
+      "accuracy": 0.613889,
+      "auroc": 0.928458,
+      "auprc": 0.983365
+    },
+    {
+      "epoch": 43,
+      "checkpoint_file": "epoch42.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_043.pt",
+      "accuracy": 0.634722,
+      "auroc": 0.936056,
+      "auprc": 0.984764
+    },
+    {
+      "epoch": 44,
+      "checkpoint_file": "epoch43.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_044.pt",
+      "accuracy": 0.619444,
+      "auroc": 0.92675,
+      "auprc": 0.983003
+    },
+    {
+      "epoch": 45,
+      "checkpoint_file": "epoch44.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_045.pt",
+      "accuracy": 0.620833,
+      "auroc": 0.935056,
+      "auprc": 0.985274
+    },
+    {
+      "epoch": 46,
+      "checkpoint_file": "epoch45.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_046.pt",
+      "accuracy": 0.627778,
+      "auroc": 0.928486,
+      "auprc": 0.982842
+    },
+    {
+      "epoch": 47,
+      "checkpoint_file": "epoch46.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_047.pt",
+      "accuracy": 0.654167,
+      "auroc": 0.935083,
+      "auprc": 0.984491
+    },
+    {
+      "epoch": 48,
+      "checkpoint_file": "epoch47.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_048.pt",
+      "accuracy": 0.644444,
+      "auroc": 0.942986,
+      "auprc": 0.986235
+    },
+    {
+      "epoch": 49,
+      "checkpoint_file": "epoch48.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_049.pt",
+      "accuracy": 0.622222,
+      "auroc": 0.926,
+      "auprc": 0.982428
+    },
+    {
+      "epoch": 50,
+      "checkpoint_file": "epoch49.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_050.pt",
+      "accuracy": 0.630556,
+      "auroc": 0.933847,
+      "auprc": 0.984431
+    },
+    {
+      "epoch": 51,
+      "checkpoint_file": "epoch50.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_051.pt",
+      "accuracy": 0.640278,
+      "auroc": 0.945792,
+      "auprc": 0.987761
+    },
+    {
+      "epoch": 52,
+      "checkpoint_file": "epoch51.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_052.pt",
+      "accuracy": 0.648611,
+      "auroc": 0.934681,
+      "auprc": 0.984867
+    },
+    {
+      "epoch": 53,
+      "checkpoint_file": "epoch52.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_053.pt",
+      "accuracy": 0.644444,
+      "auroc": 0.946764,
+      "auprc": 0.987437
+    },
+    {
+      "epoch": 54,
+      "checkpoint_file": "epoch53.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_054.pt",
+      "accuracy": 0.641667,
+      "auroc": 0.944611,
+      "auprc": 0.987052
+    },
+    {
+      "epoch": 55,
+      "checkpoint_file": "epoch54.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_055.pt",
+      "accuracy": 0.629167,
+      "auroc": 0.940236,
+      "auprc": 0.98574
+    },
+    {
+      "epoch": 56,
+      "checkpoint_file": "epoch55.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_056.pt",
+      "accuracy": 0.640278,
+      "auroc": 0.940611,
+      "auprc": 0.986357
+    },
+    {
+      "epoch": 57,
+      "checkpoint_file": "epoch56.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_057.pt",
+      "accuracy": 0.65,
+      "auroc": 0.934458,
+      "auprc": 0.983825
+    },
+    {
+      "epoch": 58,
+      "checkpoint_file": "epoch57.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_058.pt",
+      "accuracy": 0.631944,
+      "auroc": 0.947819,
+      "auprc": 0.987495
+    },
+    {
+      "epoch": 59,
+      "checkpoint_file": "epoch58.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_059.pt",
+      "accuracy": 0.648611,
+      "auroc": 0.950181,
+      "auprc": 0.98853
+    },
+    {
+      "epoch": 60,
+      "checkpoint_file": "epoch59.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_060.pt",
+      "accuracy": 0.651389,
+      "auroc": 0.930389,
+      "auprc": 0.982926
+    },
+    {
+      "epoch": 61,
+      "checkpoint_file": "epoch60.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_061.pt",
+      "accuracy": 0.648611,
+      "auroc": 0.927833,
+      "auprc": 0.982683
+    },
+    {
+      "epoch": 62,
+      "checkpoint_file": "epoch61.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_062.pt",
+      "accuracy": 0.647222,
+      "auroc": 0.931639,
+      "auprc": 0.982865
+    },
+    {
+      "epoch": 63,
+      "checkpoint_file": "epoch62.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_063.pt",
+      "accuracy": 0.659722,
+      "auroc": 0.934472,
+      "auprc": 0.984585
+    },
+    {
+      "epoch": 64,
+      "checkpoint_file": "epoch63.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_064.pt",
+      "accuracy": 0.652778,
+      "auroc": 0.939486,
+      "auprc": 0.986497
+    },
+    {
+      "epoch": 65,
+      "checkpoint_file": "epoch64.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_065.pt",
+      "accuracy": 0.663889,
+      "auroc": 0.937069,
+      "auprc": 0.984506
+    },
+    {
+      "epoch": 66,
+      "checkpoint_file": "epoch65.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_066.pt",
+      "accuracy": 0.661111,
+      "auroc": 0.936722,
+      "auprc": 0.984654
+    },
+    {
+      "epoch": 67,
+      "checkpoint_file": "epoch66.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_067.pt",
+      "accuracy": 0.659722,
+      "auroc": 0.944653,
+      "auprc": 0.987559
+    },
+    {
+      "epoch": 68,
+      "checkpoint_file": "epoch67.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_068.pt",
+      "accuracy": 0.654167,
+      "auroc": 0.942292,
+      "auprc": 0.98612
+    },
+    {
+      "epoch": 69,
+      "checkpoint_file": "epoch68.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_069.pt",
+      "accuracy": 0.663889,
+      "auroc": 0.940833,
+      "auprc": 0.986205
+    },
+    {
+      "epoch": 70,
+      "checkpoint_file": "epoch69.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_070.pt",
+      "accuracy": 0.659722,
+      "auroc": 0.939278,
+      "auprc": 0.985967
+    },
+    {
+      "epoch": 71,
+      "checkpoint_file": "epoch70.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_071.pt",
+      "accuracy": 0.640278,
+      "auroc": 0.928625,
+      "auprc": 0.982216
+    },
+    {
+      "epoch": 72,
+      "checkpoint_file": "epoch71.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_072.pt",
+      "accuracy": 0.630556,
+      "auroc": 0.925694,
+      "auprc": 0.981975
+    },
+    {
+      "epoch": 73,
+      "checkpoint_file": "epoch72.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_073.pt",
+      "accuracy": 0.663889,
+      "auroc": 0.933097,
+      "auprc": 0.983155
+    },
+    {
+      "epoch": 74,
+      "checkpoint_file": "epoch73.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_074.pt",
+      "accuracy": 0.665278,
+      "auroc": 0.935736,
+      "auprc": 0.984505
+    },
+    {
+      "epoch": 75,
+      "checkpoint_file": "epoch74.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_075.pt",
+      "accuracy": 0.663889,
+      "auroc": 0.927625,
+      "auprc": 0.982552
+    },
+    {
+      "epoch": 76,
+      "checkpoint_file": "epoch75.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_076.pt",
+      "accuracy": 0.651389,
+      "auroc": 0.926736,
+      "auprc": 0.983306
+    },
+    {
+      "epoch": 77,
+      "checkpoint_file": "epoch76.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_077.pt",
+      "accuracy": 0.661111,
+      "auroc": 0.928944,
+      "auprc": 0.983162
+    },
+    {
+      "epoch": 78,
+      "checkpoint_file": "epoch77.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_078.pt",
+      "accuracy": 0.659722,
+      "auroc": 0.930444,
+      "auprc": 0.983118
+    },
+    {
+      "epoch": 79,
+      "checkpoint_file": "epoch78.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_079.pt",
+      "accuracy": 0.663889,
+      "auroc": 0.936417,
+      "auprc": 0.985022
+    },
+    {
+      "epoch": 80,
+      "checkpoint_file": "epoch79.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_080.pt",
+      "accuracy": 0.663889,
+      "auroc": 0.937167,
+      "auprc": 0.985388
+    },
+    {
+      "epoch": 81,
+      "checkpoint_file": "epoch80.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_081.pt",
+      "accuracy": 0.655556,
+      "auroc": 0.938458,
+      "auprc": 0.985773
+    },
+    {
+      "epoch": 82,
+      "checkpoint_file": "epoch81.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_082.pt",
+      "accuracy": 0.665278,
+      "auroc": 0.937042,
+      "auprc": 0.985063
+    },
+    {
+      "epoch": 83,
+      "checkpoint_file": "epoch82.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_083.pt",
+      "accuracy": 0.658333,
+      "auroc": 0.94,
+      "auprc": 0.986065
+    },
+    {
+      "epoch": 84,
+      "checkpoint_file": "epoch83.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_084.pt",
+      "accuracy": 0.627778,
+      "auroc": 0.936069,
+      "auprc": 0.985029
+    },
+    {
+      "epoch": 85,
+      "checkpoint_file": "epoch84.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_085.pt",
+      "accuracy": 0.647222,
+      "auroc": 0.933417,
+      "auprc": 0.984658
+    },
+    {
+      "epoch": 86,
+      "checkpoint_file": "epoch85.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_086.pt",
+      "accuracy": 0.648611,
+      "auroc": 0.943222,
+      "auprc": 0.987424
+    },
+    {
+      "epoch": 87,
+      "checkpoint_file": "epoch86.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_087.pt",
+      "accuracy": 0.655556,
+      "auroc": 0.937597,
+      "auprc": 0.985892
+    },
+    {
+      "epoch": 88,
+      "checkpoint_file": "epoch87.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_088.pt",
+      "accuracy": 0.665278,
+      "auroc": 0.938694,
+      "auprc": 0.985868
+    },
+    {
+      "epoch": 89,
+      "checkpoint_file": "epoch88.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_089.pt",
+      "accuracy": 0.647222,
+      "auroc": 0.940111,
+      "auprc": 0.985351
+    },
+    {
+      "epoch": 90,
+      "checkpoint_file": "epoch89.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_090.pt",
+      "accuracy": 0.665278,
+      "auroc": 0.942528,
+      "auprc": 0.986469
+    },
+    {
+      "epoch": 91,
+      "checkpoint_file": "epoch90.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_091.pt",
+      "accuracy": 0.658333,
+      "auroc": 0.943653,
+      "auprc": 0.987232
+    },
+    {
+      "epoch": 92,
+      "checkpoint_file": "epoch91.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_092.pt",
+      "accuracy": 0.652778,
+      "auroc": 0.944181,
+      "auprc": 0.987441
+    },
+    {
+      "epoch": 93,
+      "checkpoint_file": "epoch92.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_093.pt",
+      "accuracy": 0.6625,
+      "auroc": 0.944931,
+      "auprc": 0.987645
+    },
+    {
+      "epoch": 94,
+      "checkpoint_file": "epoch93.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_094.pt",
+      "accuracy": 0.670833,
+      "auroc": 0.947333,
+      "auprc": 0.988058
+    },
+    {
+      "epoch": 95,
+      "checkpoint_file": "epoch94.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_095.pt",
+      "accuracy": 0.668056,
+      "auroc": 0.939972,
+      "auprc": 0.986417
+    },
+    {
+      "epoch": 96,
+      "checkpoint_file": "epoch95.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_096.pt",
+      "accuracy": 0.661111,
+      "auroc": 0.945181,
+      "auprc": 0.987902
+    },
+    {
+      "epoch": 97,
+      "checkpoint_file": "epoch96.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_097.pt",
+      "accuracy": 0.663889,
+      "auroc": 0.948431,
+      "auprc": 0.988748
+    },
+    {
+      "epoch": 98,
+      "checkpoint_file": "epoch97.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_098.pt",
+      "accuracy": 0.655556,
+      "auroc": 0.946944,
+      "auprc": 0.988319
+    },
+    {
+      "epoch": 99,
+      "checkpoint_file": "epoch98.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_099.pt",
+      "accuracy": 0.666667,
+      "auroc": 0.945875,
+      "auprc": 0.987858
+    },
+    {
+      "epoch": 100,
+      "checkpoint_file": "epoch99.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_100.pt",
+      "accuracy": 0.669444,
+      "auroc": 0.944292,
+      "auprc": 0.987178
+    },
+    {
+      "epoch": 101,
+      "checkpoint_file": "epoch100.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_101.pt",
+      "accuracy": 0.670833,
+      "auroc": 0.939764,
+      "auprc": 0.985794
+    },
+    {
+      "epoch": 102,
+      "checkpoint_file": "epoch101.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_102.pt",
+      "accuracy": 0.676389,
+      "auroc": 0.939486,
+      "auprc": 0.986083
+    },
+    {
+      "epoch": 103,
+      "checkpoint_file": "epoch102.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_103.pt",
+      "accuracy": 0.670833,
+      "auroc": 0.943167,
+      "auprc": 0.986934
+    },
+    {
+      "epoch": 104,
+      "checkpoint_file": "epoch103.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_104.pt",
+      "accuracy": 0.677778,
+      "auroc": 0.946292,
+      "auprc": 0.987803
+    },
+    {
+      "epoch": 105,
+      "checkpoint_file": "epoch104.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_105.pt",
+      "accuracy": 0.673611,
+      "auroc": 0.945958,
+      "auprc": 0.987617
+    },
+    {
+      "epoch": 106,
+      "checkpoint_file": "epoch105.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_106.pt",
+      "accuracy": 0.680556,
+      "auroc": 0.947181,
+      "auprc": 0.987951
+    },
+    {
+      "epoch": 107,
+      "checkpoint_file": "epoch106.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_107.pt",
+      "accuracy": 0.675,
+      "auroc": 0.944444,
+      "auprc": 0.987415
+    },
+    {
+      "epoch": 108,
+      "checkpoint_file": "epoch107.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_108.pt",
+      "accuracy": 0.663889,
+      "auroc": 0.946347,
+      "auprc": 0.987902
+    },
+    {
+      "epoch": 109,
+      "checkpoint_file": "epoch108.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_109.pt",
+      "accuracy": 0.6625,
+      "auroc": 0.946417,
+      "auprc": 0.988104
+    },
+    {
+      "epoch": 110,
+      "checkpoint_file": "epoch109.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_110.pt",
+      "accuracy": 0.659722,
+      "auroc": 0.942139,
+      "auprc": 0.987143
+    },
+    {
+      "epoch": 111,
+      "checkpoint_file": "epoch110.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_111.pt",
+      "accuracy": 0.672222,
+      "auroc": 0.946417,
+      "auprc": 0.98816
+    },
+    {
+      "epoch": 112,
+      "checkpoint_file": "epoch111.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_112.pt",
+      "accuracy": 0.677778,
+      "auroc": 0.946236,
+      "auprc": 0.987958
+    },
+    {
+      "epoch": 113,
+      "checkpoint_file": "epoch112.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_113.pt",
+      "accuracy": 0.680556,
+      "auroc": 0.944681,
+      "auprc": 0.987504
+    },
+    {
+      "epoch": 114,
+      "checkpoint_file": "epoch113.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_114.pt",
+      "accuracy": 0.676389,
+      "auroc": 0.944014,
+      "auprc": 0.987337
+    },
+    {
+      "epoch": 115,
+      "checkpoint_file": "epoch114.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_115.pt",
+      "accuracy": 0.677778,
+      "auroc": 0.943069,
+      "auprc": 0.987226
+    },
+    {
+      "epoch": 116,
+      "checkpoint_file": "epoch115.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_116.pt",
+      "accuracy": 0.676389,
+      "auroc": 0.943049,
+      "auprc": 0.98713
+    },
+    {
+      "epoch": 117,
+      "checkpoint_file": "epoch116.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_117.pt",
+      "accuracy": 0.683333,
+      "auroc": 0.942063,
+      "auprc": 0.987027
+    },
+    {
+      "epoch": 118,
+      "checkpoint_file": "epoch117.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_118.pt",
+      "accuracy": 0.681944,
+      "auroc": 0.941625,
+      "auprc": 0.986863
+    },
+    {
+      "epoch": 119,
+      "checkpoint_file": "epoch118.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_119.pt",
+      "accuracy": 0.676389,
+      "auroc": 0.941764,
+      "auprc": 0.9869
+    },
+    {
+      "epoch": 120,
+      "checkpoint_file": "epoch119.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_120.pt",
+      "accuracy": 0.673611,
+      "auroc": 0.941535,
+      "auprc": 0.986859
+    },
+    {
+      "epoch": 121,
+      "checkpoint_file": "epoch120.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_121.pt",
+      "accuracy": 0.661111,
+      "auroc": 0.940958,
+      "auprc": 0.986673
+    },
+    {
+      "epoch": 122,
+      "checkpoint_file": "epoch121.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_122.pt",
+      "accuracy": 0.6625,
+      "auroc": 0.940375,
+      "auprc": 0.986582
+    },
+    {
+      "epoch": 123,
+      "checkpoint_file": "epoch122.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_123.pt",
+      "accuracy": 0.658333,
+      "auroc": 0.940597,
+      "auprc": 0.986745
+    },
+    {
+      "epoch": 124,
+      "checkpoint_file": "epoch123.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_124.pt",
+      "accuracy": 0.669444,
+      "auroc": 0.940667,
+      "auprc": 0.986681
+    },
+    {
+      "epoch": 125,
+      "checkpoint_file": "epoch124.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_125.pt",
+      "accuracy": 0.668056,
+      "auroc": 0.941292,
+      "auprc": 0.986686
+    },
+    {
+      "epoch": 126,
+      "checkpoint_file": "epoch125.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_126.pt",
+      "accuracy": 0.668056,
+      "auroc": 0.941132,
+      "auprc": 0.986564
+    },
+    {
+      "epoch": 127,
+      "checkpoint_file": "epoch126.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_127.pt",
+      "accuracy": 0.677778,
+      "auroc": 0.941236,
+      "auprc": 0.986629
+    },
+    {
+      "epoch": 128,
+      "checkpoint_file": "epoch127.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_128.pt",
+      "accuracy": 0.673611,
+      "auroc": 0.941986,
+      "auprc": 0.98684
+    },
+    {
+      "epoch": 129,
+      "checkpoint_file": "epoch128.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_129.pt",
+      "accuracy": 0.672222,
+      "auroc": 0.941569,
+      "auprc": 0.986789
+    },
+    {
+      "epoch": 130,
+      "checkpoint_file": "epoch129.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_130.pt",
+      "accuracy": 0.672222,
+      "auroc": 0.940931,
+      "auprc": 0.986809
+    },
+    {
+      "epoch": 131,
+      "checkpoint_file": "epoch130.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_131.pt",
+      "accuracy": 0.6625,
+      "auroc": 0.940778,
+      "auprc": 0.986793
+    },
+    {
+      "epoch": 132,
+      "checkpoint_file": "epoch131.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_132.pt",
+      "accuracy": 0.659722,
+      "auroc": 0.940472,
+      "auprc": 0.986683
+    },
+    {
+      "epoch": 133,
+      "checkpoint_file": "epoch132.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_133.pt",
+      "accuracy": 0.661111,
+      "auroc": 0.939764,
+      "auprc": 0.986345
+    },
+    {
+      "epoch": 134,
+      "checkpoint_file": "epoch133.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_134.pt",
+      "accuracy": 0.656944,
+      "auroc": 0.94125,
+      "auprc": 0.986745
+    },
+    {
+      "epoch": 135,
+      "checkpoint_file": "epoch134.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_135.pt",
+      "accuracy": 0.670833,
+      "auroc": 0.941847,
+      "auprc": 0.986878
+    },
+    {
+      "epoch": 136,
+      "checkpoint_file": "epoch135.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_136.pt",
+      "accuracy": 0.670833,
+      "auroc": 0.942833,
+      "auprc": 0.98716
+    },
+    {
+      "epoch": 137,
+      "checkpoint_file": "epoch136.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_137.pt",
+      "accuracy": 0.668056,
+      "auroc": 0.94375,
+      "auprc": 0.987425
+    },
+    {
+      "epoch": 138,
+      "checkpoint_file": "epoch137.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_138.pt",
+      "accuracy": 0.668056,
+      "auroc": 0.944167,
+      "auprc": 0.987534
+    },
+    {
+      "epoch": 139,
+      "checkpoint_file": "epoch138.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_139.pt",
+      "accuracy": 0.665278,
+      "auroc": 0.944056,
+      "auprc": 0.987519
+    },
+    {
+      "epoch": 140,
+      "checkpoint_file": "epoch139.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_140.pt",
+      "accuracy": 0.6625,
+      "auroc": 0.943847,
+      "auprc": 0.987552
+    },
+    {
+      "epoch": 141,
+      "checkpoint_file": "epoch140.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_141.pt",
+      "accuracy": 0.666667,
+      "auroc": 0.943486,
+      "auprc": 0.987431
+    },
+    {
+      "epoch": 142,
+      "checkpoint_file": "epoch141.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_142.pt",
+      "accuracy": 0.668056,
+      "auroc": 0.943333,
+      "auprc": 0.987366
+    },
+    {
+      "epoch": 143,
+      "checkpoint_file": "epoch142.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_143.pt",
+      "accuracy": 0.670833,
+      "auroc": 0.943528,
+      "auprc": 0.987455
+    },
+    {
+      "epoch": 144,
+      "checkpoint_file": "epoch143.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_144.pt",
+      "accuracy": 0.669444,
+      "auroc": 0.943722,
+      "auprc": 0.987494
+    },
+    {
+      "epoch": 145,
+      "checkpoint_file": "epoch144.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_145.pt",
+      "accuracy": 0.665278,
+      "auroc": 0.943389,
+      "auprc": 0.987422
+    },
+    {
+      "epoch": 146,
+      "checkpoint_file": "epoch145.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_146.pt",
+      "accuracy": 0.663889,
+      "auroc": 0.943028,
+      "auprc": 0.987366
+    },
+    {
+      "epoch": 147,
+      "checkpoint_file": "epoch146.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_147.pt",
+      "accuracy": 0.668056,
+      "auroc": 0.944014,
+      "auprc": 0.987587
+    },
+    {
+      "epoch": 148,
+      "checkpoint_file": "epoch147.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_148.pt",
+      "accuracy": 0.672222,
+      "auroc": 0.944417,
+      "auprc": 0.987633
+    },
+    {
+      "epoch": 149,
+      "checkpoint_file": "epoch148.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_149.pt",
+      "accuracy": 0.675,
+      "auroc": 0.944743,
+      "auprc": 0.987736
+    },
+    {
+      "epoch": 150,
+      "checkpoint_file": "epoch149.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_150.pt",
+      "accuracy": 0.670833,
+      "auroc": 0.944903,
+      "auprc": 0.987774
+    },
+    {
+      "epoch": 151,
+      "checkpoint_file": "epoch150.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_151.pt",
+      "accuracy": 0.673611,
+      "auroc": 0.944792,
+      "auprc": 0.987773
+    },
+    {
+      "epoch": 152,
+      "checkpoint_file": "epoch151.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_152.pt",
+      "accuracy": 0.677778,
+      "auroc": 0.945194,
+      "auprc": 0.987831
+    },
+    {
+      "epoch": 153,
+      "checkpoint_file": "epoch152.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_153.pt",
+      "accuracy": 0.677778,
+      "auroc": 0.945236,
+      "auprc": 0.987807
+    },
+    {
+      "epoch": 154,
+      "checkpoint_file": "epoch153.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_154.pt",
+      "accuracy": 0.681944,
+      "auroc": 0.945139,
+      "auprc": 0.987757
+    },
+    {
+      "epoch": 155,
+      "checkpoint_file": "epoch154.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_155.pt",
+      "accuracy": 0.676389,
+      "auroc": 0.945306,
+      "auprc": 0.987847
+    },
+    {
+      "epoch": 156,
+      "checkpoint_file": "epoch155.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_156.pt",
+      "accuracy": 0.677778,
+      "auroc": 0.945514,
+      "auprc": 0.98791
+    },
+    {
+      "epoch": 157,
+      "checkpoint_file": "epoch156.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_157.pt",
+      "accuracy": 0.677778,
+      "auroc": 0.945333,
+      "auprc": 0.987868
+    },
+    {
+      "epoch": 158,
+      "checkpoint_file": "epoch157.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_158.pt",
+      "accuracy": 0.677778,
+      "auroc": 0.945271,
+      "auprc": 0.987846
+    },
+    {
+      "epoch": 159,
+      "checkpoint_file": "epoch158.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_159.pt",
+      "accuracy": 0.680556,
+      "auroc": 0.945833,
+      "auprc": 0.987958
+    },
+    {
+      "epoch": 160,
+      "checkpoint_file": "epoch159.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_160.pt",
+      "accuracy": 0.679167,
+      "auroc": 0.945542,
+      "auprc": 0.987874
+    },
+    {
+      "epoch": 161,
+      "checkpoint_file": "epoch160.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_161.pt",
+      "accuracy": 0.679167,
+      "auroc": 0.945583,
+      "auprc": 0.98786
+    },
+    {
+      "epoch": 162,
+      "checkpoint_file": "epoch161.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_162.pt",
+      "accuracy": 0.679167,
+      "auroc": 0.945528,
+      "auprc": 0.987848
+    },
+    {
+      "epoch": 163,
+      "checkpoint_file": "epoch162.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_163.pt",
+      "accuracy": 0.673611,
+      "auroc": 0.945694,
+      "auprc": 0.987894
+    },
+    {
+      "epoch": 164,
+      "checkpoint_file": "epoch163.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_164.pt",
+      "accuracy": 0.673611,
+      "auroc": 0.945556,
+      "auprc": 0.98786
+    },
+    {
+      "epoch": 165,
+      "checkpoint_file": "epoch164.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_165.pt",
+      "accuracy": 0.679167,
+      "auroc": 0.945562,
+      "auprc": 0.987871
+    },
+    {
+      "epoch": 166,
+      "checkpoint_file": "epoch165.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_166.pt",
+      "accuracy": 0.680556,
+      "auroc": 0.945681,
+      "auprc": 0.987906
+    },
+    {
+      "epoch": 167,
+      "checkpoint_file": "epoch166.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_167.pt",
+      "accuracy": 0.679167,
+      "auroc": 0.945667,
+      "auprc": 0.987914
+    },
+    {
+      "epoch": 168,
+      "checkpoint_file": "epoch167.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_168.pt",
+      "accuracy": 0.677778,
+      "auroc": 0.945722,
+      "auprc": 0.987916
+    },
+    {
+      "epoch": 169,
+      "checkpoint_file": "epoch168.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_169.pt",
+      "accuracy": 0.677778,
+      "auroc": 0.945792,
+      "auprc": 0.987927
+    },
+    {
+      "epoch": 170,
+      "checkpoint_file": "epoch169.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_170.pt",
+      "accuracy": 0.679167,
+      "auroc": 0.945931,
+      "auprc": 0.987957
+    },
+    {
+      "epoch": 171,
+      "checkpoint_file": "epoch170.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_171.pt",
+      "accuracy": 0.677778,
+      "auroc": 0.945972,
+      "auprc": 0.987964
+    },
+    {
+      "epoch": 172,
+      "checkpoint_file": "epoch171.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_172.pt",
+      "accuracy": 0.677778,
+      "auroc": 0.945826,
+      "auprc": 0.987913
+    },
+    {
+      "epoch": 173,
+      "checkpoint_file": "epoch172.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_173.pt",
+      "accuracy": 0.679167,
+      "auroc": 0.945771,
+      "auprc": 0.987909
+    },
+    {
+      "epoch": 174,
+      "checkpoint_file": "epoch173.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_174.pt",
+      "accuracy": 0.676389,
+      "auroc": 0.945826,
+      "auprc": 0.987923
+    },
+    {
+      "epoch": 175,
+      "checkpoint_file": "epoch174.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_175.pt",
+      "accuracy": 0.677778,
+      "auroc": 0.945576,
+      "auprc": 0.987875
+    },
+    {
+      "epoch": 176,
+      "checkpoint_file": "epoch175.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_176.pt",
+      "accuracy": 0.676389,
+      "auroc": 0.945493,
+      "auprc": 0.987859
+    },
+    {
+      "epoch": 177,
+      "checkpoint_file": "epoch176.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_177.pt",
+      "accuracy": 0.675,
+      "auroc": 0.945368,
+      "auprc": 0.987818
+    },
+    {
+      "epoch": 178,
+      "checkpoint_file": "epoch177.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_178.pt",
+      "accuracy": 0.672222,
+      "auroc": 0.945118,
+      "auprc": 0.987749
+    },
+    {
+      "epoch": 179,
+      "checkpoint_file": "epoch178.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_179.pt",
+      "accuracy": 0.670833,
+      "auroc": 0.945021,
+      "auprc": 0.987723
+    },
+    {
+      "epoch": 180,
+      "checkpoint_file": "epoch179.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_180.pt",
+      "accuracy": 0.665278,
+      "auroc": 0.944743,
+      "auprc": 0.98767
+    },
+    {
+      "epoch": 181,
+      "checkpoint_file": "epoch180.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_181.pt",
+      "accuracy": 0.666667,
+      "auroc": 0.94441,
+      "auprc": 0.987599
+    },
+    {
+      "epoch": 182,
+      "checkpoint_file": "epoch181.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_182.pt",
+      "accuracy": 0.663889,
+      "auroc": 0.944035,
+      "auprc": 0.987508
+    },
+    {
+      "epoch": 183,
+      "checkpoint_file": "epoch182.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_183.pt",
+      "accuracy": 0.666667,
+      "auroc": 0.943896,
+      "auprc": 0.987465
+    },
+    {
+      "epoch": 184,
+      "checkpoint_file": "epoch183.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_184.pt",
+      "accuracy": 0.668056,
+      "auroc": 0.94384,
+      "auprc": 0.987448
+    },
+    {
+      "epoch": 185,
+      "checkpoint_file": "epoch184.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_185.pt",
+      "accuracy": 0.668056,
+      "auroc": 0.943729,
+      "auprc": 0.987408
+    },
+    {
+      "epoch": 186,
+      "checkpoint_file": "epoch185.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_186.pt",
+      "accuracy": 0.665278,
+      "auroc": 0.943757,
+      "auprc": 0.987419
+    },
+    {
+      "epoch": 187,
+      "checkpoint_file": "epoch186.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_187.pt",
+      "accuracy": 0.665278,
+      "auroc": 0.943562,
+      "auprc": 0.987372
+    },
+    {
+      "epoch": 188,
+      "checkpoint_file": "epoch187.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_188.pt",
+      "accuracy": 0.666667,
+      "auroc": 0.943493,
+      "auprc": 0.987356
+    },
+    {
+      "epoch": 189,
+      "checkpoint_file": "epoch188.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_189.pt",
+      "accuracy": 0.669444,
+      "auroc": 0.94334,
+      "auprc": 0.987332
+    },
+    {
+      "epoch": 190,
+      "checkpoint_file": "epoch189.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_190.pt",
+      "accuracy": 0.668056,
+      "auroc": 0.94316,
+      "auprc": 0.987283
+    },
+    {
+      "epoch": 191,
+      "checkpoint_file": "epoch190.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_191.pt",
+      "accuracy": 0.666667,
+      "auroc": 0.942931,
+      "auprc": 0.987228
+    },
+    {
+      "epoch": 192,
+      "checkpoint_file": "epoch191.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_192.pt",
+      "accuracy": 0.663889,
+      "auroc": 0.94275,
+      "auprc": 0.987186
+    },
+    {
+      "epoch": 193,
+      "checkpoint_file": "epoch192.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_193.pt",
+      "accuracy": 0.659722,
+      "auroc": 0.942583,
+      "auprc": 0.987148
+    },
+    {
+      "epoch": 194,
+      "checkpoint_file": "epoch193.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_194.pt",
+      "accuracy": 0.659722,
+      "auroc": 0.942361,
+      "auprc": 0.987089
+    },
+    {
+      "epoch": 195,
+      "checkpoint_file": "epoch194.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_195.pt",
+      "accuracy": 0.659722,
+      "auroc": 0.942236,
+      "auprc": 0.987049
+    },
+    {
+      "epoch": 196,
+      "checkpoint_file": "epoch195.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_196.pt",
+      "accuracy": 0.6625,
+      "auroc": 0.942181,
+      "auprc": 0.987043
+    },
+    {
+      "epoch": 197,
+      "checkpoint_file": "epoch196.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_197.pt",
+      "accuracy": 0.663889,
+      "auroc": 0.942083,
+      "auprc": 0.987019
+    },
+    {
+      "epoch": 198,
+      "checkpoint_file": "epoch197.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_198.pt",
+      "accuracy": 0.663889,
+      "auroc": 0.942153,
+      "auprc": 0.987042
+    },
+    {
+      "epoch": 199,
+      "checkpoint_file": "epoch198.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_199.pt",
+      "accuracy": 0.665278,
+      "auroc": 0.942111,
+      "auprc": 0.987034
+    },
+    {
+      "epoch": 200,
+      "checkpoint_file": "epoch199.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11n_cls6_formal_200ep\\weights\\epoch_200.pt",
+      "accuracy": 0.668056,
+      "auroc": 0.942139,
+      "auprc": 0.987047
+    }
+  ]
+}
