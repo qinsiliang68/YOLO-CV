@@ -1,0 +1,147 @@
+{
+  "rows": [
+    {
+      "model": "yolo11m",
+      "ratio_id": "hn00",
+      "ratio_percent": 0,
+      "source_dataset_root": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\datasets\\sewerml_gate2_train7200",
+      "duplication_count": 0,
+      "duplication_csv_path": "research/results/stage1_formal/gate_hn_rebuild/duplication_csvs/m/yolo11m_gate2_formal_hn00_duplications_only.csv",
+      "expected_total_image_count": 7200,
+      "expected_train_normal_count": 1080,
+      "expected_val_normal_count": 120
+    },
+    {
+      "model": "yolo11m",
+      "ratio_id": "hn02",
+      "ratio_percent": 2,
+      "source_dataset_root": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\datasets\\sewerml_gate2_train7200",
+      "duplication_count": 22,
+      "duplication_csv_path": "research/results/stage1_formal/gate_hn_rebuild/duplication_csvs/m/yolo11m_gate2_formal_hn02_duplications_only.csv",
+      "expected_total_image_count": 7222,
+      "expected_train_normal_count": 1102,
+      "expected_val_normal_count": 120
+    },
+    {
+      "model": "yolo11m",
+      "ratio_id": "hn04",
+      "ratio_percent": 4,
+      "source_dataset_root": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\datasets\\sewerml_gate2_train7200",
+      "duplication_count": 43,
+      "duplication_csv_path": "research/results/stage1_formal/gate_hn_rebuild/duplication_csvs/m/yolo11m_gate2_formal_hn04_duplications_only.csv",
+      "expected_total_image_count": 7243,
+      "expected_train_normal_count": 1123,
+      "expected_val_normal_count": 120
+    },
+    {
+      "model": "yolo11m",
+      "ratio_id": "hn06",
+      "ratio_percent": 6,
+      "source_dataset_root": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\datasets\\sewerml_gate2_train7200",
+      "duplication_count": 65,
+      "duplication_csv_path": "research/results/stage1_formal/gate_hn_rebuild/duplication_csvs/m/yolo11m_gate2_formal_hn06_duplications_only.csv",
+      "expected_total_image_count": 7265,
+      "expected_train_normal_count": 1145,
+      "expected_val_normal_count": 120
+    },
+    {
+      "model": "yolo11m",
+      "ratio_id": "hn08",
+      "ratio_percent": 8,
+      "source_dataset_root": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\datasets\\sewerml_gate2_train7200",
+      "duplication_count": 86,
+      "duplication_csv_path": "research/results/stage1_formal/gate_hn_rebuild/duplication_csvs/m/yolo11m_gate2_formal_hn08_duplications_only.csv",
+      "expected_total_image_count": 7286,
+      "expected_train_normal_count": 1166,
+      "expected_val_normal_count": 120
+    },
+    {
+      "model": "yolo11m",
+      "ratio_id": "hn10",
+      "ratio_percent": 10,
+      "source_dataset_root": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\datasets\\sewerml_gate2_train7200",
+      "duplication_count": 108,
+      "duplication_csv_path": "research/results/stage1_formal/gate_hn_rebuild/duplication_csvs/m/yolo11m_gate2_formal_hn10_duplications_only.csv",
+      "expected_total_image_count": 7308,
+      "expected_train_normal_count": 1188,
+      "expected_val_normal_count": 120
+    },
+    {
+      "model": "yolo11m",
+      "ratio_id": "hn12",
+      "ratio_percent": 12,
+      "source_dataset_root": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\datasets\\sewerml_gate2_train7200",
+      "duplication_count": 130,
+      "duplication_csv_path": "research/results/stage1_formal/gate_hn_rebuild/duplication_csvs/m/yolo11m_gate2_formal_hn12_duplications_only.csv",
+      "expected_total_image_count": 7330,
+      "expected_train_normal_count": 1210,
+      "expected_val_normal_count": 120
+    },
+    {
+      "model": "yolo11m",
+      "ratio_id": "hn14",
+      "ratio_percent": 14,
+      "source_dataset_root": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\datasets\\sewerml_gate2_train7200",
+      "duplication_count": 151,
+      "duplication_csv_path": "research/results/stage1_formal/gate_hn_rebuild/duplication_csvs/m/yolo11m_gate2_formal_hn14_duplications_only.csv",
+      "expected_total_image_count": 7351,
+      "expected_train_normal_count": 1231,
+      "expected_val_normal_count": 120
+    },
+    {
+      "model": "yolo11m",
+      "ratio_id": "hn16",
+      "ratio_percent": 16,
+      "source_dataset_root": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\datasets\\sewerml_gate2_train7200",
+      "duplication_count": 173,
+      "duplication_csv_path": "research/results/stage1_formal/gate_hn_rebuild/duplication_csvs/m/yolo11m_gate2_formal_hn16_duplications_only.csv",
+      "expected_total_image_count": 7373,
+      "expected_train_normal_count": 1253,
+      "expected_val_normal_count": 120
+    },
+    {
+      "model": "yolo11m",
+      "ratio_id": "hn18",
+      "ratio_percent": 18,
+      "source_dataset_root": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\datasets\\sewerml_gate2_train7200",
+      "duplication_count": 194,
+      "duplication_csv_path": "research/results/stage1_formal/gate_hn_rebuild/duplication_csvs/m/yolo11m_gate2_formal_hn18_duplications_only.csv",
+      "expected_total_image_count": 7394,
+      "expected_train_normal_count": 1274,
+      "expected_val_normal_count": 120
+    },
+    {
+      "model": "yolo11m",
+      "ratio_id": "hn20",
+      "ratio_percent": 20,
+      "source_dataset_root": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\datasets\\sewerml_gate2_train7200",
+      "duplication_count": 216,
+      "duplication_csv_path": "research/results/stage1_formal/gate_hn_rebuild/duplication_csvs/m/yolo11m_gate2_formal_hn20_duplications_only.csv",
+      "expected_total_image_count": 7416,
+      "expected_train_normal_count": 1296,
+      "expected_val_normal_count": 120
+    },
+    {
+      "model": "yolo11x",
+      "ratio_id": "hn00",
+      "ratio_percent": 0,
+      "source_dataset_root": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\datasets\\sewerml_gate2_train7200",
+      "duplication_count": 0,
+      "duplication_csv_path": "research/results/stage1_formal/gate_hn_rebuild/duplication_csvs/x/yolo11x_gate2_formal_hn00_duplications_only.csv",
+      "expected_total_image_count": 7200,
+      "expected_train_normal_count": 1080,
+      "expected_val_normal_count": 120
+    },
+    {
+      "model": "yolo11x",
+      "ratio_id": "hn02",
+      "ratio_percent": 2,
+      "source_dataset_root": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\datasets\\sewerml_gate2_train7200",
+      "duplication_count": 22,
+      "duplication_csv_path": "research/results/stage1_formal/gate_hn_rebuild/duplication_csvs/x/yolo11x_gate2_formal_hn02_duplications_only.csv",
+      "expected_total_image_count": 7222,
+      "expected_train_normal_count": 1102,
+      "expected_val_normal_count": 120
+    }
+  ]
+}
