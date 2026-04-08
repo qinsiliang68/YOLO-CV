@@ -1,0 +1,132 @@
+{
+  "task_kind": "gate",
+  "dataset_root": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\datasets\\stage1_formal_gate_hn\\yolo11m_gate2_formal_hn06",
+  "split_manifest": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\research\\materials\\stage1_formal\\manifests\\val_cal_op_split.csv",
+  "normal_class": "Normal",
+  "stats": {
+    "total_images": 7265,
+    "split_counts": {
+      "train": 6545,
+      "val": 720
+    },
+    "class_counts": {
+      "Abnormal": 6000,
+      "Normal": 1265
+    },
+    "split_class_counts": {
+      "train": {
+        "Abnormal": 5400,
+        "Normal": 1145
+      },
+      "val": {
+        "Abnormal": 600,
+        "Normal": 120
+      }
+    },
+    "width": {
+      "count": 7265,
+      "min": 352.0,
+      "max": 768.0,
+      "mean": 478.209498,
+      "median": 352.0,
+      "p90": 720.0
+    },
+    "height": {
+      "count": 7265,
+      "min": 288.0,
+      "max": 576.0,
+      "mean": 406.529938,
+      "median": 288.0,
+      "p90": 576.0
+    },
+    "aspect_ratio": {
+      "count": 7265,
+      "min": 0.833333,
+      "max": 1.333333,
+      "mean": 1.189825,
+      "median": 1.222222,
+      "p90": 1.25
+    },
+    "extreme_aspect_ratio_count": 0,
+    "extreme_aspect_ratio_rule": "aspect_ratio > 2.0 or aspect_ratio < 0.5",
+    "per_split": {
+      "train": {
+        "count": 6545,
+        "class_counts": {
+          "Abnormal": 5400,
+          "Normal": 1145
+        },
+        "width": {
+          "count": 6545,
+          "min": 352.0,
+          "max": 768.0,
+          "mean": 478.291215,
+          "median": 352.0,
+          "p90": 720.0
+        },
+        "height": {
+          "count": 6545,
+          "min": 288.0,
+          "max": 576.0,
+          "mean": 407.028266,
+          "median": 288.0,
+          "p90": 576.0
+        },
+        "aspect_ratio": {
+          "count": 6545,
+          "min": 0.833333,
+          "max": 1.333333,
+          "mean": 1.18891,
+          "median": 1.222222,
+          "p90": 1.25
+        }
+      },
+      "val": {
+        "count": 720,
+        "class_counts": {
+          "Abnormal": 600,
+          "Normal": 120
+        },
+        "width": {
+          "count": 720,
+          "min": 352.0,
+          "max": 768.0,
+          "mean": 477.466667,
+          "median": 352.0,
+          "p90": 720.0
+        },
+        "height": {
+          "count": 720,
+          "min": 288.0,
+          "max": 576.0,
+          "mean": 402.0,
+          "median": 288.0,
+          "p90": 576.0
+        },
+        "aspect_ratio": {
+          "count": 720,
+          "min": 0.833333,
+          "max": 1.333333,
+          "mean": 1.198148,
+          "median": 1.222222,
+          "p90": 1.25
+        }
+      }
+    },
+    "binary_gate_counts": {
+      "normal_class": "Normal",
+      "normal": 1265,
+      "abnormal": 6000
+    },
+    "binary_gate_per_split": {
+      "train": {
+        "normal": 1145,
+        "abnormal": 5400
+      },
+      "val": {
+        "normal": 120,
+        "abnormal": 600
+      }
+    }
+  }
+}

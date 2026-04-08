@@ -1,0 +1,5 @@
+﻿model,ratio_id,ratio_percent,PTR@R99.0
+yolo11m-cls,hn00,0,0.882937
+yolo11m-cls,hn02,2,0.888889
+yolo11x-cls,hn00,0,0.892857
+yolo11x-cls,hn02,2,0.900794

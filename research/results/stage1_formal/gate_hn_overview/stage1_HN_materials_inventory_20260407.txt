@@ -1,0 +1,184 @@
+Stage-1 HN 原材料吸收清单
+生成时间：2026-04-07
+仓库根目录：C:\GitHub\YOLO-CV
+
+一、来源
+1. 源压缩包：
+   C:\Users\28898\Desktop\stage1_HN_materials.zip
+2. 该压缩包已经成功吸收到项目中，源 zip 和临时解压目录已删除。
+3. 该压缩包是“non-PT materials only”包。
+   含义：
+   - 包含 HN 的 formal summary、manifest、overview、部分 raw materials
+   - 不包含全量 .pt checkpoint
+   - PT 文件应在单独备份位置，不在这次吸收范围内
+
+二、现在项目里保存了什么
+
+[A] Materials 层
+1. research/materials/stage1_formal/gate_hn_assets
+   作用：
+   - 保存 HN 选样资产
+   当前内容：
+   - yolo11m_train_normal_scores/
+     - summary.json
+     - train_normal_scores.csv
+     - top_false_positive_normals.csv
+     - hardest_normal_gallery/
+   文件数（递归）：27
+
+2. research/materials/stage1_formal/gate_hn_m_sweep
+   作用：
+   - 保存 yolo11m 全量 HN sweep 的 formal 材料
+   ratio 覆盖：
+   - hn00
+   - hn02
+   - hn04
+   - hn06
+   - hn08
+   - hn10
+   - hn12
+   - hn14
+   - hn16
+   - hn18
+   - hn20
+   每个 ratio 目录当前至少包含：
+   - all_checkpoints_index.csv
+   - best_epoch_manifest.json
+   - dataset_manifest.json
+   - epoch_gate_summary.csv
+   - epoch_gate_summary.json
+   - epoch_gate_summary.md
+   - run_manifest.json
+   其中：
+   - hn00 ~ hn12 来自更完整 raw materials，原包中还有更重的 raw 结构
+   - hn14 / hn16 / hn18 / hn20 本次吸收为 manifest/summary 层
+   文件数（递归）：111
+
+3. research/materials/stage1_formal/gate_hn_x_crosscheck
+   作用：
+   - 保存 yolo11x cross-capacity HN check 的 formal 材料
+   ratio 覆盖：
+   - hn00
+   - hn02
+   每个 ratio 目录当前至少包含：
+   - all_checkpoints_index.csv
+   - best_epoch_manifest.json
+   - dataset_manifest.json
+   - epoch_gate_summary.csv
+   - epoch_gate_summary.json
+   - epoch_gate_summary.md
+   - run_manifest.json
+   说明：
+   - 本次吸收为 manifest/summary 层
+   文件数（递归）：14
+
+[B] Results 层
+4. research/results/stage1_formal/gate_hn_m_sweep
+   作用：
+   - 保存 yolo11m 全 sweep 的 suite-level 结果汇总
+   当前内容：
+   - hn_sweep_summary.csv
+   - hn_sweep_summary.json
+   - hn_sweep_summary.md
+   - generated_configs/
+   文件数（递归）：13
+
+5. research/results/stage1_formal/gate_hn_x_crosscheck
+   作用：
+   - 保存 yolo11x cross-check 的 suite-level 结果汇总
+   当前内容：
+   - hn_sweep_summary.csv
+   - hn_sweep_summary.json
+   - hn_sweep_summary.md
+   文件数（递归）：3
+
+6. research/results/stage1_formal/gate_hn_overview
+   作用：
+   - 保存 HN 总览、cross-capacity 对照、best checkpoint registry、吸收记录
+   当前内容：
+   - hn_best_checkpoint_registry.csv
+   - hn_best_checkpoint_registry.json
+   - hn_best_checkpoint_registry.md
+   - stage1_formal_hn_overview.csv
+   - stage1_formal_hn_overview.json
+   - stage1_formal_hn_overview.md
+   - table_hn_cross_capacity_compare.csv
+   - table_hn_cross_capacity_compare.md
+   - source_archive_manifest.json
+   - source_archive_manifest.md
+   - ingest_manifest.json
+   - ingest_manifest.md
+   文件数：12
+
+三、关键汇总文件
+1. yolo11m 全量 HN sweep 总表
+   - research/results/stage1_formal/gate_hn_m_sweep/hn_sweep_summary.csv
+   - research/results/stage1_formal/gate_hn_m_sweep/hn_sweep_summary.json
+   - research/results/stage1_formal/gate_hn_m_sweep/hn_sweep_summary.md
+
+2. yolo11x cross-check 总表
+   - research/results/stage1_formal/gate_hn_x_crosscheck/hn_sweep_summary.csv
+   - research/results/stage1_formal/gate_hn_x_crosscheck/hn_sweep_summary.json
+   - research/results/stage1_formal/gate_hn_x_crosscheck/hn_sweep_summary.md
+
+3. 全局 HN 总览
+   - research/results/stage1_formal/gate_hn_overview/stage1_formal_hn_overview.csv
+   - research/results/stage1_formal/gate_hn_overview/stage1_formal_hn_overview.json
+   - research/results/stage1_formal/gate_hn_overview/stage1_formal_hn_overview.md
+
+4. m/x cross-capacity 对照表
+   - research/results/stage1_formal/gate_hn_overview/table_hn_cross_capacity_compare.csv
+   - research/results/stage1_formal/gate_hn_overview/table_hn_cross_capacity_compare.md
+
+5. HN formal best checkpoint registry
+   - research/results/stage1_formal/gate_hn_overview/hn_best_checkpoint_registry.csv
+   - research/results/stage1_formal/gate_hn_overview/hn_best_checkpoint_registry.json
+   - research/results/stage1_formal/gate_hn_overview/hn_best_checkpoint_registry.md
+
+四、行数/覆盖情况
+1. yolo11m HN 汇总行数：11
+   - hn00
+   - hn02
+   - hn04
+   - hn06
+   - hn08
+   - hn10
+   - hn12
+   - hn14
+   - hn16
+   - hn18
+   - hn20
+
+2. yolo11x HN 汇总行数：2
+   - hn00
+   - hn02
+
+3. HN overview 总行数：13
+   - yolo11m 11 行
+   - yolo11x 2 行
+
+五、这次没有吸收到什么
+1. 没有吸收到全量 .pt checkpoint
+   原因：
+   - 这次 source zip 本身就是 non-PT materials only
+2. 没有把 raw per_epoch_gate 整棵树落进仓库
+   原因：
+   - 体量太大
+   - 当前工作区只保留 formal working set
+3. yolo11x 这边没有更重的 raw materials 镜像
+   当前吸收到的是 manifest/summary 层
+
+六、如果你后面要找 HN 关键材料，优先看哪里
+1. 先看全局总览：
+   research/results/stage1_formal/gate_hn_overview/
+2. 再看模型级 sweep：
+   - research/results/stage1_formal/gate_hn_m_sweep/
+   - research/results/stage1_formal/gate_hn_x_crosscheck/
+3. 再看 ratio 级 formal 材料：
+   - research/materials/stage1_formal/gate_hn_m_sweep/hnXX/
+   - research/materials/stage1_formal/gate_hn_x_crosscheck/hnXX/
+
+七、结论
+这波 HN 原材料已经成功消化进项目。
+当前仓库里保留的是“可继续分析、可写论文、可做正式对照”的 HN formal working set。
+桌面源 zip 与临时解压目录已经清理。
