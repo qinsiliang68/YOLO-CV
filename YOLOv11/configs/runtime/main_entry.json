@@ -11,6 +11,8 @@
   "stage1_rcis_suite_config": "YOLOv11/configs/runtime/stage1_gate_rcis_suite.json",
   "stage1_formal_gate_capacity_config": "YOLOv11/configs/runtime/stage1_formal_gate_capacity.json",
   "stage1_formal_cls6_capacity_config": "YOLOv11/configs/runtime/stage1_formal_cls6_capacity.json",
+  "stage1_formal_gate_hn_n_sweep_config": "YOLOv11/configs/runtime/stage1_formal_gate_hn_n_sweep.json",
+  "stage1_formal_gate_hn_s_sweep_config": "YOLOv11/configs/runtime/stage1_formal_gate_hn_s_sweep.json",
   "stage1_formal_gate_hn_m_sweep_config": "YOLOv11/configs/runtime/stage1_formal_gate_hn_m_sweep.json",
   "stage1_formal_gate_hn_x_crosscheck_config": "YOLOv11/configs/runtime/stage1_formal_gate_hn_x_crosscheck.json",
   "stage1_formal_gate_info_sampling_lite_config": "YOLOv11/configs/runtime/stage1_formal_gate_info_sampling_lite.json",

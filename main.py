@@ -52,6 +52,8 @@ BUILTIN_STAGE1_ENTRY_CONFIG = {
     "stage1_rcis_suite_config": r"YOLOv11\configs\runtime\stage1_gate_rcis_suite.json",
     "stage1_formal_gate_capacity_config": r"YOLOv11\configs\runtime\stage1_formal_gate_capacity.json",
     "stage1_formal_cls6_capacity_config": r"YOLOv11\configs\runtime\stage1_formal_cls6_capacity.json",
+    "stage1_formal_gate_hn_n_sweep_config": r"YOLOv11\configs\runtime\stage1_formal_gate_hn_n_sweep.json",
+    "stage1_formal_gate_hn_s_sweep_config": r"YOLOv11\configs\runtime\stage1_formal_gate_hn_s_sweep.json",
     "stage1_formal_gate_hn_m_sweep_config": r"YOLOv11\configs\runtime\stage1_formal_gate_hn_m_sweep.json",
     "stage1_formal_gate_hn_x_crosscheck_config": r"YOLOv11\configs\runtime\stage1_formal_gate_hn_x_crosscheck.json",
     "stage1_formal_gate_info_sampling_lite_config": r"YOLOv11\configs\runtime\stage1_formal_gate_info_sampling_lite.json",
@@ -99,9 +101,12 @@ def parse_args() -> argparse.Namespace:
             "stage1_gate_rcis_suite",
             "stage1_formal_gate_capacity",
             "stage1_formal_cls6_capacity",
+            "stage1_formal_gate_hn_n_sweep",
+            "stage1_formal_gate_hn_s_sweep",
             "stage1_formal_gate_hn_m_sweep",
             "stage1_formal_gate_hn_x_crosscheck",
             "stage1_formal_gate_hn_all",
+            "stage1_formal_gate_hn_ns_all",
             "stage1_formal_gate_info_sampling_lite",
         ),
         default="auto",
@@ -970,12 +975,15 @@ def run_stage1_formal_capacity(entry_cfg: dict, *, task_kind: str, dry_run: bool
 
 
 def run_stage1_formal_hn_suite(entry_cfg: dict, *, variant: str, dry_run: bool, rerun: bool) -> None:
-    if variant == "m":
-        key = "stage1_formal_gate_hn_m_sweep_config"
-        base_name = "stage1_formal_gate_hn_m_sweep.json"
-    else:
-        key = "stage1_formal_gate_hn_x_crosscheck_config"
-        base_name = "stage1_formal_gate_hn_x_crosscheck.json"
+    variant_map = {
+        "n": ("stage1_formal_gate_hn_n_sweep_config", "stage1_formal_gate_hn_n_sweep.json"),
+        "s": ("stage1_formal_gate_hn_s_sweep_config", "stage1_formal_gate_hn_s_sweep.json"),
+        "m": ("stage1_formal_gate_hn_m_sweep_config", "stage1_formal_gate_hn_m_sweep.json"),
+        "x": ("stage1_formal_gate_hn_x_crosscheck_config", "stage1_formal_gate_hn_x_crosscheck.json"),
+    }
+    if variant not in variant_map:
+        raise SystemExit(f"Unsupported formal HN variant: {variant}")
+    key, base_name = variant_map[variant]
     config_path = resolve_path(
         entry_cfg.get(key),
         base=YOLOV11_ROOT / "configs" / "runtime" / base_name,
@@ -995,6 +1003,11 @@ def run_stage1_formal_hn_suite(entry_cfg: dict, *, variant: str, dry_run: bool, 
 def run_stage1_formal_hn_all(entry_cfg: dict, *, dry_run: bool, rerun: bool) -> None:
     run_stage1_formal_hn_suite(entry_cfg, variant="m", dry_run=dry_run, rerun=rerun)
     run_stage1_formal_hn_suite(entry_cfg, variant="x", dry_run=dry_run, rerun=rerun)
+
+
+def run_stage1_formal_hn_ns_all(entry_cfg: dict, *, dry_run: bool, rerun: bool) -> None:
+    run_stage1_formal_hn_suite(entry_cfg, variant="n", dry_run=dry_run, rerun=rerun)
+    run_stage1_formal_hn_suite(entry_cfg, variant="s", dry_run=dry_run, rerun=rerun)
 
 
 def run_stage1_formal_gate_info_sampling_lite(
@@ -1146,6 +1159,18 @@ def main() -> None:
 
     if task_name == "stage1_formal_gate_hn_all":
         run_stage1_formal_hn_all(entry_cfg, dry_run=args.dry_run, rerun=args.rerun)
+        return
+
+    if task_name == "stage1_formal_gate_hn_n_sweep":
+        run_stage1_formal_hn_suite(entry_cfg, variant="n", dry_run=args.dry_run, rerun=args.rerun)
+        return
+
+    if task_name == "stage1_formal_gate_hn_s_sweep":
+        run_stage1_formal_hn_suite(entry_cfg, variant="s", dry_run=args.dry_run, rerun=args.rerun)
+        return
+
+    if task_name == "stage1_formal_gate_hn_ns_all":
+        run_stage1_formal_hn_ns_all(entry_cfg, dry_run=args.dry_run, rerun=args.rerun)
         return
 
     if task_name == "stage1_formal_gate_info_sampling_lite":
