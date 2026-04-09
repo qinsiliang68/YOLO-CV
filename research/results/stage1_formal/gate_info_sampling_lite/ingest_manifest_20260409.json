@@ -1,0 +1,26 @@
+{
+  "date": "2026-04-09",
+  "source_root": "C:\\baidunetdiskdownload",
+  "source_zip": "C:\\baidunetdiskdownload\\stage1_info_sampling_lite_materials.zip",
+  "related_source_files": [
+    "C:\\baidunetdiskdownload\\stage1_info_sampling_lite_compress.log",
+    "C:\\baidunetdiskdownload\\stage1_info_sampling_lite_compress_done.json"
+  ],
+  "targets": [
+    "C:\\GitHub\\YOLO-CV\\research\\materials\\stage1_formal\\gate_info_sampling_lite",
+    "C:\\GitHub\\YOLO-CV\\research\\results\\stage1_formal\\gate_info_sampling_lite",
+    "C:\\GitHub\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_gate_info_sampling_lite",
+    "C:\\GitHub\\YOLO-CV\\$out\\generated_configs\\stage1_formal\\gate_info_sampling_lite",
+    "C:\\GitHub\\YOLO-CV\\research\\materials\\stage1_formal\\manifests"
+  ],
+  "counts_after_ingest": {
+    "materials_files": 3696,
+    "results_files": 59,
+    "runs_files": 85,
+    "generated_configs_files": 4,
+    "manifest_files": 6
+  },
+  "contains_pt": false,
+  "temp_extract_dir": "C:\\z1",
+  "note": "This ingest restores full non-pt info-sampling-lite materials, results, generated configs, and run artifacts into the project."
+}

@@ -1,0 +1,1329 @@
+﻿% !TeX program = xelatex
+% !TeX encoding = UTF-8 Unicode
+\documentclass[UTF8,openany,12pt]{ctexbook}
+
+\usepackage[a4paper]{geometry}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{amsmath,amssymb}
+\usepackage{float}
+\usepackage{caption}
+\usepackage{enumitem}
+\usepackage{tocloft}
+\usepackage{hyperref}
+\usepackage{bookmark}
+\usepackage{setspace}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usepackage[numbers]{natbib}
+\usetikzlibrary{arrows.meta,positioning}
+
+\geometry{
+    top=2.54cm,
+    bottom=2.54cm,
+    left=3.17cm,
+    right=3.17cm,
+    headheight=1.2cm,
+    headsep=0.4cm,
+    footskip=1.6cm
+}
+
+\graphicspath{{essay/img/}}
+\hypersetup{
+    hidelinks,
+    bookmarksopen=true,
+    bookmarksopenlevel=1,
+    bookmarksnumbered=true
+}
+\setcitestyle{open={[},close={]},citesep={][}}
+\makeatletter
+\DeclareRobustCommand{\cite}[1]{%
+    \unskip\nobreak
+    \raisebox{1.4ex}{\scriptsize
+        \begingroup
+        \renewcommand*{\do}[1]{[\citenum{##1}]}%
+        \docsvlist{#1}%
+        \endgroup
+    }%
+}
+\makeatother
+\setlength{\parindent}{2em}
+\setlength{\parskip}{0pt}
+\linespread{1.35}
+\raggedbottom
+
+\DeclareCaptionFont{fsuwuhao}{\zihao{5}\songti}
+\captionsetup{font=fsuwuhao,labelfont=normalfont,labelsep=space}
+\captionsetup[figure]{justification=centering}
+\captionsetup[table]{justification=centering,singlelinecheck=false,skip=6pt}
+
+\setlength{\tabcolsep}{4.5pt}
+\renewcommand{\arraystretch}{1.20}
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{1}
+\pagestyle{plain}
+\bookmarksetup{open,numbered,depth=1}
+
+\renewcommand{\contentsname}{目\quad 录}
+\renewcommand{\listfigurename}{插图目录}
+\renewcommand{\listtablename}{表格目录}
+\renewcommand{\cfttoctitlefont}{\hfill\heiti\zihao{-2}}
+\renewcommand{\cftaftertoctitle}{\hfill}
+\renewcommand{\cftloftitlefont}{\hfill\heiti\zihao{-2}}
+\renewcommand{\cftafterloftitle}{\hfill}
+\renewcommand{\cftlottitlefont}{\hfill\heiti\zihao{-2}}
+\renewcommand{\cftafterlottitle}{\hfill}
+\setlength{\cftbeforetoctitleskip}{0pt}
+\setlength{\cftaftertoctitleskip}{12pt}
+\setlength{\cftbeforeloftitleskip}{0pt}
+\setlength{\cftafterloftitleskip}{12pt}
+\setlength{\cftbeforelottitleskip}{0pt}
+\setlength{\cftafterlottitleskip}{12pt}
+\renewcommand{\cftchapfont}{\heiti\zihao{4}}
+\renewcommand{\cftchappagefont}{\heiti\zihao{4}}
+\renewcommand{\cftsecfont}{\songti\zihao{-4}}
+\renewcommand{\cftsecpagefont}{\songti\zihao{-4}}
+\renewcommand{\cftsubsecfont}{\songti\zihao{-5}}
+\renewcommand{\cftsubsecpagefont}{\songti\zihao{-5}}
+\renewcommand{\cftfigfont}{\songti\zihao{5}}
+\renewcommand{\cftfigpagefont}{\songti\zihao{5}}
+\renewcommand{\cfttabfont}{\songti\zihao{5}}
+\renewcommand{\cfttabpagefont}{\songti\zihao{5}}
+\setlength{\cftbeforechapskip}{7pt}
+\setlength{\cftbeforesecskip}{2pt}
+\setlength{\cftbeforesubsecskip}{0pt}
+\setlength{\cftbeforefigskip}{1pt}
+\setlength{\cftbeforetabskip}{1pt}
+\cftsetindents{chapter}{0em}{4.0em}
+\cftsetindents{section}{2.2em}{3.4em}
+\cftsetindents{subsection}{5.2em}{4.0em}
+\cftsetindents{figure}{0em}{3.2em}
+\cftsetindents{table}{0em}{3.2em}
+\renewcommand{\cftchapleader}{\cftdotfill{\cftdotsep}}
+\renewcommand{\cftdotsep}{2.2}
+
+\ctexset{
+    chapter = {
+        number = \arabic{chapter},
+        format = \centering\heiti\zihao{-2},
+        beforeskip = 24pt,
+        afterskip = 18pt
+    },
+    section = {
+        format = \raggedright\heiti\zihao{3},
+        beforeskip = 18pt,
+        afterskip = 6pt
+    },
+    subsection = {
+        format = \raggedright\heiti\zihao{4},
+        beforeskip = 12pt,
+        afterskip = 6pt
+    }
+}
+
+\newcommand{\keywords}[1]{\par\noindent{\heiti 关键词：}#1}
+\newcommand{\engkeywords}[1]{\par\noindent{\bfseries Key words:}#1}
+\newcommand{\formalmetric}[1]{\texttt{#1}}
+\makeatletter
+\newcommand{\compactfrontlist}[4]{%
+    \chapter*{#1}%
+    \pdfbookmark[0]{#2}{#3}%
+    {\linespread{1.12}\selectfont\@starttoc{#4}\par}%
+}
+\makeatother
+
+\title{面向地下排水管道缺陷筛查的高召回门控选模与有效信息重加权研究}
+\author{}
+\date{2026年4月}
+
+\begin{document}
+\zihao{-4}\songti
+
+\frontmatter
+
+\chapter*{摘要}
+\addcontentsline{toc}{chapter}{摘要}
+地下排水管道缺陷筛查在工程部署中面临三类现实约束：正常帧远多于缺陷帧，细粒度异常容易被背景纹理淹没，而默认阈值下的分类指标又不能直接回答高召回筛查中的减负效果。针对这一问题，本文将研究范围限定在两阶段系统的第一阶段（stage-1），把它明确界定为固定高召回约束下的正常/异常门控任务，而不是默认阈值二分类任务。本文的目标不是提出新的检测器，而是在现有实验基础上建立一套可复现、可审计的第一阶段选模、增强与重加权研究链。
+
+围绕这一目标，本文首先完成直接二分类门控与六类源域视图两套容量扫描，并采用温度校准、工作点搜索和外部评估器进行统一比较。结果表明，门控视图与六类源域视图的容量排序并不一致，说明源域分类表现不能替代高召回门控下的模型选择。在当前数据划分与当前随机种子下，\texttt{yolo11m-cls} 在门控视图中排在第一，\texttt{yolo11x-cls} 作为第二对照模型保留。
+
+在主模型固定后，本文进一步完成 HN 比例扫描与跨容量轻量验证。结果表明，HN 回流收益不是单调增加的，而是存在模型相关的最优比例点；同时，五个二分类门控模型均出现训练器 \formalmetric{top1-best} 与门控最优检查点不一致的现象，说明训练侧 \formalmetric{top1} 只能作为训练健康信号，不宜直接作为第一阶段的检查点选择依据。
+
+在此基础上，本文继续把问题从”回流多少”推进到”固定预算下如何重新分配回流样本”。围绕难样本候选池内部的价值异质性，本文构建了 lite 版样本效用重加权框架，并完成 A0--A4 五组消融。结果表明，静态一次性重加权尚未超过既有的 \texttt{uniform\_hn14}；但这一负结果并非无效尝试，而是明确暴露出教师模型选择、候选池宽度、预算塌缩与覆盖损失等关键限制。综上，本文给出了一条从容量扫描、HN 最优比例点到固定预算样本重分配的第一阶段研究链，并对后续训练侧优化的可行收缩方向作出界定。
+\keywords{地下排水管道；高召回门控；容量扫描；Hard-Negative 回流；样本效用重加权；温度校准；检查点选模；CCTV 图像}
+
+\chapter*{Abstract}
+\addcontentsline{toc}{chapter}{Abstract}
+This thesis studies stage-1 model selection and training-side enhancement for sewer-defect screening under a high-recall operating regime. Instead of treating stage-1 as a default-threshold binary classifier, the work defines it as a recall-constrained Normal/Abnormal gate whose objective is to maximize normal filtering under fixed recall anchors. The contribution is therefore not a new detector, but a reproducible and auditable stage-1 research chain covering model selection, hard-negative replay, and fixed-budget sample reallocation.
+
+The thesis first reports two capacity scans: a direct binary-gate scan over five YOLO11 classification backbones, and a six-class source-side scan used only as an auxiliary reference. Temperature scaling and operating-point evaluation are applied consistently to every checkpoint. The two views do not yield the same ranking, which shows that source-side classification quality cannot replace gate-oriented checkpoint selection. Under the current split and seed, \texttt{yolo11m-cls} ranks first in the binary-gate view, while \texttt{yolo11x-cls} is retained as the main secondary comparison model.
+
+The thesis then reports an HN ratio sweep on \texttt{yolo11m-cls}, together with a light cross-capacity validation on \texttt{yolo11x-cls}. The results show that HN gains are non-monotonic and model-dependent rather than universally increasing with replay ratio. In addition, trainer-selected \formalmetric{top1-best} checkpoints do not align with gate-selected checkpoints for any of the five binary-gate models, indicating that trainer-side \formalmetric{top1} is useful for optimization monitoring but not sufficient for checkpoint selection under a high-recall objective.
+
+Building on these findings, the thesis further reformulates the problem from ``how much replay to add'' to ``which samples should receive the fixed replay budget''. A lite sample-utility reweighting framework is evaluated through A0--A4 ablations. The current static one-shot reweighting setup does not outperform the existing uniform HN14 anchor; however, this negative result is still informative because it exposes concrete limitations related to teacher choice, pool width, budget collapse, and coverage loss. Taken together, the thesis presents a stage-1 evidence chain from capacity scan, to HN sweet spot, to fixed-budget hard-normal reallocation, while making the current boundary conditions explicit.
+\engkeywords{sewer inspection, high-recall gate, capacity scan, hard-negative mining, sample valuation, temperature scaling, checkpoint selection, CCTV imagery}
+
+\compactfrontlist{\contentsname}{目录}{toc}{toc}
+\compactfrontlist{\listfigurename}{插图目录}{lof}{lof}
+\compactfrontlist{\listtablename}{表格目录}{lot}{lot}
+
+\chapter*{主要符号与缩略语说明}
+\addcontentsline{toc}{chapter}{主要符号与缩略语说明}
+\begin{longtable}{p{3.2cm}p{10.4cm}}
+\toprule
+符号/缩略语 & 含义 \\
+\midrule
+\endfirsthead
+\toprule
+符号/缩略语 & 含义 \\
+\midrule
+\endhead
+\formalmetric{Spec@R99.5} & 在召回率不低于 99.5\% 的约束下，正常样本拦截能力所对应的 specificity。 \\
+\formalmetric{Spec@R99.0} & 在召回率不低于 99.0\% 的约束下，正常样本拦截能力所对应的 specificity。 \\
+\formalmetric{Prec@R99.0} & 在召回率不低于 99.0\% 的约束下的 precision。 \\
+\formalmetric{PTR@R99.0} & 在召回率不低于 99.0\% 时的通过率，即进入下一阶段的样本占全部样本的比例。 \\
+val-cal / val-op & 温度校准子集与工作点评估子集。 \\
+HN & Hard-Negative，指从训练正常样本中构造的高风险回流样本。 \\
+GAEIS & Gate-Aligned Effective Information Score，本文用于固定预算样本效用重加权的评分框架。 \\
+$\tau_{99.5}, \tau_{99.0}$ & 在本文 gate 评估下分别对应 \formalmetric{R99.5} 与 \formalmetric{R99.0} 的工作阈值。 \\
+\bottomrule
+\end{longtable}
+
+\mainmatter
+
+\chapter{绪论}
+
+\section{研究背景与工程意义}
+地下排水管网是城市基础设施体系中的关键组成部分，其运行状态直接关系到城市防涝、道路安全以及水环境治理 \cite{moradi2019review,haurum2020survey,ma2026stateoftheart}。当前工程实践仍主要依赖 CCTV 巡检与人工复核，但海量正常帧、复杂背景纹理以及跨设备成像差异，使人工判读在效率、一致性和误报控制方面面临明显瓶颈 \cite{haurum2020survey,cheng2018deep}。因此，如何在保持缺陷高召回的前提下尽可能减少进入后续人工复核或后级检测的正常样本，已经成为排水管道检测智能化中的核心问题之一。
+
+传统研究通常把第一阶段视作普通分类任务，默认以 Accuracy 或 \formalmetric{top1} 作为早停和选模依据。然而，在实际两阶段工作流中，第一阶段（stage-1）的职责并不是在默认阈值下取得最高整体分类分数，而是在固定高召回约束下最大化正常样本拦截。因此，默认阈值分类语义与高召回门控语义之间存在明显错位。本文据此将第一阶段明确重定义为召回约束门控，并围绕这一目标重新组织容量扫描、校准评估、检查点（checkpoint）选择以及 HN 增强分析。
+
+\section{国内外研究现状}
+\subsection{排水管道缺陷视觉识别}
+排水管道缺陷识别经历了由人工特征到深度视觉模型的技术演进。早期工作以 HOG、SVM 和规则驱动候选区域为主，已经证明 CCTV 图像中的管道异常具有一定可计算性，但方法对场景变化较为敏感 \cite{halfawy2014hogsvm}。随着深度学习的发展，研究开始转向图像级分类与目标检测。Kumar 等利用深度卷积网络完成排水管道 CCTV 缺陷分类，Cheng 等进一步将深度模型用于管道缺陷检测，表明数据驱动表征能够显著提升识别性能 \cite{kumar2018cnn,cheng2018deep}。
+
+\subsection{YOLO 路线与排水管道场景适配}
+YOLO 系列因具备较好的实时性和工程成熟度，已成为管道缺陷检测中的常见基础路线 \cite{redmon2016yolo}。在排水管道场景中，研究者围绕特征增强、轻量化部署与场景适配提出了多种改进策略，例如改进 YOLOv5 的管道缺陷检测模型以及轻量化 YOLOv5-Sewer 等 \cite{wang2023improvedyolov5,zhao2024yolov5sewer}。这些工作证明，YOLO 路线具有良好的工程基础；但它们也表明，不同任务目标之间不能简单共享同一评价口径：用于目标检测的检测器精度并不直接回答高召回门控下的正常样本拦截问题。
+
+\subsection{高召回分类、概率校准与约束优化研究}
+Sewer-ML 数据集的发布为排水管道缺陷分类提供了统一的基准条件，也使多尺度容量比较与源域表示分析成为可能 \cite{haurum2021sewerml}。另一方面，温度校准已被证明是改善神经网络输出分数可信度的低成本方式，在不改变样本排序的前提下，有助于建立更稳定的工作点比较基础 \cite{guo2017calibration}。此外，迁移学习在线路缺陷检测中的应用也已显示出缓解目标域标注不足的价值 \cite{situ2023transfer}。然而，就本文当前已完成证据而言，最需要优先解决的问题并不是检测器结构本身，而是第一阶段的任务边界、选模规则以及在主线固定后的训练侧增强方式。
+
+\subsection{难样本挖掘、数据剪枝与样本效用建模研究}
+围绕样本选择与训练效率提升，已有研究从 hard negative mining、uncertainty-driven selection、diversity-aware active learning、training-dynamics pruning 以及结构支撑建模等多个方向展开。相关工作共同指出，样本价值并不等于单一损失大小或原始不确定性，高风险样本中同样可能混入不稳定噪声与孤立异常点；因此，样本选择需要同时考虑风险、稳定性与结构支撑等因素 \cite{koh2017influence,ash2020badge,wu2022entropy,yang2024plug,kim2024structural,zhang2024tdds}。这一线索直接支撑了本文从均匀难样本回流进一步走向固定预算样本重加权的研究动机。
+
+\begin{table}[H]
+    \centering
+    \caption{相关研究分类与本文切入点}
+    \label{tab:related-work-map}
+    \begin{tabularx}{\textwidth}{p{3.1cm}p{3.1cm}Xp{2.3cm}}
+        \toprule
+        研究方向 & 代表任务对象 & 典型回答的问题 & 与本文关系 \\
+        \midrule
+        排水管道缺陷视觉识别 & CCTV 图像分类或检测 & 管道缺陷能否被机器视觉识别 & 提供场景背景与基准语境 \\
+        YOLO / 检测器场景适配 & 检测器结构与部署效率 & 如何提升定位精度或实时性 & 仅提供工程背景，不直接回答第一阶段门控选模 \\
+        校准与约束优化 & 概率分数与工作点 & 固定召回下如何稳定比较模型 & 直接支撑本文门控导向协议 \\
+        难样本挖掘与样本效用建模 & 样本选择与训练效率 & 哪些样本更值得被重复学习 & 直接支撑 HN 与固定预算重加权 \\
+        \bottomrule
+    \end{tabularx}
+\end{table}
+
+\begin{table}[H]
+    \centering
+    \caption{本文与已有工作的差异定位}
+    \label{tab:thesis-difference-positioning}
+    \begin{tabularx}{\textwidth}{p{3.1cm}XX}
+        \toprule
+        比较维度 & 常见检测或分类工作 & 本文定位 \\
+        \midrule
+        任务边界 & 直接优化检测器或默认阈值分类精度 & 严格限定在第一阶段召回约束门控 \\
+        评价目标 & mAP、Accuracy、训练器侧 \formalmetric{top1} & \formalmetric{Spec@R99.5 > Spec@R99.0 > Prec@R99.0 > PTR@R99.0} \\
+        主问题 & 如何提升整体检测或分类性能 & 如何组织第一阶段选模、HN 与样本效用重加权 \\
+        训练增强位置 & 往往与骨干网络、损失函数或检测器结构耦合 & 在已固定主线上比较 HN 与固定预算重分配 \\
+        完整度边界 & 常直接给检测器或系统级结论 & 不对完整两阶段系统优劣作超证据结论 \\
+        \bottomrule
+    \end{tabularx}
+\end{table}
+
+\section{研究问题与研究目标}
+\subsection{本文的任务边界}
+本文的任务边界被严格限定在第一阶段前端筛查，而不是完整两阶段系统。更具体地说，本文只讨论基于 YOLO11-cls 的高召回门控如何在固定召回约束下完成骨干网络（backbone）选择、检查点选择与训练侧增强；对检测器（detector）结构、系统级闭环收益以及单阶段与两阶段系统的最终优劣比较，本文均不作超出证据范围的结论。这一边界既符合当前已完成实验的真实范围，也使整篇论文的论证能够围绕同一评价目标展开。
+
+\subsection{核心科学问题与研究目标}
+围绕当前任务边界，本文重点回答三类相互衔接的问题。第一，在统一的第一阶段评估协议下，哪一种 YOLO11-cls 容量最适合作为高召回门控的主模型。第二，在主模型固定后，HN 回流能否在同一评估器下形成可排序、可解释的净增益，以及该增益是否具有模型相关性。第三，在固定预算的 \texttt{hn14} 工作集中，均匀回流是否忽略了池内样本价值异质性，从而为后续样本效用重加权提供研究空间。
+
+据此，本文的研究目标可以概括为：一是建立可复现、可审计的第一阶段选模协议；二是完成骨干网络容量扫描、跨视图错位与 HN 最优比例点的证据闭环，把 HN 问题首先收缩到”均匀回流的数量维度最优点”；三是在此基础上进一步转向固定预算下的样本组成优化，提出面向难样本候选池内部异质性的样本效用重加权框架，为后续第一阶段训练侧优化提供统一方法接口。
+
+\section{研究内容与技术路线}
+本文的技术路线由四个递进阶段组成。首先，在直接二分类门控（direct binary gate）与六类源域视图（six-class source）两个视图上分别执行容量扫描，并通过温度校准、阈值搜索与外部评估器确定骨干网络排序。其次，以二分类门控视图下的主模型 \texttt{yolo11m-cls} 为起点，执行完整 HN 比例扫描，并在 \texttt{yolo11x-cls} 上做轻量跨容量验证，用以判断 HN 收益的最优比例点与模型相关性，同时把问题先收缩到”均匀回流的最佳预算落点”。再次，结合 HN 曲线的非单调性以及难样本候选池的内部异质性，本文把“加多少”进一步抽象为“固定预算下哪些样本该被重复学习”的问题，并提出 Gate-Aligned Effective Information Score lite 作为后续重加权框架。最后，全文通过 manifest、summary、registry 和附录中的溯源档案保证结果可复现与可审计。
+
+\section{主要创新点}
+围绕上述主线，本文的主要创新点体现在以下三个方面：
+\begin{enumerate}[label=\arabic*.]
+    \item 将第一阶段重新界定为固定高召回约束下的门控任务，并给出一套由温度校准、val-cal/val-op 划分、逐轮外部评估和门控导向检查点选择共同构成的评价协议。
+    \item 完成两套容量扫描与主模型上的 HN 比例扫描，给出从骨干网络选择、检查点错位到 HN 最优比例点的系统性第一阶段证据链，并明确直接二分类门控才是主裁判视图。
+    \item 在 HN 非单调收益和难样本候选池异质性的基础上，把研究问题从 HN 的数量维度推进到固定预算回流的组成维度，提出面向固定预算的门控导向有效信息量评分（GAEIS lite）重加权框架，并给出”静态一次性加权回流尚未超过 \texttt{uniform\_hn14}”的边界结论。
+\end{enumerate}
+
+\section{论文组织结构}
+全文围绕第一阶段主线的选模、训练侧增强和样本重加权展开。第 2 章介绍高召回门控的理论基础、指标定义和样本效用建模动机；第 3 章说明数据集、实验平台和工作集组织方式；第 4 章集中报告二分类门控容量扫描、六类源域辅助视图以及跨视图错位；第 5 章报告主模型上的 HN 比例扫描、跨容量验证以及从均匀回流最优比例点到池内异质性的问题收缩；第 6 章给出从 \texttt{hn14} 推进到固定预算样本重分配的有效信息量方法、诊断图表与负结果边界；第 7 章总结当前已建立的第一阶段证据链及其工程启示；附录部分进一步补充协议摘要、HN 来源材料以及信息量重加权的复现接口与溯源清单。
+
+\section{本章小结}
+本章明确了本文的任务边界、研究问题与技术路线。下一章将转入高召回门控的评价指标、检查点选择和样本效用建模基础。
+
+\chapter{理论基础与关键技术}
+
+\section{第一阶段高召回门控的目标定义}
+设第一阶段的输入样本总数为 $N$。其中异常样本需要尽可能完整地保留给后续人工复核或后级处理，而正常样本应在尽可能不牺牲召回的前提下被前级拦截。由此，第一阶段的核心目标并不是默认阈值下的总体分类正确率，而是高召回约束下的正常样本拦截能力。
+
+本文采用两个固定工作点作为锚点：\formalmetric{Recall$\geq$99.5\%} 与 \formalmetric{Recall$\geq$99.0\%}。在这两个约束下，排序规则定义为：
+\begin{equation}
+\formalmetric{Spec@R99.5} \succ \formalmetric{Spec@R99.0} \succ \formalmetric{Prec@R99.0} \succ \formalmetric{PTR@R99.0}.
+\end{equation}
+
+\section{评价指标定义}
+在二分类 gate 语境中，\formalmetric{Spec@R99.5} 与 \formalmetric{Spec@R99.0} 分别表示在满足相应召回约束时的 specificity；\formalmetric{Prec@R99.0} 表示在 \formalmetric{Recall$\geq$99.0\%} 约束下的 precision。本文特别采用 \formalmetric{PTR@R99.0} 作为第四排序准则，其含义为在 \formalmetric{Recall$\geq$99.0\%} 对应阈值下的通过率，即仍被送往下一阶段的样本占全部样本的比例：
+\begin{equation}
+\formalmetric{PTR@R99.0} = \frac{TP + FP}{N}.
+\end{equation}
+为便于后续统一讨论，本文同时给出 recall、specificity 与 precision 的定义。记异常类样本总数为 $P$、正常类样本总数为 $N_{\mathrm{neg}}$，则
+\begin{equation}
+\mathrm{Recall} = \frac{TP}{TP + FN},
+\end{equation}
+\begin{equation}
+\mathrm{Specificity} = \frac{TN}{TN + FP},
+\end{equation}
+\begin{equation}
+\mathrm{Precision} = \frac{TP}{TP + FP}.
+\end{equation}
+其中，\formalmetric{Spec@R99.5} 与 \formalmetric{Spec@R99.0} 均是带有工作点约束的条件量，而 \formalmetric{PTR@R99.0} 则直接刻画固定高召回条件下进入下一阶段的样本负担，因此既具有统计意义，也具有工程意义。
+
+\begin{table}[H]
+    \centering
+    \caption{常用默认分类指标与本文 gate 指标的差异}
+    \label{tab:formal-metric-difference}
+    \begin{tabularx}{\textwidth}{p{3.2cm}XX}
+        \toprule
+        比较维度 & 默认阈值分类指标 & 本文 gate 指标 \\
+        \midrule
+        典型代表 & Accuracy、训练器侧 \formalmetric{top1}、loss & \formalmetric{Spec@R99.5}、\formalmetric{Spec@R99.0}、\formalmetric{Prec@R99.0}、\formalmetric{PTR@R99.0} \\
+        工作点 & 通常隐含固定默认阈值 & 通过 val-cal 与 val-op 明确求取 \\
+        关注对象 & 总体分类正确率或训练健康状态 & 固定高召回条件下的正常样本拦截能力 \\
+        对第一阶段的适配性 & 可监控训练，但不能直接决定检查点排序 & 直接决定检查点选择与主线排序 \\
+        \bottomrule
+    \end{tabularx}
+\end{table}
+
+\section{温度校准与门控导向的检查点选择}
+为避免不同检查点的分数尺度不可比，本文对每个轮次检查点采用单标量温度缩放 \cite{guo2017calibration}。具体流程如下：
+\begin{enumerate}[label=\arabic*.]
+    \item 在固定的 val-cal 子集上拟合温度参数 $T$；
+    \item 将该温度应用于 val-op 子集，得到 calibrated score；
+    \item 在 val-op 上执行 threshold sweep，计算候选阈值下的 recall、specificity、precision 与通过率；
+    \item 按照排序规则选出门控最优检查点，而不是直接使用训练器自动保存的 \texttt{best.pt}。
+\end{enumerate}
+
+这一协议意味着温度校准已经内嵌为本文评估协议的组成部分，而不是独立于容量扫描之外的附加训练阶段。训练器侧的 \formalmetric{acc/top1/loss} 仍然保留，但只承担训练健康监控功能，不承担正文选模功能。
+
+\section{高召回约束下的非对称学习问题}
+从目标形式看，第一阶段不是一个”最大化总体准确率”的对称二分类问题，而是一个”在固定高召回条件下最大化正常样本拦截能力”的非对称学习问题。这一目标可写成如下约束优化形式：
+\begin{equation}
+\max_{\theta,\tau}\ \mathrm{Specificity}(\theta,\tau)
+\quad
+\text{s.t.}\quad
+\mathrm{Recall}(\theta,\tau)\ge R^\ast,
+\end{equation}
+其中 $\theta$ 表示模型参数，$\tau$ 表示工作阈值，$R^\ast$ 为预先设定的召回下界。与默认阈值分类不同，这一目标本质上属于”固定一个指标再优化另一个指标”的约束学习问题 \cite{kumar2021constrained}。因此，训练器侧报告的 \formalmetric{top1} 或默认验证精度并不天然对应本文真正关心的门控目标。
+
+\section{难样本挖掘与样本效用建模}
+HN 回流的直接动机是：训练阶段存在一批被当前门控赋予较高异常风险的正常样本，重复学习这些样本可能提升固定高召回条件下的正常样本拦截能力。然而，均匀难样本回流隐含了一个更强的前提，即候选池内部样本价值近似同质。当前 HN 曲线的非单调性表明，这一前提并不稳固；高风险样本并不等于高效样本，极端高分样本中可能同时混入采集噪声、模糊、反光或特征空间中的孤立异常点。
+
+这一判断与样本影响分析、主动选择与结构化样本价值建模文献的结论一致。Koh 与 Liang 指出，训练样本的价值不应只由表面损失大小决定，还应考虑其对目标函数的实际影响 \cite{koh2017influence}。BADGE 及其后续工作表明，不确定性与多样性应被联合考虑，而不能只依赖单一不确定性代理 \cite{ash2020badge,wu2022entropy,yang2024plug}。Kim 等与 Zhang 等进一步强调了结构支撑和训练动态对样本价值判断的重要性 \cite{kim2024structural,zhang2024tdds}。因此，基于已完成的容量扫描与 HN 结果，把”比例扫描”进一步推进为”固定预算下的样本效用重加权”是自然且必要的下一步。
+
+\begin{table}[H]
+    \centering
+    \caption{样本效用建模中三类关键信号的作用}
+    \label{tab:sample-valuation-signals}
+    \begin{tabularx}{\textwidth}{p{2.6cm}p{3.3cm}Xp{2.3cm}}
+        \toprule
+        信号类型 & 可观测量 & 作用机制 & 在本文中的对应 \\
+        \midrule
+        风险信号 & 校准后 abnormal score 与 threshold margin & 放大真正靠近门控边界的 normal & $R_i$ \\
+        稳定性信号 & 轻量 TTA 下的 logit variance & 抑制高风险但极不稳定的伪难例 & $C_i$ \\
+        结构支撑信号 & 特征空间邻域相似度 & 区分系统性困难模式与孤立异常点 & $D_i$ \\
+        \bottomrule
+    \end{tabularx}
+\end{table}
+
+\section{六类源域视图的辅助地位}
+除直接二分类门控外，本文还组织了一条六类源域容量扫描，用于观察不同容量模型在源域表示任务上的相对位置。该视图的排序规则为 Accuracy、AUROC 与 AUPRC。然而，这一视图只承担辅助参考角色，不应替代二分类门控的骨干网络选择。
+
+\section{本章小结}
+本章给出了后续实验所依赖的评价指标、检查点选择原则和样本效用建模动机。下一章转入数据划分、训练协议与结果留档方式。
+
+\chapter{数据集构建、实验平台与工作流}
+
+\section{数据来源与数据组织}
+本文使用两套源域数据集来支撑当前第一阶段研究。第一套是直接二分类门控数据集 \texttt{sewerml\_gate2\_train7200}，共 7200 张图像，其中训练集 6480 张、验证集 720 张；类别分布为 abnormal 6000 张、normal 1200 张。第二套是六类源域数据集 \texttt{sewerml\_cls6\_train7200}，同样包含 7200 张图像，并被均衡组织为六个类别，每类 1200 张，训练集与验证集分别为 6480 与 720 张。
+
+对于 binary gate 协议，全部 720 张验证图像进一步按类别分层拆分为 val-cal 与 val-op 两部分，其中 val-cal 为 216 张，val-op 为 504 张；对应 abnormal/normal 的划分分别为 180/36 与 420/84。该拆分仅用于温度参数拟合与工作点报告，不参与训练。
+
+\noindent 需要特别说明的是，后文 \formalmetric{Spec@R99.5} 与 \formalmetric{Spec@R99.0} 的排序都建立在 val-op 的 84 个 normal 样本之上，因此 specificity 的最小步长为 $1/84 \approx 0.0119$。这意味着 0.0476 的差异只对应 4 个 normal 样本，0.0833 的差异对应 7 个 normal 样本。由于本文当前版本未补做多随机种子重复实验，也未额外报告 bootstrap 区间，因此后文所有排序都应理解为当前数据划分与当前随机种子下的点估计，而不应表述为已获得统计显著性的稳定差异。
+
+\begin{table}[H]
+    \centering
+    \caption{第一阶段数据集统计}
+    \label{tab:stage1-dataset-stats}
+    \begin{tabular}{lcccc}
+        \toprule
+        Dataset & Total & Train & Val & Class Distribution \\
+        \midrule
+        \texttt{sewerml\_gate2\_train7200} & 7200 & 6480 & 720 & abnormal 6000 / normal 1200 \\
+        \texttt{sewerml\_cls6\_train7200} & 7200 & 6480 & 720 & 6 classes, each 1200 \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\begin{table}[H]
+    \centering
+    \caption{binary gate 协议的 val-cal / val-op 划分}
+    \label{tab:stage1-val-split}
+    \begin{tabular}{lccc}
+        \toprule
+        Subset & Total & Abnormal & Normal \\
+        \midrule
+        val-cal & 216 & 180 & 36 \\
+        val-op  & 504 & 420 & 84 \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\section{训练平台与实验环境}
+全部容量扫描均以 YOLO11-cls 五个尺度模型为候选，即 \texttt{yolo11n-cls}、\texttt{yolo11s-cls}、\texttt{yolo11m-cls}、\texttt{yolo11l-cls} 与 \texttt{yolo11x-cls}。统一训练协议如下：
+\begin{itemize}
+    \item batch size 固定为 24；
+    \item 训练轮数固定为 200；
+    \item 每轮保存检查点；
+    \item 不使用训练器侧 \formalmetric{top1} 作为早停准则；
+    \item 所有正文结果均由外部 evaluator 汇总。
+\end{itemize}
+
+\begin{table}[H]
+    \centering
+    \caption{第一阶段统一实验环境与训练协议}
+    \label{tab:stage1-env-protocol}
+    \begin{tabularx}{\textwidth}{p{3.4cm}X}
+        \toprule
+        项目 & 说明 \\
+        \midrule
+        platform & Windows-10-10.0.26200-SP0 \\
+        machine name & DESKTOP-DGQTJ9O \\
+        dataset root & \texttt{YOLOv11/datasets/sewerml\_gate2\_train7200} \\
+        candidate backbones & \texttt{YOLO11n/s/m/l/x-cls} \\
+        training batch & 24 \\
+        target epochs & 200 \\
+        checkpoint policy & every epoch checkpoint saved and externally evaluated \\
+        split manifest & \texttt{research/materials/stage1\_formal/manifests/val\_cal\_op\_split.csv} \\
+        \bottomrule
+    \end{tabularx}
+\end{table}
+
+\section{HN 回流设置与候选池来源}
+在基线容量扫描完成后，本文不再重新开启骨干网络选择问题，而是在已固定的主模型上组织 HN 增强。具体地：
+\begin{itemize}
+    \item 主模型 \texttt{yolo11m-cls} 上执行完整 HN 比例扫描：\texttt{hn00, hn02, hn04, \ldots, hn20}；
+    \item 第二模型 \texttt{yolo11x-cls} 上执行轻量跨容量验证：\texttt{hn00} 与 \texttt{hn02}；
+    \item 所有 HN 结果继续沿用与基线完全相同的门控导向排序规则。
+\end{itemize}
+
+当前工作集记录显示，\texttt{yolo11m} 的 HN 资产来自 1080 个训练正常样本，其中得分最高的 250 个样本构成难样本候选池，占训练正常样本总量的 23.15\%。
+
+\section{工作流与结果留档}
+为保证结果可追溯，本文对每个模型与每个 HN ratio 保留 run manifest、dataset manifest、best epoch manifest、all checkpoints index 以及 epoch-level summary，并在统一结果目录中生成主表、主图、附录表和补充溯源档案。
+
+\begin{table}[H]
+    \centering
+    \caption{工作集与溯源档案留档结构}
+    \label{tab:formal-working-set-structure}
+    \begin{tabularx}{\textwidth}{p{3.2cm}p{3.0cm}Xp{2.0cm}}
+        \toprule
+        层级 & 代表目录 & 主要内容 & 作用 \\
+        \midrule
+        materials & \texttt{research/materials/stage1\_formal/*} & split manifest、dataset manifest、best epoch manifest、score list & 定义输入与可追溯工作集 \\
+        results & \texttt{research/results/stage1\_formal/*} & 主表、主图、summary、appendix、registry & 形成论文证据与审计出口 \\
+        datasets & \texttt{YOLOv11/datasets/*} & 训练视图与 weighted replay 数据集视图 & 支撑训练入口直接读取 \\
+        runs & \texttt{YOLOv11/runs/*} & epoch checkpoints、trainer logs、原始 run 输出 & 保留训练过程溯源档案 \\
+        \bottomrule
+    \end{tabularx}
+\end{table}
+
+\section{本章小结}
+本章说明了数据划分、训练协议和结果留档方式，并明确了 val-op 样本量对排序分辨率的限制。下一章据此进入模型容量比较与检查点选择分析。
+
+\chapter{高召回门控的选模与容量扫描}
+
+\noindent 本章围绕三个关键问题展开：为什么第一阶段不能被当作默认阈值二分类处理，哪一个骨干网络更适合作为高召回门控主模型，以及六类源域视图与训练器侧 \formalmetric{top1} 为什么都不能替代二分类门控视图。下面依次给出任务重定义、容量扫描主结果、检查点错位证据以及跨视图错位分析。
+
+\section{第一阶段任务重定义}
+\subsection{为什么第一阶段不是普通二分类}
+第一阶段的工程职责不是在默认阈值下获得最高总体分类精度，而是在固定召回约束下尽可能多地拦截正常样本，从而降低后续人工复核或后级检测器的无效负担。因此，若仍以默认阈值 Accuracy 或训练器侧 \formalmetric{top1} 作为主要目标，就会把任务误写成普通二分类，而忽略高召回门控真正关心的工作点行为。
+
+\subsection{直接二分类门控（direct binary gate）作为主裁判}
+基于这一任务语义，本文将直接二分类门控明确为第一阶段的主裁判视图。所有骨干网络排序、检查点选择与后续训练侧增强，均在 \formalmetric{Spec@R99.5 > Spec@R99.0 > Prec@R99.0 > PTR@R99.0} 这套排序规则下完成，而不再由训练器默认 best 或默认阈值分类得分代替拍板。
+
+\subsection{六类源域视图（six-class source）作为辅助参考}
+与之对应，六类源域视图只承担辅助参考角色。它可以回答源域表示的容量差异，却不能直接决定高召回门控下的排序第一模型。因此，本文在容量扫描章节中始终坚持“主视图 / 辅助视图”的结构安排：二分类门控决定主线排序，六类视图只用于解释源域表示层面的容量现象。
+
+\section{二分类门控容量扫描}
+\begin{table}[H]
+    \centering
+    \caption{二分类门控容量扫描主表}
+    \label{tab:stage1-formal-gate-capacity}
+    \resizebox{\textwidth}{!}{%
+    \begin{tabular}{lcccccccc}
+        \toprule
+        Model & Best Epoch & Spec@R99.5 & Spec@R99.0 & Prec@R99.0 & PTR@R99.0 & $\tau_{99.5}$ & $\tau_{99.0}$ & Rank \\
+        \midrule
+        yolo11m-cls & 78  & 0.5952 & 0.6548 & 0.9348 & 0.8829 & 0.2800 & 0.3100 & 1 \\
+        yolo11x-cls & 125 & 0.5476 & 0.5952 & 0.9244 & 0.8929 & 0.2900 & 0.3600 & 2 \\
+        yolo11l-cls & 54  & 0.5238 & 0.5714 & 0.9205 & 0.8988 & 0.2800 & 0.3000 & 3 \\
+        yolo11s-cls & 77  & 0.5238 & 0.5357 & 0.9143 & 0.9028 & 0.2500 & 0.2600 & 4 \\
+        yolo11n-cls & 76  & 0.5119 & 0.5833 & 0.9224 & 0.8948 & 0.2500 & 0.3600 & 5 \\
+        \bottomrule
+    \end{tabular}
+    }
+\end{table}
+\noindent\parbox{\textwidth}{\footnotesize 注：二分类门控是第一阶段的主选模视图；排序遵循 \formalmetric{Spec@R99.5 > Spec@R99.0 > Prec@R99.0 > PTR@R99.0}。}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.92\textwidth]{research/results/stage1_formal/capacity_scan/paper_main/figures/fig_stage1_gate_capacity_bar.png}
+    \caption{二分类门控容量扫描的主指标比较}
+    \label{fig:stage1-formal-gate-bar}
+\end{figure}
+
+表 \ref{tab:stage1-formal-gate-capacity} 表明，在统一的召回约束排序规则下，\texttt{yolo11m-cls} 在当前数据划分与当前随机种子下排在第一，\texttt{yolo11x-cls} 排在第二。该排序的不确定性已在表 \ref{tab:stage1-key-wilson} 中集中给出，这里不再重复展开。
+
+\begin{table}[H]
+    \centering
+    \caption{关键排序结果对应的 normal 正确数与 95\% Wilson 区间}
+    \label{tab:stage1-key-wilson}
+    \begin{tabular}{lccc}
+        \toprule
+        Setting & Spec@R99.5 & Correct Normals on val-op & 95\% Wilson CI \\
+        \midrule
+        yolo11x-cls & 0.5476 & 46 / 84 & [0.4414, 0.6496] \\
+        yolo11m-cls & 0.5952 & 50 / 84 & [0.4883, 0.6938] \\
+        hn00        & 0.5952 & 50 / 84 & [0.4883, 0.6938] \\
+        hn14        & 0.6429 & 54 / 84 & [0.5362, 0.7370] \\
+        A4          & 0.5595 & 47 / 84 & [0.4531, 0.6608] \\
+        A1          & 0.6429 & 54 / 84 & [0.5362, 0.7370] \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\noindent 表 \ref{tab:stage1-key-wilson} 进一步说明，当前最关键的几组比较在 val-op 的 84 个 normal 上只对应 4 到 7 个样本的差别，且区间存在明显重叠。例如，\texttt{yolo11m-cls} 相对 \texttt{yolo11x-cls} 的优势只对应多判对 4 个 normal；\texttt{hn14} 相对 \texttt{hn00} 的提升同样也是 4 个 normal。因而，本文后文把这些结果解释为“当前 split 下的排序线索”和“后续问题收缩依据”，而不把它们写成已经具有统计显著性的容量定论。
+
+\section{门控最优检查点的训练动态}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.90\textwidth]{research/results/stage1_formal/capacity_scan/paper_main/figures/fig_stage1_gate_spec_r995_curve.png}
+    \caption{五模型 \formalmetric{Spec@R99.5} 随 epoch 的演化曲线}
+    \label{fig:stage1-formal-gate-spec995}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.90\textwidth]{research/results/stage1_formal/capacity_scan/paper_main/figures/fig_stage1_gate_spec_r990_curve.png}
+    \caption{五模型 \formalmetric{Spec@R99.0} 随 epoch 的演化曲线}
+    \label{fig:stage1-formal-gate-spec990}
+\end{figure}
+
+图 \ref{fig:stage1-formal-gate-spec995} 与图 \ref{fig:stage1-formal-gate-spec990} 展示了门控指标随检查点变化的整体趋势。五个模型的门控最优轮次分别为 \texttt{76/77/78/54/125}（对应 \texttt{n/s/m/l/x}），说明最优检查点通常出现在训练中期或后中期，而不是默认意义上的”最后一轮”或”训练器自动 best”。其中，\texttt{yolo11l-cls} 在较早轮次达到峰值，而 \texttt{yolo11x-cls} 需要更长优化轨迹才达到最优。
+
+\section{trainer \formalmetric{top1-best} 与 gate-best 的系统性错位}
+\begin{table}[H]
+    \centering
+    \caption{trainer \formalmetric{top1-best} 与 gate-best 的对照}
+    \label{tab:stage1-formal-top1-vs-gatebest}
+    \resizebox{\textwidth}{!}{%
+    \begin{tabular}{lccccccc}
+        \toprule
+        Model & Top1-Best Epoch & Top1-Best Top1 & Gate-Best Epoch & Gate-Best Spec@R99.5 & Gate-Best Spec@R99.0 & $\Delta$Epoch & Same \\
+        \midrule
+        yolo11n-cls & 120 & 0.9250 & 76  & 0.5119 & 0.5833 & 44  & No \\
+        yolo11s-cls & 88  & 0.9208 & 77  & 0.5238 & 0.5357 & 11  & No \\
+        yolo11m-cls & 197 & 0.9347 & 78  & 0.5952 & 0.6548 & 119 & No \\
+        yolo11l-cls & 103 & 0.9306 & 54  & 0.5238 & 0.5714 & 49  & No \\
+        yolo11x-cls & 120 & 0.9319 & 125 & 0.5476 & 0.5952 & -5  & No \\
+        \bottomrule
+    \end{tabular}
+    }
+\end{table}
+\noindent\parbox{\textwidth}{\footnotesize 注：五个模型全部出现 \formalmetric{top1-best} 与门控最优检查点不一致；\formalmetric{top1} 可作为训练健康信号，但不应作为第一阶段的早停或检查点选择标准。}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.92\textwidth]{research/results/stage1_formal/capacity_scan/paper_main/figures/fig_stage1_gate_top1_vs_spec_dualaxis.png}
+    \caption{以 \texttt{yolo11m-cls} 与 \texttt{yolo11l-cls} 为例的 \formalmetric{top1} 与 gate 指标错位}
+    \label{fig:stage1-formal-gate-top1-mismatch}
+\end{figure}
+
+表 \ref{tab:stage1-formal-top1-vs-gatebest} 与图 \ref{fig:stage1-formal-gate-top1-mismatch} 共同揭示了一个关键结论：五个模型中没有任何一个满足训练器 \formalmetric{top1-best} 与门控最优检查点一致。尤其是 \texttt{yolo11m-cls}，其训练器侧 \formalmetric{top1-best} 出现在第 197 轮，而门控最优出现在第 78 轮，两者相差 119 个轮次；\texttt{yolo11l-cls} 也表现出类似错位。这一结果说明，训练器侧的 \formalmetric{top1} 虽然仍能反映分类优化是否正常进行，但并不与召回约束下的门控目标对齐。
+
+\section{六类源域视图容量扫描}
+
+\subsection{六类源域视图主结果}
+\begin{table}[H]
+    \centering
+    \caption{六类源域视图容量扫描主表}
+    \label{tab:stage1-formal-cls6-capacity}
+    \begin{tabular}{lccccc}
+        \toprule
+        Model & Best Epoch & Accuracy & AUROC & AUPRC & Rank \\
+        \midrule
+        yolo11x-cls & 161 & 0.7000 & 0.9484 & 0.9885 & 1 \\
+        yolo11m-cls & 130 & 0.6958 & 0.9387 & 0.9848 & 2 \\
+        yolo11l-cls & 104 & 0.6944 & 0.9400 & 0.9862 & 3 \\
+        yolo11s-cls & 167 & 0.6917 & 0.9406 & 0.9854 & 4 \\
+        yolo11n-cls & 117 & 0.6833 & 0.9421 & 0.9870 & 5 \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+\noindent\parbox{\textwidth}{\footnotesize 注：六类源域视图仅用于源域表示参考，不承担第一阶段的选模功能。}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.88\textwidth]{research/results/stage1_formal/capacity_scan/paper_main/figures/fig_stage1_cls6_capacity_bar.png}
+    \caption{六类源域视图容量扫描的五模型比较}
+    \label{fig:stage1-formal-cls6-bar}
+\end{figure}
+
+在源域六类任务下，\texttt{yolo11x-cls} 在辅助视图中排在第一，\texttt{yolo11m-cls} 位居第二。这一结果说明，更大容量模型在源域六类表示任务上仍具有优势；但该优势并不能直接转译为召回约束二分类门控下的排序结果。
+
+\section{跨视图排序错位分析}
+\begin{table}[H]
+    \centering
+    \caption{六类源域视图与二分类门控的跨视图排序差异}
+    \label{tab:stage1-formal-crossview-rank-gap}
+    \resizebox{\textwidth}{!}{%
+    \begin{tabular}{lcccc}
+        \toprule
+        Model & Rank in CLS6 & Rank in Binary Gate & Rank Gap & Interpretation \\
+        \midrule
+        yolo11x-cls & 1 & 2 & -1 & 辅助 cls6 视图相对高估该模型 \\
+        yolo11m-cls & 2 & 1 & 1  & 辅助 cls6 视图相对低估该模型 \\
+        yolo11l-cls & 3 & 3 & 0  & 两种视图排序一致 \\
+        yolo11s-cls & 4 & 4 & 0  & 两种视图排序一致 \\
+        yolo11n-cls & 5 & 5 & 0  & 两种视图排序一致 \\
+        \bottomrule
+    \end{tabular}
+    }
+\end{table}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.88\textwidth]{research/results/stage1_formal/capacity_scan/paper_main/figures/fig_stage1_crossview_rank_gap.png}
+    \caption{六类源域视图与二分类门控的排序错位可视化}
+    \label{fig:stage1-formal-crossview-gap}
+\end{figure}
+
+表 \ref{tab:stage1-formal-crossview-rank-gap} 与图 \ref{fig:stage1-formal-crossview-gap} 表明，六类源域视图与二分类门控给出的排序并不一致。最关键的差异集中在 \texttt{yolo11m-cls} 与 \texttt{yolo11x-cls}：前者在六类视图中位居第二，却在门控视图中排在第一；后者则相反。
+
+\section{第一阶段主模型与第二对照模型的确定}
+综合二分类门控主表、检查点训练动态、\formalmetric{top1-best} 与门控最优检查点错位表以及跨视图排序错位分析，可得到一个当前版本下较稳妥的结论：\texttt{yolo11m-cls} 是当前数据划分与当前随机种子下的排序第一模型，\texttt{yolo11x-cls} 作为容量更大的第二对照模型保留。相较之下，\texttt{yolo11l-cls} 虽然在早期探索阶段具有吸引力，但在当前协议下已不再承担主线角色。
+
+\section{本章小结}
+本章完成了第一阶段骨干网络选择问题的第一轮收缩：二分类门控给出当前排序结果，六类源域视图只保留为辅助参考。下一章据此转入 HN 回流及其最优比例点分析。
+
+\chapter{基于 HN 回流的第一阶段训练侧增强与问题收缩}
+
+\noindent 本章要回答的问题不是”HN 有没有用”这么宽泛，而是更具体的三件事：其一，在已经固定骨干网络主线的前提下，HN 比例扫描是否存在清晰的最优比例点；其二，这种收益是否是单调的、是否会稳定复现在第二模型上；其三，当前均匀回流暗示了哪些尚未解决的样本价值异质性问题。以下结果均沿用与第 4 章一致的评估器与排序规则。
+
+\section{HN 回流设置与样本来源}
+\begin{table}[H]
+    \centering
+    \caption{\texttt{yolo11m-cls} 的 HN 排序主表}
+    \label{tab:hn-m-main-ranking}
+    \resizebox{\textwidth}{!}{%
+    \begin{tabular}{lcccccccccc}
+        \toprule
+        Ratio & Best Epoch & Spec@R99.5 & Spec@R99.0 & Prec@R99.0 & PTR@R99.0 & Rank & $\Delta$Spec@R99.5 & $\Delta$Spec@R99.0 & $\Delta$Prec@R99.0 & $\Delta$PTR@R99.0 \\
+        \midrule
+        hn00 & 78  & 0.5952 & 0.6548 & 0.9348 & 0.8829 & 3  & 0.0000  & 0.0000  & 0.0000  & 0.0000 \\
+        hn02 & 51  & 0.6429 & 0.6429 & 0.9330 & 0.8889 & 2  & 0.0476  & -0.0119 & -0.0018 & 0.0060 \\
+        hn04 & 144 & 0.5595 & 0.6071 & 0.9265 & 0.8909 & 7  & -0.0357 & -0.0476 & -0.0083 & 0.0079 \\
+        hn06 & 96  & 0.5952 & 0.6190 & 0.9286 & 0.8889 & 4  & 0.0000  & -0.0357 & -0.0063 & 0.0060 \\
+        hn08 & 1   & 0.5833 & 0.6548 & 0.9348 & 0.8829 & 5  & -0.0119 & 0.0000  & 0.0000  & 0.0000 \\
+        hn10 & 29  & 0.5238 & 0.5357 & 0.9145 & 0.9048 & 11 & -0.0714 & -0.1190 & -0.0204 & 0.0218 \\
+        hn12 & 115 & 0.5357 & 0.5714 & 0.9204 & 0.8968 & 10 & -0.0595 & -0.0833 & -0.0145 & 0.0139 \\
+        hn14 & 74  & 0.6429 & 0.6548 & 0.9350 & 0.8849 & 1  & 0.0476  & 0.0000  & 0.0001  & 0.0020 \\
+        hn16 & 118 & 0.5714 & 0.5714 & 0.9207 & 0.9008 & 6  & -0.0238 & -0.0833 & -0.0141 & 0.0179 \\
+        hn18 & 48  & 0.5476 & 0.5476 & 0.9167 & 0.9048 & 9  & -0.0476 & -0.1071 & -0.0182 & 0.0218 \\
+        hn20 & 1   & 0.5595 & 0.5952 & 0.9246 & 0.8948 & 8  & -0.0357 & -0.0595 & -0.0102 & 0.0119 \\
+        \bottomrule
+    \end{tabular}
+    }
+\end{table}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.92\textwidth]{research/results/stage1_formal/gate_hn_paper/figures/fig_hn_m_ratio_metric_curves_panel.png}
+    \caption{\texttt{yolo11m-cls} 在不同 HN ratio 下的四项 gate 指标变化}
+    \label{fig:hn-m-ratio-metrics}
+\end{figure}
+
+表 \ref{tab:hn-m-main-ranking} 与图 \ref{fig:hn-m-ratio-metrics} 共同表明，HN 的收益不是单调增加，而是存在清晰的最优比例点。按与容量扫描一致的排序规则，\texttt{hn14} 在当前 split 下排在第一；\texttt{hn02} 虽然在 \formalmetric{Spec@R99.5} 上达到同样的提升幅度，但在 \formalmetric{Spec@R99.0} 与后续 tie-break 上落后于 \texttt{hn14}。考虑到每个 0.0119 的 specificity 步长只对应 1 个 normal 样本，这些差异仍属点估计排序（不确定性参见表 \ref{tab:stage1-key-wilson}）。
+
+\section{相对 \texttt{hn00} 的增量解释}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.74\textwidth]{research/results/stage1_formal/gate_hn_paper/figures/fig_hn_best_epoch_vs_ratio.png}
+    \caption{\texttt{yolo11m-cls} 的 gate-best epoch 随 HN ratio 的变化}
+    \label{fig:hn-best-epoch-vs-ratio}
+\end{figure}
+
+从 \texttt{hn00} 锚点看，\texttt{hn14} 的主要变化集中在 \formalmetric{Spec@R99.5}，其提升幅度为 0.0476，对应 val-op 上多判对 4 个正常样本；与此同时，\formalmetric{Spec@R99.0} 基本不变，\formalmetric{Prec@R99.0} 仅有极小变化，\formalmetric{PTR@R99.0} 甚至轻微上升 0.0020。也就是说，当前可观察到的收益主要体现为高召回约束下的前级正常样本拦截，而不是所有指标都同步改善。图 \ref{fig:hn-best-epoch-vs-ratio} 则表明，门控最优轮次会随比例发生系统性移动，进一步说明 HN 改变的是训练轨迹，而非仅在终点挑选一个偶然更好的检查点。
+
+\section{代表性比例的训练轨迹对比}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.94\textwidth]{research/results/stage1_formal/gate_hn_paper/figures/fig_hn_m_epoch_dynamics_panel.png}
+    \caption{\texttt{hn00}、当前排序第一设置与高比例尾部设置的训练轨迹对比}
+    \label{fig:hn-m-epoch-dynamics}
+\end{figure}
+
+图 \ref{fig:hn-m-epoch-dynamics} 选取了三种代表性设置：\texttt{hn00}、当前排序第一的 \texttt{hn14} 以及高比例尾部设置 \texttt{hn20}。可以看到，HN 不仅影响最终最优检查点的落点，还改变了训练过程中 \formalmetric{Spec@R99.5}、\formalmetric{Spec@R99.0}、\formalmetric{Prec@R99.0} 与 \formalmetric{PTR@R99.0} 的轨迹形态。相较于 \texttt{hn00}，\texttt{hn14} 在 \formalmetric{Spec@R99.5} 上形成更高平台，而 \texttt{hn20} 则显示出更早但更弱的峰值。
+
+\section{与基线主线的衔接及跨容量验证}
+\begin{table}[H]
+    \centering
+    \caption{baseline mainline 与 HN anchor 的桥接对照}
+    \label{tab:hn-bridge}
+    \resizebox{\textwidth}{!}{%
+    \begin{tabular}{lccccc}
+        \toprule
+        Setting & Best Epoch & Spec@R99.5 & Spec@R99.0 & Prec@R99.0 & PTR@R99.0 \\
+        \midrule
+        yolo11m baseline (hn00) & 78  & 0.5952 & 0.6548 & 0.9348 & 0.8829 \\
+        yolo11m + hn14          & 74  & 0.6429 & 0.6548 & 0.9350 & 0.8849 \\
+        yolo11x baseline (hn00) & 125 & 0.5476 & 0.5952 & 0.9244 & 0.8929 \\
+        yolo11x + hn02          & 1   & 0.5238 & 0.5476 & 0.9163 & 0.9008 \\
+        \bottomrule
+    \end{tabular}
+    }
+\end{table}
+
+\begin{table}[H]
+    \centering
+    \caption{\texttt{yolo11x-cls} 的 light HN cross-capacity check}
+    \label{tab:hn-x-crosscheck}
+    \begin{tabular}{lccccc}
+        \toprule
+        Ratio & Best Epoch & Spec@R99.5 & Spec@R99.0 & Prec@R99.0 & PTR@R99.0 \\
+        \midrule
+        hn00 & 125 & 0.5476 & 0.5952 & 0.9244 & 0.8929 \\
+        hn02 & 1   & 0.5238 & 0.5476 & 0.9163 & 0.9008 \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.94\textwidth]{research/results/stage1_formal/gate_hn_paper/figures/fig_hn_cross_capacity_slope_panel.png}
+    \caption{\texttt{yolo11m-cls} 与 \texttt{yolo11x-cls} 在 \texttt{hn00} 到 \texttt{hn02} 间的 cross-capacity 方向性对比}
+    \label{fig:hn-cross-capacity}
+\end{figure}
+
+表 \ref{tab:hn-bridge} 说明，HN 实验与既有基线主线的衔接方式是”固定骨干网络后做比例扫描”，而不是重新开启容量法庭。对于 \texttt{yolo11m-cls}，\texttt{hn14} 相对 \texttt{hn00} 在 \formalmetric{Spec@R99.5} 上取得 0.0476 的绝对提升，并在 \formalmetric{Spec@R99.0} 与 \formalmetric{Prec@R99.0} 上基本保持不变。相比之下，表 \ref{tab:hn-x-crosscheck} 与图 \ref{fig:hn-cross-capacity} 表明，\texttt{yolo11x-cls} 上的 \texttt{hn02} 并未复现相同方向的净增益，四个指标均较 \texttt{hn00} 回落。因而，HN 的收益更适合被理解为与模型容量和训练动力学相关的增强效应，而不是对任意骨干网络都稳定成立的统一规律。
+
+\section{HN 样本来源的可追溯性}
+当前 HN working set 还提供了 hard-normal 来源证据。具体而言，\texttt{yolo11m} 的 HN 候选来自 1080 个训练 normal 样本，其中分数最高的 250 个样本构成回流池，占训练 normal 总量的 23.15\%。这意味着本文所讨论的 HN 并非人工主观挑选，而是直接来自 baseline gate 在训练 normal 集上的高风险尾部分布。为控制仓库存储，附录仅保留分布统计与最高分候选名单，而不复制分类图像文件。
+
+\begin{table}[H]
+    \centering
+    \caption{hard-normal 选样统计}
+    \label{tab:hn-hard-normal-stats-main}
+    \begin{tabular}{lcccccccc}
+        \toprule
+        Normal Total & Selected & Ratio & Score Min & Score Median & Score Max & Score P95 & Score P99 & Threshold \\
+        \midrule
+        1080 & 250 & 0.2315 & 0.1133 & 0.2854 & 0.9780 & 0.8377 & 0.9143 & 0.1133 \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.92\textwidth]{research/results/stage1_formal/gate_hn_paper/appendix/fig_hn_hard_normal_score_distribution.png}
+    \caption{训练 normal 样本的异常分数分布与 hard-normal 选择阈值}
+    \label{fig:hn-score-distribution-main}
+\end{figure}
+
+表 \ref{tab:hn-hard-normal-stats-main} 与图 \ref{fig:hn-score-distribution-main} 共同说明，当前 hard-normal pool 的来源是训练 normal 的高风险尾部，而不是人工主观筛图。选入 top250 pool 的样本最低分数为 0.1133，中位数为 0.2854，最高达到 0.9780，说明该候选池内部风险分布很宽。考虑到论文仓库不长期保留分类图片副本，正文不再列出文件名清单，而把来源证明集中保留为分布统计和阈值位置。这一证据已经足以说明 HN 回流面对的是一个内部风险高度不均匀的候选池，也正因此，uniform replay 之后还存在进一步做固定预算样本重分配的必要性。
+
+\section{HN 回流的已知边界}
+尽管 \texttt{yolo11m-cls} 上的 HN 比例扫描已经证明均匀难样本回流可以带来门控指标上的可观测净增益，但这一增益具有三条明确边界。第一，收益不是单调随比例增加而增长，而是存在窄的最优比例点。第二，收益不具备骨干网络无关性，\texttt{yolo11x-cls} 的轻量验证已经表明小比例 HN 并不必然复现相同方向的净增益。第三，均匀回流只能说明候选池作为整体具有训练价值，并不能说明池内部样本价值近似同质；这恰恰构成了后续样本效用重加权方法的直接动机。
+
+\subsection*{从均匀回流最优比例点到候选池内部异质性的问题转移}
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[
+        font=\small,
+        box/.style={draw, rounded corners, align=center, minimum width=2.75cm, minimum height=1.15cm},
+        arr/.style={-Latex, thick}
+    ]
+        \node[box] (cap) {容量扫描\\确定主模型};
+        \node[box, right=0.75cm of cap] (hns) {HN ratio sweep\\回答“加多少”};
+        \node[box, right=0.75cm of hns] (sweet) {hn14\\最优比例点};
+        \node[box, right=0.75cm of sweet] (hetero) {候选池异质性\\转向”哪些该加”};
+        \node[box, right=0.75cm of hetero] (reweight) {固定预算\\样本重分配};
+        \draw[arr] (cap) -- (hns);
+        \draw[arr] (hns) -- (sweet);
+        \draw[arr] (sweet) -- (hetero);
+        \draw[arr] (hetero) -- (reweight);
+    \end{tikzpicture}
+    \caption{从容量扫描、HN 最优比例点到固定预算样本重分配的问题收缩链}
+    \label{fig:hn-to-reweighting-shift}
+\end{figure}
+
+\noindent 图 \ref{fig:hn-to-reweighting-shift} 所表达的核心逻辑是：第 5 章已经基本扫透了 HN 的“数量维度”，而尚未解释的是 hard-normal pool 的“组成维度”。更具体地说，\texttt{hn14} 说明在当前主模型与 uniform replay 规则下，额外回流预算存在一个最优比例点；但 HN 收益的非单调性、在 \texttt{yolo11x-cls} 上未复现以及 top250 候选池本身较宽这三点，又共同说明 pool 内部样本并不能被近似看成同质整体。于是，下一步自然不再是继续扫描更多 ratio，而是在固定 \texttt{hn14} 预算的条件下研究“哪些该加、哪些不该加”。这也正是第 6 章的起点。
+
+\section{本章小结}
+本章把 HN 回流从“是否有用”的经验判断推进为“在统一 gate 规则下可排序、可审计、可复核”的训练侧增强问题。当前证据表明，\texttt{yolo11m-cls + hn14} 是主模型上的当前最优比例点，而 HN 收益同时呈现出非单调、模型相关和候选池内部异质性的特征。换言之，第 5 章已经把问题先收缩到 uniform replay 的最佳预算点，第 6 章则将在这一基础上继续追问：同样的预算里，哪些 hard normals 真正值得被重复学习。
+
+\chapter{从 HN 最优比例点到有效信息量：固定预算样本重加权方法}
+
+\noindent 第 5 章已将 HN 增强收缩到 \texttt{hn14} 这一 uniform replay 最优比例点。但 HN 收益的非单调性、在 \texttt{yolo11x-cls} 上未复现以及 top250 候选池风险分布很宽，三者共同说明 pool 内部样本并不同质。本章据此把问题从”加多少”推进到”固定预算下哪些样本该加”，按公式定义、实验设计、结果边界的顺序展开。
+
+\section{问题转移：从数量维度到组成维度}
+\texttt{hn14} 回答的是 uniform replay 的最优预算量；但它并未回答固定预算下 hard-normal pool 内部哪些样本更值得被重复学习。后者正是本章的核心问题。
+
+\section{固定预算样本重分配问题的形式化定义}
+设由现有 working set 导出的 hard-normal candidate pool 为
+\begin{equation}
+\mathcal{N}_{\mathrm{hard}} = \{x_i\}_{i=1}^{250},
+\end{equation}
+其来源固定为 baseline gate 在训练 normal 集上的 top250 高风险样本。令 uniform \texttt{hn14} 的额外 replay 总预算为 $B$，则本文关注的问题并非扩大候选池或继续增加 HN 数量，而是在总预算固定为 $B$ 的前提下，重新分配 hard pool 内部样本的采样概率：
+\begin{equation}
+\sum_{i=1}^{250} b_i = B,
+\qquad
+b_i \propto \pi_i,
+\end{equation}
+其中 $\pi_i$ 为样本 $x_i$ 的非线性采样概率。当前工作中，$B$ 由既有 \texttt{hn14} working set 决定，因此方法比较的核心不再是“更多回流是否更好”，而是“同样预算下怎样选择更有价值的回流样本”。
+
+\section{Gate-Aligned Effective Information Score 的设计}
+为使评分函数与门控目标对齐，本文首先使用未加回流偏置的教师模型，即 \texttt{yolo11m-cls + hn00} 的门控最优检查点，在 val-cal 上拟合温度参数 $T$，再对难样本候选池中的样本计算校准后异常概率：
+\begin{equation}
+p_i = \sigma(z_i / T),
+\end{equation}
+其中 $z_i$ 为样本 $x_i$ 的 logit 输出，$\sigma(\cdot)$ 为 sigmoid 函数。基于校准后分数，本文构建 lite 版有效信息量评分函数的三个分量。
+
+\subsection{校准后风险项的定义}
+首先定义风险项。记当前 teacher 在 \formalmetric{R99.5} 约束下的 operating threshold 为 $\tau_{99.5}$，则风险项定义为
+\begin{equation}
+r_i = \max\left(0,\frac{p_i-\tau_{99.5}}{1-\tau_{99.5}}\right),
+\qquad
+R_i = r_i^\alpha,
+\end{equation}
+其中 $\alpha > 1$ 用于对真正靠近或高于门控边界的 normal 施加非线性放大。
+
+\subsection{一致性稳定性项的定义}
+其次引入一致性稳定性项。对同一图像施加 $K$ 次轻量、语义保持的 TTA，得到校准后分数 $p_i^{(1)},\dots,p_i^{(K)}$，则其 logit 方差为
+\begin{equation}
+v_i = \mathrm{Var}\!\left(\operatorname{logit}(p_i^{(1)}),\dots,\operatorname{logit}(p_i^{(K)})\right),
+\end{equation}
+相应的一致性项定义为
+\begin{equation}
+C_i = \exp(-v_i/\sigma_c^2),
+\end{equation}
+其中 $\sigma_c$ 由当前候选池的稳健尺度给出。该项用于抑制”高风险但极不稳定”的样本，避免将采集噪声或伪难例过度放大。
+
+\subsection{结构支撑度项的定义}
+第三定义结构支撑度项。对 top250 候选池提取倒数第二层特征，并在池内计算 $k$ 近邻平均余弦相似度：
+\begin{equation}
+d_i = \frac{1}{k}\sum_{j\in kNN(i)} \cos(f_i,f_j),
+\qquad
+D_i = \mathrm{Norm}(d_i).
+\end{equation}
+若某个高风险样本在特征空间中拥有一组结构相似的近邻，则它更可能对应系统性混淆模式；反之，孤立异常点则更可能是低学习价值的噪声样本 \cite{kim2024structural}。
+
+\subsection{最终评分函数与非线性采样概率}
+由此，本文定义三种 lite 版评分：
+\begin{equation}
+S_i^{(A2)} = R_i,
+\end{equation}
+\begin{equation}
+S_i^{(A3)} = (R_i C_i)^{1/2},
+\end{equation}
+\begin{equation}
+S_i^{(A4)} = (R_i C_i D_i)^{1/3}.
+\end{equation}
+几何平均的目的在于保留“并且成立”的逻辑，即一个样本若想获得高分，必须同时具备靠近门控边界、预测稳定以及在特征空间中具有结构支撑这三个属性。
+
+最后，固定预算采样概率定义为
+\begin{equation}
+\pi_i = \frac{(S_i+\epsilon)^\kappa}{\sum_j (S_j+\epsilon)^\kappa},
+\end{equation}
+其中 $\epsilon$ 为数值稳定常数，$\kappa>1$ 控制对高价值样本的非线性放大程度。该设计保证了总预算仍与 uniform \texttt{hn14} 严格等价，只改变候选池内部的回流分布，而不改变候选池本身。
+
+\section{Lite 版 5 组消融实验设计}
+\begin{table}[H]
+    \centering
+    \caption{Lite 版 A0--A4 五组实验定义}
+    \label{tab:lite-ablation-settings}
+    \begin{tabularx}{\textwidth}{p{1.5cm}p{3.6cm}X}
+        \toprule
+        Setting & 名称 & 定义 \\
+        \midrule
+        A0 & \texttt{hn00} baseline & 直接复用当前基线，不进行 HN 回流。 \\
+        A1 & \texttt{uniform\_hn14} & 直接复用当前排序第一的 uniform HN14，对应既有 uniform replay working set。 \\
+        A2 & \texttt{weighted\_hn14\_risk\_only} & 固定 top250 hard-normal pool 与 HN14 总预算，只按风险项 $R_i$ 做非线性重加权。 \\
+        A3 & \texttt{weighted\_hn14\_risk\_consistency} & 在 A2 基础上加入一致性稳定性项 $C_i$，抑制高风险但极不稳定的样本。 \\
+        A4 & \texttt{weighted\_hn14\_risk\_consistency\_density} & 在 A3 基础上再加入结构支撑度项 $D_i$，构成 lite 版最完整设置。 \\
+        \bottomrule
+    \end{tabularx}
+\end{table}
+
+基于上述评分函数，本文将后续实验统一组织为五组 setting。A0 为 \texttt{hn00} baseline，直接复用已完成结果；A1 为现有 \texttt{uniform\_hn14}，也直接复用既有结果。A2、A3 与 A4 则分别对应 risk-only、risk+consistency 以及 risk+consistency+density 三组新实验，其中教师模型固定为 \texttt{yolo11m-cls + hn00} 的门控最优检查点，候选池固定为现有 top250，额外回流总预算固定为 \texttt{hn14} 的 151。换言之，A2--A4 不是新的骨干网络比赛，而是建立在当前主线之上的固定预算样本重分配研究。
+
+\subsection*{A0 / A1：复用 anchor}
+A0 与 A1 的作用是为后续加权回流提供两个稳定锚点。A0 保留未加 HN 的 \texttt{hn00} 基线，回答”无回流时门控达到什么水平”；A1 保留当前排序第一的 \texttt{uniform\_hn14}，回答”均匀回流在相同预算下达到什么水平”。后续全部 lite 版重加权结论，都相对于这两个锚点解释。
+
+\subsection*{A2：risk-only}
+A2 仅使用校准后风险项 $R_i$，目的在于验证一个最直接的问题：如果只把固定预算更集中地压到“更靠近门控边界”的高风险 normal 上，是否已经足以优于 uniform \texttt{hn14}。这一设置是最轻量的静态重加权基线，同时也是检验“高风险是否等于高价值”的起点。
+
+\subsection*{A3：risk + consistency}
+A3 在 A2 的基础上加入一致性项 $C_i$。其核心假设是，真正值得重复学习的 hard negative 不仅风险高，而且应在轻量、语义保持的 TTA 下保持相对稳定。若某个样本对轻微亮度、对比度或 blur 扰动极度敏感，则它更可能是采集噪声或伪难例，而不应在固定预算回流中被高权重放大。
+
+\subsection*{A4：risk + consistency + density}
+A4 进一步加入结构支撑度项 $D_i$，从而把样本评分推进为 “风险 + 稳定性 + 结构支撑” 的三分量几何平均。该设置是 lite 版的完整形式，用于回答难样本候选池中是否存在一类”既高风险、又稳定、且在特征空间中具有重复出现模式”的高价值样本。
+
+\subsection*{预算对齐与教师模型设定}
+为保持比较合法性，A2--A4 在四个方面均与当前主线保持一致：其一，教师模型固定为 \texttt{yolo11m-cls + hn00} 的门控最优检查点，而非切换到 \texttt{hn14}；其二，候选池固定为既有 \texttt{top\_false\_positive\_normals.csv} 对应的 top250，而不是重新从全部训练正常样本取新池；其三，额外回流总预算严格固定为 151，与 \texttt{uniform\_hn14} 完全等价；其四，评估仍沿用与第 4、5 章一致的 val-cal、val-op 与门控导向排序协议。
+
+\section{Lite 版主结果与训练轨迹分析}
+\begin{table}[H]
+    \centering
+    \caption{Lite 版 A0--A4 五组实验主结果表}
+    \label{tab:lite-ablation-main}
+    \resizebox{\textwidth}{!}{%
+    \begin{tabular}{lccccccccc}
+        \toprule
+        Setting & Teacher & Pool & Budget Anchor & Best Epoch & Spec@R99.5 & Spec@R99.0 & Prec@R99.0 & PTR@R99.0 & Formal Rank \\
+        \midrule
+        A1 & reused uniform HN14 & top250 & hn14 (151 extras) & 74 & 0.6429 & 0.6548 & 0.9350 & 0.8849 & 1 \\
+        A0 & reused hn00 teacher & none & hn14 (151 extras) & 78 & 0.5952 & 0.6548 & 0.9348 & 0.8829 & 2 \\
+        A4 & hn00 best checkpoint & top250 & hn14 (151 extras) & 48 & 0.5595 & 0.5833 & 0.9226 & 0.8968 & 3 \\
+        A2 & hn00 best checkpoint & top250 & hn14 (151 extras) & 43 & 0.5595 & 0.5714 & 0.9204 & 0.8968 & 4 \\
+        A3 & hn00 best checkpoint & top250 & hn14 (151 extras) & 80 & 0.5238 & 0.6429 & 0.9327 & 0.8849 & 5 \\
+        \bottomrule
+    \end{tabular}
+    }
+\end{table}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.92\textwidth]{research/results/stage1_formal/gate_info_sampling_lite/figures/fig_lite_ablation_main_barpanel.png}
+    \caption{Lite 版 A0--A4 在四项 gate 指标上的主对比图}
+    \label{fig:lite-ablation-main}
+\end{figure}
+
+表 \ref{tab:lite-ablation-main} 与图 \ref{fig:lite-ablation-main} 给出了固定预算 lite 重加权实验的核心结论。第一，在当前数据划分与当前随机种子下，\texttt{uniform\_hn14} 仍然排在第一，说明静态一次性加权回流并未在主模型上超越现有均匀回流最优比例点。第二，在三个加权变体中，A4 由于在 \formalmetric{Spec@R99.0} 与 \formalmetric{Prec@R99.0} 上优于 A2，成为加权路线中的最佳设置；但其 \formalmetric{Spec@R99.5} 仍比 A1 低 0.0833。第三，A3 在次级指标上比 A2 更接近锚点，但首要指标 \formalmetric{Spec@R99.5} 进一步下降到 0.5238，说明仅靠一致性抑制不足以形成有效替代。就当前完整实验结果而言，加权回流改变了结果排序，但尚未超过 \texttt{uniform\_hn14}。
+
+\subsection*{相对 \texttt{hn00} 与 \texttt{uniform\_hn14} 的增量解释}
+从主结果表直接可见，固定预算 lite 重加权的主要回落点出现在首要指标上。相对 \texttt{hn00}，A4 与 A2 均在 \formalmetric{Spec@R99.5} 上下降 0.0357，A3 则下降 0.0714；相对 \texttt{uniform\_hn14}，所有加权变体在四项指标上均未取得净增益，其中 A4 的回落已达到 \formalmetric{Spec@R99.5}=-0.0833、\formalmetric{Spec@R99.0}=-0.0714。当前静态一次性重加权并没有把候选池内部异质性有效转化为更高的门控表现，最好结果只是”在加权路线内部，A4 优于 A2 与 A3”。
+
+\subsection*{训练轨迹对比}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.92\textwidth]{research/results/stage1_formal/gate_info_sampling_lite/figures/fig_lite_ablation_epoch_dynamics_panel.png}
+    \caption{A0、A1 与 A4 的 epoch dynamics 对比}
+    \label{fig:lite-epoch-dynamics}
+\end{figure}
+
+图 \ref{fig:lite-epoch-dynamics} 将 lite 版完整设置 A4 与两个锚点进行了训练轨迹层面的直接对照。A4 的最优轮次早于 \texttt{uniform\_hn14}，在第 48 轮即达到自身峰值；但其 \formalmetric{Spec@R99.5} 平台明显低于 A1，说明当前加权回流并未把训练轨迹推向更好的高召回拦截状态，而更像是提早收敛到一个较低平台。A3 的最优轮次则移动到第 80 轮，且首要指标更弱，进一步说明一致性抑制虽然改变了训练过程，但没有在当前教师模型和候选池设定下形成更优的门控检查点。
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.92\textwidth]{research/results/stage1_formal/gate_info_sampling_lite/figures/fig_a1_vs_a4_spec995_delta.png}
+    \caption{A1 与 A4 在 \formalmetric{Spec@R99.5} 上的轨迹对比及差值曲线}
+    \label{fig:lite-a1-a4-delta}
+\end{figure}
+
+\noindent 图 \ref{fig:lite-a1-a4-delta} 进一步单独对比首要指标的平台差异。该图回答的问题不是”谁更早达到峰值”，而是”加权路线是否曾在训练过程中真正达到过均匀回流锚点的平台高度”。结果表明，A4 虽然更早触顶，但其 \formalmetric{Spec@R99.5} 在大部分轮次都低于 A1，差值曲线长期位于零线以下。这意味着当前加权回流的问题不只是最终检查点选取有误，而是整个训练状态未能到达 \texttt{uniform\_hn14} 的主指标平台。
+
+\subsection*{评分分布与采样概率分布}
+\begin{table}[H]
+    \centering
+    \caption{Lite 版评分分量与概率集中度统计}
+    \label{tab:lite-score-components}
+    \begin{tabular}{lcccccc}
+        \toprule
+        Setting & Score Min & Score Median & Score Max & Effective Count & Gini & Top10 Cumulative $\pi$ \\
+        \midrule
+        A2 & 0.0000 & 0.0489 & 0.9229 & 64.5756 & 0.8067 & 0.3640 \\
+        A3 & 0.0000 & 0.0000 & 0.3165 & 14.7234 & 0.9555 & 0.8581 \\
+        A4 & 0.0010 & 0.0010 & 0.4379 & 22.0599 & 0.9343 & 0.7246 \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.92\textwidth]{research/results/stage1_formal/gate_info_sampling_lite/figures/fig_score_distribution_panel.png}
+    \caption{A2、A3 与 A4 的评分分布与采样概率分布}
+    \label{fig:lite-score-distribution}
+\end{figure}
+
+表 \ref{tab:lite-score-components} 与图 \ref{fig:lite-score-distribution} 说明，加入 consistency 与 density 后，采样概率确实显著集中。A2 的 effective count 为 64.5756，top10 cumulative probability 为 0.3640；而 A3 的对应数值收缩到 14.7234 和 0.8581，A4 也达到 22.0599 和 0.7246。这表明 lite 版分量并非没有作用，相反，它们强烈改变了固定预算回流的分配方式。但正因为集中度过高，当前一次性方案也可能把一部分真正有训练价值的难样本一并压掉，这与最终门控表现未能超过 A1 的结果是一致的。
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.92\textwidth]{research/results/stage1_formal/gate_info_sampling_lite/figures/fig_budget_concentration_tripanel.png}
+    \caption{A2、A3 与 A4 的回流预算集中度诊断}
+    \label{fig:lite-budget-concentration}
+\end{figure}
+
+\noindent 图 \ref{fig:lite-budget-concentration} 将”预算塌缩”单独可视化为有效样本数、Gini 系数与前 10 名累计概率三个指标。A3 与 A4 都明显比 A2 更集中，尤其 A3 的前 10 名累计概率已达 0.8581，说明固定预算中的绝大部分回流事实上被少数样本占据。该现象本身不等价于错误，但要求后文将当前负结果解释为可诊断的边界结果，而非简单归结为”评分函数无效”。
+
+\noindent 仅凭主结果表尚不足以解释加权回流为何未超过 \texttt{uniform\_hn14}。有必要从教师模型选择、候选池宽度、预算集中度与样本覆盖度四个角度做进一步诊断。需要说明的是，下面四条解释仍属于基于现有图表的诊断性假设，而非已通过控制变量实验逐条验证的因果结论。本文尚未补做”更换教师模型”或”收窄 top250 为 top100/top50”等反事实实验，因此本节的作用是界定最值得继续收缩的变量，而非声称误差来源已被完全证实。
+
+\section{负结果边界与误差来源分析}
+\subsection*{三个评分分量的必要性}
+从加权变体的内部排序看，三分量组合的 A4 优于仅用风险项的 A2，也优于只加入一致性项的 A3。这说明风险、一致性与结构支撑三个分量并不完全冗余，至少在当前候选池上会导向不同的回流分布。具体而言，A4 在 \formalmetric{Spec@R99.5} 上与 A2 持平，但以更高的 \formalmetric{Spec@R99.0} 与 \formalmetric{Prec@R99.0} 排到加权路线第一；A3 则显示一致性项如果缺少结构支撑的配合，容易把分布推得过窄，导致首要指标进一步受损。
+
+\subsection*{原因一：教师模型与训练状态的错位}
+第一种误差来源，是加权路线所依赖的静态教师模型与最终对比目标之间存在天然错位。A2--A4 的全部评分都来自 \texttt{hn00} 教师模型，而 A1 对应的却是已经经过均匀 HN14 回流之后的训练状态。主结果表、图 \ref{fig:lite-epoch-dynamics} 与图 \ref{fig:lite-a1-a4-delta} 共同提示：当前加权路线没有把训练推进到与 \texttt{uniform\_hn14} 同一平台，而是更早地收敛在较低平台上。更稳妥的表述不是”教师模型选错了”，而是 \texttt{hn00} 教师模型对固定预算回流价值的静态估计，未必足够贴近 \texttt{hn14} 已经形成的训练状态。
+
+\subsection*{原因二：top250 候选池仍然过宽}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.92\textwidth]{research/results/stage1_formal/gate_info_sampling_lite/figures/fig_pool_width_threshold_panel.png}
+    \caption{难样本候选池宽度与门控工作阈值的关系}
+    \label{fig:lite-pool-width-threshold}
+\end{figure}
+
+\noindent 第二种误差来源，是当前固定的 top250 难样本候选池可能本身就偏宽。表 \ref{tab:hn-hard-normal-stats-main}、图 \ref{fig:hn-score-distribution-main} 与图 \ref{fig:lite-pool-width-threshold} 共同说明：top250 候选池的最低分阈值约为 0.1133，中位数约为 0.2854，而 \texttt{hn00} 教师模型的 $\tau_{99.5}$ 约为 0.2800、$\tau_{99.0}$ 约为 0.3100。这意味着 top250 并不是一个很窄的极端尾部，而是覆盖了相当宽的一段高风险区间。于是，即便加权回流在池内做了重新排序，也仍可能是在一个过宽、内部可学习价值差异很大的候选池中作一次性静态选择。当前结果与其说明”池内异质性不存在”，不如说明”池太宽，导致静态排序难以命中最有价值的回流子集”。
+
+\subsection*{原因三：采样概率发生预算塌缩，覆盖度被压缩}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.80\textwidth]{research/results/stage1_formal/gate_info_sampling_lite/figures/fig_uniform_vs_weighted_overlap.png}
+    \caption{\texttt{uniform\_hn14} 与加权回流的样本重叠度对比}
+    \label{fig:lite-overlap}
+\end{figure}
+
+\noindent 第三种误差来源，是采样概率在 A3/A4 中发生了明显的预算塌缩，并进一步带来了覆盖度丢失。表 \ref{tab:lite-score-components} 与图 \ref{fig:lite-budget-concentration} 已经说明，A3 与 A4 都把大量预算压到了极少数样本上；图 \ref{fig:lite-overlap} 则进一步显示，这种集中不是对 \texttt{uniform\_hn14} 的轻微重排，而是对覆盖集合的明显改写。A2 与均匀回流的重叠样本数为 45，A3 仅为 18，A4 为 22；与此同时，A4 仍有 129 个仅被均匀回流覆盖的独有样本未进入加权高概率集合。这说明加权回流的确在候选池内部发现了不同的子集，但它同时也削弱了已有均匀回流最优点所保留的覆盖面。当前结果因此更像是在说明：对候选池做静态一次性重分配时，覆盖度的损失很可能已经抵消了集中采样带来的潜在收益。
+
+\subsection*{原因四：一致性与密度分量的抑制可能过强}
+\noindent 第四种误差来源，是一致性与密度分量的抑制效应在当前 lite 设定下可能过强。图 \ref{fig:lite-score-distribution} 已经显示，A3/A4 的评分和采样概率分布都比 A2 更尖锐，这意味着一致性与密度并不是”没有作用”，而是作用非常强。A3 在首要指标上比 A2 更弱，而 A4 虽然通过密度项稍微回收了次级指标，却仍未超过 A1。这提示当前教师模型、候选池与静态一次性评分组合下的抑制力度，可能连带压掉了一部分仍有训练价值的边界样本。由于样本画廊更适合放在附录且当前资产完整性不足，本文不再把该类示例图作为正文证据，而把判断主要建立在分布、覆盖度和训练轨迹这三类可审计图表之上。
+
+\subsection*{边界结果总结}
+当前 lite 全量实验的最关键结论并不是”提出了一个更好的回流策略”，而是一个必须保留的边界结果：在固定 top250 候选池、教师模型为 \texttt{hn00}、预算为 151 且采用静态一次性评分的条件下，A2、A3、A4 均未优于 \texttt{uniform\_hn14}。其中 A4 虽然在加权变体中排名最高，但其 \formalmetric{Spec@R99.5} 和 \formalmetric{Spec@R99.0} 仍明显回落。该负结果的成败受制于四个已被显式化的关键变量：教师模型与训练状态的贴合程度、top250 候选池的宽度、采样概率的覆盖度损失，以及一致性与密度分量的抑制强度。后续优化应沿着这四个变量继续收缩问题边界。
+
+\section{本章小结}
+本章完成 A0--A4 五组 lite 实验。当前静态一次性加权回流尚未超过 \texttt{uniform\_hn14}，但加权变体的内部排序差异与样本重叠度偏移证明候选池内部价值分布并非同质。后续优化方向已在上节收缩为四个关键变量。
+
+\chapter{综合讨论与工程启示}
+
+\noindent 本章不再重复前文实验细节，而是回答三个更高层的问题：第一，当前第一阶段已经建立了哪些可以稳定复述的证据；第二，这些证据对未来完整两阶段系统意味着什么；第三，基于现有完成度，本文明确不打算对哪些问题提前下结论。
+
+\section{已建立的第一阶段证据链}
+\begin{table}[H]
+    \centering
+    \caption{第一阶段已建立证据链总表}
+    \label{tab:stage1-evidence-chain}
+    \begin{tabularx}{\textwidth}{p{3.1cm}p{3.2cm}Xp{2.2cm}}
+        \toprule
+        证据环节 & 回答的问题 & 当前结论 & 状态 \\
+        \midrule
+        容量扫描 & 谁是第一阶段主模型 & \texttt{yolo11m-cls} 为主模型，\texttt{yolo11x-cls} 为第二对照 & 已完成 \\
+        检查点错位 & 训练器指标能否直接选模 & 五模型全部 \formalmetric{top1-best != gate-best} & 已完成 \\
+        跨视图错位 & 六类视图能否替代门控视图 & 六类源域视图仅为辅助参考，不能替代门控选模 & 已完成 \\
+        HN 比例扫描 & HN 是否存在最优比例点 & \texttt{yolo11m-cls + hn14} 为当前排序第一的设置 & 已完成 \\
+        lite 重加权 & 固定预算重加权是否优于均匀回流 & A1 仍排在第一；A4 为加权变体最优但未超过 \texttt{uniform\_hn14} & 已完成 \\
+        \bottomrule
+    \end{tabularx}
+\end{table}
+
+表 \ref{tab:stage1-evidence-chain} 汇总了五条相互衔接的证据环节。所有排序均为当前数据划分与当前随机种子下的点估计（具体不确定性见表 \ref{tab:stage1-key-wilson}）。其中 lite 路线的贡献不是给出胜出策略，而是把”固定预算下的难样本重分配”建立为一个可审计、带清晰边界的研究问题。
+
+\section{对后续两阶段系统的工程启示}
+当前结果不支持将 HN 解读为”重新改变全局骨干网络排序”的因素。相反，HN 的合理定位应是：在已完成容量扫描的主线上，进一步组织训练样本以提升高召回约束下的拦截能力。对于 \texttt{yolo11m-cls}，这一增强在 \texttt{hn14} 达到当前最优比例点；对于 \texttt{yolo11x-cls}，当前轻量跨容量验证并未提供同方向的净增益。因此，HN 更适合被表述为建立在主模型上的训练侧优化，而不是容量无关的普适策略。
+
+从工程实现角度看，本文对后续两阶段系统至少提供了三点启示。首先，前端筛查若要承担减负功能，就必须先明确自身的任务边界、检查点选择和工作点评估方式，否则第二阶段的输入质量会随训练器侧代理指标漂移。其次，HN 与未来的样本效用重加权都不应被理解为检测器替代物，而应被理解为向后级检测器提供更干净、更稳定前端输入的训练侧机制。最后，即便未来进入检测器与系统级闭环比较，第一阶段的评价仍应保持独立，因为源域分类、默认阈值 \formalmetric{top1} 与高召回门控目标三者并不等价。
+
+\section{本文的局限性与不作出的结论}
+\begin{table}[H]
+    \centering
+    \caption{本文已解决问题与未解决问题对照表}
+    \label{tab:stage1-solved-unsolved}
+    \begin{tabularx}{\textwidth}{p{4.0cm}Xp{2.4cm}}
+        \toprule
+        问题类型 & 当前结论 & 是否已闭合 \\
+        \midrule
+        第一阶段选模 & 已通过二分类门控协议闭合 & 是 \\
+        HN 最优比例点 & 已在 \texttt{yolo11m-cls} 上闭合到 \texttt{hn14} & 是 \\
+        HN 跨容量稳定性 & \texttt{yolo11x-cls} 的轻量验证已提示收益与模型相关 & 部分 \\
+        固定预算样本重加权效果 & lite 版 A0--A4 已完成，结论是未超过 \texttt{uniform\_hn14} & 是 \\
+        完整两阶段系统优于单阶段检测器 & 当前不作结论 & 否 \\
+        \bottomrule
+    \end{tabularx}
+\end{table}
+
+尽管第一阶段的高召回门控动机来自两阶段系统的工程需求，但当前尚未完成针对单阶段检测器与两阶段系统的系统级对比实验。因此，本文不对”整体两阶段系统优于单阶段检测器”作出结论。当前有效结论仅限于：若后续系统采用第一阶段前端筛查，则其骨干网络与训练侧增强都必须在二分类门控视图下确定，而不能由默认阈值分类指标或六类源域结果替代决定。
+
+此外，lite 版重加权的全量实验结果属于负结果边界（A4 仍未超过 \texttt{uniform\_hn14}），本文不把它表述为已解决的增强方案，而是一条已暴露出教师模型、候选池与静态评分限制的研究路线。对于数据划分尺度与更大规模跨设备数据下的稳定性问题，本文也不作外推声明。
+
+\section{本章小结}
+本章的核心作用在于把容量扫描、HN 比例扫描与后续样本重加权重新组织为一条闭合的第一阶段证据链，并明确它对未来两阶段系统研究的意义与边界。换言之，本文已经完成的是前端筛查的任务界定、选模与训练侧增强，而尚未完成的是检测器及系统级闭环；这一边界的保留既保证了论证严谨，也为后续工作留出了清晰接口。
+
+\appendix
+
+\chapter{Stage-1 协议与符号表}
+\begin{table}[H]
+    \centering
+    \caption{Stage-1 协议摘要}
+    \label{tab:stage1-capacity-protocol}
+    \begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{3.2cm}X}
+        \toprule
+        项目 & 说明 \\
+        \midrule
+        primary selection view & direct binary gate \\
+        auxiliary reference view & source six-class capacity scan \\
+        binary gate ranking rule & \formalmetric{Spec@R99.5 > Spec@R99.0 > Prec@R99.0 > PTR@R99.0} \\
+        six-class ranking rule & Accuracy $>$ AUROC $>$ AUPRC \\
+        shared training protocol & \texttt{batch=24}, \texttt{epochs=200}, checkpoint saved every epoch \\
+        checkpoint policy & every epoch checkpoint is externally evaluated; trainer \formalmetric{top1} does not determine the final checkpoint choice \\
+        calibration protocol & val-cal temperature fitting followed by val-op threshold sweep \\
+        HN protocol & the same calibrated gate-aware rule is reused after backbone selection \\
+        manuscript scope & only completed stage-1 evidence is reported in the current paper \\
+        \bottomrule
+    \end{tabularx}
+\end{table}
+
+\chapter{capacity scan 补充材料}
+
+\section{五模型 checkpoint 关键索引}
+\begin{table}[H]
+    \centering
+    \caption{五模型 gate-best 与 trainer \formalmetric{top1-best} 关键索引}
+    \label{tab:appendix-capacity-checkpoint-index}
+    \begin{tabular}{lcccc}
+        \toprule
+        Model & Gate-Best Epoch & Top1-Best Epoch & Epoch Gap & Binary-Gate Rank \\
+        \midrule
+        yolo11n-cls & 76  & 120 & 44  & 5 \\
+        yolo11s-cls & 77  & 88  & 11  & 4 \\
+        yolo11m-cls & 78  & 197 & 119 & 1 \\
+        yolo11l-cls & 54  & 103 & 49  & 3 \\
+        yolo11x-cls & 125 & 120 & -5  & 2 \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\section{capacity scan 补充说明}
+capacity scan 的完整主表、主图与附录图表均已在 \texttt{research/results/stage1\_formal/capacity\_scan/} 下留档。正文只保留最直接支撑结论的主表与主图，而本附录的作用是提供更明确的 checkpoint index、错位量级与溯源路径，便于后续复核与复现。
+
+\chapter{HN sweep 与 hard-normal 来源补充材料}
+
+\section{HN 检查点与材料覆盖}
+\begin{table}[H]
+    \centering
+    \caption{HN best checkpoint registry（clean view）}
+    \label{tab:hn-registry-clean}
+    \resizebox{\textwidth}{!}{%
+    \begin{tabular}{lcccccc}
+        \toprule
+        Model & Ratio & Best Epoch & Spec@R99.5 & Spec@R99.0 & Prec@R99.0 & PTR@R99.0 \\
+        \midrule
+        yolo11m-cls & hn00 & 78  & 0.5952 & 0.6548 & 0.9348 & 0.8829 \\
+        yolo11m-cls & hn02 & 51  & 0.6429 & 0.6429 & 0.9330 & 0.8889 \\
+        yolo11m-cls & hn04 & 144 & 0.5595 & 0.6071 & 0.9265 & 0.8909 \\
+        yolo11m-cls & hn06 & 96  & 0.5952 & 0.6190 & 0.9286 & 0.8889 \\
+        yolo11m-cls & hn08 & 1   & 0.5833 & 0.6548 & 0.9348 & 0.8829 \\
+        yolo11m-cls & hn10 & 29  & 0.5238 & 0.5357 & 0.9145 & 0.9048 \\
+        yolo11m-cls & hn12 & 115 & 0.5357 & 0.5714 & 0.9204 & 0.8968 \\
+        yolo11m-cls & hn14 & 74  & 0.6429 & 0.6548 & 0.9350 & 0.8849 \\
+        yolo11m-cls & hn16 & 118 & 0.5714 & 0.5714 & 0.9207 & 0.9008 \\
+        yolo11m-cls & hn18 & 48  & 0.5476 & 0.5476 & 0.9167 & 0.9048 \\
+        yolo11m-cls & hn20 & 1   & 0.5595 & 0.5952 & 0.9246 & 0.8948 \\
+        yolo11x-cls & hn00 & 125 & 0.5476 & 0.5952 & 0.9244 & 0.8929 \\
+        yolo11x-cls & hn02 & 1   & 0.5238 & 0.5476 & 0.9163 & 0.9008 \\
+        \bottomrule
+    \end{tabular}
+    }
+\end{table}
+
+\begin{table}[H]
+    \centering
+    \caption{HN ratio 覆盖与材料层级}
+    \label{tab:hn-ratio-coverage}
+    \resizebox{\textwidth}{!}{%
+    \begin{tabular}{lcccccc}
+        \toprule
+        Model & Ratio & epoch summary & checkpoint index & best manifest & raw per-epoch tree & note \\
+        \midrule
+        yolo11m-cls & hn00 & Yes & Yes & Yes & No & repo summaries/manifests only; fuller non-PT source archive existed \\
+        yolo11m-cls & hn02 & Yes & Yes & Yes & No & repo summaries/manifests only; fuller non-PT source archive existed \\
+        yolo11m-cls & hn04 & Yes & Yes & Yes & No & repo summaries/manifests only; fuller non-PT source archive existed \\
+        yolo11m-cls & hn06 & Yes & Yes & Yes & No & repo summaries/manifests only; fuller non-PT source archive existed \\
+        yolo11m-cls & hn08 & Yes & Yes & Yes & No & repo summaries/manifests only; fuller non-PT source archive existed \\
+        yolo11m-cls & hn10 & Yes & Yes & Yes & No & repo summaries/manifests only; fuller non-PT source archive existed \\
+        yolo11m-cls & hn12 & Yes & Yes & Yes & No & repo summaries/manifests only; fuller non-PT source archive existed \\
+        yolo11m-cls & hn14 & Yes & Yes & Yes & No & repo summaries/manifests only \\
+        yolo11m-cls & hn16 & Yes & Yes & Yes & No & repo summaries/manifests only \\
+        yolo11m-cls & hn18 & Yes & Yes & Yes & No & repo summaries/manifests only \\
+        yolo11m-cls & hn20 & Yes & Yes & Yes & No & repo summaries/manifests only \\
+        yolo11x-cls & hn00 & Yes & Yes & Yes & No & repo summaries/manifests only \\
+        yolo11x-cls & hn02 & Yes & Yes & Yes & No & repo summaries/manifests only \\
+        \bottomrule
+    \end{tabular}
+    }
+\end{table}
+
+\section{HN sweep 的整体形态}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.88\textwidth]{research/results/stage1_formal/gate_hn_paper/appendix/fig_hn_overview_heatmap_delta.png}
+    \caption{各 HN ratio 相对 \texttt{hn00} 的增量热力图}
+    \label{fig:hn-heatmap-delta}
+\end{figure}
+
+\section{HN 样本来源证明}
+\begin{table}[H]
+    \centering
+    \caption{hard-normal 选样统计}
+    \label{tab:hn-hard-normal-stats}
+    \begin{tabular}{lcccccc}
+        \toprule
+        Total Normals & Selected & Ratio & Score Min & Score Median & Score Max & Threshold \\
+        \midrule
+        1080 & 250 & 0.2315 & 0.1133 & 0.2854 & 0.9780 & 0.1133 \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.92\textwidth]{research/results/stage1_formal/gate_hn_paper/appendix/fig_hn_hard_normal_score_distribution.png}
+    \caption{训练 normal 样本的异常分数分布与 hard-normal 选择阈值}
+    \label{fig:hn-score-distribution}
+\end{figure}
+
+\section{关于 ratio 级 top1-vs-gatebest 的说明}
+当前 HN material level 并不包含可靠的 trainer-side per-ratio \formalmetric{top1} 轨迹字段；因此，本文不构造伪造性的 “ratio-level top1-vs-gatebest” 结论，而仅在附录溯源档案中登记该限制。
+
+\chapter{有效信息量评分函数、消融接口与样本清单}
+
+\section{Lite 版评分函数摘要}
+为便于后续复现实验，本文将 Gate-Aligned Effective Information Score lite 的最终表达统一记为
+\begin{equation}
+S_i^{(A2)} = R_i,\qquad
+S_i^{(A3)} = (R_i C_i)^{1/2},\qquad
+S_i^{(A4)} = (R_i C_i D_i)^{1/3},
+\end{equation}
+其中风险项 $R_i$、一致性项 $C_i$ 与结构支撑项 $D_i$ 的定义见第 6 章。三组实验共享同一 hard-normal candidate pool、同一 \texttt{hn14} 预算锚点以及同一 evaluator，不改变骨干网络、批量大小、训练轮数或检查点策略。
+
+\section{样本清单与固定预算接口}
+对于 lite 版重加权实验，本文保留的最小可复现工作集包括候选池 score 清单、采样概率清单、weighted replay 清单与 suite-level summary，而不要求在论文仓库内长期保留全量中间张量或分类图片副本。更具体地说，\texttt{candidate\_pool\_scores.csv}、\texttt{score\_stats.json/md}、\texttt{weighted\_replay\_summary.json} 以及相应 manifest 共同构成了从 fixed top250 pool 到固定预算 replay 分配的可追溯接口。
+
+\chapter{复现实验命令、目录结构与溯源清单}
+
+\section{训练脚本与运行入口}
+当前 lite 版重加权实验的训练入口统一为 \texttt{main.py} 中的 \texttt{stage1\_formal\_gate\_info\_sampling\_lite} 任务。其脚本组织如下：
+\begin{enumerate}[label=\arabic*.]
+    \item \texttt{stage1\_prepare\_info\_sampling\_lite\_scores.py}：生成 top250 pool 的 one-shot score、采样概率与 score statistics；
+    \item \texttt{stage1\_build\_info\_sampling\_lite\_dataset.py}：在固定 \texttt{hn14} 预算下构建 weighted replay 数据集视图；
+    \item \texttt{stage1\_formal\_gate\_info\_sampling\_lite.py}：组织 preflight、smoke、full-run 和 suite-level summary；
+    \item \texttt{stage1\_build\_info\_sampling\_lite\_paper\_assets.py}：生成 tables、figures、summary 与 manifests。
+\end{enumerate}
+为避免误用，teacher 固定为 \texttt{yolo11m-cls + hn00} 的 gate-best checkpoint，hard pool 固定为既有 \texttt{top\_false\_positive\_normals.csv}，budget 固定为 151。若 preflight 或 smoke 未通过，本文不建议直接启动 full-run。
+
+\section{目录结构与溯源清单}
+与 lite 版实验直接相关的目录可概括为三层：其一，\texttt{research/materials/stage1\_formal/gate\_info\_sampling\_lite} 用于保留候选池打分、dataset manifest 与 run manifest；其二，\texttt{research/results/stage1\_formal/gate\_info\_sampling\_lite} 用于保留 PREFLIGHT、SMOKE、SUMMARY、REPRODUCE 与 ARTIFACTS 等汇总文件；其三，\texttt{YOLOv11/datasets/stage1\_formal\_gate\_info\_sampling\_lite} 与 \texttt{YOLOv11/runs/stage1\_formal\_gate\_info\_sampling\_lite} 则分别保存 weighted dataset view 和训练运行目录。三层目录之间通过 manifest 与 path pointer 关联，而不依赖人工整理。
+
+\begin{table}[H]
+    \centering
+    \caption{lite 版 PNG rebuild manifests 与用途说明}
+    \label{tab:lite-png-manifests}
+    \begin{tabularx}{\textwidth}{p{5.0cm}p{3.4cm}X}
+        \toprule
+        文件 & 层级 & 用途 \\
+        \midrule
+        \texttt{stage1\_info\_sampling\_lite\_png\_file\_manifest.csv} & materials / manifests & 登记当前 lite 工作流中所有 PNG 产物的文件级清单，便于核查哪些图表已经被实际生成。 \\
+        \texttt{stage1\_info\_sampling\_lite\_png\_rebuild\_map.csv} & materials / manifests & 建立 PNG 文件与重建来源之间的映射关系，用于后续按脚本和溯源路径重画图表。 \\
+        \texttt{stage1\_info\_sampling\_lite\_png\_manifest\_usage.md} & materials / manifests & 对上述两份 CSV 的字段、用途与使用方式给出文字说明。 \\
+        \bottomrule
+    \end{tabularx}
+\end{table}
+
+截至本文当前版本，lite 路线已经同时包含 A0--A4 的结果表、主图、appendix 材料以及上述 PNG rebuild manifests。后者的作用是补强图表可追溯性与重建路径，而不是替代性能结果本身。因此，第 6 章的 lite 结论应以 summary tables 与 figures 为主，以 manifests 为溯源辅助。
+
+\section{artifacts 保留与清理规则}
+考虑到训练侧工作流会产生大量中间文件，本文对 lite 版 artifacts 的保留规则作如下约定：保留 \texttt{candidate\_pool\_scores.csv}、\texttt{score\_stats.json/md}、\texttt{dataset\_manifest.json}、\texttt{run\_manifest.json}、\texttt{epoch\_gate\_summary.*}、\texttt{best\_epoch\_manifest.json} 与 suite-level 主表主图；不将全量 checkpoint 复制到 \texttt{research/materials}，也不默认复制分类图片副本。若临时生成 feature tensor、TTA raw array 或 gallery 中间件，应用后即清理，并在相应 manifest 中登记“已清理”状态。
+
+\backmatter
+\begin{thebibliography}{99}
+\bibitem{moradi2019review}
+Moradi S, Zayed T, Golkhoo F. Review on Computer Aided Sewer Pipeline Defect Detection and Condition Assessment[J]. Infrastructures, 2019, 4(1): 10.
+
+\bibitem{haurum2020survey}
+Haurum J B, Moeslund T B. A Survey on Image-Based Automation of CCTV and SSET Sewer Inspections[J]. Automation in Construction, 2020, 111: 103061.
+
+\bibitem{ma2026stateoftheart}
+Ma D, Fang H, Wang N, et al. The State-of-the-Art in Pipe Defect Inspection with Computer Vision-Based Methods[J]. Measurement, 2026, 257: 118431.
+
+\bibitem{halfawy2014hogsvm}
+Halfawy M R, Hengmeechai J. Automated Defect Detection in Sewer Closed Circuit Television Images Using Histograms of Oriented Gradients and Support Vector Machine[J]. Automation in Construction, 2014, 38: 1--13.
+
+\bibitem{kumar2018cnn}
+Kumar S S, Abraham D M, Jahanshahi M R, et al. Automated Defect Classification in Sewer Closed Circuit Television Inspections Using Deep Convolutional Neural Networks[J]. Automation in Construction, 2018, 91: 273--283.
+
+\bibitem{cheng2018deep}
+Cheng J C P, Wang M. Automated Detection of Sewer Pipe Defects in CCTV Images Using Deep Learning Techniques[J]. Automation in Construction, 2018, 95: 155--171.
+
+\bibitem{haurum2021sewerml}
+Haurum J B, Moeslund T B. Sewer-ML: A Multi-Label Sewer Defect Classification Dataset and Benchmark[C]//Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition. 2021: 13456--13467.
+
+\bibitem{redmon2016yolo}
+Redmon J, Divvala S, Girshick R, Farhadi A. You Only Look Once: Unified, Real-Time Object Detection[C]//Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition. 2016: 779--788.
+
+\bibitem{guo2017calibration}
+Guo C, Pleiss G, Sun Y, Weinberger K Q. On Calibration of Modern Neural Networks[C]//Proceedings of the 34th International Conference on Machine Learning. 2017: 1321--1330.
+
+\bibitem{kumar2021constrained}
+Kumar A, Narasimhan H, Cotter A, Gupta M. Optimizing Specificity at a High Sensitivity[C]//Proceedings of the 38th International Conference on Machine Learning. 2021: 11415--11424.
+
+\bibitem{koh2017influence}
+Koh P W, Liang P. Understanding Black-box Predictions via Influence Functions[C]//Proceedings of the 34th International Conference on Machine Learning. 2017: 1885--1894.
+
+\bibitem{ash2020badge}
+Ash J T, Zhang C, Krishnamurthy A, Langford J, Agarwal A. Deep Batch Active Learning by Diverse, Uncertain Gradient Lower Bounds[C]//International Conference on Learning Representations. 2020.
+
+\bibitem{wu2022entropy}
+Wu J, Zhang T, Zhai Y, et al. Entropy-Based Active Learning for Object Detection With Progressive Diversity Constraint[C]//Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition. 2022: 9397--9406.
+
+\bibitem{yang2024plug}
+Yang Y, Wu Z, Wang J, et al. Plug-and-Play Active Learning for Object Detection[C]//Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition. 2024: 25163--25172.
+
+\bibitem{kim2024structural}
+Kim M, Hwang J, Kim S, et al. Learning With Structural Labels for Learning With Noisy Labels[C]//Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition. 2024: 17639--17649.
+
+\bibitem{zhang2024tdds}
+Zhang Y, Li X, Zhou Y, et al. Spanning Training Progress: Temporal Dual-Depth Scoring (TDDS) for Enhanced Dataset Pruning in Object Detection[C]//Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition. 2024: 17665--17675.
+
+\bibitem{situ2023transfer}
+Situ Z, Teng S, Feng W, et al. A Transfer Learning-Based YOLO Network for Sewer Defect Detection in Comparison to Classic Object Detection Methods[J]. Developments in the Built Environment, 2023, 15: 100191.
+
+\bibitem{wang2023improvedyolov5}
+Wang T, Li Y, Zhai Y, et al. A Sewer Pipeline Defect Detection Method Based on Improved YOLOv5[J]. Processes, 2023, 11(8): 2508.
+
+\bibitem{zhao2024yolov5sewer}
+Zhao X, Xiao N, Cai Z, et al. YOLOv5-Sewer: Lightweight Sewer Defect Detection Model[J]. Applied Sciences, 2024, 14(5): 1869.
+\end{thebibliography}
+
+\end{document}

@@ -1,4 +1,4 @@
-% !TeX program = xelatex
+﻿% !TeX program = xelatex
 % !TeX encoding = UTF-8 Unicode
 \documentclass[UTF8,openany,12pt]{ctexbook}
 
@@ -69,7 +69,7 @@
 \newcommand{\engkeywords}[1]{\par\noindent{\bfseries Key words:}#1}
 \newcommand{\formalmetric}[1]{\texttt{#1}}
 
-\title{面向地下排水管道缺陷筛查的高召回门控选模与样本效用重加权研究}
+\title{面向地下排水管道缺陷筛查的高召回门控选模与有效信息重加权研究}
 \author{}
 \date{2026年4月}
 
@@ -130,22 +130,25 @@ $\tau_{99.5}, \tau_{99.0}$ & 在 formal gate 评估下分别对应 \formalmetric
 
 \chapter{绪论}
 
-\section{研究背景与问题提出}
+\section{研究背景与工程意义}
 地下排水管网是城市基础设施体系中的关键组成部分，其运行状态直接关系到城市防涝、道路安全以及水环境治理 \cite{moradi2019review,haurum2020survey,ma2026stateoftheart}。当前工程实践仍主要依赖 CCTV 巡检与人工复核，但海量正常帧、复杂背景纹理以及跨设备成像差异，使人工判读在效率、一致性和误报控制方面面临明显瓶颈 \cite{haurum2020survey,cheng2018deep}。因此，如何在保持缺陷高召回的前提下尽可能减少进入后续人工复核或后级检测的正常样本，已经成为 sewer inspection 智能化中的核心问题之一。
 
 传统研究通常把第一阶段视作普通分类任务，默认以 Accuracy 或 \formalmetric{top1} 作为早停和选模依据。然而，在实际两阶段工作流中，stage-1 的职责并不是在默认阈值下取得最高整体分类分数，而是在固定高召回约束下最大化正常样本拦截。因此，默认阈值分类语义与高召回门控语义之间存在明显错位。本文据此将 stage-1 明确重定义为 recall-constrained gate，并围绕这一目标重新组织容量扫描、校准评估、checkpoint 选择以及 HN 增强分析。
 
-\section{相关研究现状}
+\section{国内外研究现状}
 \subsection{排水管道缺陷视觉识别}
 排水管道缺陷识别经历了由人工特征到深度视觉模型的技术演进。早期工作以 HOG、SVM 和规则驱动候选区域为主，已经证明 CCTV 图像中的管道异常具有一定可计算性，但方法对场景变化较为敏感 \cite{halfawy2014hogsvm}。随着深度学习的发展，研究开始转向图像级分类与目标检测。Kumar 等利用深度卷积网络完成 sewer CCTV 缺陷分类，Cheng 等进一步将深度模型用于管道缺陷检测，表明数据驱动表征能够显著提升识别性能 \cite{kumar2018cnn,cheng2018deep}。
 
 \subsection{YOLO 路线与 sewer 场景适配}
 YOLO 系列因具备较好的实时性和工程成熟度，已成为管道缺陷检测中的常见基础路线 \cite{redmon2016yolo}。在 sewer 场景中，研究者围绕特征增强、轻量化部署与场景适配提出了多种改进策略，例如改进 YOLOv5 的管道缺陷检测模型以及轻量化 YOLOv5-Sewer 等 \cite{wang2023improvedyolov5,zhao2024yolov5sewer}。这些工作证明，YOLO 路线具有良好的工程基础；但它们也表明，不同任务目标之间不能简单共享同一评价口径：用于目标检测的 detector 精度并不直接回答高召回门控下的 normal filtering 问题。
 
-\subsection{公开数据、校准与迁移视角}
+\subsection{高召回分类、概率校准与约束优化研究}
 Sewer-ML 数据集的发布为 sewer defect classification 提供了统一的 benchmark 条件，也使多尺度容量比较与 source-side representation 分析成为可能 \cite{haurum2021sewerml}。另一方面，温度校准已被证明是改善神经网络输出分数可信度的低成本方式，在不改变样本排序的前提下，有助于建立更稳定的 operating-point 比较基础 \cite{guo2017calibration}。此外，迁移学习在线路缺陷检测中的应用也已显示出缓解目标域标注不足的价值 \cite{situ2023transfer}。然而，就本文当前已完成证据而言，最需要优先解决的问题并不是 detector 结构本身，而是 stage-1 的正式任务边界、正式选模规则以及在正式主线固定后的训练侧增强方式。
 
-\section{研究问题、研究目标与主要创新点}
+\subsection{难样本挖掘、数据剪枝与样本效用建模研究}
+围绕样本选择与训练效率提升，已有研究从 hard negative mining、uncertainty-driven selection、diversity-aware active learning、training-dynamics pruning 以及结构支撑建模等多个方向展开。相关工作共同指出，样本价值并不等于单一损失大小或原始不确定性，高风险样本中同样可能混入不稳定噪声与孤立异常点；因此，样本选择需要同时考虑风险、稳定性与结构支撑等因素 \cite{koh2017influence,ash2020badge,wu2022entropy,yang2024plug,kim2024structural,zhang2024tdds}。这一线索直接支撑了本文从 uniform HN replay 进一步走向固定预算样本重加权的研究动机。
+
+\section{研究问题与研究目标}
 \subsection{本文的任务边界}
 本文的任务边界被严格限定在 stage-1 前端筛查，而不是完整两阶段系统。更具体地说，本文只讨论基于 YOLO11-cls 的 high-recall gate 如何在固定召回约束下完成 formal backbone 选模、checkpoint 选择与训练侧增强；对 detector 结构、系统级闭环收益以及单阶段与两阶段系统的最终优劣比较，本文均不作正式结论。这一边界既符合当前已完成实验的真实范围，也使整篇论文的论证能够围绕同一 formal objective 展开。
 
@@ -165,7 +168,7 @@ Sewer-ML 数据集的发布为 sewer defect classification 提供了统一的 be
     \item 在 HN 非单调收益和 hard-normal candidate pool 异质性的基础上，提出面向固定预算的 Gate-Aligned Effective Information Score lite 重加权框架，将训练侧增强问题从“回流比例”推进到“池内样本效用”层面。
 \end{enumerate}
 
-\section{论文组织}
+\section{论文组织结构}
 全文围绕 stage-1 主线的 formal 选模、训练侧增强和样本重加权展开。第 2 章介绍高召回门控的理论基础、指标定义和样本效用建模动机；第 3 章说明数据集、实验平台和 formal working set 的组织方式；第 4 章集中报告 direct binary gate capacity scan、six-class source 辅助视图以及 cross-view rank mismatch；第 5 章报告主模型上的 HN ratio sweep 与 cross-capacity validation；第 6 章给出基于有效信息量的非线性样本重加权方法及 lite 消融设计；第 7 章总结当前已建立的 stage-1 证据链及其工程启示；第 8 章给出全文结论与后续研究方向；附录部分进一步补充 formal protocol、HN provenance 以及信息量重加权的复现接口与 source-of-truth 清单。
 
 \section{本章小结}
@@ -237,7 +240,7 @@ HN 回流的直接动机是：训练阶段存在一批被当前 gate 赋予较�
 
 对于 binary gate formal protocol，全部 720 张验证图像进一步按类别分层拆分为 val-cal 与 val-op 两部分，其中 val-cal 为 216 张，val-op 为 504 张；对应 abnormal/normal 的划分分别为 180/36 与 420/84。该拆分仅用于温度参数拟合与 operating-point 报告，不参与训练。
 
-\section{容量扫描设置与统一训练协议}
+\section{训练平台与实验环境}
 全部 capacity scan 均以 YOLO11-cls 五个尺度模型为候选，即 \texttt{yolo11n-cls}、\texttt{yolo11s-cls}、\texttt{yolo11m-cls}、\texttt{yolo11l-cls} 与 \texttt{yolo11x-cls}。统一训练协议如下：
 \begin{itemize}
     \item batch size 固定为 24；
@@ -409,7 +412,7 @@ HN 回流的直接动机是：训练阶段存在一批被当前 gate 赋予较�
 
 \chapter{基于 HN 回流的 stage-1 训练侧增强}
 
-\section{主模型 \texttt{yolo11m-cls} 的 HN ratio sweep}
+\section{HN 回流设置与样本来源}
 \begin{table}[H]
     \centering
     \caption{\texttt{yolo11m-cls} 的 HN 正式排序主表}
@@ -558,7 +561,7 @@ b_i \propto \pi_i,
 \end{equation}
 其中 $\pi_i$ 为样本 $x_i$ 的非线性采样概率。当前工作中，$B$ 由既有 \texttt{hn14} working set 决定，因此方法比较的核心不再是“更多回流是否更好”，而是“同样预算下怎样选择更有价值的回流样本”。
 
-\section{Gate-Aligned Effective Information Score lite}
+\section{Gate-Aligned Effective Information Score 的设计}
 为使评分函数与 formal gate objective 对齐，本文首先使用未加回流偏置的 teacher，即 \texttt{yolo11m-cls + hn00} 的 gate-best checkpoint，在 val-cal 上拟合温度参数 $T$，再对 hard-normal pool 中的样本计算校准后 abnormal 概率：
 \begin{equation}
 p_i = \sigma(z_i / T),
@@ -609,7 +612,7 @@ S_i^{(A4)} = (R_i C_i D_i)^{1/3}.
 \end{equation}
 其中 $\epsilon$ 为数值稳定常数，$\kappa>1$ 控制对高价值样本的非线性放大程度。该设计保证了总预算仍与 uniform \texttt{hn14} 严格等价，只改变 hard pool 内部的 replay 分布，而不改变候选池本身。
 
-\section{Lite 版 5 组消融实验框架}
+\section{Lite 版 5 组消融实验设计}
 基于上述评分函数，本文将后续实验统一组织为五组 setting。A0 为 \texttt{hn00} baseline，直接复用已完成 formal 结果；A1 为现有 \texttt{uniform\_hn14}，也直接复用正式结果。A2、A3 与 A4 则分别对应 risk-only、risk+consistency 以及 risk+consistency+density 三组新实验，其中 teacher 固定为 \texttt{yolo11m-cls + hn00} 的 gate-best checkpoint，hard pool 固定为现有 top250，额外 replay 总预算固定为 \texttt{hn14} 的 151。换言之，A2--A4 不是新的 backbone 法庭，而是建立在当前 mainline 之上的 fixed-budget sample reallocation study。
 
 \section{当前实现状态与验证边界}

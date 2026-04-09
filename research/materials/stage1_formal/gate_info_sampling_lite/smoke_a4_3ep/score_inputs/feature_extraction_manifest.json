@@ -1,0 +1,20 @@
+{
+  "teacher_checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_gate\\yolo11m_gate2_formal_200ep\\weights\\epoch_078.pt",
+  "feature_export_dir": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\$out\\scratch\\stage1_formal\\gate_info_sampling_lite\\smoke_a4_3ep\\teacher_train_features",
+  "feature_export_summary": {
+    "weights": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_gate\\yolo11m_gate2_formal_200ep\\weights\\epoch_078.pt",
+    "data_root": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\datasets\\sewerml_gate2_train7200",
+    "output_dir": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\$out\\scratch\\stage1_formal\\gate_info_sampling_lite\\smoke_a4_3ep\\teacher_train_features",
+    "splits": [
+      {
+        "split": "train",
+        "csv_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\$out\\scratch\\stage1_formal\\gate_info_sampling_lite\\smoke_a4_3ep\\teacher_train_features\\train_features.csv",
+        "npy_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\$out\\scratch\\stage1_formal\\gate_info_sampling_lite\\smoke_a4_3ep\\teacher_train_features\\train_embeddings.npy",
+        "meta_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\$out\\scratch\\stage1_formal\\gate_info_sampling_lite\\smoke_a4_3ep\\teacher_train_features\\train_features_meta.json",
+        "rows": 6480,
+        "embedding_dim": 512
+      }
+    ]
+  },
+  "cleanup_planned": true
+}

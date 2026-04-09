@@ -1,0 +1,6 @@
+﻿setting,setting_id,setting_name,teacher,pool,budget_anchor,best_epoch,Spec@R99.5,Spec@R99.0,Prec@R99.0,PTR@R99.0,setting_order,formal_rank
+A1_uniform_hn14,A1,uniform_hn14,reused uniform HN14,fixed top250 hard-normal pool,hn14 (151 extras),74,0.642857,0.654762,0.934978,0.884921,1,1
+A0_hn00,A0,hn00,reused hn00 teacher,none,hn14 (151 extras),78,0.595238,0.654762,0.934831,0.882937,0,2
+A4_weighted_hn14_risk_consistency_density,A4,weighted_hn14_risk_consistency_density,hn00 best checkpoint,fixed top250 hard-normal pool,hn14 (151 extras),48,0.559524,0.583333,0.922566,0.896825,6,3
+A2_weighted_hn14_risk_only,A2,weighted_hn14_risk_only,hn00 best checkpoint,fixed top250 hard-normal pool,hn14 (151 extras),43,0.559524,0.571429,0.920354,0.896825,4,4
+A3_weighted_hn14_risk_consistency,A3,weighted_hn14_risk_consistency,hn00 best checkpoint,fixed top250 hard-normal pool,hn14 (151 extras),80,0.52381,0.642857,0.932735,0.884921,5,5

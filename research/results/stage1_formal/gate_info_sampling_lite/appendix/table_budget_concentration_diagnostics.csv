@@ -1,0 +1,4 @@
+﻿setting_id,setting,effective_count,gini,top10_cumulative_pi,nonzero_probability_count
+A2,weighted_hn14_risk_only,64.5756,0.806705,0.36396423,250
+A3,weighted_hn14_risk_consistency,14.7234,0.955452,0.85812533,250
+A4,weighted_hn14_risk_consistency_density,22.0599,0.934314,0.72464685,250

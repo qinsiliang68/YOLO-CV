@@ -1,0 +1,97 @@
+{
+  "task_name": "stage1_formal_gate_info_sampling_lite",
+  "mode": "smoke",
+  "smoke_epochs": 3,
+  "smoke_setting": "A4",
+  "teacher": {
+    "ratio_id": "hn00",
+    "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_gate\\yolo11m_gate2_formal_200ep\\weights\\epoch_078.pt",
+    "checkpoint_exists": true,
+    "summary_dir": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\research\\materials\\stage1_formal\\gate_hn_m_sweep\\hn00",
+    "pool_teacher_matches_hn00_teacher": true
+  },
+  "pool": {
+    "candidate_top_k": 250,
+    "pool_top_count": 250,
+    "pool_source_csv": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\research\\materials\\stage1_formal\\gate_hn_assets\\yolo11m_train_normal_scores\\top_false_positive_normals.csv",
+    "pool_scores_csv": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\research\\materials\\stage1_formal\\gate_hn_assets\\yolo11m_train_normal_scores\\train_normal_scores.csv",
+    "pool_is_reused_existing_top250": true
+  },
+  "budget": {
+    "budget_anchor_ratio_id": "hn14",
+    "fixed_budget_count": 151,
+    "uniform_anchor_ratio_id": "hn14"
+  },
+  "score_checks": {
+    "A4": {
+      "score_csv": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\research\\materials\\stage1_formal\\gate_info_sampling_lite\\smoke_a4_3ep\\score_inputs\\A4_candidate_pool_scores.csv",
+      "score_csv_exists": true,
+      "schema_ok": true,
+      "missing_columns": [],
+      "row_count": 250,
+      "candidate_top_k_matches": true,
+      "pool_exact_reuse_matches_top250": false,
+      "sum_pi": 1.0000008099999942,
+      "sum_pi_close_to_one": true,
+      "score_has_nan": false,
+      "score_has_inf": false,
+      "probability_has_nan": false,
+      "probability_has_inf": false,
+      "duplication_total": 151,
+      "duplication_total_matches_budget": true,
+      "top10_cumulative_pi": 0.7246468500000001
+    }
+  },
+  "dataset_checks": {
+    "A4": {
+      "dataset_root": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\datasets\\stage1_formal_gate_info_sampling_lite\\smoke_a4_3ep\\weighted_hn14_risk_consistency_density",
+      "weighted_replay_summary_exists": true,
+      "duplicated_images": 151,
+      "expected_duplicated_images": 151,
+      "duplication_total_matches_expected": true
+    }
+  },
+  "schema_checks": {
+    "anchors": {
+      "hn_summary_csv": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\research\\results\\stage1_formal\\gate_hn_m_sweep\\hn_sweep_summary.csv",
+      "hn_summary_schema_ok": true,
+      "hn_summary_missing_columns": [],
+      "teacher_best_manifest_ok": true,
+      "teacher_best_manifest_missing": [],
+      "uniform_best_manifest_ok": true,
+      "uniform_best_manifest_missing": []
+    },
+    "A4": {
+      "summary_dir": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\research\\materials\\stage1_formal\\gate_info_sampling_lite\\smoke_a4_3ep\\weighted_hn14_risk_consistency_density",
+      "best_epoch_manifest_exists": false,
+      "epoch_gate_summary_exists": false,
+      "best_manifest_schema_ok": null,
+      "best_manifest_missing": [],
+      "epoch_summary_schema_ok": null,
+      "epoch_summary_missing": []
+    }
+  },
+  "rerun_scope": {
+    "cleanup_roots": [
+      "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\research\\materials\\stage1_formal\\gate_info_sampling_lite\\smoke_a4_3ep",
+      "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\research\\results\\stage1_formal\\gate_info_sampling_lite\\smoke_a4_3ep",
+      "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\datasets\\stage1_formal_gate_info_sampling_lite\\smoke_a4_3ep",
+      "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_gate_info_sampling_lite\\smoke_a4_3ep",
+      "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\_recycle_bin\\stage1_formal_gate_info_sampling_lite\\smoke_a4_3ep",
+      "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\$out\\scratch\\stage1_formal\\gate_info_sampling_lite\\smoke_a4_3ep",
+      "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\$out\\generated_configs\\stage1_formal\\gate_info_sampling_lite\\smoke_a4_3ep"
+    ],
+    "protected_hn_roots": [
+      "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\research\\materials\\stage1_formal\\gate_hn_m_sweep",
+      "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\research\\results\\stage1_formal\\gate_hn_m_sweep",
+      "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\research\\results\\stage1_formal\\gate_hn_overview",
+      "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\research\\materials\\stage1_formal\\gate_hn_assets"
+    ],
+    "safe": true,
+    "violations": []
+  },
+  "ready_for_full_train": true,
+  "checked_settings": [
+    "A4"
+  ]
+}

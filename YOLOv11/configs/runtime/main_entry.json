@@ -14,6 +14,8 @@
   "stage1_formal_gate_hn_n_sweep_config": "YOLOv11/configs/runtime/stage1_formal_gate_hn_n_sweep.json",
   "stage1_formal_gate_hn_s_sweep_config": "YOLOv11/configs/runtime/stage1_formal_gate_hn_s_sweep.json",
   "stage1_formal_gate_hn_m_sweep_config": "YOLOv11/configs/runtime/stage1_formal_gate_hn_m_sweep.json",
+  "stage1_formal_gate_hn_l_sweep_config": "YOLOv11/configs/runtime/stage1_formal_gate_hn_l_sweep.json",
+  "stage1_formal_gate_hn_x_sweep_config": "YOLOv11/configs/runtime/stage1_formal_gate_hn_x_sweep.json",
   "stage1_formal_gate_hn_x_crosscheck_config": "YOLOv11/configs/runtime/stage1_formal_gate_hn_x_crosscheck.json",
   "stage1_formal_gate_info_sampling_lite_config": "YOLOv11/configs/runtime/stage1_formal_gate_info_sampling_lite.json",
   "cls6_sweep_config": "YOLOv11/configs/runtime/cls_cls6_sweep.json"
