@@ -1,0 +1,49 @@
+{
+  "setting_id": "A3",
+  "details": {
+    "setting_name": "weighted_hn14_risk_consistency",
+    "score_variant": "risk_consistency",
+    "selected_unique_count": 22,
+    "duplicate_total": 151,
+    "probability_sum": 0.9999999999999998,
+    "top10_cumulative_pi": 0.85812533,
+    "nonzero_probability_count": 250,
+    "score_has_nan": false,
+    "score_has_inf": false,
+    "probability_has_nan": false,
+    "probability_has_inf": false,
+    "top10_ids": [
+      "Normal_00457555",
+      "Normal_00344448",
+      "Normal_00320863",
+      "Normal_00160245",
+      "Normal_00335278",
+      "Normal_00006200",
+      "Normal_00278336",
+      "Normal_00019908",
+      "Normal_00503763",
+      "Normal_00359446"
+    ],
+    "bottom10_ids": [
+      "Normal_00500159",
+      "Normal_00397824",
+      "Normal_00436092",
+      "Normal_00144495",
+      "Normal_00158209",
+      "Normal_00458420",
+      "Normal_00375607",
+      "Normal_00329365",
+      "Normal_00479528",
+      "Normal_00380312"
+    ]
+  },
+  "fixed_budget_count": 151,
+  "candidate_top_k": 250,
+  "teacher_tau_r995": 0.28,
+  "teacher_tau_r990": 0.31,
+  "teacher_temperature": 1.856125,
+  "alpha": 2.0,
+  "kappa": 2.0,
+  "density_k": 15,
+  "sigma_c": 0.04137999936938286
+}

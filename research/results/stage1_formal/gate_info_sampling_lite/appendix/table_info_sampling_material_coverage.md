@@ -1,0 +1,7 @@
+# table_ratio_coverage_manifest
+
+| setting_name | has_epoch_gate_summary | has_all_checkpoints_index | has_best_epoch_manifest | has_pt | material_level_note |
+| --- | --- | --- | --- | --- | --- |
+| weighted_hn14_risk_only | True | True | True | True | repo working set keeps summaries/manifests and checkpoint pointers; PT lives in training runs/checkpoint storage |
+| weighted_hn14_risk_consistency | True | True | True | True | repo working set keeps summaries/manifests and checkpoint pointers; PT lives in training runs/checkpoint storage |
+| weighted_hn14_risk_consistency_density | True | True | True | True | repo working set keeps summaries/manifests and checkpoint pointers; PT lives in training runs/checkpoint storage |

@@ -29,6 +29,20 @@ plt.rcParams.update(
     }
 )
 
+SETTING_ID_MAP = {
+    "weighted_hn14_risk_only": "A2",
+    "weighted_hn14_risk_consistency": "A3",
+    "weighted_hn14_risk_consistency_density": "A4",
+}
+
+SETTING_LABEL_MAP = {
+    "A0": "A0\nhn00",
+    "A1": "A1\nuniform_hn14",
+    "A2": "A2\nrisk_only",
+    "A3": "A3\nrisk+consistency",
+    "A4": "A4\nrisk+consistency+density",
+}
+
 
 @dataclass
 class CaptionSpec:
@@ -59,6 +73,22 @@ def rel(path: Path) -> str:
         return str(path.relative_to(REPO_ROOT)).replace("\\", "/")
     except Exception:
         return str(path).replace("\\", "/")
+
+
+def resolve_repo_anchored_path(raw_path: str | Path, fallback: Path | None = None) -> Path:
+    path = Path(str(raw_path))
+    if path.exists():
+        return path
+    if fallback is not None and fallback.exists():
+        return fallback
+    parts = list(path.parts)
+    for anchor in ("research", "YOLOv11", "$out", "_recycle_bin"):
+        if anchor in parts:
+            anchor_index = parts.index(anchor)
+            candidate = REPO_ROOT.joinpath(*parts[anchor_index:])
+            if candidate.exists():
+                return candidate
+    return fallback if fallback is not None else path
 
 
 def ensure_dirs(*paths: Path) -> None:
@@ -233,7 +263,7 @@ def build_ablation_rows(cfg: dict[str, Any], ctx: dict[str, Path]) -> tuple[pd.D
         if setting_id not in setting_lookup:
             continue
         setting_name = resolve_str(suite_row.get("setting_name"), setting_id.lower())
-        summary_dir = Path(suite_row["summary_dir"])
+        summary_dir = resolve_repo_anchored_path(suite_row["summary_dir"], ctx["materials_root"] / setting_name)
         best = load_setting_best(summary_dir)
         row_bank.append(
             {
@@ -337,6 +367,45 @@ def build_main_barpanel(main_df: pd.DataFrame, target: Path) -> None:
     plt.close(fig)
 
 
+def build_budget_concentration_tripanel(score_stats: pd.DataFrame, target: Path) -> pd.DataFrame:
+    plot_df = score_stats.copy()
+    plot_df["setting_id"] = plot_df["setting"].map(SETTING_ID_MAP)
+    plot_df = plot_df.loc[plot_df["setting_id"].isin(["A2", "A3", "A4"])].copy()
+    plot_df["setting_label"] = plot_df["setting_id"].map(SETTING_LABEL_MAP)
+    plot_df = plot_df.sort_values("setting_id").reset_index(drop=True)
+
+    metrics = [
+        ("effective_count", "Effective Count", "#355C7D"),
+        ("gini", "Gini", "#F67280"),
+        ("top10_cumulative_pi", "Top10 Cumulative $\\pi$", "#6C5B7B"),
+    ]
+    fig, axes = plt.subplots(1, 3, figsize=(13, 4.2))
+    x = np.arange(len(plot_df))
+    for ax, (column, title, color) in zip(axes, metrics, strict=True):
+        values = plot_df[column].to_numpy(dtype=float)
+        bars = ax.bar(x, values, color=color, width=0.62)
+        ax.set_xticks(x, plot_df["setting_label"].tolist())
+        ax.set_title(title)
+        value_max = max(values) if len(values) else 1.0
+        ax.set_ylim(0, value_max * 1.18 if value_max > 0 else 1.0)
+        for bar, value in zip(bars, values, strict=True):
+            ax.text(
+                bar.get_x() + bar.get_width() / 2,
+                value + value_max * 0.03,
+                fmt4(value),
+                ha="center",
+                va="bottom",
+                fontsize=8,
+            )
+    fig.suptitle("Replay-budget concentration diagnostics for weighted variants", fontsize=12)
+    fig.tight_layout(rect=(0, 0, 1, 0.96))
+    fig.savefig(target, dpi=220, bbox_inches="tight")
+    plt.close(fig)
+    return plot_df[
+        ["setting_id", "setting", "effective_count", "gini", "top10_cumulative_pi", "nonzero_probability_count"]
+    ].copy()
+
+
 def build_score_distribution_panel(score_dir: Path, target: Path) -> None:
     settings = [("A2", "risk_only"), ("A3", "risk_consistency"), ("A4", "risk_consistency_density")]
     fig, axes = plt.subplots(3, 2, figsize=(12, 12))
@@ -349,6 +418,77 @@ def build_score_distribution_panel(score_dir: Path, target: Path) -> None:
     fig.tight_layout()
     fig.savefig(target, dpi=220, bbox_inches="tight")
     plt.close(fig)
+
+
+def build_pool_width_threshold_panel(
+    score_dir: Path,
+    target: Path,
+) -> tuple[pd.DataFrame, pd.DataFrame]:
+    pool_manifest = load_json(score_dir / "pool_source_manifest.json")
+    pool_scores_path = resolve_repo_anchored_path(
+        pool_manifest["pool_scores_csv"],
+        REPO_ROOT / "research" / "materials" / "stage1_formal" / "gate_hn_assets" / "yolo11m_train_normal_scores" / "train_normal_scores.csv",
+    )
+    top_k = int(pool_manifest["candidate_top_k"])
+    tau_r995 = float(pool_manifest["teacher_tau_r995"])
+    tau_r990 = float(pool_manifest["teacher_tau_r990"])
+
+    pool_df = pd.read_csv(pool_scores_path)
+    if "p_abnormal" not in pool_df.columns:
+        raise SystemExit(f"Expected `p_abnormal` in pool score csv: {pool_scores_path}")
+
+    ranked_df = pool_df.sort_values("p_abnormal", ascending=False).reset_index(drop=True).copy()
+    ranked_df["rank_desc"] = np.arange(1, len(ranked_df) + 1)
+    ranked_df["in_top250"] = ranked_df["rank_desc"] <= top_k
+    ranked_df["image_stub"] = ranked_df["img_rel_path"].astype(str).map(lambda value: Path(value).stem)
+
+    top_cutoff = float(ranked_df.loc[top_k - 1, "p_abnormal"])
+    top_median = float(ranked_df.loc[ranked_df["in_top250"], "p_abnormal"].median())
+    top_ratio = float(top_k / len(ranked_df))
+
+    markers_df = pd.DataFrame(
+        [
+            {"marker": "tau_r995", "value": tau_r995},
+            {"marker": "tau_r990", "value": tau_r990},
+            {"marker": "top250_cutoff", "value": top_cutoff},
+            {"marker": "top250_median", "value": top_median},
+            {"marker": "top250_ratio", "value": top_ratio},
+            {"marker": "total_train_normals", "value": float(len(ranked_df))},
+            {"marker": "candidate_top_k", "value": float(top_k)},
+        ]
+    )
+
+    fig, axes = plt.subplots(1, 2, figsize=(13, 4.8))
+
+    hist_ax = axes[0]
+    hist_ax.hist(ranked_df["p_abnormal"], bins=32, color="#355C7D", alpha=0.85)
+    hist_ax.axvspan(top_cutoff, ranked_df["p_abnormal"].max(), color="#F67280", alpha=0.14, label="top250 span")
+    hist_ax.axvline(tau_r995, color="#C06C84", linestyle="--", linewidth=1.7, label=r"$\tau_{99.5}$")
+    hist_ax.axvline(tau_r990, color="#6C5B7B", linestyle="--", linewidth=1.7, label=r"$\tau_{99.0}$")
+    hist_ax.axvline(top_cutoff, color="#F67280", linestyle="-", linewidth=1.7, label="top250 cutoff")
+    hist_ax.set_title("Train-normal score distribution")
+    hist_ax.set_xlabel("Teacher abnormal score")
+    hist_ax.set_ylabel("Count")
+    hist_ax.legend(loc="upper right")
+
+    rank_ax = axes[1]
+    rank_ax.plot(ranked_df["rank_desc"], ranked_df["p_abnormal"], color="#355C7D", linewidth=1.8)
+    rank_ax.axvspan(1, top_k, color="#F67280", alpha=0.14, label=f"top250 ({top_ratio:.2%})")
+    rank_ax.axhline(tau_r995, color="#C06C84", linestyle="--", linewidth=1.5, label=r"$\tau_{99.5}$")
+    rank_ax.axhline(tau_r990, color="#6C5B7B", linestyle="--", linewidth=1.5, label=r"$\tau_{99.0}$")
+    rank_ax.axhline(top_cutoff, color="#F67280", linestyle="-", linewidth=1.5, label="top250 cutoff")
+    rank_ax.scatter([top_k], [top_cutoff], color="#F67280", s=32, zorder=5)
+    rank_ax.set_title("Descending rank view of the hard-normal pool")
+    rank_ax.set_xlabel("Rank among train-normal scores (descending)")
+    rank_ax.set_ylabel("Teacher abnormal score")
+    rank_ax.legend(loc="upper right")
+
+    fig.suptitle("Hard-normal pool width relative to the formal operating thresholds", fontsize=12)
+    fig.tight_layout(rect=(0, 0, 1, 0.96))
+    fig.savefig(target, dpi=220, bbox_inches="tight")
+    plt.close(fig)
+
+    return ranked_df[["rank_desc", "img_rel_path", "p_abnormal", "in_top250", "image_stub"]].copy(), markers_df
 
 
 def build_overlap_figure(score_dir: Path, target: Path) -> pd.DataFrame:
@@ -376,11 +516,64 @@ def build_overlap_figure(score_dir: Path, target: Path) -> pd.DataFrame:
     ax.set_xticks(x, overlap_df["setting_id"].tolist())
     ax.set_ylabel("Count")
     ax.set_title("Uniform HN14 vs weighted replay overlap")
+    for offset, column in ((-width, "overlap_count"), (0, "weighted_only_count"), (width, "uniform_only_count")):
+        for xpos, value in zip(x + offset, overlap_df[column].to_numpy(dtype=float), strict=True):
+            ax.text(xpos, value + 2, f"{int(value)}", ha="center", va="bottom", fontsize=8)
     ax.legend(loc="best")
     fig.tight_layout()
     fig.savefig(target, dpi=220, bbox_inches="tight")
     plt.close(fig)
     return overlap_df
+
+
+def build_a1_vs_a4_spec995_delta(summary_dirs: dict[str, Path], target: Path) -> pd.DataFrame:
+    a1 = load_epoch_summary(summary_dirs["A1"])[["epoch", "spec_at_r995"]].rename(columns={"spec_at_r995": "a1_spec_at_r995"})
+    a4 = load_epoch_summary(summary_dirs["A4"])[["epoch", "spec_at_r995"]].rename(columns={"spec_at_r995": "a4_spec_at_r995"})
+    joined = a1.merge(a4, on="epoch", how="inner")
+    joined["delta_spec_at_r995"] = joined["a4_spec_at_r995"] - joined["a1_spec_at_r995"]
+
+    best_a1 = joined.loc[joined["a1_spec_at_r995"].idxmax()]
+    best_a4 = joined.loc[joined["a4_spec_at_r995"].idxmax()]
+
+    fig, axes = plt.subplots(2, 1, figsize=(11, 6.6), sharex=True, gridspec_kw={"height_ratios": [2.2, 1.2]})
+
+    top_ax = axes[0]
+    top_ax.plot(joined["epoch"], joined["a1_spec_at_r995"], color="#6C5B7B", linewidth=1.8, label="A1 uniform_hn14")
+    top_ax.plot(joined["epoch"], joined["a4_spec_at_r995"], color="#F67280", linewidth=1.8, label="A4 risk+consistency+density")
+    top_ax.scatter([best_a1["epoch"]], [best_a1["a1_spec_at_r995"]], color="#6C5B7B", s=34, zorder=5)
+    top_ax.scatter([best_a4["epoch"]], [best_a4["a4_spec_at_r995"]], color="#F67280", s=34, zorder=5)
+    top_ax.set_ylabel("Spec@R99.5")
+    top_ax.set_title("A1 vs A4 on the primary metric")
+    top_ax.legend(loc="best")
+
+    delta_ax = axes[1]
+    delta_ax.axhline(0.0, color="#444444", linewidth=1.0)
+    delta_ax.plot(joined["epoch"], joined["delta_spec_at_r995"], color="#355C7D", linewidth=1.8)
+    delta_ax.fill_between(
+        joined["epoch"],
+        joined["delta_spec_at_r995"],
+        0.0,
+        where=joined["delta_spec_at_r995"] >= 0.0,
+        color="#355C7D",
+        alpha=0.20,
+    )
+    delta_ax.fill_between(
+        joined["epoch"],
+        joined["delta_spec_at_r995"],
+        0.0,
+        where=joined["delta_spec_at_r995"] < 0.0,
+        color="#F67280",
+        alpha=0.20,
+    )
+    delta_ax.set_xlabel("Epoch")
+    delta_ax.set_ylabel(r"$\Delta$Spec@R99.5")
+    delta_ax.set_title("A4 - A1 delta curve")
+
+    fig.suptitle("Primary-metric gap between the uniform anchor and the best weighted variant", fontsize=12)
+    fig.tight_layout(rect=(0, 0, 1, 0.96))
+    fig.savefig(target, dpi=220, bbox_inches="tight")
+    plt.close(fig)
+    return joined
 
 
 def render_contact_sheet(rows: pd.DataFrame, source_dataset: Path, title: str) -> Image.Image:
@@ -657,7 +850,12 @@ def main() -> None:
 
     build_main_barpanel(main_df, figures_dir / "fig_lite_ablation_main_barpanel.png")
     build_epoch_panel(summary_dirs, figures_dir / "fig_lite_ablation_epoch_dynamics_panel.png")
+    budget_diag_df = build_budget_concentration_tripanel(score_stats, figures_dir / "fig_budget_concentration_tripanel.png")
     build_score_distribution_panel(ctx["score_dir"], figures_dir / "fig_score_distribution_panel.png")
+    pool_width_curve_df, pool_width_markers_df = build_pool_width_threshold_panel(
+        ctx["score_dir"],
+        figures_dir / "fig_pool_width_threshold_panel.png",
+    )
     build_gallery_panel(
         ctx["score_dir"],
         ctx["source_dataset"],
@@ -665,8 +863,15 @@ def main() -> None:
         top_n=int(cfg.get("panel_top_n", 12) or 12),
     )
     overlap_df = build_overlap_figure(ctx["score_dir"], figures_dir / "fig_uniform_vs_weighted_overlap.png")
+    a1_a4_delta_df = build_a1_vs_a4_spec995_delta(summary_dirs, figures_dir / "fig_a1_vs_a4_spec995_delta.png")
     save_csv(appendix_dir / "table_uniform_vs_weighted_overlap.csv", overlap_df)
     save_md_table(appendix_dir / "table_uniform_vs_weighted_overlap.md", "table_uniform_vs_weighted_overlap", overlap_df)
+    save_csv(appendix_dir / "table_budget_concentration_diagnostics.csv", budget_diag_df)
+    save_md_table(appendix_dir / "table_budget_concentration_diagnostics.md", "table_budget_concentration_diagnostics", budget_diag_df)
+    save_csv(appendix_dir / "table_pool_width_threshold_markers.csv", pool_width_markers_df)
+    save_md_table(appendix_dir / "table_pool_width_threshold_markers.md", "table_pool_width_threshold_markers", pool_width_markers_df)
+    save_csv(derived_dir / "pool_width_ranked_normals.csv", pool_width_curve_df)
+    save_csv(derived_dir / "a1_vs_a4_spec995_delta.csv", a1_a4_delta_df)
 
     build_ratio_coverage(
         ctx["materials_root"],
@@ -748,6 +953,17 @@ def main() -> None:
     write_caption(
         captions_dir,
         CaptionSpec(
+            "fig_budget_concentration_tripanel",
+            "Whether the weighted variants are redistributing the replay budget smoothly or collapsing it onto a very small subset of the hard pool.",
+            [rel(ctx["score_dir"] / "table_score_component_stats.csv")],
+            "The tripanel compares the fixed top250 pool under the same one-shot hn00 teacher and budget.",
+            "A3 and A4 concentrate much more heavily than A2, with substantially lower effective counts and much higher top10 cumulative replay mass.",
+            "These are pool-level concentration diagnostics and do not by themselves prove which weighting policy should win downstream.",
+        ),
+    )
+    write_caption(
+        captions_dir,
+        CaptionSpec(
             "fig_score_distribution_panel",
             "How the score distributions and replay probabilities differ across A2/A3/A4.",
             [
@@ -758,6 +974,20 @@ def main() -> None:
             "Scores are computed once from the hn00 teacher over the fixed top250 pool.",
             "The panel shows whether adding consistency and density increases or dampens replay concentration.",
             "This is a static one-shot view and does not cover dynamic score refresh.",
+        ),
+    )
+    write_caption(
+        captions_dir,
+        CaptionSpec(
+            "fig_pool_width_threshold_panel",
+            "Whether the top250 hard-normal pool is a narrow extreme tail or a relatively wide high-risk region under the hn00 teacher.",
+            [
+                rel(ctx["score_dir"] / "pool_source_manifest.json"),
+                rel(Path(load_json(ctx["score_dir"] / "pool_source_manifest.json")["pool_scores_csv"])),
+            ],
+            "The figure uses the hn00 teacher thresholds tau_r995 and tau_r990 together with the fixed top250 cutoff.",
+            "The selected top250 region extends far below the formal threshold anchors, which supports the view that the hard-normal pool is wide rather than near-homogeneous.",
+            "This figure summarizes the pool scores only and does not by itself identify which subregion is most learnable.",
         ),
     )
     write_caption(
@@ -789,6 +1019,20 @@ def main() -> None:
             "Uniform HN14 is compared against the selected unique samples from each weighted variant.",
             "The overlap view indicates whether weighted replay primarily reorders the same pool or surfaces a different subset of hard normals.",
             "The figure summarizes unique-sample overlap rather than replay-count overlap.",
+        ),
+    )
+    write_caption(
+        captions_dir,
+        CaptionSpec(
+            "fig_a1_vs_a4_spec995_delta",
+            "Whether the best weighted variant reaches the same primary-metric platform as the uniform_hn14 anchor across training epochs.",
+            [
+                rel(summary_dirs["A1"] / "epoch_gate_summary.csv"),
+                rel(summary_dirs["A4"] / "epoch_gate_summary.csv"),
+            ],
+            "A1 and A4 are compared on the same backbone, metric, and epoch axis; the lower panel shows A4 minus A1.",
+            "A4 peaks earlier but stays below the A1 platform on the primary metric for most of training, which matches the final formal ranking gap.",
+            "The comparison isolates Spec@R99.5 only and should still be read together with the full four-metric formal rule.",
         ),
     )
 
