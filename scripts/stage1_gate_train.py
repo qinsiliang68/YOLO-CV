@@ -28,7 +28,7 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Train stage-1 gate experiments with optional HN and custom binary loss.")
     parser.add_argument(
         "--config",
-        default="YOLOv11/configs/runtime/stage1_gate_l_hn.json",
+        required=True,
         help="JSON runtime config for stage-1 gate training.",
     )
     parser.add_argument("--stdout-log", default="", help="Optional path to tee stdout log.")

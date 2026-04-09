@@ -13,7 +13,7 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Train a source-domain classification model for the SewerML pipeline.")
     parser.add_argument(
         "--config",
-        default="YOLOv11/configs/runtime/cls_source_cls6.json",
+        required=True,
         help="JSON runtime config for source-domain classification.",
     )
     parser.add_argument("--data", default="", help="Override the classification dataset directory.")
