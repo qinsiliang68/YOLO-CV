@@ -51,6 +51,77 @@ def write_csv(path: Path, fieldnames: list[str], rows: list[dict[str, Any]]) -> 
         writer.writerows(rows)
 
 
+def path_replacements(old_prefix: str, new_prefix: str) -> list[tuple[str, str]]:
+    variants = [
+        (old_prefix, new_prefix),
+        (old_prefix.replace("\\", "/"), new_prefix.replace("\\", "/")),
+        (old_prefix.replace("\\", "\\\\"), new_prefix.replace("\\", "\\\\")),
+    ]
+    dedup: list[tuple[str, str]] = []
+    for src, dst in variants:
+        if src and (src, dst) not in dedup:
+            dedup.append((src, dst))
+    return dedup
+
+
+def rewrite_summary_checkpoint_paths(summary_dir: Path, old_prefix: str, new_prefix: str) -> int:
+    if not summary_dir.exists():
+        return 0
+    replacements = path_replacements(old_prefix, new_prefix)
+    rewritten = 0
+    for path in summary_dir.rglob("*"):
+        if not path.is_file() or path.suffix.lower() not in {".json", ".csv", ".md", ".txt"}:
+            continue
+        try:
+            text = path.read_text(encoding="utf-8")
+        except UnicodeDecodeError:
+            continue
+        updated = text
+        for src, dst in replacements:
+            if src in updated:
+                updated = updated.replace(src, dst)
+        if updated != text:
+            path.write_text(updated, encoding="utf-8")
+            rewritten += 1
+    return rewritten
+
+
+def offload_run_checkpoints(
+    *,
+    run_dir: Path,
+    summary_dir: Path,
+    checkpoint_offload_root: Path | None,
+    dry_run: bool,
+) -> None:
+    if checkpoint_offload_root is None:
+        return
+    weights_dir = run_dir / "weights"
+    if not weights_dir.exists():
+        return
+    pt_files = sorted(path for path in weights_dir.glob("*.pt") if path.is_file())
+    if not pt_files:
+        return
+
+    target_weights_dir = checkpoint_offload_root / run_dir.name / "weights"
+    print_step("offload", f"{weights_dir} -> {target_weights_dir} ({len(pt_files)} .pt)")
+    if dry_run:
+        return
+
+    target_weights_dir.mkdir(parents=True, exist_ok=True)
+    for pt in pt_files:
+        target = target_weights_dir / pt.name
+        if target.exists():
+            target.unlink()
+        shutil.move(str(pt), str(target))
+
+    rewritten = rewrite_summary_checkpoint_paths(
+        summary_dir=summary_dir,
+        old_prefix=str(weights_dir.resolve()),
+        new_prefix=str(target_weights_dir.resolve()),
+    )
+    print_step("offload", f"updated checkpoint paths in {rewritten} summary files")
+
+
 def model_stem(model_name: str) -> str:
     return model_name.replace("-cls", "")
 
@@ -385,6 +456,7 @@ def run_ratio(
     dataset_view_root: Path,
     split_csv: Path,
     train_scores_csv: Path,
+    checkpoint_offload_root: Path | None,
     dry_run: bool,
     rerun: bool,
 ) -> None:
@@ -572,6 +644,13 @@ def run_ratio(
             dry_run=False,
         )
 
+    offload_run_checkpoints(
+        run_dir=run_dir,
+        summary_dir=summary_dir,
+        checkpoint_offload_root=checkpoint_offload_root,
+        dry_run=dry_run,
+    )
+
 
 def run_suite(args: argparse.Namespace) -> None:
     config_path = resolve_path(args.config, base=YOLOV11_ROOT / "configs" / "runtime")
@@ -589,6 +668,12 @@ def run_suite(args: argparse.Namespace) -> None:
     split_csv = resolve_path(cfg.get("split_csv"), base=REPO_ROOT / "research" / "materials" / "stage1_formal" / "manifests" / "val_cal_op_split.csv")
     scoring_output_dir = resolve_path(cfg.get("scoring_output_dir"), base=REPO_ROOT / "research" / "materials" / "stage1_formal" / "gate_hn_assets")
     dataset_view_root = resolve_path(cfg.get("dataset_view_root"), base=YOLOV11_ROOT / "datasets" / "stage1_formal_gate_hn")
+    checkpoint_offload_text = str(cfg.get("checkpoint_offload_root") or "").strip()
+    checkpoint_offload_root: Path | None = (
+        resolve_path(checkpoint_offload_text, base=REPO_ROOT / "$out" / "checkpoint_offload")
+        if checkpoint_offload_text
+        else None
+    )
 
     base_model = resolve_str(cfg.get("base_model"), "")
     if not base_model:
@@ -685,6 +770,7 @@ def run_suite(args: argparse.Namespace) -> None:
             dataset_view_root=dataset_view_root,
             split_csv=split_csv,
             train_scores_csv=train_scores_csv,
+            checkpoint_offload_root=checkpoint_offload_root,
             dry_run=args.dry_run,
             rerun=args.rerun,
         )
@@ -709,6 +795,7 @@ def run_suite(args: argparse.Namespace) -> None:
                 "project_root": str(project_root),
                 "scoring_output_dir": str(scoring_output_dir),
                 "dataset_view_root": str(dataset_view_root),
+                "checkpoint_offload_root": str(checkpoint_offload_root) if checkpoint_offload_root is not None else "",
                 "ratios": rows_for_sweep_manifest,
             },
         )

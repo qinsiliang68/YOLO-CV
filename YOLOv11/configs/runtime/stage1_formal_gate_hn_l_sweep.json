@@ -6,6 +6,7 @@
   "base_summary_dir": "research/materials/stage1_formal/gate_capacity/yolo11l_gate2_formal",
   "base_summary_csv": "research/results/stage1_formal/gate_capacity/binary_gate_capacity_summary.csv",
   "project_root": "YOLOv11/runs/stage1_formal_gate_hn",
+  "checkpoint_offload_root": "H:/stage1_HN_l_pt_files/checkpoints/stage1_formal_gate_hn",
   "recycle_root": "_recycle_bin/stage1_formal_gate_hn",
   "temp_config_dir": "$out/generated_configs/stage1_formal/gate_hn_l_sweep",
   "materials_root": "research/materials/stage1_formal/gate_hn_l_sweep",
