@@ -309,17 +309,52 @@ YOLO（You Only Look Once）是当前工程部署中应用最广泛的目标检�
 \subsection{目标检测的两条技术路线}
 基于深度学习的目标检测算法按检测流程可分为两类 \cite{redmon2016yolo}。以 R-CNN 系列为代表的两阶段（two-stage）检测器，先通过候选区域生成模块（如选择性搜索或区域提议网络）产生大量候选框，再对每个候选框逐一进行分类和边界框回归；这类方法检测精度较高，但推理速度受候选框数量限制。以 YOLO 和 SSD 为代表的单阶段（one-stage）检测器，则将目标定位与类别预测统一在一次前向传播中完成，大幅提升了推理效率，尤其适合对实时性有要求的工程场景。
 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.82\textwidth]{essay/img/fig_yolo_detection_pipeline.png}
+    \caption{YOLO 检测系统流程：缩放输入图像、运行卷积网络、非极大值抑制（图片来源于文献 \cite{redmon2016yolo}）}
+    \label{fig:yolo-detection-pipeline}
+\end{figure}
+
 \subsection{YOLO 算法的核心思想与版本演进}
 Redmon 等人于 2016 年首次提出 YOLO 算法 \cite{redmon2016yolo}，其核心思想是将目标检测问题转化为单次回归问题：将输入图像划分为 $S \times S$ 的网格，每个网格单元同时预测若干边界框的坐标、置信度以及各类别的条件概率，整个过程仅需一次网络前向传播即可完成。这一设计在保持较高检测精度的同时，实现了远超两阶段检测器的推理速度。
 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.78\textwidth]{essay/img/fig_yolo_grid_detection.png}
+    \caption{YOLO 网格检测原理：将图像划分为 $S \times S$ 网格，每个单元预测边界框与类别概率，最终融合为检测结果（图片来源于文献 \cite{redmon2016yolo}）}
+    \label{fig:yolo-grid-detection}
+\end{figure}
+
 此后，YOLO 系列经历了持续的架构改进与技术迭代。YOLOv2 引入了批归一化、锚框机制（anchor box）和多尺度训练等技术，在提升检测精度的同时保持了高效性 \cite{redmon2017yolov2}。YOLOv3 采用多尺度特征金字塔结构（Feature Pyramid Network，FPN），使模型能够同时检测大、中、小三种尺度的目标 \cite{redmon2018yolov3}。YOLOv4 在骨干网络中引入了 CSPDarknet 结构和 Mish 激活函数等新组件，进一步优化了精度与速度的权衡 \cite{bochkovskiy2020yolov4}。
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.82\textwidth]{essay/img/fig_yolo_architecture.png}
+    \caption{YOLO 网络结构：包含卷积层、最大池化层和全连接层（图片来源于文献 \cite{redmon2016yolo}）}
+    \label{fig:yolo-architecture}
+\end{figure}
 
 在工程社区层面，Ultralytics 团队从 YOLOv5 开始对 YOLO 系列进行了系统的工程化重构，提供了统一的训练、推理和模型导出接口 \cite{jocher2023ultralytics}。后续的 YOLOv8 和 YOLO11 延续了这一框架，并在骨干网络结构、特征融合方式和训练策略上持续迭代。本文使用的 YOLO11 是 Ultralytics 于 2024 年发布的版本，其骨干网络采用了 C3k2 模块和空间金字塔池化快速版（SPPF），在保持高效推理的同时提升了多尺度特征提取能力。
 
 \subsection{YOLO11 分类模型}
 虽然 YOLO 系列最初为目标检测而设计，但其骨干网络同样可以复用于图像分类任务。YOLO11 分类模型（YOLO11-cls）保留了 YOLO11 的完整骨干网络，将检测头替换为全局平均池化层与全连接分类层，形成标准的图像分类器 \cite{jocher2023ultralytics}。
 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.72\textwidth]{essay/img/fig_yolo11_overview.png}
+    \caption{YOLO11 多任务架构概览：骨干网络包含 C3k2、C2PSA 和 SPPF 等核心模块，支持检测、分割、分类等多种视觉任务（图片来源于 Ultralytics 官方文档 \cite{jocher2023ultralytics}）}
+    \label{fig:yolo11-overview}
+\end{figure}
+
 YOLO11-cls 提供了五个容量等级的预训练模型，按参数量从小到大依次为 yolo11n-cls（nano）、yolo11s-cls（small）、yolo11m-cls（medium）、yolo11l-cls（large）和 yolo11x-cls（extra-large）。不同容量模型的骨干网络深度系数和宽度系数不同，参数量与计算量逐级增加。在第一阶段门控任务中，容量选择是一个关键决策：容量过小可能导致模型无法充分区分边界附近的困难样本，容量过大则可能带来过拟合风险和不必要的计算开销。本文第 4 章将报告这五个容量模型在直接二分类门控视图下的系统性扫描结果。
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.82\textwidth]{essay/img/fig_yolo11_performance.png}
+    \caption{YOLO 各版本在 COCO 数据集上的 mAP-延迟性能对比（图片来源于 Ultralytics 官方文档 \cite{jocher2023ultralytics}）}
+    \label{fig:yolo11-performance}
+\end{figure}
 
 \section{迁移学习与预训练策略}
 迁移学习（Transfer Learning）是指将在源域（source domain）上学习到的知识迁移到目标域（target domain），以缓解目标域标注样本不足或训练资源受限的问题 \cite{pan2010transfer}。在计算机视觉中，最常见的迁移学习形式是基于 ImageNet 预训练的微调策略：首先在 ImageNet 等大规模数据集（包含超过 100 万张图像、1000 个类别）上训练骨干网络，使其学习到通用的视觉特征（如边缘、纹理、形状等低层和中层表示），然后在目标任务的数据集上对网络进行微调（fine-tuning）。
