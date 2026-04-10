@@ -18,7 +18,6 @@
 \usepackage{setspace}
 \usepackage{xcolor}
 \usepackage{tikz}
-\usepackage[numbers]{natbib}
 \usetikzlibrary{arrows.meta,positioning}
 
 \geometry{
@@ -38,17 +37,9 @@
     bookmarksopenlevel=1,
     bookmarksnumbered=true
 }
-\setcitestyle{open={[},close={]},citesep={][}}
 \makeatletter
-\DeclareRobustCommand{\cite}[1]{%
-    \unskip\nobreak
-    \raisebox{1.4ex}{\scriptsize
-        \begingroup
-        \renewcommand*{\do}[1]{[\citenum{##1}]}%
-        \docsvlist{#1}%
-        \endgroup
-    }%
-}
+\renewcommand{\@cite}[2]{\textsuperscript{[{#1\if@tempswa , #2\fi}]}}
+\renewcommand{\@biblabel}[1]{[#1]}
 \makeatother
 \setlength{\parindent}{2em}
 \setlength{\parskip}{0pt}
@@ -275,6 +266,73 @@ Sewer-ML 数据集的发布为排水管道缺陷分类提供了统一的基准�
 
 \chapter{理论基础与关键技术}
 
+\section{卷积神经网络基础}
+卷积神经网络（Convolutional Neural Network，简称 CNN）是当前计算机视觉领域最核心的深度学习架构 \cite{goodfellow2016deep}。自 LeCun 等人于 1998 年提出 LeNet 用于手写数字识别以来 \cite{lecun1998gradient}，CNN 已逐步发展为图像分类、目标检测和语义分割等视觉任务的主流方法。本节介绍 CNN 的基本组成单元及其典型架构演进，为后续理解 YOLO11 分类骨干网络的设计逻辑提供必要的理论基础。
+
+\subsection{卷积层与特征提取}
+卷积层是 CNN 区别于传统全连接网络的核心组件。设输入图像（或上一层的特征图）为 $X \in \mathbb{R}^{H \times W \times C_{\mathrm{in}}}$，其中 $H$、$W$ 分别为空间高度和宽度，$C_{\mathrm{in}}$ 为输入通道数（例如 RGB 图像的 $C_{\mathrm{in}}=3$）。卷积核 $K \in \mathbb{R}^{k \times k \times C_{\mathrm{in}}}$ 在输入上滑动，输出特征图上位置 $(i,j)$ 处的响应为
+\begin{equation}
+Y(i,j) = \sum_{m=0}^{k-1}\sum_{n=0}^{k-1}\sum_{c=0}^{C_{\mathrm{in}}-1} K(m,n,c) \cdot X(i \cdot s + m,\; j \cdot s + n,\; c) + b,
+\end{equation}
+其中 $k$ 为卷积核的空间尺寸，$s$ 为步长（stride），$b$ 为偏置项。多个卷积核分别提取不同的局部特征模式，共同组成该层的输出特征图。与全连接层相比，卷积层通过参数共享（同一卷积核在所有空间位置上重复使用）和局部连接（每个输出仅依赖输入的一个局部感受野）两个机制，大幅减少了模型参数量，同时保留了图像的空间结构信息 \cite{lecun1998gradient}。此外，卷积操作中的填充（padding）参数可在输入边界补零以控制输出尺寸，其中常用的 same 填充可使输出空间尺寸与输入相同。
+
+\subsection{激活函数}
+卷积操作本身是线性变换，多层线性变换的堆叠在数学上等价于单层线性变换 \cite{goodfellow2016deep}，因此需要在每层卷积后引入非线性激活函数以增强网络的表达能力。在早期神经网络研究中，常用的激活函数包括 Sigmoid 函数 $\sigma(x)=1/(1+e^{-x})$ 和双曲正切函数 $\tanh(x)$，但这两种函数在输入绝对值较大时梯度接近于零，容易在深层网络训练中引发梯度消失问题。
+
+Nair 与 Hinton 于 2010 年提出的修正线性单元（Rectified Linear Unit，简称 ReLU）有效缓解了这一问题 \cite{nair2010relu}，其定义为
+\begin{equation}
+\mathrm{ReLU}(x) = \max(0,\; x).
+\end{equation}
+ReLU 在正半轴保持线性、梯度恒为 1，不会随网络深度增加而衰减；在负半轴输出为零，提供了稀疏激活特性。由于计算简单且训练收敛速度远快于 Sigmoid 和 $\tanh$，ReLU 及其变体（如 Leaky ReLU、SiLU 等）已成为现代卷积网络中最常用的激活函数。本文使用的 YOLO11 模型中，骨干网络默认采用 SiLU（又称 Swish）激活函数，其定义为 $\mathrm{SiLU}(x) = x \cdot \sigma(x)$，兼顾了 ReLU 的计算效率与 Sigmoid 的平滑可微性。
+
+\subsection{池化层}
+池化层（Pooling Layer）对特征图进行空间下采样，以减小后续层的计算量并扩大感受野。最常用的池化方式是最大池化（Max Pooling），其在每个固定大小的窗口内取最大值作为输出：
+\begin{equation}
+Y(i,j) = \max_{(m,n) \in \mathcal{R}_{i,j}} X(m,n),
+\end{equation}
+其中 $\mathcal{R}_{i,j}$ 为以 $(i,j)$ 为起点、大小为 $p \times p$ 的池化窗口。以 $2 \times 2$ 最大池化为例，输出的空间尺寸缩小为输入的一半，而通道数保持不变。池化操作不引入可学习参数，但通过逐层缩小空间分辨率、逐步提升特征的抽象层次，使高层特征图能够捕捉更大范围的语义信息。在现代网络架构中，池化层有时被步长为 2 的卷积层替代以保留更灵活的下采样方式，但全局平均池化（Global Average Pooling）作为分类网络末端的特征聚合手段仍被广泛采用。
+
+\subsection{全连接层与分类输出}
+在卷积和池化层提取出高层特征后，分类网络通常使用全连接层将特征映射为各类别的得分。设最后一层的输出经全局平均池化后为向量 $f \in \mathbb{R}^d$，全连接层的输出 $z = Wf + b$ 给出 $K$ 个类别的原始得分，即 logit 值。对于多类分类任务，logit 向量通过 Softmax 函数转化为概率分布 \cite{goodfellow2016deep}：
+\begin{equation}
+p_k = \frac{e^{z_k}}{\displaystyle\sum_{j=1}^{K} e^{z_j}}, \quad k = 1, 2, \dots, K.
+\end{equation}
+训练阶段通过最小化交叉熵损失函数 $\mathcal{L} = -\sum_{k=1}^{K} y_k \log p_k$ 更新模型参数，其中 $y_k$ 为真实标签的 one-hot 编码。对于本文的二分类门控任务（$K=2$），Softmax 退化为等价的 Sigmoid 形式：当仅关注异常类概率时，$p_{\mathrm{abnormal}} = \sigma(z_{\mathrm{abnormal}} - z_{\mathrm{normal}})$，其中 $\sigma$ 即后续章节使用的 Sigmoid 函数。
+
+\subsection{典型卷积网络架构的演进}
+自 LeNet 以来，卷积网络的设计经历了从浅层到深层、从手工特征到端到端学习的持续演进。2012 年，Krizhevsky 等人提出的 AlexNet 在 ImageNet 大规模图像识别挑战中以显著优势获胜，标志着深度学习在计算机视觉领域的突破性进展 \cite{krizhevsky2012imagenet}。AlexNet 采用 8 层网络结构（5 层卷积与 3 层全连接），并在训练中引入了 ReLU 激活函数、Dropout 正则化和数据增强等关键技术，为后续深层卷积网络的发展奠定了基础。
+
+2014 年，Simonyan 与 Zisserman 提出的 VGGNet 进一步证明了网络深度对分类性能的重要性 \cite{simonyan2015vgg}。VGGNet 统一使用 $3 \times 3$ 小卷积核，通过堆叠更多卷积层（16 至 19 层）来增加网络深度。这一设计思路表明，多个小卷积核的级联可以等效于一个大卷积核的感受野，同时引入更多非线性变换层，增强了网络的表达能力。然而，简单增加网络深度会导致梯度消失和训练退化问题。
+
+2016 年，He 等人提出的残差网络（Residual Network，简称 ResNet）通过引入跨层的快捷连接（shortcut connection）解决了深层网络的训练退化问题 \cite{he2016resnet}。残差块的核心思想是让网络学习输入与输出之间的残差映射 $\mathcal{F}(x) = H(x) - x$，而非直接学习目标映射 $H(x)$，从而使梯度信号能够通过快捷连接直接回传到较浅的层。这一设计使训练超过百层的深度网络成为可能，在 ImageNet 上将 top-5 错误率降至 3.57\%。残差连接已成为现代卷积网络的标准组件，YOLO 系列网络的骨干同样采用了残差结构。
+
+批归一化（Batch Normalization，简称 BN）是另一项推动深层网络训练的关键技术 \cite{ioffe2015batchnorm}。BN 在每一层的激活之前，对当前 mini-batch 内的特征进行归一化使其均值为零、方差为一，随后通过两个可学习参数进行仿射变换恢复表达能力。BN 显著加速了网络收敛速度，降低了对学习率初始值和权重初始化方案的敏感性，并在一定程度上起到正则化作用，已成为几乎所有现代卷积网络的标准组件。
+
+\section{YOLO 系列算法与分类骨干网络}
+YOLO（You Only Look Once）是当前工程部署中应用最广泛的目标检测框架之一。虽然本文的第一阶段门控任务属于图像分类而非目标检测，但本文使用的 YOLO11-cls 分类模型直接复用了 YOLO11 的骨干网络。因此，有必要简要介绍 YOLO 系列的核心思想与版本演进，以及 YOLO11 分类模型的架构特点。
+
+\subsection{目标检测的两条技术路线}
+基于深度学习的目标检测算法按检测流程可分为两类 \cite{redmon2016yolo}。以 R-CNN 系列为代表的两阶段（two-stage）检测器，先通过候选区域生成模块（如选择性搜索或区域提议网络）产生大量候选框，再对每个候选框逐一进行分类和边界框回归；这类方法检测精度较高，但推理速度受候选框数量限制。以 YOLO 和 SSD 为代表的单阶段（one-stage）检测器，则将目标定位与类别预测统一在一次前向传播中完成，大幅提升了推理效率，尤其适合对实时性有要求的工程场景。
+
+\subsection{YOLO 算法的核心思想与版本演进}
+Redmon 等人于 2016 年首次提出 YOLO 算法 \cite{redmon2016yolo}，其核心思想是将目标检测问题转化为单次回归问题：将输入图像划分为 $S \times S$ 的网格，每个网格单元同时预测若干边界框的坐标、置信度以及各类别的条件概率，整个过程仅需一次网络前向传播即可完成。这一设计在保持较高检测精度的同时，实现了远超两阶段检测器的推理速度。
+
+此后，YOLO 系列经历了持续的架构改进与技术迭代。YOLOv2 引入了批归一化、锚框机制（anchor box）和多尺度训练等技术，在提升检测精度的同时保持了高效性 \cite{redmon2017yolov2}。YOLOv3 采用多尺度特征金字塔结构（Feature Pyramid Network，FPN），使模型能够同时检测大、中、小三种尺度的目标 \cite{redmon2018yolov3}。YOLOv4 在骨干网络中引入了 CSPDarknet 结构和 Mish 激活函数等新组件，进一步优化了精度与速度的权衡 \cite{bochkovskiy2020yolov4}。
+
+在工程社区层面，Ultralytics 团队从 YOLOv5 开始对 YOLO 系列进行了系统的工程化重构，提供了统一的训练、推理和模型导出接口 \cite{jocher2023ultralytics}。后续的 YOLOv8 和 YOLO11 延续了这一框架，并在骨干网络结构、特征融合方式和训练策略上持续迭代。本文使用的 YOLO11 是 Ultralytics 于 2024 年发布的版本，其骨干网络采用了 C3k2 模块和空间金字塔池化快速版（SPPF），在保持高效推理的同时提升了多尺度特征提取能力。
+
+\subsection{YOLO11 分类模型}
+虽然 YOLO 系列最初为目标检测而设计，但其骨干网络同样可以复用于图像分类任务。YOLO11 分类模型（YOLO11-cls）保留了 YOLO11 的完整骨干网络，将检测头替换为全局平均池化层与全连接分类层，形成标准的图像分类器 \cite{jocher2023ultralytics}。
+
+YOLO11-cls 提供了五个容量等级的预训练模型，按参数量从小到大依次为 yolo11n-cls（nano）、yolo11s-cls（small）、yolo11m-cls（medium）、yolo11l-cls（large）和 yolo11x-cls（extra-large）。不同容量模型的骨干网络深度系数和宽度系数不同，参数量与计算量逐级增加。在第一阶段门控任务中，容量选择是一个关键决策：容量过小可能导致模型无法充分区分边界附近的困难样本，容量过大则可能带来过拟合风险和不必要的计算开销。本文第 4 章将报告这五个容量模型在直接二分类门控视图下的系统性扫描结果。
+
+\section{迁移学习与预训练策略}
+迁移学习（Transfer Learning）是指将在源域（source domain）上学习到的知识迁移到目标域（target domain），以缓解目标域标注样本不足或训练资源受限的问题 \cite{pan2010transfer}。在计算机视觉中，最常见的迁移学习形式是基于 ImageNet 预训练的微调策略：首先在 ImageNet 等大规模数据集（包含超过 100 万张图像、1000 个类别）上训练骨干网络，使其学习到通用的视觉特征（如边缘、纹理、形状等低层和中层表示），然后在目标任务的数据集上对网络进行微调（fine-tuning）。
+
+Yosinski 等人的研究表明，深度网络低层学习到的特征具有较强的通用性（如 Gabor 滤波器和颜色斑块），可以在不同视觉任务之间有效迁移；而高层特征则更偏向于特定任务，迁移效果取决于源域与目标域之间的相似度 \cite{yosinski2014transferable}。在排水管道缺陷筛查场景中，目标域的数据规模通常受到巡检成本和标注工作量的限制。通过使用在 ImageNet 上预训练的 YOLO11-cls 作为起点，模型能够继承通用视觉特征，从而在有限的管道数据上更快地收敛并取得更好的泛化性能 \cite{situ2023transfer}。
+
+本文所有实验均采用 ImageNet 预训练权重作为初始化，在此基础上对全网络进行微调。这一策略使得即使在当前 7200 张图像的训练规模下，YOLO11-cls 仍然能够在二分类门控任务上达到具有工程意义的拦截性能。预训练与微调的有效性也意味着，骨干网络的容量选择不仅影响模型的理论表达能力，还影响预训练特征向目标域迁移的效率——过大的容量可能导致预训练特征中与目标域不相关的部分在微调过程中产生干扰，这一判断将在第 4 章的容量扫描中得到间接验证。
+
 \section{第一阶段高召回门控的目标定义}
 设第一阶段的输入样本总数为 $N$。其中异常样本需要尽可能完整地保留给后续人工复核或后级处理，而正常样本应在尽可能不牺牲召回的前提下被前级拦截。由此，第一阶段的核心目标并不是默认阈值下的总体分类正确率，而是高召回约束下的正常样本拦截能力。
 
@@ -286,13 +344,7 @@ Sewer-ML 数据集的发布为排水管道缺陷分类提供了统一的基准�
 \section{评价指标定义}
 
 \subsection{二分类混淆矩阵基础}
-在二分类门控语境中，模型对每个样本做出"异常"或"正常"的判定，与真实标签组合后产生四种结果：
-\begin{itemize}
-    \item \textbf{TP}（True Positive，真阳性）：真实为异常，模型判定为异常——正确保留了缺陷帧。
-    \item \textbf{FN}（False Negative，假阴性）：真实为异常，模型判定为正常——漏掉了缺陷帧，这是高召回门控中最不可接受的错误。
-    \item \textbf{TN}（True Negative，真阴性）：真实为正常，模型判定为正常——成功拦截了正常帧，不再送往后续阶段。
-    \item \textbf{FP}（False Positive，假阳性）：真实为正常，模型判定为异常——误将正常帧当作缺陷帧放行，增加了后续阶段的无效负担。
-\end{itemize}
+在二分类门控语境中，模型对每个样本做出"异常"或"正常"的判定，与真实标签组合后产生四种结果 \cite{goodfellow2016deep}。\textbf{TP}（True Positive，真阳性）是指真实为异常且模型判定为异常的情形，即正确保留了缺陷帧。\textbf{FN}（False Negative，假阴性）是指真实为异常但模型判定为正常的情形，即漏掉了缺陷帧，这是高召回门控中最不可接受的错误。\textbf{TN}（True Negative，真阴性）是指真实为正常且模型判定为正常的情形，即成功拦截了正常帧，不再送往后续阶段。\textbf{FP}（False Positive，假阳性）是指真实为正常但模型判定为异常的情形，即误将正常帧当作缺陷帧放行，增加了后续阶段的无效负担。
 
 \begin{table}[H]
     \centering
@@ -331,14 +383,7 @@ Specificity 越高，说明前级过滤掉的正常帧越多，后续阶段的�
 \end{equation}
 
 \subsection{本文的门控导向指标}
-在上述基础指标的基础上，本文定义四个带有工作点约束的门控导向指标：
-
-\begin{itemize}
-    \item \formalmetric{Spec@R99.5}：在召回率不低于 99.5\% 的约束下，所能达到的最高 specificity。
-    \item \formalmetric{Spec@R99.0}：在召回率不低于 99.0\% 的约束下，所能达到的最高 specificity。
-    \item \formalmetric{Prec@R99.0}：在召回率不低于 99.0\% 的约束下的 precision。
-    \item \formalmetric{PTR@R99.0}：在召回率不低于 99.0\% 对应阈值下的通过率（Pass-Through Rate），即仍被送往下一阶段的样本占全部样本的比例：
-\end{itemize}
+在上述基础指标的基础上，本文定义四个带有工作点约束的门控导向指标。\formalmetric{Spec@R99.5} 表示在召回率不低于 99.5\% 的约束下所能达到的最高 specificity，是本文最严格的排序依据。\formalmetric{Spec@R99.0} 表示在召回率不低于 99.0\% 的约束下所能达到的最高 specificity，作为第二排序依据。\formalmetric{Prec@R99.0} 表示在召回率不低于 99.0\% 的约束下的 precision，用于衡量被放行样本中真实缺陷帧的纯度。\formalmetric{PTR@R99.0} 表示在召回率不低于 99.0\% 对应阈值下的通过率（Pass-Through Rate），即仍被送往下一阶段的样本占全部样本的比例，其定义为
 \begin{equation}
 \formalmetric{PTR@R99.0} = \frac{TP + FP}{N},
 \end{equation}
@@ -391,13 +436,7 @@ p_i = \sigma\!\left(\frac{z_i}{T}\right),
 其中 $T > 0$ 为在 val-cal 子集上以负对数似然为目标拟合的单一标量参数。当 $T > 1$ 时，logit 被压缩，校准后概率更趋保守；当 $T < 1$ 时，logit 被拉伸，概率分布更尖锐。温度缩放不改变样本的排序（因为 $\sigma(\cdot)$ 是单调函数），只改变概率值本身，从而使不同检查点之间的阈值具有可比性。
 
 \subsection{检查点选择流程}
-基于上述变换，检查点选择的具体流程如下：
-\begin{enumerate}[label=\arabic*.]
-    \item 在固定的 val-cal 子集上拟合温度参数 $T$；
-    \item 将该温度应用于 val-op 子集，得到 calibrated score；
-    \item 在 val-op 上执行 threshold sweep，计算候选阈值下的 recall、specificity、precision 与通过率；
-    \item 按照排序规则选出门控最优检查点，而不是直接使用训练器自动保存的 \texttt{best.pt}。
-\end{enumerate}
+基于上述变换，检查点选择的具体流程如下。首先，在固定的 val-cal 子集上以负对数似然为目标拟合温度参数 $T$。其次，将拟合得到的温度应用于 val-op 子集，得到校准后概率得分（calibrated score）。然后，在 val-op 上执行阈值扫描（threshold sweep），遍历候选阈值并计算每个阈值下的 recall、specificity、precision 与通过率。最后，按照上述排序规则选出门控最优检查点，而不是直接使用训练器自动保存的 \texttt{best.pt}。
 
 这一协议意味着温度校准已经内嵌为本文评估协议的组成部分，而不是独立于容量扫描之外的附加训练阶段。训练器侧的 \formalmetric{acc/top1/loss} 仍然保留，但只承担训练健康监控功能，不承担正文选模功能。
 
@@ -528,7 +567,7 @@ S = (s_1 \cdot s_2 \cdots s_n)^{1/n}.
 除直接二分类门控外，本文还组织了一条六类源域容量扫描，用于观察不同容量模型在源域表示任务上的相对位置。该视图的排序规则为 Accuracy、AUROC 与 AUPRC。然而，这一视图只承担辅助参考角色，不应替代二分类门控的骨干网络选择。
 
 \section{本章小结}
-本章给出了后续实验所依赖的评价指标、检查点选择原则和样本效用建模动机。下一章转入数据划分、训练协议与结果留档方式。
+本章从卷积神经网络的基本组件出发，介绍了 YOLO 系列算法的核心思想与版本演进，并说明了 YOLO11 分类骨干网络的架构特点以及迁移学习与预训练在目标域数据受限场景下的作用。在此基础上，本章依次给出了高召回门控任务的目标定义、评价指标体系、温度校准与检查点选择流程、非对称学习的约束优化形式，以及难样本挖掘与样本效用建模的五条理论线索和教师模型质量的因果分析。上述理论基础为后续第 4 至 6 章的实验设计与结果分析提供了统一的概念框架。下一章转入数据划分、训练协议与结果留档方式。
 
 \chapter{数据集构建、实验平台与工作流}
 
@@ -1435,6 +1474,45 @@ S_i^{(A4)} = (R_i C_i D_i)^{1/3},
 
 \backmatter
 \begin{thebibliography}{99}
+\bibitem{goodfellow2016deep}
+Goodfellow I, Bengio Y, Courville A. Deep Learning[M]. Cambridge: MIT Press, 2016.
+
+\bibitem{lecun1998gradient}
+LeCun Y, Bottou L, Bengio Y, Haffner P. Gradient-Based Learning Applied to Document Recognition[J]. Proceedings of the IEEE, 1998, 86(11): 2278--2324.
+
+\bibitem{krizhevsky2012imagenet}
+Krizhevsky A, Sutskever I, Hinton G E. ImageNet Classification with Deep Convolutional Neural Networks[C]//Advances in Neural Information Processing Systems. 2012: 1097--1105.
+
+\bibitem{simonyan2015vgg}
+Simonyan K, Zisserman A. Very Deep Convolutional Networks for Large-Scale Image Recognition[C]//International Conference on Learning Representations. 2015.
+
+\bibitem{he2016resnet}
+He K, Zhang X, Ren S, Sun J. Deep Residual Learning for Image Recognition[C]//Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition. 2016: 770--778.
+
+\bibitem{nair2010relu}
+Nair V, Hinton G E. Rectified Linear Units Improve Restricted Boltzmann Machines[C]//Proceedings of the 27th International Conference on Machine Learning. 2010: 807--814.
+
+\bibitem{ioffe2015batchnorm}
+Ioffe S, Szegedy C. Batch Normalization: Accelerating Deep Network Training by Reducing Internal Covariate Shift[C]//Proceedings of the 32nd International Conference on Machine Learning. 2015: 448--456.
+
+\bibitem{redmon2017yolov2}
+Redmon J, Farhadi A. YOLO9000: Better, Faster, Stronger[C]//Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition. 2017: 6517--6525.
+
+\bibitem{redmon2018yolov3}
+Redmon J, Farhadi A. YOLOv3: An Incremental Improvement[J]. arXiv preprint arXiv:1804.02767, 2018.
+
+\bibitem{bochkovskiy2020yolov4}
+Bochkovskiy A, Wang C Y, Liao H Y M. YOLOv4: Optimal Speed and Accuracy of Object Detection[J]. arXiv preprint arXiv:2004.10934, 2020.
+
+\bibitem{jocher2023ultralytics}
+Jocher G, Chaurasia A, Qiu J. Ultralytics YOLO[EB/OL]. https://github.com/ultralytics/ultralytics, 2023.
+
+\bibitem{pan2010transfer}
+Pan S J, Yang Q. A Survey on Transfer Learning[J]. IEEE Transactions on Knowledge and Data Engineering, 2010, 22(10): 1345--1359.
+
+\bibitem{yosinski2014transferable}
+Yosinski J, Clune J, Bengio Y, Lipson H. How Transferable Are Features in Deep Neural Networks?[C]//Advances in Neural Information Processing Systems. 2014: 3320--3328.
+
 \bibitem{moradi2019review}
 Moradi S, Zayed T, Golkhoo F. Review on Computer Aided Sewer Pipeline Defect Detection and Condition Assessment[J]. Infrastructures, 2019, 4(1): 10.
 
