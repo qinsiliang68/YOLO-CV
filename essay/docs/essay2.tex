@@ -284,21 +284,73 @@ Sewer-ML 数据集的发布为排水管道缺陷分类提供了统一的基准�
 \end{equation}
 
 \section{评价指标定义}
-在二分类 gate 语境中，\formalmetric{Spec@R99.5} 与 \formalmetric{Spec@R99.0} 分别表示在满足相应召回约束时的 specificity；\formalmetric{Prec@R99.0} 表示在 \formalmetric{Recall$\geq$99.0\%} 约束下的 precision。本文特别采用 \formalmetric{PTR@R99.0} 作为第四排序准则，其含义为在 \formalmetric{Recall$\geq$99.0\%} 对应阈值下的通过率，即仍被送往下一阶段的样本占全部样本的比例：
+
+\subsection{二分类混淆矩阵基础}
+在二分类门控语境中，模型对每个样本做出"异常"或"正常"的判定，与真实标签组合后产生四种结果：
+\begin{itemize}
+    \item \textbf{TP}（True Positive，真阳性）：真实为异常，模型判定为异常——正确保留了缺陷帧。
+    \item \textbf{FN}（False Negative，假阴性）：真实为异常，模型判定为正常——漏掉了缺陷帧，这是高召回门控中最不可接受的错误。
+    \item \textbf{TN}（True Negative，真阴性）：真实为正常，模型判定为正常——成功拦截了正常帧，不再送往后续阶段。
+    \item \textbf{FP}（False Positive，假阳性）：真实为正常，模型判定为异常——误将正常帧当作缺陷帧放行，增加了后续阶段的无效负担。
+\end{itemize}
+
+\begin{table}[H]
+    \centering
+    \caption{二分类混淆矩阵}
+    \label{tab:confusion-matrix}
+    \begin{tabular}{lcc}
+        \toprule
+         & 模型判定为异常 & 模型判定为正常 \\
+        \midrule
+        真实异常 & TP（正确保留） & FN（漏检） \\
+        真实正常 & FP（误放行） & TN（成功拦截） \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\noindent 在第一阶段门控任务中，FN 意味着缺陷帧被直接过滤掉而无法进入后续复核，代价极高；TN 意味着正常帧被前级成功拦截，是门控的核心收益。因此，本文的目标可以直观地理解为：在 FN 尽可能少（高召回）的前提下，让 TN 尽可能多（高拦截率）。
+
+\subsection{基础指标定义}
+基于上述四种结果，定义以下基础指标。记异常类样本总数为 $P = TP + FN$、正常类样本总数为 $N_{\mathrm{neg}} = TN + FP$，则
+
+\noindent\textbf{召回率}（Recall）衡量异常样本中被正确保留的比例：
 \begin{equation}
-\formalmetric{PTR@R99.0} = \frac{TP + FP}{N}.
+\mathrm{Recall} = \frac{TP}{TP + FN} = \frac{TP}{P}.
 \end{equation}
-为便于后续统一讨论，本文同时给出 recall、specificity 与 precision 的定义。记异常类样本总数为 $P$、正常类样本总数为 $N_{\mathrm{neg}}$，则
+Recall = 99.5\% 意味着每 200 个真实缺陷帧中最多漏掉 1 个。
+
+\noindent\textbf{特异度}（Specificity）衡量正常样本中被成功拦截的比例：
 \begin{equation}
-\mathrm{Recall} = \frac{TP}{TP + FN},
+\mathrm{Specificity} = \frac{TN}{TN + FP} = \frac{TN}{N_{\mathrm{neg}}}.
 \end{equation}
-\begin{equation}
-\mathrm{Specificity} = \frac{TN}{TN + FP},
-\end{equation}
+Specificity 越高，说明前级过滤掉的正常帧越多，后续阶段的无效负担越小。
+
+\noindent\textbf{精确率}（Precision）衡量模型判定为异常的样本中，真正是异常的比例：
 \begin{equation}
 \mathrm{Precision} = \frac{TP}{TP + FP}.
 \end{equation}
-其中，\formalmetric{Spec@R99.5} 与 \formalmetric{Spec@R99.0} 均是带有工作点约束的条件量，而 \formalmetric{PTR@R99.0} 则直接刻画固定高召回条件下进入下一阶段的样本负担，因此既具有统计意义，也具有工程意义。
+
+\subsection{本文的门控导向指标}
+在上述基础指标的基础上，本文定义四个带有工作点约束的门控导向指标：
+
+\begin{itemize}
+    \item \formalmetric{Spec@R99.5}：在召回率不低于 99.5\% 的约束下，所能达到的最高 specificity。
+    \item \formalmetric{Spec@R99.0}：在召回率不低于 99.0\% 的约束下，所能达到的最高 specificity。
+    \item \formalmetric{Prec@R99.0}：在召回率不低于 99.0\% 的约束下的 precision。
+    \item \formalmetric{PTR@R99.0}：在召回率不低于 99.0\% 对应阈值下的通过率（Pass-Through Rate），即仍被送往下一阶段的样本占全部样本的比例：
+\end{itemize}
+\begin{equation}
+\formalmetric{PTR@R99.0} = \frac{TP + FP}{N},
+\end{equation}
+其中 $N$ 为全部样本总数。PTR 越低，说明前级过滤效果越好，后续阶段需要处理的样本越少。
+
+这四个指标的排序优先级为
+\begin{equation}
+\formalmetric{Spec@R99.5} \succ \formalmetric{Spec@R99.0} \succ \formalmetric{Prec@R99.0} \succ \formalmetric{PTR@R99.0},
+\end{equation}
+即首先比较最严格召回约束下的拦截能力，只有在前一指标持平时才进入后续指标的 tie-break。这一排序规则贯穿本文所有模型比较与检查点选择。
+
+需要强调的是，\formalmetric{Spec@R99.5} 与 \formalmetric{Spec@R99.0} 均是带有工作点约束的条件量，而不是在默认阈值下计算的整体分类指标。\formalmetric{PTR@R99.0} 则直接刻画固定高召回条件下进入下一阶段的样本负担，因此既具有统计意义，也具有工程意义。
 
 \begin{table}[H]
     \centering
@@ -317,7 +369,29 @@ Sewer-ML 数据集的发布为排水管道缺陷分类提供了统一的基准�
 \end{table}
 
 \section{温度校准与门控导向的检查点选择}
-为避免不同检查点的分数尺度不可比，本文对每个轮次检查点采用单标量温度缩放 \cite{guo2017calibration}。具体流程如下：
+为避免不同检查点的分数尺度不可比，本文对每个轮次检查点采用单标量温度缩放 \cite{guo2017calibration}。在给出具体流程之前，先引入后续各章反复用到的三个基本变换。
+
+\subsection{logit 与 sigmoid 变换}
+对于取值在 $(0,1)$ 之间的概率 $p$，logit 函数将其映射到实数轴：
+\begin{equation}
+\operatorname{logit}(p) = \log\frac{p}{1-p}.
+\end{equation}
+其逆变换为 sigmoid 函数：
+\begin{equation}
+\sigma(x) = \frac{1}{1+e^{-x}},
+\end{equation}
+即 $\sigma(\operatorname{logit}(p)) = p$。logit 空间的线性移动对应概率空间中不同程度的非线性压缩或拉伸，因此本文在校准、阈值搜索和样本评分中均优先在 logit 空间上操作。
+
+\subsection{单标量温度缩放}
+设模型对样本 $x_i$ 的原始 logit 输出为 $z_i$，则温度缩放后的校准概率为
+\begin{equation}
+\label{eq:temperature-scaling}
+p_i = \sigma\!\left(\frac{z_i}{T}\right),
+\end{equation}
+其中 $T > 0$ 为在 val-cal 子集上以负对数似然为目标拟合的单一标量参数。当 $T > 1$ 时，logit 被压缩，校准后概率更趋保守；当 $T < 1$ 时，logit 被拉伸，概率分布更尖锐。温度缩放不改变样本的排序（因为 $\sigma(\cdot)$ 是单调函数），只改变概率值本身，从而使不同检查点之间的阈值具有可比性。
+
+\subsection{检查点选择流程}
+基于上述变换，检查点选择的具体流程如下：
 \begin{enumerate}[label=\arabic*.]
     \item 在固定的 val-cal 子集上拟合温度参数 $T$；
     \item 将该温度应用于 val-op 子集，得到 calibrated score；
@@ -338,24 +412,117 @@ Sewer-ML 数据集的发布为排水管道缺陷分类提供了统一的基准�
 其中 $\theta$ 表示模型参数，$\tau$ 表示工作阈值，$R^\ast$ 为预先设定的召回下界。与默认阈值分类不同，这一目标本质上属于”固定一个指标再优化另一个指标”的约束学习问题 \cite{kumar2021constrained}。因此，训练器侧报告的 \formalmetric{top1} 或默认验证精度并不天然对应本文真正关心的门控目标。
 
 \section{难样本挖掘与样本效用建模}
-HN 回流的直接动机是：训练阶段存在一批被当前门控赋予较高异常风险的正常样本，重复学习这些样本可能提升固定高召回条件下的正常样本拦截能力。然而，均匀难样本回流隐含了一个更强的前提，即候选池内部样本价值近似同质。当前 HN 曲线的非单调性表明，这一前提并不稳固；高风险样本并不等于高效样本，极端高分样本中可能同时混入采集噪声、模糊、反光或特征空间中的孤立异常点。
+本节围绕”什么样的训练样本更值得被重复学习”这一核心问题，依次引入五条理论线索。这些线索并非本文独创，而是来自校准与约束优化、训练动态分析、不确定性评估、结构化样本建模以及数据归因等已有研究方向；但本文将它们统一组织到固定高召回门控的语境下，为后续第 6 章的样本效用重加权提供完整的理论铺垫。
 
-这一判断与样本影响分析、主动选择与结构化样本价值建模文献的结论一致。Koh 与 Liang 指出，训练样本的价值不应只由表面损失大小决定，还应考虑其对目标函数的实际影响 \cite{koh2017influence}。BADGE 及其后续工作表明，不确定性与多样性应被联合考虑，而不能只依赖单一不确定性代理 \cite{ash2020badge,wu2022entropy,yang2024plug}。Kim 等与 Zhang 等进一步强调了结构支撑和训练动态对样本价值判断的重要性 \cite{kim2024structural,zhang2024tdds}。因此，基于已完成的容量扫描与 HN 结果，把”比例扫描”进一步推进为”固定预算下的样本效用重加权”是自然且必要的下一步。
+\subsection{Hard-Negative 回流的正式定义与动机}
+在本文语境中，Hard-Negative 回流（简称 HN 回流）是指：利用已训练的教师模型对训练集正常样本逐一推理，按校准后异常概率 $p_i$（见公式~\ref{eq:temperature-scaling}）从高到低排序，将排名靠前的高风险正常样本以额外副本的形式重新加入训练集，从而增加模型在门控边界附近对正常样本的学习强度。
+
+更形式化地，设训练正常样本集为 $\mathcal{N} = \{x_1, x_2, \dots, x_M\}$，教师模型对每个样本的校准异常概率为 $p_i$。取分数最高的前 $N_{\mathrm{pool}}$ 个样本构成难样本候选池：
+\begin{equation}
+\mathcal{N}_{\mathrm{hard}} = \operatorname{Top}_{N_{\mathrm{pool}}}(\mathcal{N},\ p_i).
+\end{equation}
+在固定的额外回流预算 $B$ 下，均匀回流（uniform replay）等概率地从 $\mathcal{N}_{\mathrm{hard}}$ 中采样 $B$ 次副本加入训练集；而加权回流（weighted replay）则按非均匀的采样概率 $\pi_i$ 进行分配，其中 $\sum_{i} \pi_i = 1$。两者的总回流量相同，区别在于候选池内部的样本分配方式。
+
+均匀回流隐含了一个前提：候选池内部样本的训练价值近似同质。然而，高风险样本不等于高价值样本——极端高分样本中可能混入采集噪声（如反光、模糊）、标注边界模糊或特征空间中的孤立异常点。因此，判断样本是否真正值得被重复学习，需要从以下五个维度进行分析。
+
+\subsection{校准后风险与门控边界相关性}
+样本效用的第一个维度是校准后风险。在固定召回约束的门控任务中，样本价值不应由原始异常概率 $p_i$ 的绝对大小决定，而应围绕门控工作阈值 $\tau$ 来定义 \cite{guo2017calibration,kumar2021constrained}。
+
+具体地，记教师模型在 \formalmetric{R99.5} 约束下的工作阈值为 $\tau_{99.5}$，则校准后风险项定义为
+\begin{equation}
+r_i = \max\!\left(0,\ \frac{p_i - \tau_{99.5}}{1 - \tau_{99.5}}\right),
+\qquad
+R_i = r_i^{\,\alpha},
+\end{equation}
+其中 $\alpha > 1$ 用于对真正靠近或超过门控边界的正常样本施加非线性放大。该定义的核心直觉是：一个 $p_i = 0.95$ 的样本和一个 $p_i = 0.30$（刚好在 $\tau_{99.5}$ 附近）的样本，对门控性能的影响可能截然不同。前者虽然异常概率极高，但可能只是反光或脏帧引发的极端个例；后者虽然概率不高，却恰好落在门控决策边界附近，对拦截率的边际影响更大。
+
+\subsection{训练动态与样本价值的时变性}
+样本效用的第二个维度来自训练动态（training dynamics）。Swayamdipta 等人在 Dataset Cartography 中指出，样本在训练过程中的行为模式可以将其区分为三类：easy（始终被正确分类）、ambiguous（在不同轮次间反复摇摆）和 hard-to-learn（持续被错分）\cite{swayamdipta2020cartography}。
+
+这一观点对本文的启示在于：样本的”难度”不应由某个固定检查点的一次打分快照决定，而应观察该样本在训练过程中是否持续靠近门控边界。如果一个样本仅在某个检查点偶然获得高分，但在相邻检查点上迅速回落，则它更可能是训练噪声而非系统性困难模式。
+
+本文的 HN 曲线已经从实验侧印证了这一判断：不同 HN 比例不仅改变了最终最优检查点的落点（第 5 章图~\ref{fig:hn-best-epoch-vs-ratio}），还改变了训练轨迹的整体形态（第 5 章图~\ref{fig:hn-m-epoch-dynamics}），说明样本对训练过程的影响是动态的、路径相关的，而不是静态可加的。
+
+\subsection{测试时增强与预测稳定性}
+样本效用的第三个维度是预测稳定性，其可观测代理为测试时增强（Test-Time Augmentation，简称 TTA）下的输出波动。
+
+TTA 的具体做法是：对同一图像 $x_i$ 施加 $K$ 次语义保持的轻量增强变换（如微小亮度扰动、对比度调整、轻微高斯模糊等），得到 $K$ 个增强版本 $\tilde{x}_i^{(1)}, \dots, \tilde{x}_i^{(K)}$。将这些增强版本逐一送入教师模型，得到 $K$ 个校准后异常概率 $p_i^{(1)}, \dots, p_i^{(K)}$。在 logit 空间中计算这些输出的方差：
+\begin{equation}
+v_i = \mathrm{Var}\!\left(\operatorname{logit}(p_i^{(1)}),\ \dots,\ \operatorname{logit}(p_i^{(K)})\right).
+\end{equation}
+相应的一致性稳定性项定义为
+\begin{equation}
+C_i = \exp\!\left(-\frac{v_i}{\sigma_c^2}\right),
+\end{equation}
+其中 $\sigma_c$ 由当前候选池的稳健尺度给出。当 $v_i$ 较小时（输出稳定），$C_i$ 接近 1；当 $v_i$ 较大时（输出剧烈波动），$C_i$ 趋近 0。
+
+该项的作用是抑制”高风险但极不稳定”的样本。一个真正的系统性困难模式——例如管壁水膜区域与轻微裂缝的视觉混淆——应当在轻微增强下保持一致的高异常概率；而采集噪声或偶发反光引起的高分，往往对微小扰动极度敏感 \cite{wu2022entropy}。
+
+\subsection{特征空间结构支撑与孤立点识别}
+样本效用的第四个维度来自特征空间的结构信息。Kim 等人在 CVPR 2024 的工作中，利用反向 $k$ 近邻（reverse k-NN）构建结构化标签，以区分特征流形上的系统性模式与孤立噪声 \cite{kim2024structural}。
+
+具体地，设模型倒数第二层对样本 $x_i$ 的特征输出为 $f_i \in \mathbb{R}^d$，则两个样本之间的余弦相似度定义为
+\begin{equation}
+\cos(f_i, f_j) = \frac{f_i \cdot f_j}{\|f_i\| \, \|f_j\|},
+\end{equation}
+其中 $\|\cdot\|$ 表示 $L_2$ 范数。$k$ 近邻（$k$-Nearest Neighbors，简称 kNN）是指在特征空间中与 $x_i$ 余弦相似度最高的 $k$ 个样本。基于此，邻域平均相似度定义为
+\begin{equation}
+d_i = \frac{1}{k}\sum_{j \in \mathrm{kNN}(i)} \cos(f_i, f_j),
+\qquad
+D_i = \mathrm{Norm}(d_i),
+\end{equation}
+其中 $\mathrm{Norm}(\cdot)$ 表示在候选池范围内的归一化。
+
+该项的核心直觉是：如果一个高风险正常样本在特征空间中拥有一组结构相似的近邻，则它更可能对应一种系统性的困难模式——例如特定光照条件下的管壁纹理与裂缝的视觉混淆，这种模式在数据集中反复出现，值得被重点学习。反之，如果一个高风险样本在特征空间中完全孤立，没有相似邻居，则它更可能是偶发的采集异常或标注边界模糊，其训练价值有限。
+
+\subsection{覆盖度、多样性与预算塌缩}
+样本效用的第五个维度是候选池的模式覆盖度。BADGE 及其后续工作表明，样本选择不能只追求单一维度上的极端值（如最高不确定性或最高风险），还必须保证所选子集能覆盖特征空间中的多种困难模式 \cite{ash2020badge,yang2024plug}。
+
+当采样概率高度集中于极少数样本时，会产生预算塌缩（budget collapse）现象：名义上的回流预算 $B$ 仍然不变，但实际上绝大部分预算被少数样本占据，导致候选池中其他有训练价值的困难模式被完全忽略。衡量预算集中度的一个指标是有效样本数（effective count）：
+\begin{equation}
+N_{\mathrm{eff}} = \exp\!\left(-\sum_{i} \pi_i \log \pi_i\right),
+\end{equation}
+其中 $\pi_i$ 为样本 $x_i$ 的采样概率。当所有样本等概率时，$N_{\mathrm{eff}}$ 等于池大小；当概率集中于少数样本时，$N_{\mathrm{eff}}$ 急剧下降。这一指标将在第 6 章中用于诊断加权回流方案的覆盖度损失。
+
+\subsection{几何平均作为联合约束逻辑}
+当需要将上述多个维度组合为统一的样本评分时，本文采用几何平均而非加权求和。对于 $n$ 个分量 $s_1, s_2, \dots, s_n$，几何平均定义为
+\begin{equation}
+S = (s_1 \cdot s_2 \cdots s_n)^{1/n}.
+\end{equation}
+几何平均的关键性质是：当任何一个分量为零时，总分即为零。这保留了”同时满足”的逻辑约束——一个样本若想获得高分，必须在所有分量上都达到一定水平，而不能靠某个极高的分量来补偿另一个为零的分量。相比之下，加权求和 $S = w_1 s_1 + w_2 s_2 + \cdots$ 允许这种补偿，这与本文对”同时具备风险、稳定性和结构支撑”的直觉不一致。
+
+\subsection{数据归因与影响分析}
+除上述五个维度外，样本效用建模还可以从数据归因（data attribution）的角度切入。Koh 与 Liang 指出，训练样本的价值不应只由其表面损失大小决定，还应考虑其对目标函数的实际影响方向与幅度 \cite{koh2017influence}。Zhang 等进一步通过训练动态视角构建了跨训练阶段的样本重要性评估 \cite{zhang2024tdds}。
+
+数据归因的核心问题是：给定一个目标查询集（例如当前门控仍然误放的正常样本），哪些训练样本对修正这些误放行为的正向影响最大？本文当前版本尚未在正文实验中引入完整的数据归因流程，但将其保留为后续训练侧优化的重要候选方向。
 
 \begin{table}[H]
     \centering
-    \caption{样本效用建模中三类关键信号的作用}
+    \caption{样本效用建模中五类关键信号的作用}
     \label{tab:sample-valuation-signals}
-    \begin{tabularx}{\textwidth}{p{2.6cm}p{3.3cm}Xp{2.3cm}}
+    \begin{tabularx}{\textwidth}{p{2.4cm}p{3.0cm}Xp{2.0cm}}
         \toprule
         信号类型 & 可观测量 & 作用机制 & 在本文中的对应 \\
         \midrule
         风险信号 & 校准后 abnormal score 与 threshold margin & 放大真正靠近门控边界的 normal & $R_i$ \\
         稳定性信号 & 轻量 TTA 下的 logit variance & 抑制高风险但极不稳定的伪难例 & $C_i$ \\
         结构支撑信号 & 特征空间邻域相似度 & 区分系统性困难模式与孤立异常点 & $D_i$ \\
+        覆盖度信号 & 有效样本数、模式覆盖度 & 防止预算塌缩导致多样性丢失 & $N_{\mathrm{eff}}$ \\
+        教师质量信号 & 教师训练状态与目标域贴合度 & 保证评分输入质量 & 教师选择 \\
         \bottomrule
     \end{tabularx}
 \end{table}
+
+\section{教师模型质量与评分输入偏差}
+上述五个维度的样本效用评估，都依赖同一个前提：教师模型的评分质量足以反映样本的真实训练价值。然而，这一前提并不天然成立。
+
+在样本效用建模的完整链条中，存在一条严格的因果传递关系：教师模型的训练状态决定打分质量，打分质量决定候选池的排序与组成，候选池的排序与组成决定加权回流的分配方式，加权回流的分配方式最终决定下游模型的训练质量。这一链条可以概括为
+\begin{equation}
+\text{教师质量} \longrightarrow \text{打分质量} \longrightarrow \text{选样质量} \longrightarrow \text{训练质量}.
+\end{equation}
+如果教师模型本身从未接触过目标域的困难模式，则其对样本难度的排序反映的是教师自身的认知盲区，而不是样本对目标训练状态的真实价值。换言之，无论下游的评分公式多么精密，如果输入端的打分本身就是有偏的，则整个重加权流程的输出也是有偏的——评分函数只能在教师模型给出的排序空间内做重分配，无法修正教师模型本身的认知缺陷。
+
+因此，教师模型的选择不是一个与评分函数平行的超参数，而是一个位于整个重加权流程上游的前置决策。这一判断将在第 6 章的负结果诊断中得到实验验证：当教师模型与最终对比目标之间存在训练状态错位时，无论 $R_i$、$C_i$、$D_i$ 如何组合，加权回流均未能超过均匀回流锚点。
 
 \section{六类源域视图的辅助地位}
 除直接二分类门控外，本文还组织了一条六类源域容量扫描，用于观察不同容量模型在源域表示任务上的相对位置。该视图的排序规则为 Accuracy、AUROC 与 AUPRC。然而，这一视图只承担辅助参考角色，不应替代二分类门控的骨干网络选择。
@@ -1315,6 +1482,9 @@ Kim M, Hwang J, Kim S, et al. Learning With Structural Labels for Learning With 
 
 \bibitem{zhang2024tdds}
 Zhang Y, Li X, Zhou Y, et al. Spanning Training Progress: Temporal Dual-Depth Scoring (TDDS) for Enhanced Dataset Pruning in Object Detection[C]//Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition. 2024: 17665--17675.
+
+\bibitem{swayamdipta2020cartography}
+Swayamdipta S, Schwartz R, Lourie N, et al. Dataset Cartography: Mapping and Diagnosing Datasets with Training Dynamics[C]//Proceedings of the 2020 Conference on Empirical Methods in Natural Language Processing. 2020: 9275--9293.
 
 \bibitem{situ2023transfer}
 Situ Z, Teng S, Feng W, et al. A Transfer Learning-Based YOLO Network for Sewer Defect Detection in Comparison to Classic Object Detection Methods[J]. Developments in the Built Environment, 2023, 15: 100191.
