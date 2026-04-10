@@ -1,0 +1,26 @@
+{
+  "ranking_rule": [
+    "Spec@R99.5 descending",
+    "Spec@R99.0 descending",
+    "Prec@R99.0 descending",
+    "PTR@R99.0 ascending"
+  ],
+  "rows": [
+    {
+      "epoch": 76,
+      "checkpoint_file": "best.pt",
+      "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_gate\\yolo11n_gate2_formal_200ep\\weights\\best.pt",
+      "temperature_T": 1.551809,
+      "tau_r995": 0.25,
+      "tau_r990": 0.36,
+      "spec_at_r995": 0.511905,
+      "spec_at_r990": 0.583333,
+      "prec_at_r990": 0.922395,
+      "ptr_at_r990": 0.894841,
+      "tn_at_r995": 43,
+      "fn_at_r995": 2,
+      "tn_at_r990": 49,
+      "fn_at_r990": 4
+    }
+  ]
+}
