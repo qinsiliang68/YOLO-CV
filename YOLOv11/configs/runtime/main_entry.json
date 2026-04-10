@@ -18,5 +18,10 @@
   "stage1_formal_gate_hn_x_sweep_config": "YOLOv11/configs/runtime/stage1_formal_gate_hn_x_sweep.json",
   "stage1_formal_gate_hn_x_crosscheck_config": "YOLOv11/configs/runtime/stage1_formal_gate_hn_x_crosscheck.json",
   "stage1_formal_gate_info_sampling_lite_config": "YOLOv11/configs/runtime/stage1_formal_gate_info_sampling_lite.json",
+  "stage1_formal_gate_bucket_pilot_config": "YOLOv11/configs/runtime/stage1_formal_gate_bucket_pilot.json",
+  "stage1_formal_gate_value_g1_config": "YOLOv11/configs/runtime/stage1_formal_gate_value_g1.json",
+  "stage1_formal_gate_value_g2_config": "YOLOv11/configs/runtime/stage1_formal_gate_value_g2.json",
+  "stage1_formal_gate_value_g3_config": "YOLOv11/configs/runtime/stage1_formal_gate_value_g3.json",
+  "stage1_formal_gate_value_g4_config": "YOLOv11/configs/runtime/stage1_formal_gate_value_g4.json",
   "cls6_sweep_config": "YOLOv11/configs/runtime/cls_cls6_sweep.json"
 }

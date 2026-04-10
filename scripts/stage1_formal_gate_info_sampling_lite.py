@@ -29,7 +29,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--rerun", action="store_true", help="Archive existing suite outputs before rerunning.")
     parser.add_argument("--preflight-only", action="store_true", help="Run setup, score, dataset, and validation checks without starting training.")
     parser.add_argument("--smoke-epochs", type=int, default=0, help="If >0, run an isolated smoke test for the selected setting(s) with this epoch count.")
-    parser.add_argument("--smoke-setting", default="", help="Optional setting_id to smoke-test, e.g. A2 or A4. Defaults to A4 when --smoke-epochs > 0.")
+    parser.add_argument("--smoke-setting", default="", help="Optional setting_id to smoke-test, e.g. G1 or A4. Defaults to the last configured setting when --smoke-epochs > 0.")
     return parser.parse_args()
 
 
@@ -68,6 +68,77 @@ def write_csv(path: Path, fieldnames: list[str], rows: list[dict[str, Any]]) -> 
 
 def normalize_path_token(text: str | Path) -> str:
     return str(text).replace("\\", "/").rstrip("/").lower()
+
+
+def try_rebase_repo_path(text: str | Path) -> Path | None:
+    raw = str(text or "").strip()
+    if not raw:
+        return None
+    path = Path(raw)
+    if path.exists():
+        return path.resolve()
+
+    normalized = raw.replace("\\", "/")
+    lower = normalized.lower()
+    markers = (
+        "yolo-cv/",
+        "yolov11/",
+        "research/",
+        "$out/",
+        "_recycle_bin/",
+    )
+    for marker in markers:
+        index = lower.rfind(marker)
+        if index < 0:
+            continue
+        if marker == "yolo-cv/":
+            suffix = normalized[index + len(marker) :]
+        else:
+            suffix = normalized[index:]
+        return (REPO_ROOT / Path(suffix)).resolve()
+    return None
+
+
+def resolve_repo_token(text: str | Path) -> str:
+    raw = str(text or "").strip()
+    if not raw:
+        return ""
+    path = Path(raw)
+    if path.exists():
+        return str(path.resolve())
+    rebased = try_rebase_repo_path(raw)
+    if rebased is not None:
+        return str(rebased)
+    return raw
+
+
+def resolve_manifest_checkpoint(summary_dir: Path, best_manifest: dict[str, Any]) -> str:
+    checkpoint_path = str(best_manifest.get("checkpoint_path", "")).strip()
+    checkpoint_file = str(best_manifest.get("checkpoint_file", "")).strip()
+    run_manifest = load_json_if_exists(summary_dir / "run_manifest.json")
+    run_dir_text = str(run_manifest.get("run_dir", "")).strip()
+
+    candidates: list[str] = []
+    if checkpoint_path:
+        candidates.append(resolve_repo_token(checkpoint_path))
+    if run_dir_text and checkpoint_file:
+        run_dir_candidate = resolve_repo_token(run_dir_text)
+        if run_dir_candidate:
+            candidates.append(str((Path(run_dir_candidate) / "weights" / checkpoint_file).resolve()))
+
+    seen: set[str] = set()
+    ordered_candidates: list[str] = []
+    for item in candidates:
+        key = normalize_path_token(item)
+        if not key or key in seen:
+            continue
+        seen.add(key)
+        ordered_candidates.append(item)
+
+    for item in ordered_candidates:
+        if Path(item).exists():
+            return str(Path(item).resolve())
+    return ordered_candidates[0] if ordered_candidates else checkpoint_path
 
 
 def sanitize_model_stem(model_name: str) -> str:
@@ -175,8 +246,15 @@ def build_setup_audit(
         else int(round(total_train_normals * float(fixed_budget_row.get("ratio_percent", 0.0) or 0.0) / 100.0))
     )
 
-    teacher_checkpoint = str(teacher_best.get("checkpoint_path", ""))
-    pool_teacher_checkpoint = str(pool_summary.get("weights", ""))
+    teacher_checkpoint = resolve_manifest_checkpoint(teacher_summary_dir, teacher_best)
+    uniform_checkpoint = resolve_manifest_checkpoint(uniform_anchor_summary_dir, uniform_best)
+    pool_teacher_checkpoint = resolve_repo_token(pool_summary.get("weights", ""))
+    if teacher_checkpoint and teacher_best:
+        teacher_best = dict(teacher_best)
+        teacher_best["checkpoint_path"] = teacher_checkpoint
+    if uniform_checkpoint and uniform_best:
+        uniform_best = dict(uniform_best)
+        uniform_best["checkpoint_path"] = uniform_checkpoint
     required_inputs = {
         "hn_summary_csv": hn_summary_csv.exists(),
         "teacher_best_manifest": teacher_manifest_path.exists(),
@@ -210,7 +288,7 @@ def build_setup_audit(
         "pool_summary_top_k": int(pool_summary.get("top_k", len(pool_top_rows))),
         "pool_total_train_normals": total_train_normals,
         "pool_teacher_checkpoint_path": pool_teacher_checkpoint,
-        "pool_teacher_matches_hn00_teacher": bool(pool_teacher_checkpoint and teacher_checkpoint) and normalize_path_token(pool_teacher_checkpoint) == normalize_path_token(teacher_checkpoint),
+        "pool_teacher_matches_teacher": bool(pool_teacher_checkpoint and teacher_checkpoint) and normalize_path_token(pool_teacher_checkpoint) == normalize_path_token(teacher_checkpoint),
         "teacher_summary_row": teacher_row,
         "budget_anchor_summary_row": fixed_budget_row,
         "fixed_budget_count": fixed_budget_count,
@@ -220,9 +298,9 @@ def build_setup_audit(
         "core_inputs_ready": all(required_inputs.values()),
     }
     audit["notes"] = [
-        "Teacher defaults to hn00 unless the existing hard-normal pool provenance contradicts this assumption.",
-        "This suite keeps the top250 hard-normal pool fixed and only redistributes replay probability under the hn14-equivalent budget.",
-        "A0/A1 are reused anchors; only A2/A3/A4 are newly trained.",
+        "Teacher, candidate pool width, and probability concentration can be varied by config for controlled experiments.",
+        "This suite keeps the replay budget fixed to the hn14-equivalent extra-normal count unless explicitly redefined.",
+        "Anchor settings may be reused while only the configured new settings are newly trained.",
     ]
 
     results_dir.mkdir(parents=True, exist_ok=True)
@@ -240,7 +318,7 @@ def build_setup_audit(
                 f"- budget anchor ratio: `{audit['budget_anchor_ratio_id']}`",
                 f"- fixed budget count: `{audit['fixed_budget_count']}`",
                 f"- fixed pool size: `{audit['pool_top_count']}`",
-                f"- pool provenance matches hn00 teacher: `{audit['pool_teacher_matches_hn00_teacher']}`",
+                f"- pool provenance matches current teacher: `{audit['pool_teacher_matches_teacher']}`",
                 f"- source dataset exists: `{audit['source_dataset_exists']}`",
                 f"- core inputs ready: `{audit['core_inputs_ready']}`",
                 "",
@@ -323,7 +401,7 @@ def build_preflight_report(
             "checkpoint_path": audit["teacher_checkpoint_path"],
             "checkpoint_exists": audit["teacher_checkpoint_exists"],
             "summary_dir": str(teacher_summary_dir),
-            "pool_teacher_matches_hn00_teacher": bool(audit["pool_teacher_matches_hn00_teacher"]),
+            "pool_teacher_matches_teacher": bool(audit["pool_teacher_matches_teacher"]),
         },
         "pool": {
             "candidate_top_k": int(cfg.get("candidate_top_k", 250) or 250),
@@ -522,8 +600,8 @@ def build_preflight_report(
         audit["core_inputs_ready"]
         and audit["teacher_checkpoint_exists"]
         and audit["source_dataset_exists"]
-        and audit["pool_teacher_matches_hn00_teacher"]
-        and int(audit["pool_top_count"]) == int(cfg.get("candidate_top_k", 250) or 250)
+        and (not bool(cfg.get("require_pool_teacher_match", True)) or audit["pool_teacher_matches_teacher"])
+        and int(audit["pool_top_count"]) >= int(cfg.get("candidate_top_k", 250) or 250)
         and settings_ok
         and cleanup_scope["safe"]
         and hn_schema_ok
@@ -546,7 +624,7 @@ def build_preflight_report(
         f"- pool exact reuse source: `{preflight['pool']['pool_source_csv']}`",
         f"- fixed budget count: `{preflight['budget']['fixed_budget_count']}`",
         f"- checked settings: `{', '.join(preflight['checked_settings']) or 'none'}`",
-        f"- pool provenance matches hn00 teacher: `{preflight['teacher']['pool_teacher_matches_hn00_teacher']}`",
+        f"- pool provenance matches current teacher: `{preflight['teacher']['pool_teacher_matches_teacher']}`",
         f"- core inputs ready: `{audit['core_inputs_ready']}`",
         f"- rerun cleanup scope safe: `{preflight['rerun_scope']['safe']}`",
         f"- ready_for_full_train: `{preflight['ready_for_full_train']}`",
@@ -581,6 +659,7 @@ def build_preflight_report(
 def maybe_prepare_scores(
     *,
     cfg: dict[str, Any],
+    settings: list[dict[str, Any]],
     source_dataset: Path,
     score_output_dir: Path,
     scratch_root: Path,
@@ -595,9 +674,10 @@ def maybe_prepare_scores(
 ) -> None:
     expected_outputs = [
         score_output_dir / "candidate_pool_master.csv",
-        score_output_dir / "A2_candidate_pool_scores.csv",
-        score_output_dir / "A3_candidate_pool_scores.csv",
-        score_output_dir / "A4_candidate_pool_scores.csv",
+        *[
+            score_output_dir / f"{resolve_str(setting.get('setting_id'), '').upper()}_candidate_pool_scores.csv"
+            for setting in settings
+        ],
         score_output_dir / "table_score_component_stats.csv",
         score_output_dir / "pool_source_manifest.json",
     ]
@@ -674,6 +754,20 @@ def maybe_prepare_scores(
             str(int(cfg.get("seed", 20260330) or 20260330)),
             "--normal-class",
             resolve_str(cfg.get("normal_class"), "Normal"),
+            *[
+                arg
+                for setting in settings
+                for arg in (
+                    "--setting",
+                    "|".join(
+                        [
+                            resolve_str(setting.get("setting_id"), "").upper(),
+                            resolve_str(setting.get("setting_name"), resolve_str(setting.get("setting_id"), "").lower()),
+                            resolve_str(setting.get("score_variant"), "risk_only"),
+                        ]
+                    ),
+                )
+            ],
         ],
         dry_run=dry_run,
     )
@@ -962,13 +1056,16 @@ def main() -> None:
     scratch_root = resolve_path(cfg.get("scratch_root"), base=REPO_ROOT / "$out" / "scratch" / "stage1_formal" / "gate_info_sampling_lite")
     dataset_view_root = resolve_path(cfg.get("dataset_view_root"), base=YOLOV11_ROOT / "datasets" / "stage1_formal_gate_info_sampling_lite")
     split_csv = resolve_path(cfg.get("split_csv"), base=REPO_ROOT / "research" / "materials" / "stage1_formal" / "manifests" / "val_cal_op_split.csv")
+    settings = cfg.get("settings") or []
+    if not isinstance(settings, list) or not settings:
+        raise SystemExit("Config field `settings` must define at least one new setting.")
 
     smoke_setting = args.smoke_setting.strip().upper()
     if args.smoke_epochs < 0:
         raise SystemExit("--smoke-epochs must be >= 0")
     if args.smoke_epochs > 0:
         if not smoke_setting:
-            smoke_setting = "A4"
+            smoke_setting = resolve_str(settings[-1].get("setting_id"), "").upper()
         mode_suffix = f"smoke_{smoke_setting.lower()}_{int(args.smoke_epochs)}ep"
         print_step("mode", f"smoke test enabled: setting={smoke_setting} epochs={int(args.smoke_epochs)}")
         project_root = project_root / mode_suffix
@@ -1001,6 +1098,7 @@ def main() -> None:
     if audit["core_inputs_ready"] or args.dry_run:
         maybe_prepare_scores(
             cfg=cfg,
+            settings=settings,
             source_dataset=source_dataset,
             score_output_dir=score_output_dir,
             scratch_root=scratch_root,
@@ -1016,28 +1114,29 @@ def main() -> None:
     else:
         print_step("preflight", "skip score preparation because required input files are missing")
 
-    suite_rows: list[dict[str, Any]] = [
-        {
-            "setting_id": "A0",
-            "setting_name": "hn00",
-            "run_name": str(try_resolve_ratio_row(hn_summary_csv, "hn00").get("run_name", "yolo11m_gate2_formal_200ep")),
-            "run_dir": str(teacher_best.get("checkpoint_path", "")),
-            "summary_dir": str(teacher_summary_dir),
-            "status": "reused",
-        },
-        {
-            "setting_id": "A1",
-            "setting_name": "uniform_hn14",
-            "run_name": str(try_resolve_ratio_row(hn_summary_csv, resolve_str(cfg.get("uniform_anchor_ratio_id"), "hn14")).get("run_name", "yolo11m_gate2_formal_hn14_200ep")),
-            "run_dir": str(uniform_anchor_best.get("checkpoint_path", "")),
-            "summary_dir": str(uniform_anchor_summary_dir),
-            "status": "reused",
-        },
-    ]
-
-    settings = cfg.get("settings") or []
-    if not isinstance(settings, list) or not settings:
-        raise SystemExit("Config field `settings` must define A2/A3/A4.")
+    suite_rows: list[dict[str, Any]] = []
+    if bool(cfg.get("include_teacher_anchor", True)):
+        suite_rows.append(
+            {
+                "setting_id": resolve_str(cfg.get("teacher_anchor_setting_id"), "A0"),
+                "setting_name": resolve_str(cfg.get("teacher_anchor_setting_name"), "hn00"),
+                "run_name": str(try_resolve_ratio_row(hn_summary_csv, resolve_str(cfg.get("teacher_ratio_id"), "hn00")).get("run_name", "yolo11m_gate2_formal_200ep")),
+                "run_dir": str(teacher_best.get("checkpoint_path", "")),
+                "summary_dir": str(teacher_summary_dir),
+                "status": "reused",
+            }
+        )
+    if bool(cfg.get("include_uniform_anchor", True)):
+        suite_rows.append(
+            {
+                "setting_id": resolve_str(cfg.get("uniform_anchor_setting_id"), "A1"),
+                "setting_name": resolve_str(cfg.get("uniform_anchor_setting_name"), "uniform_hn14"),
+                "run_name": str(try_resolve_ratio_row(hn_summary_csv, resolve_str(cfg.get("uniform_anchor_ratio_id"), "hn14")).get("run_name", "yolo11m_gate2_formal_hn14_200ep")),
+                "run_dir": str(uniform_anchor_best.get("checkpoint_path", "")),
+                "summary_dir": str(uniform_anchor_summary_dir),
+                "status": "reused",
+            }
+        )
     if smoke_setting:
         settings = [item for item in settings if resolve_str(item.get("setting_id"), "").upper() == smoke_setting]
         if not settings:
@@ -1093,8 +1192,7 @@ def main() -> None:
 
     if not preflight["ready_for_full_train"] and not args.dry_run:
         raise SystemExit(
-            "Preflight failed. Inspect research/results/stage1_formal/gate_info_sampling_lite/"
-            "PREFLIGHT_gate_info_sampling_lite.md before smoke/full runs."
+            f"Preflight failed. Inspect {results_dir / 'PREFLIGHT_gate_info_sampling_lite.md'} before smoke/full runs."
         )
 
     epochs_override = int(args.smoke_epochs) if args.smoke_epochs > 0 else None

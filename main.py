@@ -32,6 +32,11 @@ BUILTIN_STAGE1_ENTRY_CONFIG = {
     "stage1_formal_gate_hn_x_sweep_config": r"YOLOv11\configs\runtime\stage1_formal_gate_hn_x_sweep.json",
     "stage1_formal_gate_hn_x_crosscheck_config": r"YOLOv11\configs\runtime\stage1_formal_gate_hn_x_crosscheck.json",
     "stage1_formal_gate_info_sampling_lite_config": r"YOLOv11\configs\runtime\stage1_formal_gate_info_sampling_lite.json",
+    "stage1_formal_gate_bucket_pilot_config": r"YOLOv11\configs\runtime\stage1_formal_gate_bucket_pilot.json",
+    "stage1_formal_gate_value_g1_config": r"YOLOv11\configs\runtime\stage1_formal_gate_value_g1.json",
+    "stage1_formal_gate_value_g2_config": r"YOLOv11\configs\runtime\stage1_formal_gate_value_g2.json",
+    "stage1_formal_gate_value_g3_config": r"YOLOv11\configs\runtime\stage1_formal_gate_value_g3.json",
+    "stage1_formal_gate_value_g4_config": r"YOLOv11\configs\runtime\stage1_formal_gate_value_g4.json",
 }
 
 
@@ -64,6 +69,12 @@ def parse_args() -> argparse.Namespace:
             "stage1_formal_gate_hn_all",
             "stage1_formal_gate_hn_ns_all",
             "stage1_formal_gate_info_sampling_lite",
+            "stage1_formal_gate_bucket_pilot",
+            "stage1_formal_gate_value_g1",
+            "stage1_formal_gate_value_g2",
+            "stage1_formal_gate_value_g3",
+            "stage1_formal_gate_value_g4",
+            "stage1_formal_gate_value_g0_g4_all",
         ),
         default="auto",
         help="Task to run. 'auto' reads YOLOv11/configs/runtime/main_entry.json.",
@@ -820,6 +831,89 @@ def run_stage1_formal_gate_info_sampling_lite(
         ],
         dry_run=False,
     )
+
+
+def run_stage1_formal_gate_bucket_pilot(
+    entry_cfg: dict,
+    *,
+    dry_run: bool,
+    rerun: bool,
+    preflight_only: bool,
+) -> None:
+    config_path = resolve_path(
+        entry_cfg.get("stage1_formal_gate_bucket_pilot_config"),
+        base=YOLOV11_ROOT / "configs" / "runtime" / "stage1_formal_gate_bucket_pilot.json",
+    )
+    run_python(
+        "scripts/stage1_formal_gate_bucket_pilot.py",
+        [
+            "--config",
+            str(config_path),
+            *(["--dry-run"] if dry_run else []),
+            *(["--rerun"] if rerun else []),
+            *(["--preflight-only"] if preflight_only else []),
+        ],
+        dry_run=False,
+    )
+
+
+def run_stage1_formal_gate_value_control(
+    entry_cfg: dict,
+    *,
+    variant: str,
+    dry_run: bool,
+    rerun: bool,
+    preflight_only: bool,
+    smoke_epochs: int,
+    smoke_setting: str,
+) -> None:
+    variant_map = {
+        "g1": ("stage1_formal_gate_value_g1_config", "stage1_formal_gate_value_g1.json"),
+        "g2": ("stage1_formal_gate_value_g2_config", "stage1_formal_gate_value_g2.json"),
+        "g3": ("stage1_formal_gate_value_g3_config", "stage1_formal_gate_value_g3.json"),
+        "g4": ("stage1_formal_gate_value_g4_config", "stage1_formal_gate_value_g4.json"),
+    }
+    if variant not in variant_map:
+        raise SystemExit(f"Unsupported gate value control variant: {variant}")
+    key, base_name = variant_map[variant]
+    config_path = resolve_path(
+        entry_cfg.get(key),
+        base=YOLOV11_ROOT / "configs" / "runtime" / base_name,
+    )
+    run_python(
+        "scripts/stage1_formal_gate_info_sampling_lite.py",
+        [
+            "--config",
+            str(config_path),
+            *(["--dry-run"] if dry_run else []),
+            *(["--rerun"] if rerun else []),
+            *(["--preflight-only"] if preflight_only else []),
+            *(["--smoke-epochs", str(int(smoke_epochs))] if int(smoke_epochs) > 0 else []),
+            *(["--smoke-setting", smoke_setting] if str(smoke_setting).strip() else []),
+        ],
+        dry_run=False,
+    )
+
+
+def run_stage1_formal_gate_value_controls_all(
+    entry_cfg: dict,
+    *,
+    dry_run: bool,
+    rerun: bool,
+    preflight_only: bool,
+) -> None:
+    for variant in ("g1", "g2", "g3", "g4"):
+        run_stage1_formal_gate_value_control(
+            entry_cfg,
+            variant=variant,
+            dry_run=dry_run,
+            rerun=rerun,
+            preflight_only=preflight_only,
+            smoke_epochs=0,
+            smoke_setting="",
+        )
+
+
 def run_stage1_embed_supcon(entry_cfg: dict, dry_run: bool) -> None:
     config_path = resolve_path(
         entry_cfg.get("stage1_embed_supcon_config"),
@@ -961,6 +1055,66 @@ def main() -> None:
             preflight_only=args.preflight_only,
             smoke_epochs=args.smoke_epochs,
             smoke_setting=args.smoke_setting,
+        )
+        return
+    if task_name == "stage1_formal_gate_bucket_pilot":
+        run_stage1_formal_gate_bucket_pilot(
+            entry_cfg,
+            dry_run=args.dry_run,
+            rerun=args.rerun,
+            preflight_only=args.preflight_only,
+        )
+        return
+    if task_name == "stage1_formal_gate_value_g1":
+        run_stage1_formal_gate_value_control(
+            entry_cfg,
+            variant="g1",
+            dry_run=args.dry_run,
+            rerun=args.rerun,
+            preflight_only=args.preflight_only,
+            smoke_epochs=args.smoke_epochs,
+            smoke_setting=args.smoke_setting,
+        )
+        return
+    if task_name == "stage1_formal_gate_value_g2":
+        run_stage1_formal_gate_value_control(
+            entry_cfg,
+            variant="g2",
+            dry_run=args.dry_run,
+            rerun=args.rerun,
+            preflight_only=args.preflight_only,
+            smoke_epochs=args.smoke_epochs,
+            smoke_setting=args.smoke_setting,
+        )
+        return
+    if task_name == "stage1_formal_gate_value_g3":
+        run_stage1_formal_gate_value_control(
+            entry_cfg,
+            variant="g3",
+            dry_run=args.dry_run,
+            rerun=args.rerun,
+            preflight_only=args.preflight_only,
+            smoke_epochs=args.smoke_epochs,
+            smoke_setting=args.smoke_setting,
+        )
+        return
+    if task_name == "stage1_formal_gate_value_g4":
+        run_stage1_formal_gate_value_control(
+            entry_cfg,
+            variant="g4",
+            dry_run=args.dry_run,
+            rerun=args.rerun,
+            preflight_only=args.preflight_only,
+            smoke_epochs=args.smoke_epochs,
+            smoke_setting=args.smoke_setting,
+        )
+        return
+    if task_name == "stage1_formal_gate_value_g0_g4_all":
+        run_stage1_formal_gate_value_controls_all(
+            entry_cfg,
+            dry_run=args.dry_run,
+            rerun=args.rerun,
+            preflight_only=args.preflight_only,
         )
         return
     raise SystemExit(f"Unsupported task: {task_name}")

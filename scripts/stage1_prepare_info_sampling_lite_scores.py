@@ -33,6 +33,12 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--kappa", type=float, default=2.0, help="Nonlinear amplification used for replay probability.")
     parser.add_argument("--seed", type=int, default=20260330, help="Base random seed.")
     parser.add_argument("--normal-class", default="Normal", help="Class treated as normal.")
+    parser.add_argument(
+        "--setting",
+        action="append",
+        default=[],
+        help="Optional setting triple encoded as setting_id|setting_name|score_variant.",
+    )
     return parser.parse_args()
 
 
@@ -195,6 +201,28 @@ def finite_flags(values: list[float]) -> tuple[bool, bool]:
     return has_nan, has_inf
 
 
+def resolve_variant_defs(setting_specs: list[str]) -> list[tuple[str, str, str]]:
+    if not setting_specs:
+        return [
+            ("A2", "weighted_hn14_risk_only", "risk_only"),
+            ("A3", "weighted_hn14_risk_consistency", "risk_consistency"),
+            ("A4", "weighted_hn14_risk_consistency_density", "risk_consistency_density"),
+        ]
+    variant_defs: list[tuple[str, str, str]] = []
+    allowed = {"risk_only", "risk_consistency", "risk_consistency_density"}
+    for spec in setting_specs:
+        parts = [part.strip() for part in str(spec).split("|")]
+        if len(parts) != 3:
+            raise SystemExit(f"Invalid --setting spec `{spec}`. Expected setting_id|setting_name|score_variant.")
+        setting_id, setting_name, score_variant = parts
+        if not setting_id or not setting_name or not score_variant:
+            raise SystemExit(f"Invalid --setting spec `{spec}`. Empty field is not allowed.")
+        if score_variant not in allowed:
+            raise SystemExit(f"Unsupported score_variant `{score_variant}` in `{spec}`.")
+        variant_defs.append((setting_id, setting_name, score_variant))
+    return variant_defs
+
+
 def rank_pool_rows(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
     return sorted(rows, key=lambda row: float(row["pool_score_anchor"]), reverse=True)
 
@@ -293,11 +321,7 @@ def main() -> None:
         row["C"] = round(float(c_score), 6)
         row["D"] = round(float(d_score), 6)
 
-    variant_defs = [
-        ("A2", "weighted_hn14_risk_only", "risk_only"),
-        ("A3", "weighted_hn14_risk_consistency", "risk_consistency"),
-        ("A4", "weighted_hn14_risk_consistency_density", "risk_consistency_density"),
-    ]
+    variant_defs = resolve_variant_defs(args.setting)
     variant_rows: dict[str, list[dict[str, Any]]] = {}
     stats_rows: list[dict[str, Any]] = []
     variant_details: dict[str, Any] = {}
