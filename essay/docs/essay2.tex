@@ -251,12 +251,7 @@ Sewer-ML 数据集的发布为排水管道缺陷分类提供了统一的基准�
 本文的技术路线由四个递进阶段组成。首先，在直接二分类门控（direct binary gate）与六类源域视图（six-class source）两个视图上分别执行容量扫描，并通过温度校准、阈值搜索与外部评估器确定骨干网络排序。其次，以二分类门控视图下的主模型 \texttt{yolo11m-cls} 为起点，执行完整 HN 比例扫描，并在 \texttt{yolo11x-cls} 上做轻量跨容量验证，用以判断 HN 收益的最优比例点与模型相关性，同时把问题先收缩到”均匀回流的最佳预算落点”。再次，结合 HN 曲线的非单调性以及难样本候选池的内部异质性，本文把“加多少”进一步抽象为“固定预算下哪些样本该被重复学习”的问题，并提出 Gate-Aligned Effective Information Score lite 作为后续重加权框架。最后，全文通过 manifest、summary、registry 和附录中的溯源档案保证结果可复现与可审计。
 
 \section{主要创新点}
-围绕上述主线，本文的主要创新点体现在以下三个方面：
-\begin{enumerate}[label=\arabic*.]
-    \item 将第一阶段重新界定为固定高召回约束下的门控任务，并给出一套由温度校准、val-cal/val-op 划分、逐轮外部评估和门控导向检查点选择共同构成的评价协议。
-    \item 完成两套容量扫描与主模型上的 HN 比例扫描，给出从骨干网络选择、检查点错位到 HN 最优比例点的系统性第一阶段证据链，并明确直接二分类门控才是主裁判视图。
-    \item 在 HN 非单调收益和难样本候选池异质性的基础上，把研究问题从 HN 的数量维度推进到固定预算回流的组成维度，提出面向固定预算的门控导向有效信息量评分（GAEIS lite）重加权框架，并给出”静态一次性加权回流尚未超过 \texttt{uniform\_hn14}”的边界结论。
-\end{enumerate}
+围绕上述主线，本文的主要创新点体现在以下三个方面。第一，将第一阶段重新界定为固定高召回约束下的门控任务，并给出一套由温度校准、val-cal/val-op 划分、逐轮外部评估和门控导向检查点选择共同构成的评价协议。第二，完成两套容量扫描与主模型上的 HN 比例扫描，给出从骨干网络选择、检查点错位到 HN 最优比例点的系统性第一阶段证据链，并明确直接二分类门控才是主裁判视图。第三，在 HN 非单调收益和难样本候选池异质性的基础上，把研究问题从 HN 的数量维度推进到固定预算回流的组成维度，提出面向固定预算的门控导向有效信息量评分（GAEIS lite）重加权框架，并给出”静态一次性加权回流尚未超过 \texttt{uniform\_hn14}”的边界结论。
 
 \section{论文组织结构}
 全文围绕第一阶段主线的选模、训练侧增强和样本重加权展开。第 2 章介绍高召回门控的理论基础、指标定义和样本效用建模动机；第 3 章说明数据集、实验平台和工作集组织方式；第 4 章集中报告二分类门控容量扫描、六类源域辅助视图以及跨视图错位；第 5 章报告主模型上的 HN 比例扫描、跨容量验证以及从均匀回流最优比例点到池内异质性的问题收缩；第 6 章给出从 \texttt{hn14} 推进到固定预算样本重分配的有效信息量方法、诊断图表与负结果边界；第 7 章总结当前已建立的第一阶段证据链及其工程启示；附录部分进一步补充协议摘要、HN 来源材料以及信息量重加权的复现接口与溯源清单。
@@ -607,14 +602,7 @@ S = (s_1 \cdot s_2 \cdots s_n)^{1/n}.
 \end{table}
 
 \section{训练平台与实验环境}
-全部容量扫描均以 YOLO11-cls 五个尺度模型为候选，即 \texttt{yolo11n-cls}、\texttt{yolo11s-cls}、\texttt{yolo11m-cls}、\texttt{yolo11l-cls} 与 \texttt{yolo11x-cls}。统一训练协议如下：
-\begin{itemize}
-    \item batch size 固定为 24；
-    \item 训练轮数固定为 200；
-    \item 每轮保存检查点；
-    \item 不使用训练器侧 \formalmetric{top1} 作为早停准则；
-    \item 所有正文结果均由外部 evaluator 汇总。
-\end{itemize}
+全部容量扫描均以 YOLO11-cls 五个尺度模型为候选，即 \texttt{yolo11n-cls}、\texttt{yolo11s-cls}、\texttt{yolo11m-cls}、\texttt{yolo11l-cls} 与 \texttt{yolo11x-cls}。统一训练协议如下：batch size 固定为 24，训练轮数固定为 200，每轮保存检查点，不使用训练器侧 \formalmetric{top1} 作为早停准则，所有正文结果均由外部 evaluator 汇总。
 
 \begin{table}[H]
     \centering
@@ -637,12 +625,7 @@ S = (s_1 \cdot s_2 \cdots s_n)^{1/n}.
 \end{table}
 
 \section{HN 回流设置与候选池来源}
-在基线容量扫描完成后，本文不再重新开启骨干网络选择问题，而是在已固定的主模型上组织 HN 增强。具体地：
-\begin{itemize}
-    \item 主模型 \texttt{yolo11m-cls} 上执行完整 HN 比例扫描：\texttt{hn00, hn02, hn04, \ldots, hn20}；
-    \item 第二模型 \texttt{yolo11x-cls} 上执行轻量跨容量验证：\texttt{hn00} 与 \texttt{hn02}；
-    \item 所有 HN 结果继续沿用与基线完全相同的门控导向排序规则。
-\end{itemize}
+在基线容量扫描完成后，本文不再重新开启骨干网络选择问题，而是在已固定的主模型上组织 HN 增强。具体地，主模型 \texttt{yolo11m-cls} 上执行完整 HN 比例扫描（\texttt{hn00, hn02, hn04, \ldots, hn20}），第二模型 \texttt{yolo11x-cls} 上执行轻量跨容量验证（\texttt{hn00} 与 \texttt{hn02}），所有 HN 结果继续沿用与基线完全相同的门控导向排序规则。
 
 当前工作集记录显示，\texttt{yolo11m} 的 HN 资产来自 1080 个训练正常样本，其中得分最高的 250 个样本构成难样本候选池，占训练正常样本总量的 23.15\%。
 
@@ -1440,13 +1423,7 @@ S_i^{(A4)} = (R_i C_i D_i)^{1/3},
 \chapter{复现实验命令、目录结构与溯源清单}
 
 \section{训练脚本与运行入口}
-当前 lite 版重加权实验的训练入口统一为 \texttt{main.py} 中的 \texttt{stage1\_formal\_gate\_info\_sampling\_lite} 任务。其脚本组织如下：
-\begin{enumerate}[label=\arabic*.]
-    \item \texttt{stage1\_prepare\_info\_sampling\_lite\_scores.py}：生成 top250 pool 的 one-shot score、采样概率与 score statistics；
-    \item \texttt{stage1\_build\_info\_sampling\_lite\_dataset.py}：在固定 \texttt{hn14} 预算下构建 weighted replay 数据集视图；
-    \item \texttt{stage1\_formal\_gate\_info\_sampling\_lite.py}：组织 preflight、smoke、full-run 和 suite-level summary；
-    \item \texttt{stage1\_build\_info\_sampling\_lite\_paper\_assets.py}：生成 tables、figures、summary 与 manifests。
-\end{enumerate}
+当前 lite 版重加权实验的训练入口统一为 \texttt{main.py} 中的 \texttt{stage1\_formal\_gate\_info\_sampling\_lite} 任务。其脚本组织如下：首先由 \texttt{stage1\_prepare\_info\_sampling\_lite\_scores.py} 生成 top250 pool 的 one-shot score、采样概率与 score statistics；然后由 \texttt{stage1\_build\_info\_sampling\_lite\_dataset.py} 在固定 \texttt{hn14} 预算下构建 weighted replay 数据集视图；接着由 \texttt{stage1\_formal\_gate\_info\_sampling\_lite.py} 组织 preflight、smoke、full-run 和 suite-level summary；最后由 \texttt{stage1\_build\_info\_sampling\_lite\_paper\_assets.py} 生成 tables、figures、summary 与 manifests。
 为避免误用，teacher 固定为 \texttt{yolo11m-cls + hn00} 的 gate-best checkpoint，hard pool 固定为既有 \texttt{top\_false\_positive\_normals.csv}，budget 固定为 151。若 preflight 或 smoke 未通过，本文不建议直接启动 full-run。
 
 \section{目录结构与溯源清单}
