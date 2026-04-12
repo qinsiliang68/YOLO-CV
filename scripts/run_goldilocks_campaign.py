@@ -130,7 +130,7 @@ def compute_T_signal(pool: list[dict]) -> dict[str, float]:
             op_json = epoch_dir / "threshold_operating_points_calibrated.json"
             if op_json.exists():
                 ops = json.loads(op_json.read_text(encoding="utf-8"))
-                tau = float(ops.get("r995", {}).get("tau", 0.28))
+                tau = float(ops.get("recall_ge_99_5", {}).get("threshold", 0.28))
             else:
                 tau = 0.28
             tau_per_epoch[ep] = tau
@@ -138,13 +138,16 @@ def compute_T_signal(pool: list[dict]) -> dict[str, float]:
             pred_csv = epoch_dir / "val_op_predictions_calibrated.csv"
             if not pred_csv.exists():
                 continue
+            # build mapping from short img_id (e.g. "00467510") to pool image_id ("Normal_00467510")
             with open(pred_csv, "r", encoding="utf-8-sig") as f:
                 for row in csv.DictReader(f):
-                    img_id = row.get("image_id", "")
-                    if img_id in sample_logits:
-                        score = float(row.get("calibrated_score", row.get("score", 0)))
+                    raw_id = row.get("img_id", "")
+                    # try both formats: with and without "Normal_" prefix
+                    full_id = f"Normal_{raw_id}" if not raw_id.startswith("Normal_") else raw_id
+                    if full_id in sample_logits:
+                        score = float(row.get("p_abnormal_calibrated", row.get("abnormal_conf", 0)))
                         score = max(1e-6, min(1 - 1e-6, score))
-                        sample_logits[img_id][ep] = math.log(score / (1 - score))
+                        sample_logits[full_id][ep] = math.log(score / (1 - score))
 
     if not tau_per_epoch:
         print("  WARNING: per_epoch_gate not found, using R as proxy for T")
@@ -374,9 +377,19 @@ def build_dataset_view(exp_id: str, selected_ids: list[str],
 
 def run_training(exp_id: str, ds_root: Path, teacher_ckpt: str, device: str) -> Path:
     run_dir = CAMP_RUNS / exp_id
-    if (run_dir / "weights" / "last.pt").exists():
-        print(f"    training exists, skipping")
-        return run_dir
+    last_pt = run_dir / "weights" / "last.pt"
+    if last_pt.exists():
+        try:
+            import torch
+            state = torch.load(str(last_pt), map_location="cpu", weights_only=False)
+            completed_epoch = state.get("epoch", 0)
+            if completed_epoch >= SHARED_PROTOCOL["epochs"] - 1:
+                print(f"    training complete ({completed_epoch+1} epochs), skipping")
+                return run_dir
+            else:
+                print(f"    incomplete training ({completed_epoch+1}/{SHARED_PROTOCOL['epochs']} epochs), retraining")
+        except Exception:
+            print(f"    last.pt exists but unreadable, retraining")
     from ultralytics import YOLO
     model = YOLO(teacher_ckpt)
     model.train(data=str(ds_root), project=str(CAMP_RUNS), name=exp_id,
@@ -384,7 +397,7 @@ def run_training(exp_id: str, ds_root: Path, teacher_ckpt: str, device: str) -> 
     return run_dir
 
 
-def run_gate_eval(exp_id: str, run_dir: Path) -> dict[str, Any]:
+def run_gate_eval(exp_id: str, run_dir: Path, dataset_root: Path) -> dict[str, Any]:
     summary_dir = CAMP_ROOT / exp_id
     summary_dir.mkdir(parents=True, exist_ok=True)
     if (summary_dir / "best_epoch_manifest.json").exists():
@@ -392,13 +405,16 @@ def run_gate_eval(exp_id: str, run_dir: Path) -> dict[str, Any]:
         print(f"    eval exists: Spec@R99.5={m.get('spec_at_r995', '?')}")
         return m
     eval_script = SCRIPTS_DIR / "stage1_formal_gate_epoch_eval.py"
-    cfg = {"run_dir": str(run_dir), "split_csv": str(SPLIT_CSV),
-           "summary_dir": str(summary_dir), "produce_per_epoch_gate": True,
-           "produce_dashboard": False}
-    cfg_path = summary_dir / "_eval_config.json"
-    cfg_path.write_text(json.dumps(cfg, indent=2), encoding="utf-8")
     import subprocess
-    subprocess.run([sys.executable, str(eval_script), "--config", str(cfg_path)], cwd=str(REPO_ROOT))
+    result = subprocess.run([
+        sys.executable, str(eval_script),
+        "--run-dir", str(run_dir),
+        "--data-root", str(dataset_root),
+        "--summary-dir", str(summary_dir),
+        "--split-csv", str(SPLIT_CSV),
+    ], cwd=str(REPO_ROOT))
+    if result.returncode != 0:
+        print(f"    WARNING: gate eval failed (exit {result.returncode})")
     if (summary_dir / "best_epoch_manifest.json").exists():
         m = json.loads((summary_dir / "best_epoch_manifest.json").read_text(encoding="utf-8"))
         print(f"    eval complete: Spec@R99.5={m.get('spec_at_r995', '?')}")
@@ -479,10 +495,19 @@ def main():
         for k in K_VALUES:
             D_values_by_k[k] = compute_D_for_k(pool, k)
 
-    # pre-sort pools
+    # pre-sort pools (only for available signals)
     sorted_pools: dict[str, list[dict]] = {}
     for sig_key in ["R", "T", "C"] + [f"D-k{k:02d}" for k in K_VALUES]:
-        sorted_pools[sig_key] = sort_pool(pool, sig_key, T_values, D_values_by_k)
+        if sig_key == "T" and T_values is None:
+            sorted_pools[sig_key] = sorted(pool, key=lambda r: float(r.get("R", 0)), reverse=True)
+        elif sig_key.startswith("D-k"):
+            k_val = int(sig_key.split("k")[1])
+            if k_val in D_values_by_k:
+                sorted_pools[sig_key] = sort_pool(pool, sig_key, T_values, D_values_by_k)
+            else:
+                sorted_pools[sig_key] = sorted(pool, key=lambda r: float(r.get("D", 0)), reverse=True)
+        else:
+            sorted_pools[sig_key] = sort_pool(pool, sig_key, T_values, D_values_by_k)
 
     all_results = []
     peak_results_path = CAMP_RESULTS / "peak_results.json"
@@ -523,7 +548,7 @@ def main():
             ds = build_dataset_view(exp["id"], selected_ids, id_to_fn)
             t0 = time.time()
             rd = run_training(exp["id"], ds, teacher_ckpt, args.device)
-            m = run_gate_eval(exp["id"], rd)
+            m = run_gate_eval(exp["id"], rd, ds)
             all_results.append({**exp, "spec_at_r995": m.get("spec_at_r995"),
                                 "best_epoch": m.get("epoch"),
                                 "train_hours": round((time.time()-t0)/3600, 2)})
@@ -538,7 +563,7 @@ def main():
             ds = build_dataset_view(exp["id"], selected_ids, id_to_fn)
             t0 = time.time()
             rd = run_training(exp["id"], ds, teacher_ckpt, args.device)
-            m = run_gate_eval(exp["id"], rd)
+            m = run_gate_eval(exp["id"], rd, ds)
             all_results.append({**exp, "spec_at_r995": m.get("spec_at_r995"),
                                 "best_epoch": m.get("epoch"),
                                 "train_hours": round((time.time()-t0)/3600, 2)})

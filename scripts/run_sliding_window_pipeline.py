@@ -272,7 +272,7 @@ def run_training(exp_id: str, dataset_root: Path, teacher_ckpt: str,
     return run_dir
 
 
-def run_gate_eval(exp_id: str, run_dir: Path) -> dict[str, Any]:
+def run_gate_eval(exp_id: str, run_dir: Path, dataset_root: Path) -> dict[str, Any]:
     """Run gate evaluation on all checkpoints."""
     summary_dir = SW_ROOT / exp_id
     summary_dir.mkdir(parents=True, exist_ok=True)
@@ -283,21 +283,14 @@ def run_gate_eval(exp_id: str, run_dir: Path) -> dict[str, Any]:
         return manifest
 
     eval_script = SCRIPTS_DIR / "stage1_formal_gate_epoch_eval.py"
-    eval_config = {
-        "run_dir": str(run_dir),
-        "split_csv": str(SPLIT_CSV),
-        "summary_dir": str(summary_dir),
-        "produce_per_epoch_gate": True,
-        "produce_dashboard": False,
-    }
-    config_path = summary_dir / "_eval_config.json"
-    config_path.write_text(json.dumps(eval_config, indent=2), encoding="utf-8")
-
     import subprocess
-    result = subprocess.run(
-        [sys.executable, str(eval_script), "--config", str(config_path)],
-        cwd=str(REPO_ROOT),
-    )
+    result = subprocess.run([
+        sys.executable, str(eval_script),
+        "--run-dir", str(run_dir),
+        "--data-root", str(dataset_root),
+        "--summary-dir", str(summary_dir),
+        "--split-csv", str(SPLIT_CSV),
+    ], cwd=str(REPO_ROOT))
     if result.returncode != 0:
         print(f"    WARNING: gate eval failed for {exp_id}")
         return {}
@@ -337,7 +330,7 @@ def run_experiment(exp: dict, pool_sorted: list[dict],
     t0 = time.time()
     run_dir = run_training(exp_id, ds_root, teacher_ckpt, device)
     train_time = time.time() - t0
-    manifest = run_gate_eval(exp_id, run_dir)
+    manifest = run_gate_eval(exp_id, run_dir, ds_root)
 
     result = {
         "experiment_id": exp_id,
