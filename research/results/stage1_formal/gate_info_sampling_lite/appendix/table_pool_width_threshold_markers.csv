@@ -1,8 +1,0 @@
-﻿marker,value
-tau_r995,0.28
-tau_r990,0.31
-top250_cutoff,0.113281
-top250_median,0.2854005
-top250_ratio,0.23148148148148148
-total_train_normals,1080.0
-candidate_top_k,250.0

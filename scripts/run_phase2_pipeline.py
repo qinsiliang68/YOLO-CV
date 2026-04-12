@@ -29,7 +29,7 @@ sys.path.insert(0, str(SCRIPTS_DIR))
 
 DATASET_SOURCE = REPO_ROOT / "YOLOv11" / "datasets" / "sewerml_gate2_train7200"
 SPLIT_CSV = REPO_ROOT / "research" / "materials" / "stage1_formal" / "manifests" / "val_cal_op_split.csv"
-POOL_MASTER = REPO_ROOT / "research" / "materials" / "stage1_formal" / "gate_info_sampling_lite" / "score_inputs" / "candidate_pool_master.csv"
+POOL_MASTER = REPO_ROOT / "research" / "materials" / "stage1_formal" / "gate_bucket_pilot" / "score_inputs" / "candidate_pool_master.csv"
 TEACHER_MANIFEST = REPO_ROOT / "research" / "materials" / "stage1_formal" / "gate_hn_m_sweep" / "hn00" / "best_epoch_manifest.json"
 
 PHASE2_ROOT = REPO_ROOT / "research" / "materials" / "stage1_formal" / "gate_phase2"

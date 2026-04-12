@@ -1,0 +1,94 @@
+{
+  "task_name": "stage1_formal_gate_value_g1",
+  "mode": "dry_run",
+  "smoke_epochs": 0,
+  "smoke_setting": "",
+  "teacher": {
+    "ratio_id": "hn00",
+    "checkpoint_path": "C:\\GitHub\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_gate\\yolo11m_gate2_formal_200ep\\weights\\epoch_078.pt",
+    "checkpoint_exists": false,
+    "summary_dir": "C:\\GitHub\\YOLO-CV\\research\\materials\\stage1_formal\\gate_hn_m_sweep\\hn00",
+    "pool_teacher_matches_teacher": true
+  },
+  "pool": {
+    "candidate_top_k": 250,
+    "pool_top_count": 250,
+    "pool_source_csv": "C:\\GitHub\\YOLO-CV\\research\\materials\\stage1_formal\\gate_hn_assets\\yolo11m_train_normal_scores\\top_false_positive_normals.csv",
+    "pool_scores_csv": "C:\\GitHub\\YOLO-CV\\research\\materials\\stage1_formal\\gate_hn_assets\\yolo11m_train_normal_scores\\train_normal_scores.csv",
+    "pool_is_reused_existing_top250": true
+  },
+  "budget": {
+    "budget_anchor_ratio_id": "hn14",
+    "fixed_budget_count": 151,
+    "uniform_anchor_ratio_id": "hn14"
+  },
+  "score_checks": {
+    "G1": {
+      "score_csv": "C:\\GitHub\\YOLO-CV\\research\\materials\\stage1_formal\\gate_value_controls\\g1\\score_inputs\\G1_candidate_pool_scores.csv",
+      "score_csv_exists": false,
+      "schema_ok": false,
+      "missing_columns": [
+        "setting_id",
+        "image_id",
+        "img_rel_path",
+        "pool_rank",
+        "calibrated_p",
+        "R",
+        "C",
+        "D",
+        "S",
+        "pi",
+        "duplication_count"
+      ]
+    }
+  },
+  "dataset_checks": {
+    "G1": {
+      "dataset_root": "C:\\GitHub\\YOLO-CV\\YOLOv11\\datasets\\stage1_formal_gate_value_controls\\g1\\g1_risk_only_hn00_pool250_k2",
+      "weighted_replay_summary_exists": false
+    }
+  },
+  "schema_checks": {
+    "anchors": {
+      "hn_summary_csv": "C:\\GitHub\\YOLO-CV\\research\\results\\stage1_formal\\gate_hn_m_sweep\\hn_sweep_summary.csv",
+      "hn_summary_schema_ok": true,
+      "hn_summary_missing_columns": [],
+      "teacher_best_manifest_ok": true,
+      "teacher_best_manifest_missing": [],
+      "uniform_best_manifest_ok": true,
+      "uniform_best_manifest_missing": []
+    },
+    "G1": {
+      "summary_dir": "C:\\GitHub\\YOLO-CV\\research\\materials\\stage1_formal\\gate_value_controls\\g1\\g1_risk_only_hn00_pool250_k2",
+      "best_epoch_manifest_exists": false,
+      "epoch_gate_summary_exists": false,
+      "best_manifest_schema_ok": null,
+      "best_manifest_missing": [],
+      "epoch_summary_schema_ok": null,
+      "epoch_summary_missing": []
+    }
+  },
+  "rerun_scope": {
+    "cleanup_roots": [
+      "C:\\GitHub\\YOLO-CV\\research\\materials\\stage1_formal\\gate_value_controls\\g1",
+      "C:\\GitHub\\YOLO-CV\\research\\results\\stage1_formal\\gate_value_controls\\g1",
+      "C:\\GitHub\\YOLO-CV\\YOLOv11\\datasets\\stage1_formal_gate_value_controls\\g1",
+      "C:\\GitHub\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_gate_value_controls\\g1",
+      "C:\\GitHub\\YOLO-CV\\_recycle_bin\\stage1_formal\\gate_value_controls\\g1",
+      "C:\\GitHub\\YOLO-CV\\$out\\scratch\\stage1_formal\\gate_value_controls\\g1",
+      "C:\\GitHub\\YOLO-CV\\$out\\generated_configs\\stage1_formal\\gate_value_controls\\g1"
+    ],
+    "protected_hn_roots": [
+      "C:\\GitHub\\YOLO-CV\\research\\materials\\stage1_formal\\gate_hn_m_sweep",
+      "C:\\GitHub\\YOLO-CV\\research\\results\\stage1_formal\\gate_hn_m_sweep",
+      "C:\\GitHub\\YOLO-CV\\research\\results\\stage1_formal\\gate_hn_overview",
+      "C:\\GitHub\\YOLO-CV\\research\\materials\\stage1_formal\\gate_hn_assets"
+    ],
+    "safe": true,
+    "violations": []
+  },
+  "ready_for_full_train": false,
+  "checked_settings": [
+    "G1"
+  ]
+}

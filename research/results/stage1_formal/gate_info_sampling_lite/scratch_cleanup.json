@@ -1,6 +1,0 @@
-{
-  "removed_paths": [
-    "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\$out\\scratch\\stage1_formal\\gate_info_sampling_lite\\teacher_train_features"
-  ],
-  "reason": "large temporary feature/embedding exports are not kept in the formal working set"
-}

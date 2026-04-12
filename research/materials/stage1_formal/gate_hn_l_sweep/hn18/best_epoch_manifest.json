@@ -1,0 +1,16 @@
+{
+  "epoch": 1,
+  "checkpoint_file": "epoch_001.pt",
+  "checkpoint_path": "H:\\stage1_HN_l_pt_files\\checkpoints\\stage1_formal_gate_hn\\yolo11l_gate2_formal_hn18_200ep\\weights\\epoch_001.pt",
+  "temperature_T": 1.23534,
+  "tau_r995": 0.16,
+  "tau_r990": 0.21,
+  "spec_at_r995": 0.47619,
+  "spec_at_r990": 0.511905,
+  "prec_at_r990": 0.91048,
+  "ptr_at_r990": 0.90873,
+  "tn_at_r995": 40,
+  "fn_at_r995": 2,
+  "tn_at_r990": 43,
+  "fn_at_r990": 3
+}

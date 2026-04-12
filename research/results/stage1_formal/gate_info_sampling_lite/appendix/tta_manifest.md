@@ -1,5 +1,0 @@
-# tta_manifest
-
-- K: `5`
-- variants: `['orig', 'bright_down', 'bright_up', 'contrast_down', 'blur_light']`
-- note: `Only low-distortion semantic-preserving TTA variants are used for consistency scoring.`

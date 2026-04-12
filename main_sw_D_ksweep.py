@@ -22,7 +22,7 @@ REPO_ROOT = Path(__file__).resolve().parent
 SCRIPTS_DIR = REPO_ROOT / "scripts"
 sys.path.insert(0, str(SCRIPTS_DIR))
 
-POOL_MASTER = REPO_ROOT / "research" / "materials" / "stage1_formal" / "gate_info_sampling_lite" / "score_inputs" / "candidate_pool_master.csv"
+POOL_MASTER = REPO_ROOT / "research" / "materials" / "stage1_formal" / "gate_bucket_pilot" / "score_inputs" / "candidate_pool_master.csv"
 SW_ROOT = REPO_ROOT / "research" / "materials" / "stage1_formal" / "gate_sliding_window"
 SW_RESULTS = REPO_ROOT / "research" / "results" / "stage1_formal" / "gate_sliding_window"
 
