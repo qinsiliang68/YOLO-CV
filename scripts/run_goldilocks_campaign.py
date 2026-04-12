@@ -130,7 +130,7 @@ def compute_T_signal(pool: list[dict]) -> dict[str, float]:
             op_json = epoch_dir / "threshold_operating_points_calibrated.json"
             if op_json.exists():
                 ops = json.loads(op_json.read_text(encoding="utf-8"))
-                tau = float(ops.get("recall_ge_99_5", {}).get("threshold", 0.28))
+                tau = float(ops.get("operating_points", {}).get("recall_ge_99_5", {}).get("threshold", 0.28))
             else:
                 tau = 0.28
             tau_per_epoch[ep] = tau
@@ -151,6 +151,22 @@ def compute_T_signal(pool: list[dict]) -> dict[str, float]:
 
     if not tau_per_epoch:
         print("  WARNING: per_epoch_gate not found, using R as proxy for T")
+        print("  NOTE: To compute real T signal, run stage1_extract_T_signal.py first")
+        T_values = {r["image_id"]: float(r["R"]) for r in pool}
+        cache_path.parent.mkdir(parents=True, exist_ok=True)
+        cache_path.write_text(json.dumps(T_values, indent=2), encoding="utf-8")
+        return T_values
+
+    # IMPORTANT: val_op predictions contain VALIDATION samples, but pool samples
+    # are from TRAINING set. We need to check if there's any overlap.
+    # If not, we need per-checkpoint inference on training samples instead.
+    pool_matched = sum(1 for pid in pool_ids if any(sample_logits[pid]))
+    if pool_matched == 0:
+        print("  WARNING: val_op predictions have zero overlap with pool samples")
+        print("  (pool = training normals, val_op = validation samples)")
+        print("  T signal requires per-checkpoint inference on training candidates.")
+        print("  Falling back to R as proxy for T.")
+        print("  To compute real T: run stage1_extract_T_signal.py before campaign.")
         T_values = {r["image_id"]: float(r["R"]) for r in pool}
         cache_path.parent.mkdir(parents=True, exist_ok=True)
         cache_path.write_text(json.dumps(T_values, indent=2), encoding="utf-8")
@@ -630,7 +646,7 @@ def main():
             ds = build_dataset_view(exp["id"], selected_ids, id_to_fn)
             t0 = time.time()
             rd = run_training(exp["id"], ds, teacher_ckpt, args.device)
-            m = run_gate_eval(exp["id"], rd)
+            m = run_gate_eval(exp["id"], rd, ds)
             all_results.append({**exp, "spec_at_r995": m.get("spec_at_r995"),
                                 "n_selected": len(selected_ids),
                                 "best_epoch": m.get("epoch"),
