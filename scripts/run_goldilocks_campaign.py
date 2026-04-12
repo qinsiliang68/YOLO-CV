@@ -489,6 +489,8 @@ def main():
         return
 
     pool = load_pool()
+    if not pool:
+        raise SystemExit("ERROR: candidate_pool_master.csv has no data rows")
     teacher_ckpt = load_teacher_checkpoint()
     id_to_fn = build_id_to_filename(pool)
 
@@ -658,14 +660,23 @@ def main():
     print(f"  Campaign complete. {total_h:.1f}h")
     print(f"{'='*60}\n")
 
+    # append to summary CSV (not overwrite) so multi-call usage preserves all results
     summary_path = CAMP_RESULTS / "goldilocks_campaign_summary.csv"
     summary_path.parent.mkdir(parents=True, exist_ok=True)
     fields = ["id", "phase", "signal", "signal_key", "rank_start", "rank_end",
               "center_pct", "spec_at_r995", "best_epoch", "train_hours"]
-    with open(summary_path, "w", newline="", encoding="utf-8") as f:
+    write_header = not summary_path.exists()
+    existing_ids = set()
+    if summary_path.exists():
+        with open(summary_path, "r", encoding="utf-8") as f:
+            for row in csv.DictReader(f):
+                existing_ids.add(row.get("id", ""))
+    new_rows = [r for r in all_results if r.get("id", "") not in existing_ids]
+    with open(summary_path, "a", newline="", encoding="utf-8") as f:
         w = csv.DictWriter(f, fieldnames=fields, extrasaction="ignore")
-        w.writeheader()
-        w.writerows(all_results)
+        if write_header:
+            w.writeheader()
+        w.writerows(new_rows)
 
     print(f"  Summary: {summary_path}")
     for r in all_results:

@@ -24,9 +24,11 @@ import sys
 from pathlib import Path
 
 import numpy as np
-import torch
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
+SCRIPTS_DIR = REPO_ROOT / "scripts"
+sys.path.insert(0, str(SCRIPTS_DIR))
+
 POOL_MASTER = REPO_ROOT / "research" / "materials" / "stage1_formal" / "gate_bucket_pilot" / "score_inputs" / "candidate_pool_master.csv"
 DATASET_SOURCE = REPO_ROOT / "YOLOv11" / "datasets" / "sewerml_gate2_train7200"
 TEACHER_RUN_DIR = REPO_ROOT / "YOLOv11" / "runs" / "stage1_formal_gate" / "yolo11m_gate2_formal_200ep"
@@ -44,7 +46,6 @@ def load_pool() -> list[dict]:
 
 
 def get_checkpoint_path(epoch: int) -> Path:
-    """Find checkpoint file for given epoch."""
     weights_dir = TEACHER_RUN_DIR / "weights"
     candidates = [
         weights_dir / f"epoch_{epoch:03d}.pt",
@@ -58,44 +59,82 @@ def get_checkpoint_path(epoch: int) -> Path:
     raise FileNotFoundError(f"Checkpoint for epoch {epoch} not found in {weights_dir}")
 
 
-def run_inference_on_pool(checkpoint_path: Path, pool: list[dict], device: str) -> dict[str, float]:
-    """Run inference on pool samples using given checkpoint, return calibrated scores."""
+def infer_pool_samples(checkpoint_path: Path, pool: list[dict], device: str) -> tuple[dict[str, float], float]:
+    """
+    Run inference on pool samples + val_cal for temperature calibration.
+    Returns (pool_scores, temperature).
+    """
     from ultralytics import YOLO
+    import torch
 
     model = YOLO(str(checkpoint_path))
 
-    # calibrate temperature on val_cal
-    from temperature_scale_gate_runs import fit_temperature, prediction_view
-    from collect_cls_raw_materials import collect_validation_predictions
-
-    # get val predictions for temperature fitting
-    val_preds = collect_validation_predictions(
-        model_path=str(checkpoint_path),
-        data_root=str(DATASET_SOURCE),
-        split="val",
-        device=device,
-        imgsz=640,
-        batch=24,
-    )
-
-    # load split info
-    split_rows = {}
-    with open(SPLIT_CSV, "r", encoding="utf-8-sig") as f:
-        for row in csv.DictReader(f):
-            split_rows[row.get("img_id", row.get("image_id", ""))] = row.get("cal_or_op", "")
-
-    cal_preds = [p for p in val_preds if split_rows.get(p.get("img_id", ""), "") == "cal"]
-
-    if cal_preds:
-        T_temp = fit_temperature(cal_preds)
+    # Step 1: get val_cal predictions for temperature fitting
+    val_dir = DATASET_SOURCE / "val"
+    if not val_dir.exists():
+        print(f"    WARNING: val dir not found, using T=1.0")
+        temperature = 1.0
     else:
-        T_temp = 1.0
+        # run prediction on val set
+        results_val = model.predict(
+            source=str(val_dir),
+            device=device, imgsz=640, batch=24, verbose=False,
+        )
 
-    # now run inference on pool samples (training normals)
-    scores = {}
+        # load split CSV to identify cal vs op
+        cal_ids = set()
+        with open(SPLIT_CSV, "r", encoding="utf-8-sig") as f:
+            for row in csv.DictReader(f):
+                if row.get("cal_or_op", "") == "cal":
+                    cal_ids.add(row.get("img_id", ""))
+
+        # collect cal logits and labels
+        cal_logits = []
+        cal_labels = []
+        for r in results_val:
+            img_name = Path(r.path).stem
+            if img_name not in cal_ids:
+                continue
+            probs = r.probs
+            if probs is None:
+                continue
+            # get abnormal probability (class index depends on training)
+            p_data = probs.data.cpu()
+            if p_data.shape[0] == 2:
+                logit_abnormal = float(torch.log(p_data[0] / p_data[1])) if p_data[1] > 1e-8 else 0.0
+            else:
+                logit_abnormal = 0.0
+            # determine label from directory
+            parent_name = Path(r.path).parent.name
+            label = 1 if parent_name != "Normal" else 0
+            cal_logits.append(logit_abnormal)
+            cal_labels.append(label)
+
+        if len(cal_logits) >= 10:
+            # fit temperature using simple grid search on NLL
+            logits_t = torch.tensor(cal_logits, dtype=torch.float32)
+            labels_t = torch.tensor(cal_labels, dtype=torch.float32)
+            best_T = 1.0
+            best_nll = float("inf")
+            for T_cand in np.arange(0.5, 5.0, 0.05):
+                scaled = logits_t / T_cand
+                probs_scaled = torch.sigmoid(scaled)
+                nll = -torch.mean(labels_t * torch.log(probs_scaled + 1e-8) +
+                                  (1 - labels_t) * torch.log(1 - probs_scaled + 1e-8))
+                if nll < best_nll:
+                    best_nll = nll
+                    best_T = T_cand
+            temperature = float(best_T)
+        else:
+            temperature = 1.0
+
+    print(f"    Temperature: {temperature:.4f}")
+
+    # Step 2: run inference on pool samples (training normals)
     train_normal_dir = DATASET_SOURCE / "train" / "Normal"
+    scores = {}
 
-    for row in pool:
+    for i, row in enumerate(pool):
         img_id = row["image_id"]
         filename = Path(row.get("img_rel_path", "")).name
         img_path = train_normal_dir / filename
@@ -108,18 +147,23 @@ def run_inference_on_pool(checkpoint_path: Path, pool: list[dict], device: str) 
         if results and len(results) > 0:
             probs = results[0].probs
             if probs is not None:
-                p_abnormal = float(probs.data[0])  # assuming class 0 = Abnormal
-                # apply temperature scaling
-                logit = math.log(max(p_abnormal, 1e-6) / max(1 - p_abnormal, 1e-6))
-                scaled_logit = logit / T_temp
-                p_calibrated = 1.0 / (1.0 + math.exp(-scaled_logit))
+                p_data = probs.data.cpu()
+                if p_data.shape[0] == 2:
+                    logit = float(torch.log(p_data[0] / p_data[1])) if p_data[1] > 1e-8 else 0.0
+                else:
+                    logit = 0.0
+                scaled_logit = logit / temperature
+                p_calibrated = float(torch.sigmoid(torch.tensor(scaled_logit)))
                 scores[img_id] = p_calibrated
             else:
                 scores[img_id] = 0.5
         else:
             scores[img_id] = 0.5
 
-    return scores
+        if (i + 1) % 50 == 0:
+            print(f"    scored {i+1}/{len(pool)} samples")
+
+    return scores, temperature
 
 
 def main():
@@ -128,9 +172,11 @@ def main():
     args = parser.parse_args()
 
     pool = load_pool()
+    if not pool:
+        sys.exit("ERROR: candidate_pool_master.csv has no data rows")
     print(f"Pool: {len(pool)} samples")
+    print(f"Checkpoints: {T_CHECKPOINTS}")
 
-    # collect per-checkpoint scores
     checkpoint_scores: dict[int, dict[str, float]] = {}
     checkpoint_taus: dict[int, float] = {}
 
@@ -143,28 +189,25 @@ def main():
             print(f"    SKIP: {e}")
             continue
 
-        scores = run_inference_on_pool(ckpt_path, pool, args.device)
+        scores, temperature = infer_pool_samples(ckpt_path, pool, args.device)
         checkpoint_scores[ep] = scores
 
-        # estimate tau_r995 from the scores distribution
-        score_vals = sorted(scores.values(), reverse=True)
-        # tau_r995 ≈ threshold where 99.5% of abnormals are above
-        # for normal samples, use a rough estimate based on score distribution
-        tau = float(np.percentile(list(scores.values()), 70))  # rough proxy
+        # estimate tau from calibrated scores
+        score_vals = list(scores.values())
+        tau = float(np.percentile(score_vals, 70))
         checkpoint_taus[ep] = tau
-        print(f"    scored {len(scores)} samples, tau_est={tau:.4f}")
+        print(f"    scored {len(scores)} samples, tau_est={tau:.4f}, T={temperature:.4f}")
 
     if len(checkpoint_scores) < 3:
-        print(f"\n  ERROR: only {len(checkpoint_scores)} checkpoints available, need at least 3")
-        print(f"  T signal cannot be computed. Campaign will use R as proxy.")
-        return
+        print(f"\n  ERROR: only {len(checkpoint_scores)} checkpoints available, need >= 3")
+        sys.exit(1)
 
     # compute T signal
     print(f"\n  Computing T signal from {len(checkpoint_scores)} checkpoints...")
     T_values = {}
-    pool_ids = [r["image_id"] for r in pool]
 
-    for img_id in pool_ids:
+    for row in pool:
+        img_id = row["image_id"]
         b_vals = []
         for ep, scores in checkpoint_scores.items():
             if img_id not in scores:
@@ -186,15 +229,14 @@ def main():
         else:
             T_values[img_id] = 0.0
 
-    # save
     output_path = OUTPUT_DIR / "T_signal_cache.json"
     output_path.parent.mkdir(parents=True, exist_ok=True)
     output_path.write_text(json.dumps(T_values, indent=2), encoding="utf-8")
 
-    # summary
-    vals = list(T_values.values())
-    print(f"\n  T signal extracted for {len(T_values)} samples")
-    print(f"  min={min(vals):.6f}, max={max(vals):.6f}, mean={np.mean(vals):.6f}")
+    vals = [v for v in T_values.values() if v > 0]
+    print(f"\n  T signal extracted: {len(T_values)} samples ({len(vals)} nonzero)")
+    if vals:
+        print(f"  min={min(vals):.6f}, max={max(vals):.6f}, mean={np.mean(vals):.6f}")
     print(f"  saved → {output_path}")
 
 
