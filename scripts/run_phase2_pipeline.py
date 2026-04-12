@@ -119,16 +119,30 @@ def build_dataset_view(
     if n_unique == 0:
         raise ValueError(f"No samples selected for {experiment_id}")
 
+    # build image_id → actual filename mapping from pool master
+    id_to_filename = {}
+    pool_rows = load_pool()
+    for row in pool_rows:
+        img_id = row["image_id"]
+        rel_path = row.get("img_rel_path", "")
+        if rel_path:
+            id_to_filename[img_id] = Path(rel_path).name
+        else:
+            # fallback: strip "Normal_" prefix
+            numeric = img_id.replace("Normal_", "")
+            id_to_filename[img_id] = f"{numeric}.png"
+
     copies_needed = replay_count
     for copy_idx in range(copies_needed):
         src_id = selected_ids[copy_idx % n_unique]
-        src_file = src_train_normal / f"{src_id}.png"
+        filename = id_to_filename.get(src_id, f"{src_id}.png")
+        src_file = src_train_normal / filename
         if not src_file.exists():
-            alt = list(src_train_normal.glob(f"{src_id}.*"))
+            alt = list(src_train_normal.glob(f"*{src_id.replace('Normal_', '')}*"))
             if alt:
                 src_file = alt[0]
             else:
-                print(f"    WARNING: {src_id} not found in training normal dir")
+                print(f"    WARNING: {src_id} ({filename}) not found in training normal dir")
                 continue
         dst_name = f"_replay_{experiment_id}_{copy_idx:04d}_{src_file.name}"
         dst = train_normal / dst_name
