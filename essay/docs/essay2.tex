@@ -602,7 +602,7 @@ S = (s_1 \cdot s_2 \cdots s_n)^{1/n}.
 \item \textbf{邻域空间 $D$ $\leftrightarrow$ 时间动态（训练轨迹）}：$D$ 在特征空间中度量局部密度（是否抱团），训练动态（Dataset Cartography \cite{swayamdipta2020cartography}）在 epoch 维度上度量样本行为的时变性。两者分别回答"空间上是否有结构"和"时间上是否稳定"。
 \end{enumerate}
 
-\noindent 覆盖度 $N_\mathrm{eff}$ 作为集合级约束位于分配层，教师质量位于输入层（式~\eqref{eq:teacher-cascade}）。本文当前实验实现了 $R$、$C$、$D$ 三个样本级信号，未实现训练轨迹动态（静态一次性打分）；这一缺失是 lite 版负结果的四个诊断变量之一（第 6 章）。
+\noindent 覆盖度 $N_\mathrm{eff}$ 作为集合级约束位于分配层，教师质量位于输入层（式~\eqref{eq:teacher-cascade}）。本文当前实验实现了 $R$、$C$、$D$ 三个样本级信号的分位数分层消融验证（第 6 章），训练轨迹动态信号 $T$ 作为第四条轴留待后续实现。
 
 \subsection{非单调价值--信号响应的理论预期}
 上述形式化隐含了一个常见假设：信号值越高，样本越有价值（如 $R$ 越大 $\Rightarrow$ 越靠近边界 $\Rightarrow$ 越值得学习）。然而，已有文献对此提出了质疑。Swayamdipta 等人在 Dataset Cartography 中发现，\emph{ambiguous} 样本（中等难度）的训练价值高于 \emph{hard-to-learn} 样本（极端难度）\cite{swayamdipta2020cartography}；Ash 等人在 BADGE 中指出，纯不确定性选样会导致覆盖度损失 \cite{ash2020badge}。
@@ -1192,242 +1192,35 @@ HN 回流的实验设置（候选池来源、比例定义 $r = |\mathcal{S}_\mat
 
 \noindent 图 \ref{fig:hn-to-reweighting-shift} 所表达的核心逻辑是：第 5 章已经基本扫透了 HN 的“数量维度”，而尚未解释的是困难正常样本候选池的“组成维度”。更具体地说，\texttt{hn14} 说明在当前主模型与均匀回流规则下，额外回流预算存在一个最优比例点；但 HN 收益的非单调性、在 \texttt{yolo11x-cls} 上未复现以及 top250 候选池本身较宽这三点，又共同说明候选池内部样本并不能被近似看成同质整体。于是，下一步自然不再是继续扫描更多比例，而是在固定 \texttt{hn14} 预算的条件下研究“哪些该加、哪些不该加”。这也正是第 6 章的起点。
 
-\chapter{从 HN 最优比例点到高价值困难样本直接评估：固定预算样本重分配方法}
+\chapter{高价值困难样本的信号分解与 Goldilocks 效应验证}
 
-\noindent 第 5 章将 HN 增强收缩至均匀回流的最优比例点（m+hn14），并揭示了 HN 增益的非单调性、模型相关性和形态异质性。但均匀回流隐含了”候选池内部样本同质”的假设。本章将问题从\textbf{数量维度}（”加多少”）推进到\textbf{组成维度}（”加哪些”）：在固定回流预算下，如何直接评估并优先利用\textbf{高价值困难样本}（high-value hard samples）。本章依次给出固定预算样本重分配的形式化定义、门控导向有效信息量评分（GAEIS）的 lite 版实现与负结果分析，以及基于 $R$/$C$/$D$ 三信号的\textbf{分位数分层消融}（quintile-stratified ablation）与 \textbf{Goldilocks 效应}验证。
+\noindent 第 5 章的 HN 比例全量扫描揭示了三个关键观察：（1）HN 增益呈非单调双峰形态，说明候选池中混有高价值与低价值样本；（2）不同容量模型的最优比例点互不相同，说明样本价值具有模型相关性；（3）较高比例（hn16--hn20）的性能急剧下降，说明过量注入低价值样本会干扰训练。这三个观察共同指向一个核心问题：\textbf{在固定回流预算下，候选池内部哪些样本真正对门控性能有正向贡献？}
 
-\section{问题转移：从数量维度到高价值样本直接评估}
-\texttt{hn14} 回答的是均匀回流的最优预算量；但它并未回答固定预算下困难正常样本候选池内部哪些样本更值得被重复学习。后者正是本章的核心问题，也是高价值困难样本直接评估所要回答的问题。
+\section{从 HN 非单调性到样本价值信号假设}
 
-\section{固定预算样本重分配问题的形式化定义}
-设由现有工作集导出的困难正常样本候选池为
-\begin{equation}
-\mathcal{N}_{\mathrm{hard}} = \{x_i\}_{i=1}^{250},
-\end{equation}
-其来源固定为基线门控模型在训练正常集上的 250 个高风险样本。令均匀 \texttt{hn14} 的额外回流总预算为 $B$，则本文关注的问题并非扩大候选池或继续增加 HN 数量，而是在总预算固定为 $B$ 的前提下，重新分配候选池内部样本的采样概率：
-\begin{equation}
-\sum_{i=1}^{250} b_i = B,
-\qquad
-b_i \propto \pi_i,
-\end{equation}
-其中 $\pi_i$ 为样本 $x_i$ 的非线性采样概率。当前工作中，$B$ 由既有 \texttt{hn14} 工作集决定，因此方法比较的核心不再是“更多回流是否更好”，而是“同样预算下怎样选择更有价值的回流样本”。
+均匀回流将 \texttt{hn14} 的 $B=151$ 张预算等概率地分配给候选池中的所有样本，隐含了”候选池内部样本同质”的假设。但 HN 曲线的双峰形态直接否定了该假设——如果所有候选样本价值相同，增加比例应产生单调递增而非双峰。
 
-\section{Gate-Aligned Effective Information Score 的设计}
-为使评分函数与门控目标对齐，本文将 Gate-Aligned Effective Information Score 作为高价值困难样本直接评估框架的 lite 版实现。当前实现首先使用未加回流偏置的教师模型，即 \texttt{yolo11m-cls + hn00} 的门控最优检查点，在校准集上拟合温度参数 $T$，再对难样本候选池中的样本计算校准后异常概率：
-\begin{equation}
-p_i = \sigma(z_i / T),
-\end{equation}
-其中 $z_i$ 为样本 $x_i$ 的 logit 输出，$\sigma(\cdot)$ 为 sigmoid 函数。基于校准后分数，本文构建 lite 版有效信息量评分函数的三个分量。
+基于第 2 章的理论分析，本文从\textbf{卷积网络的训练动力学}出发，提出四条可观测的样本价值信号假设：
 
-\subsection{校准后风险项的定义}
-首先定义风险项。记当前教师模型在 \formalmetric{R99.5} 约束下的工作阈值为 $\tau_{99.5}$，则风险项定义为
-\begin{equation}
-r_i = \max\left(0,\frac{p_i-\tau_{99.5}}{1-\tau_{99.5}}\right),
-\qquad
-R_i = r_i^\alpha,
-\end{equation}
-其中 $\alpha > 1$ 用于对真正靠近或高于门控边界的 normal 施加非线性放大。
+\begin{enumerate}[leftmargin=2em,nosep]
+\item \textbf{校准后边界风险 $R$}（boundary risk）：样本是否靠近门控工作阈值 $\tau_{99.5}$。从式~\eqref{eq:gate-objective} 的约束优化目标直接推导——距离决策边界越近的样本，对 specificity 的边际影响越大 \cite{guo2017calibration,kumar2021constrained}。
+\item \textbf{特征空间结构支撑 $D$}（density）：样本在 representation space 中是否具有相似邻居。有邻域支撑的高风险样本更可能对应系统性困难模式（如管壁水膜与裂缝的视觉混淆），而孤立高风险样本更可能是采集噪声 \cite{kim2024structural}。
+\item \textbf{扰动预测稳定性 $C$}（consistency）：样本在轻量 TTA 下的预测是否稳定。真正的系统性困难模式应在微小扰动下保持高异常概率，而偶发反光/脏帧引起的高分往往对扰动极度敏感 \cite{wu2022entropy}。
+\item \textbf{训练轨迹持续性 $T$}（trajectory）：样本在跨 epoch 训练过程中是否持续处于门控边界附近。Dataset Cartography \cite{swayamdipta2020cartography} 表明，在不同 epoch 间反复摇摆的 ambiguous 样本具有最高训练价值，而持续被正确分类的 easy 样本和持续被错分的 hard-to-learn 样本价值较低。
+\end{enumerate}
 
-\subsection{一致性稳定性项的定义}
-其次引入一致性稳定性项。对同一图像施加 $K$ 次轻量、语义保持的 TTA，得到校准后分数 $p_i^{(1)},\dots,p_i^{(K)}$，则其 logit 方差为
-\begin{equation}
-v_i = \mathrm{Var}\!\left(\operatorname{logit}(p_i^{(1)}),\dots,\operatorname{logit}(p_i^{(K)})\right),
-\end{equation}
-相应的一致性项定义为
-\begin{equation}
-C_i = \exp(-v_i/\sigma_c^2),
-\end{equation}
-其中 $\sigma_c$ 由当前候选池的稳健尺度给出。该项用于抑制”高风险但极不稳定”的样本，避免将采集噪声或伪难例过度放大。
+\noindent 这四条信号构成两对\textbf{正交镜像}：$R \leftrightarrow C$（空间位置 vs 扰动稳定性）和 $D \leftrightarrow T$（邻域结构 vs 时间轨迹）。本章首先对已实现的 $R$/$C$/$D$ 三条信号执行\textbf{分位数分层消融}（quintile-stratified ablation），验证各信号的独立排序力与非单调价值--信号响应（Goldilocks pattern）。
 
-\subsection{结构支撑度项的定义}
-第三定义结构支撑度项。对 top250 候选池提取倒数第二层特征，并在池内计算 $k$ 近邻平均余弦相似度：
-\begin{equation}
-d_i = \frac{1}{k}\sum_{j\in kNN(i)} \cos(f_i,f_j),
-\qquad
-D_i = \mathrm{Norm}(d_i).
-\end{equation}
-若某个高风险样本在特征空间中拥有一组结构相似的近邻，则它更可能对应系统性混淆模式；反之，孤立异常点则更可能是低学习价值的噪声样本 \cite{kim2024structural}。
+\section{候选池构建}
 
-\subsection{最终评分函数与非线性采样概率}
-由此，本文定义三种 lite 版评分：
-\begin{equation}
-S_i^{(A2)} = R_i,
-\end{equation}
-\begin{equation}
-S_i^{(A3)} = (R_i C_i)^{1/2},
-\end{equation}
-\begin{equation}
-S_i^{(A4)} = (R_i C_i D_i)^{1/3}.
-\end{equation}
-几何平均的目的在于保留“并且成立”的逻辑，即一个样本若想获得高分，必须同时具备靠近门控边界、预测稳定以及在特征空间中具有结构支撑这三个属性。
+候选池固定为基线门控模型 \texttt{yolo11m-cls + hn00}（epoch 78）在 1080 个训练正常样本上的 top-250 高风险样本。\texttt{hn14} 的最优回流预算为 151 张，但最优比例点附近的非单调性表明候选池边界可能遗漏有价值样本，因此将候选池扩展至 top-250（训练正常样本的前 23.15\%），确保潜在的 Goldilocks zone 完整落入候选范围。
 
-最后，固定预算采样概率定义为
-\begin{equation}
-\pi_i = \frac{(S_i+\epsilon)^\kappa}{\sum_j (S_j+\epsilon)^\kappa},
-\end{equation}
-其中 $\epsilon$ 为数值稳定常数，$\kappa>1$ 控制对高价值样本的非线性放大程度。该设计保证了总预算仍与 uniform \texttt{hn14} 严格等价，只改变候选池内部的回流分布，而不改变候选池本身。
-
-\section{Lite 版 5 组消融实验设计}
-\begin{table}[H]
-    \centering
-    \caption{Lite 版 A0--A4 五组实验定义}
-    \label{tab:lite-ablation-settings}
-    \small
-    \renewcommand{\arraystretch}{1.15}
-    \begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{1.3cm}>{\raggedright\arraybackslash}p{4.7cm}>{\raggedright\arraybackslash}X}
-        \toprule
-        Setting & 名称 & 定义 \\
-        \midrule
-        A0 & \texttt{hn00} 基线 & 直接复用当前基线，不进行 HN 回流。 \\
-        A1 & \texttt{uniform\_hn14} & 直接复用当前排序第一的均匀 HN14，对应既有均匀回流工作集。 \\
-        A2 & \shortstack[l]{\texttt{weighted\_hn14\_}\\\texttt{risk\_only}} & 固定 top250 困难正常样本候选池与 HN14 总预算，只按风险项 $R_i$ 做非线性重加权。 \\
-        A3 & \shortstack[l]{\texttt{weighted\_hn14\_risk\_}\\\texttt{consistency}} & 在 A2 基础上加入一致性稳定性项 $C_i$，抑制高风险但极不稳定的样本。 \\
-        A4 & \shortstack[l]{\texttt{weighted\_hn14\_risk\_}\\\texttt{consistency\_}\\\texttt{density}} & 在 A3 基础上再加入结构支撑度项 $D_i$，构成 lite 版最完整设置。 \\
-        \bottomrule
-    \end{tabularx}
-\end{table}
-
-基于上述评分函数，本文将后续实验统一组织为五组设置。A0 为 \texttt{hn00} 基线，直接复用已完成结果；A1 为现有均匀 HN14 设置（\texttt{uniform\_hn14}），也直接复用既有结果。A2、A3 与 A4 则分别对应“仅风险项”“风险项加一致性项”以及“风险项加一致性项和结构支撑项”三组新实验，其中教师模型固定为 \texttt{yolo11m-cls + hn00} 的门控最优检查点，候选池固定为现有 top250，额外回流总预算固定为 \texttt{hn14} 的 151。换言之，A2--A4 不是新的骨干网络比较，而是高价值困难样本直接评估框架的 lite 版首轮验证。
-
-\subsection*{A0 / A1：复用锚点}
-A0 与 A1 的作用是为后续加权回流提供两个稳定锚点。A0 保留未加 HN 的 \texttt{hn00} 基线，回答“无回流时门控达到什么水平”；A1 保留当前排序第一的均匀 HN14 设置，回答“均匀回流在相同预算下达到什么水平”。后续全部 lite 版重加权结论，都相对于这两个锚点解释。
-
-\subsection*{A2：仅风险项}
-A2 仅使用校准后风险项 $R_i$，目的在于验证一个最直接的问题：如果只把固定预算更集中地压到“更靠近门控边界”的高风险正常样本上，是否已经足以优于均匀 \texttt{hn14}。这一设置是最轻量的静态重加权基线，同时也是检验“高风险是否等于高价值”的起点。
-
-\subsection*{A3：风险项加一致性项}
-A3 在 A2 的基础上加入一致性项 $C_i$。其核心假设是，真正值得重复学习的困难负样本不仅风险高，而且应在轻量、语义保持的测试时增强下保持相对稳定。若某个样本对轻微亮度、对比度或模糊扰动极度敏感，则它更可能是采集噪声或伪难例，而不应在固定预算回流中被高权重放大。
-
-\subsection*{A4：风险项加一致性项和结构支撑项}
-A4 进一步加入结构支撑度项 $D_i$，从而把样本评分推进为“风险 + 稳定性 + 结构支撑”的三分量几何平均。该设置是 lite 版的完整形式，用于回答难样本候选池中是否存在一类“既高风险、又稳定、且在特征空间中具有重复出现模式”的高价值样本。
-
-\subsection*{预算对齐与教师模型设定}
-为保持比较合法性，A2--A4 在四个方面均与当前主线保持一致：其一，教师模型固定为 \texttt{yolo11m-cls + hn00} 的门控最优检查点，而非切换到 \texttt{hn14}；其二，候选池固定为既有 \texttt{top\_false\_positive\_normals.csv} 对应的 top250，而不是重新从全部训练正常样本取新池；其三，额外回流总预算严格固定为 151，与均匀 HN14 设置完全等价；其四，评估仍沿用与第 4、5 章一致的校准集、工作点评估集与门控导向排序协议。
-
-\section{Lite 版主结果与训练轨迹分析}
-\begin{table}[H]
-    \centering
-    \caption{Lite 版 A0--A4 五组实验主结果表}
-    \label{tab:lite-ablation-main}
-    \resizebox{\textwidth}{!}{%
-    \begin{tabular}{lccccccccc}
-        \toprule
-        组别 & 教师模型 & 候选池 & 预算锚点 & 最优轮次 & Spec@R99.5 & Spec@R99.0 & Prec@R99.0 & PTR@R99.0 & 排序 \\
-        \midrule
-        A1 & 复用 uniform HN14 & top250 & hn14（151 个额外样本） & 74 & 0.6429 & 0.6548 & 0.9350 & 0.8849 & 1 \\
-        A0 & 复用 hn00 教师模型 & 无 & hn14（151 个额外样本） & 78 & 0.5952 & 0.6548 & 0.9348 & 0.8829 & 2 \\
-        A4 & hn00 最优检查点 & top250 & hn14（151 个额外样本） & 48 & 0.5595 & 0.5833 & 0.9226 & 0.8968 & 3 \\
-        A2 & hn00 最优检查点 & top250 & hn14（151 个额外样本） & 43 & 0.5595 & 0.5714 & 0.9204 & 0.8968 & 4 \\
-        A3 & hn00 最优检查点 & top250 & hn14（151 个额外样本） & 80 & 0.5238 & 0.6429 & 0.9327 & 0.8849 & 5 \\
-        \bottomrule
-    \end{tabular}
-    }
-\end{table}
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.92\textwidth]{research/results/stage1_formal/gate_info_sampling_lite/figures/fig_lite_ablation_main_barpanel.png}
-    \caption{Lite 版 A0--A4 在四项 gate 指标上的主对比图}
-    \label{fig:lite-ablation-main}
-\end{figure}
-
-表 \ref{tab:lite-ablation-main} 与图 \ref{fig:lite-ablation-main} 给出了固定预算 lite 实现的核心结论。第一，在当前数据划分与当前随机种子下，均匀 HN14 设置仍然排在第一，说明静态一次性直接评估并未在主模型上超越现有均匀回流最优比例点。第二，在三个 lite 变体中，A4 由于在 \formalmetric{Spec@R99.0} 与 \formalmetric{Prec@R99.0} 上优于 A2，成为当前实现中的最佳设置；但其 \formalmetric{Spec@R99.5} 仍比 A1 低 0.0833。第三，A3 在次级指标上比 A2 更接近锚点，但首要指标 \formalmetric{Spec@R99.5} 进一步下降到 0.5238，说明仅靠一致性抑制不足以形成有效替代。就当前完整实验结果而言，lite 版直接评估改变了结果排序，但尚未超过均匀 HN14 设置。
-
-\subsection*{相对 \texttt{hn00} 与 \texttt{uniform\_hn14} 的增量解释}
-从主结果表直接可见，固定预算 lite 实现的主要回落点出现在首要指标上。相对 \texttt{hn00}，A4 与 A2 均在 \formalmetric{Spec@R99.5} 上下降 0.0357，A3 则下降 0.0714；相对均匀 HN14 设置，所有 lite 变体在四项指标上均未取得净增益，其中 A4 的回落已达到 \formalmetric{Spec@R99.5}=-0.0833、\formalmetric{Spec@R99.0}=-0.0714。当前静态一次性直接评估并没有把候选池内部异质性有效转化为更高的门控表现，最好结果只是“在 lite 路线内部，A4 优于 A2 与 A3”。
-
-\subsection*{训练轨迹对比}
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.92\textwidth]{research/results/stage1_formal/gate_info_sampling_lite/figures/fig_lite_ablation_epoch_dynamics_panel.png}
-    \caption{A0、A1 与 A4 的 epoch dynamics 对比}
-    \label{fig:lite-epoch-dynamics}
-\end{figure}
-
-图 \ref{fig:lite-epoch-dynamics} 将 lite 版完整设置 A4 与两个锚点进行了训练轨迹层面的直接对照。A4 的最优轮次早于均匀 HN14 设置，在第 48 轮即达到自身峰值；但其 \formalmetric{Spec@R99.5} 平台明显低于 A1，说明当前加权回流并未把训练轨迹推向更好的高召回拦截状态，而更像是提早收敛到一个较低平台。A3 的最优轮次则移动到第 80 轮，且首要指标更弱，进一步说明一致性抑制虽然改变了训练过程，但没有在当前教师模型和候选池设定下形成更优的门控检查点。
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.92\textwidth]{research/results/stage1_formal/gate_info_sampling_lite/figures/fig_a1_vs_a4_spec995_delta.png}
-    \caption{A1 与 A4 在 \formalmetric{Spec@R99.5} 上的轨迹对比及差值曲线}
-    \label{fig:lite-a1-a4-delta}
-\end{figure}
-
-\noindent 图 \ref{fig:lite-a1-a4-delta} 进一步单独对比首要指标的平台差异。该图回答的问题不是“谁更早达到峰值”，而是“加权路线是否曾在训练过程中真正达到过均匀回流锚点的平台高度”。结果表明，A4 虽然更早触顶，但其 \formalmetric{Spec@R99.5} 在大部分轮次都低于 A1，差值曲线长期位于零线以下。这意味着当前加权回流的问题不只是最终检查点选取有误，而是整个训练状态未能到达均匀 HN14 设置的主指标平台。
-
-\subsection*{评分分布与采样概率分布}
-\begin{table}[H]
-    \centering
-    \caption{Lite 版评分分量与概率集中度统计}
-    \label{tab:lite-score-components}
-    \begin{tabular}{lcccccc}
-        \toprule
-        Setting & Score Min & Score Median & Score Max & Effective Count & Gini & Top10 Cumulative $\pi$ \\
-        \midrule
-        A2 & 0.0000 & 0.0489 & 0.9229 & 64.5756 & 0.8067 & 0.3640 \\
-        A3 & 0.0000 & 0.0000 & 0.3165 & 14.7234 & 0.9555 & 0.8581 \\
-        A4 & 0.0010 & 0.0010 & 0.4379 & 22.0599 & 0.9343 & 0.7246 \\
-        \bottomrule
-    \end{tabular}
-\end{table}
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.92\textwidth]{research/results/stage1_formal/gate_info_sampling_lite/figures/fig_score_distribution_panel.png}
-    \caption{A2、A3 与 A4 的评分分布与采样概率分布}
-    \label{fig:lite-score-distribution}
-\end{figure}
-
-表 \ref{tab:lite-score-components} 与图 \ref{fig:lite-score-distribution} 说明，加入一致性与结构支撑项后，采样概率确实显著集中。A2 的有效样本数为 64.5756，前 10 名累计概率为 0.3640；而 A3 的对应数值收缩到 14.7234 和 0.8581，A4 也达到 22.0599 和 0.7246。这表明 lite 版分量并非没有作用，相反，它们强烈改变了固定预算回流的分配方式。但正因为集中度过高，当前一次性方案也可能把一部分真正有训练价值的难样本一并压掉，这与最终门控表现未能超过 A1 的结果是一致的。
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.92\textwidth]{research/results/stage1_formal/gate_info_sampling_lite/figures/fig_budget_concentration_tripanel.png}
-    \caption{A2、A3 与 A4 的回流预算集中度诊断}
-    \label{fig:lite-budget-concentration}
-\end{figure}
-
-\noindent 图 \ref{fig:lite-budget-concentration} 将”预算塌缩”单独可视化为有效样本数、Gini 系数与前 10 名累计概率三个指标。A3 与 A4 都明显比 A2 更集中，尤其 A3 的前 10 名累计概率已达 0.8581，说明固定预算中的绝大部分回流事实上被少数样本占据。该现象本身不等价于错误，但要求后文将当前负结果解释为可诊断的边界结果，而非简单归结为”评分函数无效”。
-
-\noindent 仅凭主结果表尚不足以解释加权回流为何未超过均匀 HN14 设置。有必要从教师模型选择、候选池宽度、预算集中度与样本覆盖度四个角度做进一步诊断。需要说明的是，下面四条解释仍属于基于现有图表的诊断性假设，而非已通过控制变量实验逐条验证的因果结论。本文尚未补做“更换教师模型”或“将 top250 收窄为 top100/top50”等反事实实验，因此本节的作用是界定最值得继续收缩的变量，而非声称误差来源已被完全证实。
-
-\section{负结果边界与误差来源分析}
-\subsection*{三个评分分量的必要性}
-从加权变体的内部排序看，三分量组合的 A4 优于仅用风险项的 A2，也优于只加入一致性项的 A3。这说明风险、一致性与结构支撑三个分量并不完全冗余，至少在当前候选池上会导向不同的回流分布。具体而言，A4 在 \formalmetric{Spec@R99.5} 上与 A2 持平，但以更高的 \formalmetric{Spec@R99.0} 与 \formalmetric{Prec@R99.0} 排到加权路线第一；A3 则显示一致性项如果缺少结构支撑的配合，容易把分布推得过窄，导致首要指标进一步受损。
-
-\subsection*{原因一：教师模型与训练状态的错位}
-第一种误差来源，是加权路线所依赖的静态教师模型与最终对比目标之间存在天然错位。A2--A4 的全部评分都来自 \texttt{hn00} 教师模型，而 A1 对应的却是已经经过均匀 HN14 回流之后的训练状态。主结果表、图 \ref{fig:lite-epoch-dynamics} 与图 \ref{fig:lite-a1-a4-delta} 共同提示：当前加权路线没有把训练推进到与均匀 HN14 设置相同的平台，而是更早地收敛在较低平台上。更稳妥的表述不是“教师模型选错了”，而是 \texttt{hn00} 教师模型对固定预算回流价值的静态估计，未必足够贴近 \texttt{hn14} 已经形成的训练状态。
-
-\subsection*{原因二：当前候选池范围仍然过宽}
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.92\textwidth]{research/results/stage1_formal/gate_info_sampling_lite/figures/fig_pool_width_threshold_panel.png}
-    \caption{难样本候选池宽度与门控工作阈值的关系}
-    \label{fig:lite-pool-width-threshold}
-\end{figure}
-
-\noindent 第二种误差来源，是当前固定的 top250 困难正常样本候选池可能本身就偏宽。表 \ref{tab:hn-hard-normal-stats-main}、图 \ref{fig:hn-score-distribution-main} 与图 \ref{fig:lite-pool-width-threshold} 共同说明：top250 候选池的最低分阈值约为 0.1133，中位数约为 0.2854，而 \texttt{hn00} 教师模型的 $\tau_{99.5}$ 约为 0.2800、$\tau_{99.0}$ 约为 0.3100。这意味着 top250 并不是一个很窄的极端尾部，而是覆盖了相当宽的一段高风险区间。于是，即便加权回流在池内做了重新排序，也仍可能是在一个过宽、内部可学习价值差异很大的候选池中作一次性静态选择。当前结果与其说明“池内异质性不存在”，不如说明“候选池过宽，导致静态排序难以命中最有价值的回流子集”。
-
-\subsection*{原因三：采样概率发生预算塌缩，覆盖度被压缩}
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.80\textwidth]{research/results/stage1_formal/gate_info_sampling_lite/figures/fig_uniform_vs_weighted_overlap.png}
-    \caption{\texttt{uniform\_hn14} 与加权回流的样本重叠度对比}
-    \label{fig:lite-overlap}
-\end{figure}
-
-\noindent 第三种误差来源，是采样概率在 A3/A4 中发生了明显的预算塌缩，并进一步带来了覆盖度丢失。表 \ref{tab:lite-score-components} 与图 \ref{fig:lite-budget-concentration} 已经说明，A3 与 A4 都把大量预算压到了极少数样本上；图 \ref{fig:lite-overlap} 则进一步显示，这种集中不是对均匀 HN14 设置的轻微重排，而是对覆盖集合的明显改写。A2 与均匀回流的重叠样本数为 45，A3 仅为 18，A4 为 22；与此同时，A4 仍有 129 个仅被均匀回流覆盖的独有样本未进入加权高概率集合。这说明加权回流的确在候选池内部发现了不同的子集，但它同时也削弱了已有均匀回流最优点所保留的覆盖面。当前结果因此更像是在说明：对候选池做静态一次性重分配时，覆盖度的损失很可能已经抵消了集中采样带来的潜在收益。
-
-\subsection*{原因四：一致性与密度分量的抑制可能过强}
-\noindent 第四种误差来源，是一致性与密度分量的抑制效应在当前 lite 设定下可能过强。图 \ref{fig:lite-score-distribution} 已经显示，A3/A4 的评分和采样概率分布都比 A2 更尖锐，这意味着一致性与密度并不是“没有作用”，而是作用非常强。A3 在首要指标上比 A2 更弱，而 A4 虽然通过密度项稍微回收了次级指标，却仍未超过 A1。这提示当前教师模型、候选池与静态一次性评分组合下的抑制力度，可能连带压掉了一部分仍有训练价值的边界样本。由于样本画廊更适合放在附录且当前资产完整性不足，本文不再把该类示例图作为正文证据，而把判断主要建立在分布、覆盖度和训练轨迹这三类可审计图表之上。
-
-\subsection*{边界结果总结}
-当前 lite 全量实验的最关键结论并不是“已经提出了更好的回流策略”，而是一个必须保留的边界结果：本文已经把高价值困难样本直接评估形式化为一个可审计、可复现实验化的问题，并给出首轮 lite 实现的结果边界。在固定 top250 候选池、教师模型为 \texttt{hn00}、预算为 151 且采用静态一次性评分的条件下，A2、A3、A4 均未优于均匀 HN14 设置。其中 A4 虽然在 lite 变体中排名最高，但其 \formalmetric{Spec@R99.5} 和 \formalmetric{Spec@R99.0} 仍明显回落。该负结果的成败受制于四个已被显式化的关键变量：教师模型与训练状态的贴合程度、top250 候选池的宽度、采样概率的覆盖度损失，以及一致性与密度分量的抑制强度。后续优化应沿着这四个变量继续收缩问题边界。
+% R/C/D 信号的形式化定义已在第 2 章给出，此处不再重复。
 
 \section{分位数分层消融与 Goldilocks 效应验证}
 \label{sec:bucket-pilot}
 
-lite 版的负结果表明，基于 $R$/$C$/$D$ 联合加权的一次性评分未能超过均匀基线。为诊断失败来源，本节采用\textbf{分位数分层消融}（quintile-stratified ablation）设计，将三个信号的排序力从联合评分中解耦，逐信号独立验证。
+上述四条信号假设需要在当前门控任务上逐信号独立验证。直接将多个信号组合为单一评分函数存在\textbf{隐含单调假设}（implicit monotonic assumption）的风险——即默认信号值越高则样本越有价值。为避免这一假设偏差，本节采用\textbf{分位数分层消融}（quintile-stratified ablation）设计，将各信号的排序力解耦，逐信号验证其排序力与价值--信号响应的单调性。
 
 \subsection{实验设计}
 
@@ -1460,14 +1253,14 @@ lite 版的负结果表明，基于 $R$/$C$/$D$ 联合加权的一次性评分�
 
 \textbf{（3）Goldilocks pattern 在三个正交信号上独立复现。}$R$（空间静态边界风险）、$C$（扰动动态 TTA 稳定性）和 $D$（邻域空间 kNN 密度）测量的是三个正交维度的样本属性，但三者均呈现相同的非单调模式。单个信号出现非单调可能是偶然；三个正交信号独立复现则构成\textbf{结构性规律}。这一交叉验证（cross-signal cross-validation）使 Goldilocks pattern 的实证基础不依赖于 multi-seed 重复。
 
-\subsection{Lite 失败的 Goldilocks 归因}
+\subsection{单调加权假设的反证}
 
-分位数分层消融的结果为 lite 版的负结果提供了明确归因。lite A3/A4 的 GAEIS 评分通过 $R^{\alpha}$（$\alpha > 1$）对高 $R$ 样本施加非线性放大，将采样概率集中在高信号值区域（Q1 附近）。然而，表~\ref{tab:bucket-pilot-main} 证明 $R$-Q1 恰好是\textbf{排序力最低}的分位桶，其 gate 性能甚至低于 G0 均匀基线。Goldilocks 效应表明，lite 的失败并非 $R$/$C$/$D$ 信号本身缺乏排序力，而是\textbf{单调加权假设}与\textbf{预算塌缩}的联合效应：评分函数将预算过度集中在"皮层"样本上，系统性地错过了"Goldilocks zone"中的高价值中间层样本。
+Goldilocks pattern 直接否定了\textbf{单调加权假设}（monotonic weighting assumption）——即"信号值越高则样本训练价值越高"。若按该假设设计评分函数（如 $\pi_i \propto R_i^{\kappa}$），采样概率将集中在 Q1 附近。然而，表~\ref{tab:bucket-pilot-main} 证明 $R$-Q1 恰好是\textbf{排序力最低}的分位桶，其 gate 性能甚至低于 G0 均匀基线。因此，有效的样本评分函数必须是\textbf{非单调的}——对中间层（Goldilocks zone）赋予高权重，对两端赋予低权重。
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.92\textwidth]{research/results/stage1_formal/gate_bucket_pilot/fig_goldilocks_attribution.png}
-    \caption{Lite 失败的 Goldilocks 归因。(a) lite A4 将 84\% 以上的采样预算集中在 Q1（最高 $R$ 值样本）。(b) 分位数消融表明 Q1 的 Spec@R99.5 低于 G0 基线（$-$0.0238），而 Q2 才是 peak（$+$0.0714）。lite 的预算系统性地投向了最低价值分位桶。}
+    \caption{单调加权假设的反证。(a) 假设采用 $\pi_i \propto R_i^2$ 的单调评分，84\% 以上的采样预算将集中在 Q1（最高 $R$ 值样本）。(b) 分位数消融表明 Q1 的 Spec@R99.5 低于 G0 基线（$-$0.0238），而 Q2 才是 peak（$+$0.0714）。单调加权将预算系统性地投向最低价值分位桶。}
     \label{fig:goldilocks-attribution}
 \end{figure}
 
