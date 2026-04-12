@@ -1,5 +1,5 @@
 """
-机器 2: 动态维度镜像对 T + C
+机器 B: 动态维度镜像对 T + C
   T = 训练动力学 (Trajectory) — 样本跨 epoch 是否持续对训练有帮助
   C = 扰动稳定性 (Consistency) — 样本在 TTA 扰动下预测跳不跳
   共 42 run, 预计 ~4.5 天
@@ -11,13 +11,13 @@
 如果 per_epoch_gate 目录不存在, T 会退化为 R 的代理。
 
 Usage:
-    uv run main_sw_machine2.py
+    uv run main_sw_machineB.py
 """
 import sys
 import time
 
 print("=" * 60)
-print("  Machine 2: 动态维度镜像对 T + C")
+print("  Machine B: 动态维度镜像对 T + C")
 print("  T (训练动力学) 21 run + C (扰动稳定性) 21 run = 42 run")
 print(f"  Start: {time.strftime('%Y-%m-%d %H:%M:%S')}")
 print("=" * 60)
@@ -40,6 +40,6 @@ for signal in ["T", "C"]:
         traceback.print_exc()
 
 print(f"\n{'=' * 60}")
-print(f"  Machine 2 complete: T + C")
+print(f"  Machine B complete: T + C")
 print(f"  {time.strftime('%Y-%m-%d %H:%M:%S')}")
 print(f"{'=' * 60}")

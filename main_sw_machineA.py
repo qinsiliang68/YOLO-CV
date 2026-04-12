@@ -1,5 +1,5 @@
 """
-机器 1: 空间维度镜像对 R + D
+机器 A: 空间维度镜像对 R + D
   R = 边界性 (Risk) — 样本离门控决策边界多远
   D = 抱团性 (Density) — 样本在特征空间有没有相似邻居
   共 42 run, 预计 ~4.5 天
@@ -8,13 +8,13 @@
 目的: 精确定位 R 和 D 各自的 Goldilocks peak 中心 μ 和宽度 w
 
 Usage:
-    uv run main_sw_machine1.py
+    uv run main_sw_machineA.py
 """
 import sys
 import time
 
 print("=" * 60)
-print("  Machine 1: 空间维度镜像对 R + D")
+print("  Machine A: 空间维度镜像对 R + D")
 print("  R (边界性) 21 run + D (抱团性) 21 run = 42 run")
 print(f"  Start: {time.strftime('%Y-%m-%d %H:%M:%S')}")
 print("=" * 60)
@@ -37,6 +37,6 @@ for signal in ["R", "D"]:
         traceback.print_exc()
 
 print(f"\n{'=' * 60}")
-print(f"  Machine 1 complete: R + D")
+print(f"  Machine A complete: R + D")
 print(f"  {time.strftime('%Y-%m-%d %H:%M:%S')}")
 print(f"{'=' * 60}")
