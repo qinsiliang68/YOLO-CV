@@ -204,11 +204,19 @@ $\tau_{99.5}, \tau_{99.0}$ & 在本文 gate 评估下分别对应 \formalmetric{
 \subsection{YOLO 路线与排水管道场景适配}
 YOLO 系列因具备较好的实时性和工程成熟度，已成为管道缺陷检测中的常见基础路线 \cite{redmon2016yolo}。在排水管道场景中，研究者围绕特征增强、轻量化部署与场景适配提出了多种改进策略，例如改进 YOLOv5 的管道缺陷检测模型以及轻量化 YOLOv5-Sewer 等 \cite{wang2023improvedyolov5,zhao2024yolov5sewer}。这些工作证明，YOLO 路线具有良好的工程基础；但它们也表明，不同任务目标之间不能简单共享同一评价口径：用于目标检测的检测器精度并不直接回答高召回门控下的正常样本拦截问题。
 
-\subsection{高召回分类、概率校准与约束优化研究}
-Sewer-ML 数据集的发布为排水管道缺陷分类提供了统一的基准条件，也使多尺度容量比较与源域表示分析成为可能 \cite{haurum2021sewerml}。另一方面，温度校准已被证明是改善神经网络输出分数可信度的低成本方式，在不改变样本排序的前提下，有助于建立更稳定的工作点比较基础 \cite{guo2017calibration}。此外，迁移学习在线路缺陷检测中的应用也已显示出缓解目标域标注不足的价值 \cite{situ2023transfer}。然而，就本文当前已完成证据而言，最需要优先解决的问题并不是检测器结构本身，而是第一阶段的任务边界、选模规则以及在主线固定后的训练侧增强方式。
+\subsection{两阶段预筛、概率校准与召回约束评价}
+在排水管道 CCTV 巡检中，"先粗筛正常帧、再精检缺陷帧"的两阶段思路并非空白。Xie 等最早提出分层深度网络：第一层二分类区分有无缺陷，第二层对保留图像做缺陷类型分类，总体准确率达 94.96\% \cite{xie2019hierarchical}。Chen 等采用轻量 SqueezeNet 做前端异常帧筛查，再用 InceptionV3 做精细分类，是架构上最接近"轻量门控 + 重模型"部署范式的早期工作 \cite{chen2018intelligent}。Haurum 与 Moeslund 在发布 Sewer-ML 基准数据集时，明确定义了三种系统架构选项，其中 Setting~(b) 即为"先二分类、再多标签分类"的两阶段方案，并引入 F1-Normal 指标评价正常帧分类能力 \cite{haurum2021sewerml}。最近，Shamsolmoali 等实现了 ResNet50--Swin Transformer 二分类器 + 改进 YOLOv8 检测器的完整两阶段 pipeline，报告预筛阶段使后端检测 mAP 从 0.70 提升至 0.81 \cite{shamsolmoali2025twostage}。
+
+与上述工作同期，Meijer 等在 \textit{Automation in Construction} 上率先将\textbf{操作层面的审阅效率}纳入评价体系：该研究在 220 万张 Panoramo 图像上使用 CNN 做 12 类缺陷分类，明确报告了 specificity at sensitivity 与 precision at recall 两组工作点指标，并指出实际缺陷率仅约 0.8\%、CNN 辅助可减少 60.5\% 的人工复核量 \cite{meijer2019defect}。Myrans 等则从视频时序角度出发，通过帧间平滑降低误报率，表明"管理连续视频流的误报与审阅效率"而非仅优化单帧检测性能，已成为排水管道视觉识别的务实关切 \cite{myrans2019automated}。
+
+然而，上述两阶段或审阅效率工作均未涉及以下三个环节：（1）对二分类门控的输出概率进行\textbf{事后温度校准}（post-hoc temperature scaling）\cite{guo2017calibration}；（2）在显式\textbf{召回下限约束}下搜索最优工作点阈值，而非使用固定阈值 0.5；（3）在 200 epoch 的完整训练轨迹上逐 epoch 评估并选择检查点，而非直接采用验证损失或分类准确率最优的默认检查点。这三个环节构成了本文评估协议与已有工作的核心差异。
 
 \subsection{难样本挖掘、数据剪枝与样本效用建模研究}
-围绕样本选择与训练效率提升，已有研究从难负样本挖掘、不确定性驱动选样、兼顾多样性的主动学习、基于训练动态的数据剪枝以及结构支撑建模等多个方向展开。相关工作共同指出，样本价值并不等于单一损失大小或原始不确定性，高风险样本中同样可能混入不稳定噪声与孤立异常点；因此，样本选择需要同时考虑风险、稳定性与结构支撑等因素 \cite{koh2017influence,ash2020badge,wu2022entropy,yang2024plug,kim2024structural,zhang2024tdds}。这一线索直接支撑了本文从均匀难样本回流进一步走向高价值困难样本直接评估的研究动机。
+围绕样本选择与训练效率提升，已有研究从难负样本挖掘、不确定性驱动选样、兼顾多样性的主动学习、基于训练动态的数据剪枝以及结构支撑建模等多个方向展开。相关工作共同指出，样本价值并不等于单一损失大小或原始不确定性，高风险样本中同样可能混入不稳定噪声与孤立异常点；因此，样本选择需要同时考虑风险、稳定性与结构支撑等因素 \cite{koh2017influence,ash2020badge,wu2022entropy,yang2024plug,kim2024structural,zhang2024tdds}。
+
+其中与本文最具思想同构性的是 Swayamdipta 等提出的\textbf{Dataset Cartography} 框架 \cite{swayamdipta2020cartography}。该工作将训练样本按跨 epoch 置信度均值与方差映射到"易学/模糊/难学"三个区域，核心发现为：对模型最有训练价值的往往不是最难学的样本，而是\textbf{中等置信度的模糊样本}——最难学样本中大量混入标注噪声与分布外异常。这一"中间层最优"的发现，与本文在分位数分层消融中观察到的 Goldilocks 效应（第一分位极端样本的门控性能低于第二至四分位中等样本）形成直接呼应，表明非单调价值--信号响应并非排水管道场景的特例，而可能是样本效用建模的一般规律。
+
+综上，本文的研究动机并非首创门控预筛或样本价值评估的概念，而是将上述已有思想在排水管道第一阶段召回约束门控场景下\textbf{系统化}：建立温度校准 + 召回约束检查点选择的评估协议，在等条件共享训练协议下完成跨容量 HN 全量扫描，并通过 RDTC 四信号分位数分层消融验证 Goldilocks 效应，形成完整的证据链。
 
 \begin{table}[H]
     \centering
@@ -216,29 +224,30 @@ Sewer-ML 数据集的发布为排水管道缺陷分类提供了统一的基准�
     \label{tab:related-work-map}
     \begin{tabularx}{\textwidth}{p{3.1cm}p{3.1cm}Xp{2.3cm}}
         \toprule
-        研究方向 & 代表任务对象 & 典型回答的问题 & 与本文关系 \\
+        研究方向 & 代表工作 & 典型回答的问题 & 与本文关系 \\
         \midrule
-        排水管道缺陷视觉识别 & CCTV 图像分类或检测 & 管道缺陷能否被机器视觉识别 & 提供场景背景与基准语境 \\
-        YOLO / 检测器场景适配 & 检测器结构与部署效率 & 如何提升定位精度或实时性 & 仅提供工程背景，不直接回答第一阶段门控选模 \\
-        校准与约束优化 & 概率分数与工作点 & 固定召回下如何稳定比较模型 & 直接支撑本文门控导向协议 \\
-        难样本挖掘与样本效用建模 & 样本选择与训练效率 & 哪些样本更值得被重复学习 & 直接支撑 HN 与固定预算重加权 \\
+        排水管道缺陷视觉识别 & Kumar 2018; Cheng 2018 & 管道缺陷能否被机器视觉识别 & 提供场景背景与基准语境 \\
+        YOLO / 检测器场景适配 & Wang 2023; Zhao 2024 & 如何提升定位精度或实时性 & 仅提供工程背景，不直接回答门控选模 \\
+        两阶段预筛与审阅效率 & Xie 2019; Meijer 2019; Shamsolmoali 2025 & 先筛正常帧能否提升后端精度或减少人工复核 & 本文的直接前驱；差异在于校准、召回约束与检查点选择 \\
+        校准与约束优化 & Guo 2017; Kumar 2021 & 固定召回下如何稳定比较模型 & 直接支撑本文门控导向协议 \\
+        样本效用建模 & Swayamdipta 2020; Kim 2024 & 哪些样本最有训练价值 & 直接支撑 Goldilocks 效应假设 \\
         \bottomrule
     \end{tabularx}
 \end{table}
 
 \begin{table}[H]
     \centering
-    \caption{本文与已有工作的差异定位}
+    \caption{本文与已有两阶段/预筛工作的差异定位}
     \label{tab:thesis-difference-positioning}
-    \begin{tabularx}{\textwidth}{p{3.1cm}XX}
+    \begin{tabularx}{\textwidth}{p{2.6cm}XX}
         \toprule
-        比较维度 & 常见检测或分类工作 & 本文定位 \\
+        比较维度 & 已有两阶段/预筛工作 & 本文定位 \\
         \midrule
-        任务边界 & 直接优化检测器或默认阈值分类精度 & 严格限定在第一阶段召回约束门控 \\
-        评价目标 & mAP、准确率、训练器侧 \formalmetric{top1} & \formalmetric{Spec@R99.5 > Spec@R99.0 > Prec@R99.0 > PTR@R99.0} \\
-        主问题 & 如何提升整体检测或分类性能 & 如何组织第一阶段选模、HN 与高价值困难样本评估 \\
-        训练增强位置 & 往往与骨干网络、损失函数或检测器结构耦合 & 在已固定主线上比较 HN 与固定预算重分配 \\
-        完整度边界 & 常直接给检测器或系统级结论 & 不对完整两阶段系统优劣作超证据结论 \\
+        二分类阈值 & 固定阈值 0.5 或未报告 & 温度校准后在召回下限约束下搜索最优阈值 \\
+        检查点选择 & best-val-loss 或 best-mAP & 逐 epoch 全扫描，按 \formalmetric{Spec@R99.5} 四元排序规则选择 \\
+        评价指标 & 整体准确率或后端 mAP 增益 & \formalmetric{Spec@R99.5 > Spec@R99.0 > Prec@R99.0 > PTR@R99.0} \\
+        HN 训练增强 & 未涉及或不系统 & 等条件 4 模型 $\times$ 11 比例全量扫描（55 run） \\
+        样本价值分解 & 未涉及 & RDTC 四信号分位数分层消融 + Goldilocks 验证 \\
         \bottomrule
     \end{tabularx}
 \end{table}
@@ -266,7 +275,7 @@ Sewer-ML 数据集的发布为排水管道缺陷分类提供了统一的基准�
 
 \noindent\textbf{创新点一：门控导向等条件评估协议。}将第一阶段重新界定为式~\eqref{eq:gate-objective} 的召回约束门控，建立由温度校准、校准集/工作点评估集划分（val-cal/val-op split）、逐 epoch 外部评估和四元排序规则（$\mathrm{Spec@R99.5} \succ \mathrm{Spec@R99.0} \succ \mathrm{Prec@R99.0} \succ \mathrm{PTR@R99.0}$）共同构成的评价协议，并在五个容量梯度 $\times$ 11 个 HN 比例的 55 个独立 run 上保持等条件共享训练协议。
 
-\noindent\textbf{创新点二：跨容量 HN 比例全量扫描与容量阶梯假说。}在四个已完成容量（n/s/m/l）上各自执行 11 点比例全量扫描，发现 HN 增益具有\textbf{非单调性}（各容量最优比例点互不相同）、\textbf{模型相关性}（$\Delta\mathrm{Spec}$ 随容量变化）和\textbf{形态异质性}（sweep 曲线形态两两不同），且较大容量 l 的 HN 增益为零，支持容量阶梯不可跨越假说。
+\noindent\textbf{创新点二：跨容量 HN 比例全量扫描与容量阶梯假说。}在四个已完成容量（n/s/m/l）上各自执行 11 点比例全量扫描，发现 HN 增益具有\textbf{非单调性}（各容量最优比例点互不相同）、\textbf{模型相关性}（$\Delta\mathrm{Spec}$ 随容量变化）和\textbf{形态异质性}（sweep 曲线形态两两不同），且较大容量 l 仅在最低非零比例（hn02）取得微弱增益（$+$0.0357），中高比例零扰动至退化，支持容量阶梯不可跨越假说。
 
 \noindent\textbf{创新点三：三信号分位数分层消融与 Goldilocks 效应发现。}提出门控导向样本效用评分框架，将候选池样本按 $R$/$C$/$D$ 三个正交信号分层并执行 16 组分位数消融。三个信号均呈现\textbf{非单调价值--信号响应}（Goldilocks pattern）：极端信号值样本（第一分位）的门控性能\emph{低于}中等信号值样本（第二至四分位），表明困难样本价值并非信号强度的单调函数，而是存在最优中间层（Goldilocks zone）。
 
@@ -1000,28 +1009,32 @@ HN 回流的实验设置（候选池来源、比例定义 $r = |\mathcal{S}_\mat
 
 \begin{table}[H]
     \centering
-    \caption{\texttt{yolo11l-cls} 的 HN 排序主表（等条件共享协议，$r \in \{8\%,\ldots,20\%\}$）}
+    \caption{\texttt{yolo11l-cls} HN 比例扫描：主排序指标与增量（完整四指标表见附录表~\ref{tab:hn-l-full-sweep}）}
     \label{tab:hn-l-main-ranking}
-    \resizebox{\textwidth}{!}{%
-    \begin{tabular}{lcccccccccc}
+    \begin{tabular}{lccccc}
         \toprule
-        Ratio & Best Epoch & Spec@R99.5 & Spec@R99.0 & Prec@R99.0 & PTR@R99.0 & Rank & $\Delta$Spec@R99.5 & $\Delta$Spec@R99.0 & $\Delta$Prec@R99.0 & $\Delta$PTR@R99.0 \\
+        Ratio & Best Epoch & Spec@R99.5 & $\Delta$Spec@R99.5 & Spec@R99.0 & Rank \\
         \midrule
-        hn08 & 14  & 0.5238 & 0.5714 & 0.9204 & 0.8968 & 1 & 0.0000 & 0.0000 & 0.0000 & 0.0000 \\
-        hn10 & 48  & 0.5238 & 0.5238 & 0.9127 & 0.9087 & 2 & 0.0000 & $-$0.0476 & $-$0.0077 & 0.0119 \\
-        hn12 & 5   & 0.5238 & 0.5476 & 0.9163 & 0.9008 & 3 & 0.0000 & $-$0.0238 & $-$0.0041 & 0.0040 \\
-        hn14 & 86  & 0.5119 & 0.5714 & 0.9204 & 0.8968 & 4 & $-$0.0119 & 0.0000 & 0.0000 & 0.0000 \\
-        hn16 & 54  & 0.5000 & 0.5119 & 0.9105 & 0.9087 & 5 & $-$0.0238 & $-$0.0595 & $-$0.0099 & 0.0119 \\
-        hn18 & 1   & 0.4762 & 0.5119 & 0.9105 & 0.9087 & 6 & $-$0.0476 & $-$0.0595 & $-$0.0099 & 0.0119 \\
-        hn20 & 5   & 0.5238 & 0.5595 & 0.9183 & 0.8988 & 2 & 0.0000 & $-$0.0119 & $-$0.0020 & 0.0020 \\
+        hn00 & 54  & 0.5238 & 0.0000  & 0.5714 & 4 \\
+        \textbf{hn02} & \textbf{64} & \textbf{0.5595} & $\boldsymbol{+}$\textbf{0.0357} & \textbf{0.5833} & \textbf{1} \\
+        hn04 & 115 & 0.5357 & $+$0.0119 & 0.5357 & 2 \\
+        hn06 & 16  & 0.5238 & 0.0000  & 0.5833 & 5 \\
+        hn08 & 14  & 0.5238 & 0.0000  & 0.5714 & 6 \\
+        hn10 & 48  & 0.5238 & 0.0000  & 0.5238 & 7 \\
+        hn12 & 5   & 0.5238 & 0.0000  & 0.5476 & 8 \\
+        hn14 & 86  & 0.5119 & $-$0.0119 & 0.5714 & 9 \\
+        hn16 & 54  & 0.5000 & $-$0.0238 & 0.5119 & 10 \\
+        hn18 & 1   & 0.4762 & $-$0.0476 & 0.5119 & 11 \\
+        hn20 & 5   & 0.5238 & 0.0000  & 0.5595 & 3 \\
         \bottomrule
     \end{tabular}
-    }
 \end{table}
 
-\texttt{yolo11l-cls}（24M 参数）的 HN 比例扫描结果呈现\textbf{全平/微负}（flat-negative）形态。\texttt{hn08} 的 \formalmetric{Spec@R99.5} = 0.5238 精确等于容量扫描基线（$\Delta = 0$），HN 回流对 \texttt{yolo11l-cls} 的增益为\textbf{零}。更高比例（hn14--hn18）反而导致性能下降，其中 \texttt{hn18} 的 best\_epoch = 1 表明模型在第一轮训练后即开始退化。7 个比例中有 4 个的 best\_epoch $\leq$ 14，表明 \texttt{yolo11l-cls} 在 batch = 24 / 200 epoch / lr-auto 的等条件协议下严重\textbf{训练不充分}（undertrained），训练早期即达到容量上限后持续退化。
+\texttt{yolo11l-cls}（24M 参数）的 HN 比例扫描结果呈现\textbf{尖刺衰减}（spike-and-decay）形态。\texttt{hn02} 以 \formalmetric{Spec@R99.5} = 0.5595（$\Delta = +0.0357$，3 个正常样本）排在第一，是 l 唯一取得正增益的比例点；\texttt{hn04} 微增 0.0119 后，hn06--hn12 六个比例全部锁死在基线 0.5238（tn = 44 不变），hn14 起开始退化，hn18 跌至全表最低 0.4762 且 best\_epoch = 1。
 
-该结果直接支持\textbf{容量阶梯不可跨越假说}：\texttt{yolo11l-cls} 的最优表现（0.5238）不仅低于 \texttt{yolo11m-cls} 的 HN 最优（m+hn14 = 0.6429），甚至低于 \texttt{yolo11m-cls} 的无 HN 基线（m+hn00 = 0.5952），差距为 0.0714（6 个正常样本）。在等条件共享协议下，更大的骨干网络容量不能通过 HN 回流弥补与中等容量模型之间的性能阶差。
+该形态与 n/s/m 截然不同：l 只在最低非零比例 hn02 处获得微弱增益，之后 HN 回流对决策边界\textbf{零扰动}（hn06--hn12 六个点 tn 完全一致），直到 hn14 噪声积累到足以推歪边界才出现退化。11 个比例中仅 1 个 best\_epoch = 1（9\%），远低于 n 的 55\%，表明 l 并非"训练太快"，而是表征过于僵硬、中等剂量 HN 无梯度效应。
+
+\texttt{yolo11l-cls} 的最优表现（0.5595）不仅低于 \texttt{yolo11m-cls} 的 HN 最优（m+hn14 = 0.6429，差距 0.0833），也低于 \texttt{yolo11m-cls} 的无 HN 基线（m+hn00 = 0.5952，差距 0.0357）。这一结果支持\textbf{容量阶梯不可跨越假说}：在等条件共享协议下，更大的骨干网络容量不能通过 HN 回流弥补与中等容量模型之间的性能阶差。
 
 \section{跨容量 HN 增益对比与形态分类}
 
@@ -1036,7 +1049,7 @@ HN 回流的实验设置（候选池来源、比例定义 $r = |\mathcal{S}_\mat
         yolo11n-cls & 5.4M  & 0.5119 & hn08 & $+$0.0714 & bimodal & 6/11 (55\%) \\
         yolo11s-cls & 10M   & 0.5238 & hn20 & $+$0.0714 & late-peak-with-dip & 4/11 (36\%) \\
         yolo11m-cls & 25M   & 0.5952 & hn14 & $+$0.0476 & bimodal & 2/11 (18\%) \\
-        yolo11l-cls & 24M   & 0.5238 & hn08 & 0 & flat-negative & 4/7 (57\%) \\
+        yolo11l-cls & 24M   & 0.5238 & hn02 & $+$0.0357 & spike-and-decay & 1/11 (9\%) \\
         \bottomrule
     \end{tabular}
 \end{table}
@@ -1044,7 +1057,7 @@ HN 回流的实验设置（候选池来源、比例定义 $r = |\mathcal{S}_\mat
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.95\textwidth]{research/results/stage1_formal/gate_hn_paper/figures/fig_hn_sweep_heatmap.png}
-    \caption{四容量 $\times$ 11 比例的 $\Delta$Spec@R99.5 热力图。红色 = 正增益，蓝色 = 负增益，白色 = 零。n 和 m 呈双峰正增益（hn02/hn08 和 hn02/hn14），s 的正增益集中在高比例尾部（hn10--hn20），l 全行为零或负增益。四种形态在同一张图中直接可比。}
+    \caption{四容量 $\times$ 11 比例的 $\Delta$Spec@R99.5 热力图。红色 = 正增益，蓝色 = 负增益，白色 = 零。n 和 m 呈双峰正增益（hn02/hn08 和 hn02/hn14），s 的正增益集中在高比例尾部（hn10--hn20），l 仅 hn02 微增后六点 flat 再退化。四种形态在同一张图中直接可比。}
     \label{fig:hn-sweep-heatmap}
 \end{figure}
 
@@ -1052,9 +1065,9 @@ HN 回流的实验设置（候选池来源、比例定义 $r = |\mathcal{S}_\mat
 
 \textbf{（1）最优比例点不可迁移（non-transferable optimal ratio）。}n、s、m、l 的 winner ratio 分别为 hn08、hn20、hn14、hn08，四个容量无一相同（s 的 hn20 尤其反直觉），表明 HN 增益具有强烈的\textbf{模型相关性}（model-dependent gain）。
 
-\textbf{（2）sweep 曲线形态两两异质（shape heterogeneity）。}n 和 m 均呈双峰（bimodal），s 呈后置单峰伴中段塌陷（late-peak-with-dip），l 全平至微负（flat-negative）。这四种形态无法由单一超参数（如比例大小）统一解释，而是反映了不同容量模型对 HN 注入的不同训练动力学响应。
+\textbf{（2）sweep 曲线形态两两异质（shape heterogeneity）。}n 和 m 均呈双峰（bimodal），s 呈后置单峰伴中段塌陷（late-peak-with-dip），l 呈尖刺衰减（spike-and-decay，仅 hn02 微增后六点 flat 再退化）。这四种形态无法由单一超参数（如比例大小）统一解释，而是反映了不同容量模型对 HN 注入的不同训练动力学响应。
 
-\textbf{（3）HN 增益随容量递减至零（diminishing-to-zero gain）。}$\Delta\mathrm{Spec@R99.5}$ 从 n 的 $+$0.0714 下降至 l 的 0，同时 best\_epoch = 1 的出现率从 18\% 上升至 57\%。较大容量模型在等条件协议下更容易出现训练早期即达峰值的退化现象。
+\textbf{（3）HN 增益随容量递减（diminishing gain）。}$\Delta\mathrm{Spec@R99.5}$ 从 n/s 的 $+$0.0714 下降至 m 的 $+$0.0476，再降至 l 的仅 $+$0.0357（且仅在最低非零比例 hn02 处取得）。l 的 hn06--hn12 六个比例对门控性能\textbf{零扰动}（tn 完全一致），hn14 起退化。较大容量模型在等条件协议下对 HN 的吸收能力显著弱于中小容量。
 
 \section{相对 \texttt{hn00} 的增量解释与训练动力学}
 \begin{figure}[H]
@@ -1110,6 +1123,8 @@ HN 回流的实验设置（候选池来源、比例定义 $r = |\mathcal{S}_\mat
         yolo11s + hn20          & 66  & 0.5952 & 0.6071 & 0.9267 & 0.8929 \\
         yolo11m 基线（hn00） & 78  & 0.5952 & 0.6548 & 0.9348 & 0.8829 \\
         yolo11m + hn14          & 74  & 0.6429 & 0.6548 & 0.9350 & 0.8849 \\
+        yolo11l 基线（hn00） & 54  & 0.5238 & 0.5714 & 0.9205 & 0.8988 \\
+        yolo11l + hn02          & 64  & 0.5595 & 0.5833 & 0.9224 & 0.8948 \\
         yolo11x 基线（hn00） & 125 & 0.5476 & 0.5952 & 0.9244 & 0.8929 \\
         yolo11x + hn02          & 1   & 0.5238 & 0.5476 & 0.9163 & 0.9008 \\
         \bottomrule
@@ -1298,7 +1313,7 @@ Goldilocks pattern 直接否定了\textbf{单调加权假设}（monotonic weight
 \section{容量阶梯假说与 HN 增益的模型相关性}
 表~\ref{tab:hn-cross-capacity-summary} 的跨容量对比表明，在等条件共享协议下，HN 增益呈\textbf{递减至零}的趋势：$\Delta\mathrm{Spec@R99.5}$ 从 n 的 $+$0.0714 下降至 l 的 0。m+hn14 = 0.6429 为 55 个数据点的全局最强，l 的最优表现（0.5238）甚至低于 m 的无 HN 基线（0.5952），差距为 6 个正常样本。该结果支持\textbf{容量阶梯不可跨越假说}：在 shared-protocol 下，更大的骨干网络容量不能通过 HN 回流弥补与中等容量模型之间的性能阶差。
 
-四个容量的 sweep 曲线形态两两不同（bimodal / late-peak-with-dip / flat-negative），winner ratio 无一相同（n$\to$hn08, s$\to$hn20, m$\to$hn14, l$\to$hn08），表明 HN 增益具有强烈的模型相关性与形态异质性。这些差异不能由单一超参数解释，而是反映了不同容量模型对 HN 注入的不同训练动力学响应。
+四个容量的 sweep 曲线形态两两不同（bimodal / late-peak-with-dip / spike-and-decay），winner ratio 无一相同（n$\to$hn08, s$\to$hn20, m$\to$hn14, l$\to$hn02），表明 HN 增益具有强烈的模型相关性与形态异质性。这些差异不能由单一超参数解释，而是反映了不同容量模型对 HN 注入的不同训练动力学响应。
 
 需要强调的是，上述结论严格限定在等条件共享协议的 scope 内。l/x 在 batch=24 / 200 epoch / lr-auto 下可能未充分收敛；在 model-specific 调参下，较大容量模型是否仍然无法跨越容量阶梯，有待后续验证。
 
@@ -1701,6 +1716,24 @@ Wang T, Li Y, Zhai Y, et al. A Sewer Pipeline Defect Detection Method Based on I
 
 \bibitem{zhao2024yolov5sewer}
 Zhao X, Xiao N, Cai Z, et al. YOLOv5-Sewer: Lightweight Sewer Defect Detection Model[J]. Applied Sciences, 2024, 14(5): 1869.
+
+\bibitem{meijer2019defect}
+Meijer D, Scholten L, Clemens F, Knobbe A. A Defect Classification Methodology for Sewer Image Sets with Convolutional Neural Networks[J]. Automation in Construction, 2019, 104: 281--298.
+
+\bibitem{xie2019hierarchical}
+Xie Q, Li D, Xu J, Yu Z, Wang J. Automatic Detection and Classification of Sewer Defects via Hierarchical Deep Learning[J]. IEEE Transactions on Automation Science and Engineering, 2019, 16(4): 1836--1847.
+
+\bibitem{chen2018intelligent}
+Chen K, Hu H, Chen C, Chen L, He C. An Intelligent Sewer Defect Detection Method Based on Convolutional Neural Network[C]//IEEE International Conference on Information and Automation. 2018: 1301--1306.
+
+\bibitem{shamsolmoali2025twostage}
+Shamsolmoali P, Sadka A H, Savvas I K, et al. Automated Defect Classification and Localization in Sewer Pipelines Using Hybrid ResNet50--Swin Transformer and Modified YOLOv8[J]. Scientific Reports, 2025, 15: 6143.
+
+\bibitem{myrans2019automated}
+Myrans J, Everson R, Maybury R. Automated Detection of Faults in Sewers Using CCTV Image Sequences[J]. Automation in Construction, 2019, 95: 64--71.
+
+\bibitem{li2021srpn}
+Li Y, Xie Q, Yu Z, et al. Sewer Pipe Defect Detection via Deep Learning with Local and Global Feature Fusion[J]. Automation in Construction, 2021, 129: 103823.
 \end{thebibliography}
 
 \end{document}
