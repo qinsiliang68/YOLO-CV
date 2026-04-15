@@ -1,0 +1,16 @@
+{
+  "R": {
+    "signal_key": "R",
+    "rank_start": 21,
+    "rank_end": 70,
+    "spec_at_r995": 0.607143,
+    "id": "R-W02"
+  },
+  "T": {
+    "signal_key": "T",
+    "rank_start": 21,
+    "rank_end": 70,
+    "spec_at_r995": 0.607143,
+    "id": "T-W02"
+  }
+}
