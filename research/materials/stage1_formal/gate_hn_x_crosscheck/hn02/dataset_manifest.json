@@ -1,6 +1,6 @@
 {
   "task_kind": "gate",
-  "dataset_root": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\datasets\\stage1_formal_gate_hn\\yolo11x_gate2_formal_hn02",
+  "dataset_root": "D:\\BaiduNetdiskDownload\\stage1_formal_gate_hn_x\\YOLOv11\\datasets\\stage1_formal_gate_hn\\yolo11x_gate2_hn02",
   "split_manifest": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\research\\materials\\stage1_formal\\manifests\\val_cal_op_split.csv",
   "normal_class": "Normal",
   "stats": {

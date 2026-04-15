@@ -1,0 +1,16 @@
+{
+  "epoch": 107,
+  "checkpoint_file": "epoch106.pt",
+  "checkpoint_path": "D:\\BaiduNetdiskDownload\\stage1_formal_gate_hn_x\\YOLOv11\\runs\\stage1_formal_gate_hn\\yolo11x_gate2_formal_hn08_200ep\\weights\\epoch_107.pt",
+  "temperature_T": 3.361042,
+  "tau_r995": 0.36,
+  "tau_r990": 0.36,
+  "spec_at_r995": 0.547619,
+  "spec_at_r990": 0.547619,
+  "prec_at_r990": 0.916667,
+  "ptr_at_r990": 0.904762,
+  "tn_at_r995": 46,
+  "fn_at_r995": 2,
+  "tn_at_r990": 46,
+  "fn_at_r990": 2
+}

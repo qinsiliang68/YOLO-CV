@@ -1,0 +1,11 @@
+dataset_name,model,ratio_id,source_image_count,duplicate_count,actual_image_count,expected_image_count,source_missing_count,missing_expected_count,extra_actual_count,summary_present,summary_pass,validation_pass
+yolo11x_gate2_hn02,yolo11x,hn02,7200,22,7222,7222,0,0,0,1,1,1
+yolo11x_gate2_hn04,yolo11x,hn04,7200,43,7243,7243,0,0,0,1,1,1
+yolo11x_gate2_hn06,yolo11x,hn06,7200,65,7265,7265,0,0,0,1,1,1
+yolo11x_gate2_hn08,yolo11x,hn08,7200,86,7286,7286,0,0,0,1,1,1
+yolo11x_gate2_hn10,yolo11x,hn10,7200,108,7308,7308,0,0,0,1,1,1
+yolo11x_gate2_hn12,yolo11x,hn12,7200,130,7330,7330,0,0,0,1,1,1
+yolo11x_gate2_hn14,yolo11x,hn14,7200,151,7351,7351,0,0,0,1,1,1
+yolo11x_gate2_hn16,yolo11x,hn16,7200,173,7373,7373,0,0,0,1,1,1
+yolo11x_gate2_hn18,yolo11x,hn18,7200,194,7394,7394,0,0,0,1,1,1
+yolo11x_gate2_hn20,yolo11x,hn20,7200,216,7416,7416,0,0,0,1,1,1
