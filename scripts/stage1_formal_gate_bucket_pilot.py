@@ -217,6 +217,21 @@ def expected_experiments(cfg: dict[str, Any], score_output_dir: Path) -> list[di
     return rows
 
 
+def filter_experiments(rows: list[dict[str, Any]], cfg: dict[str, Any]) -> list[dict[str, Any]]:
+    selected = cfg.get("experiment_ids")
+    if not selected:
+        return rows
+    wanted = [str(item).strip() for item in selected if str(item).strip()]
+    if not wanted:
+        return rows
+    wanted_set = set(wanted)
+    filtered = [row for row in rows if str(row.get("experiment_id", "")).strip() in wanted_set]
+    missing = [item for item in wanted if item not in {str(row.get("experiment_id", "")).strip() for row in rows}]
+    if missing:
+        raise SystemExit(f"Unknown experiment_ids in config: {', '.join(missing)}")
+    return filtered
+
+
 def build_preflight(
     *,
     cfg: dict[str, Any],
@@ -631,7 +646,10 @@ def main() -> None:
         fixed_budget_count = int(resolve_ratio_row(hn_summary_csv, budget_anchor_ratio_id)["backflow_count"])
 
     feature_dir = scratch_root / "teacher_train_features"
-    expected_rows = expected_experiments({**cfg, "fixed_budget_count": fixed_budget_count}, score_output_dir)
+    expected_rows = filter_experiments(
+        expected_experiments({**cfg, "fixed_budget_count": fixed_budget_count}, score_output_dir),
+        cfg,
+    )
 
     results_dir.mkdir(parents=True, exist_ok=True)
     materials_root.mkdir(parents=True, exist_ok=True)
@@ -678,6 +696,7 @@ def main() -> None:
 
     registry_path = score_output_dir / "bucket_experiment_registry.csv"
     experiment_rows = expected_rows if args.dry_run or not registry_path.exists() else load_csv_rows(registry_path)
+    experiment_rows = filter_experiments(experiment_rows, cfg)
 
     for experiment in experiment_rows:
         ensure_dataset_view(

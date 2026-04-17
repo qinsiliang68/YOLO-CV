@@ -44,7 +44,13 @@ import numpy as np
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 SCRIPTS_DIR = REPO_ROOT / "scripts"
+YOLOV11_DIR = REPO_ROOT / "YOLOv11"
 sys.path.insert(0, str(SCRIPTS_DIR))
+sys.path.insert(0, str(YOLOV11_DIR))
+
+ARTIFACT_ROOT = Path(os.environ.get("YOLO_STAGE1_ARTIFACT_ROOT", str(REPO_ROOT))).expanduser()
+if not ARTIFACT_ROOT.is_absolute():
+    ARTIFACT_ROOT = (REPO_ROOT / ARTIFACT_ROOT).resolve()
 
 DATASET_SOURCE = REPO_ROOT / "YOLOv11" / "datasets" / "sewerml_gate2_train7200"
 SPLIT_CSV = REPO_ROOT / "research" / "materials" / "stage1_formal" / "manifests" / "val_cal_op_split.csv"
@@ -52,10 +58,10 @@ POOL_MASTER = REPO_ROOT / "research" / "materials" / "stage1_formal" / "gate_buc
 TEACHER_MANIFEST = REPO_ROOT / "research" / "materials" / "stage1_formal" / "gate_hn_m_sweep" / "hn00" / "best_epoch_manifest.json"
 HN00_PER_EPOCH = REPO_ROOT / "research" / "materials" / "stage1_formal" / "gate_hn_m_sweep" / "hn00" / "per_epoch_gate"
 
-CAMP_ROOT = REPO_ROOT / "research" / "materials" / "stage1_formal" / "gate_goldilocks_campaign"
-CAMP_RESULTS = REPO_ROOT / "research" / "results" / "stage1_formal" / "gate_goldilocks_campaign"
-CAMP_DATASETS = REPO_ROOT / "YOLOv11" / "datasets" / "stage1_goldilocks"
-CAMP_RUNS = REPO_ROOT / "YOLOv11" / "runs" / "stage1_goldilocks"
+CAMP_ROOT = ARTIFACT_ROOT / "research" / "materials" / "stage1_formal" / "gate_goldilocks_campaign"
+CAMP_RESULTS = ARTIFACT_ROOT / "research" / "results" / "stage1_formal" / "gate_goldilocks_campaign"
+CAMP_DATASETS = ARTIFACT_ROOT / "YOLOv11" / "datasets" / "stage1_goldilocks"
+CAMP_RUNS = ARTIFACT_ROOT / "YOLOv11" / "runs" / "stage1_goldilocks"
 
 WINDOW_SIZE = 50
 STEP_SIZE = 20
@@ -212,6 +218,7 @@ def compute_D_for_k(pool: list[dict], k: int) -> dict[str, float]:
     # find embeddings
     embed_candidates = [
         REPO_ROOT / "$out" / "scratch" / "stage1_formal" / "gate_info_sampling_lite" / "teacher_train_features" / "train_embeddings.npy",
+        REPO_ROOT / "$out" / "scratch" / "stage1_formal" / "gate_bucket_pilot" / "teacher_train_features" / "train_embeddings.npy",
         REPO_ROOT / "research" / "materials" / "stage1_formal" / "gate_bucket_pilot" / "score_inputs" / "train_embeddings.npy",
     ]
     embed_path = None
@@ -233,13 +240,37 @@ def compute_D_for_k(pool: list[dict], k: int) -> dict[str, float]:
     # find feature CSV for index mapping
     feat_csv_candidates = [
         REPO_ROOT / "$out" / "scratch" / "stage1_formal" / "gate_info_sampling_lite" / "teacher_train_features" / "train_features.csv",
+        REPO_ROOT / "$out" / "scratch" / "stage1_formal" / "gate_bucket_pilot" / "teacher_train_features" / "train_features.csv",
         REPO_ROOT / "research" / "materials" / "stage1_formal" / "gate_bucket_pilot" / "score_inputs" / "train_features.csv",
     ]
     feature_ids = None
     for p in feat_csv_candidates:
         if p.exists():
             with open(p, "r", encoding="utf-8-sig") as f:
-                feature_ids = [row.get("image_id", row.get("path", "")) for row in csv.DictReader(f)]
+                rows = list(csv.DictReader(f))
+            parsed_ids = []
+            for row in rows:
+                fid = (row.get("image_id") or "").strip()
+                if not fid:
+                    rel = (row.get("img_rel_path") or "").replace("\\", "/").strip()
+                    if rel:
+                        stem = Path(rel).stem
+                        parts = rel.split("/")
+                        if len(parts) >= 2 and parts[-2] in {"Normal", "Abnormal"}:
+                            fid = f"{parts[-2]}_{stem}"
+                        else:
+                            fid = stem
+                if not fid:
+                    img_id = (row.get("img_id") or "").strip()
+                    gt_label = (row.get("gt_label") or row.get("label") or "").strip()
+                    if img_id and gt_label in {"Normal", "Abnormal"}:
+                        fid = f"{gt_label}_{img_id}"
+                    elif img_id:
+                        fid = img_id
+                if not fid:
+                    fid = (row.get("path") or "").strip()
+                parsed_ids.append(fid)
+            feature_ids = parsed_ids
             break
 
     if feature_ids is None:
@@ -253,6 +284,34 @@ def compute_D_for_k(pool: list[dict], k: int) -> dict[str, float]:
     id_to_idx = {fid: idx for idx, fid in enumerate(feature_ids) if fid in pool_ids}
     pool_id_list = [pid for pid in pool_ids if pid in id_to_idx]
     pool_indices = [id_to_idx[pid] for pid in pool_id_list]
+
+    # fallback: use explicit embedding indices from candidate pool if ID schema differs
+    if not pool_id_list:
+        fallback_pairs = []
+        for row in pool:
+            try:
+                idx = int(row.get("embedding_index", ""))
+            except (TypeError, ValueError):
+                continue
+            if 0 <= idx < len(embeddings):
+                fallback_pairs.append((row["image_id"], idx))
+        seen = set()
+        pool_id_list = []
+        pool_indices = []
+        for pid, idx in fallback_pairs:
+            if pid in seen:
+                continue
+            seen.add(pid)
+            pool_id_list.append(pid)
+            pool_indices.append(idx)
+
+    if not pool_id_list:
+        print(f"  WARNING: no overlap between pool IDs and feature IDs for k={k}, using existing D values")
+        D_values = {r["image_id"]: float(r["D"]) for r in pool}
+        cache_path.parent.mkdir(parents=True, exist_ok=True)
+        cache_path.write_text(json.dumps(D_values, indent=2), encoding="utf-8")
+        return D_values
+
     pool_embeds = embeddings[pool_indices]
 
     norms = np.linalg.norm(pool_embeds, axis=1, keepdims=True)
@@ -261,10 +320,11 @@ def compute_D_for_k(pool: list[dict], k: int) -> dict[str, float]:
     sim_matrix = pool_embeds_normed @ pool_embeds_normed.T
 
     D_values = {}
+    k_eff = min(k, max(1, len(pool_id_list) - 1))
     for i, pid in enumerate(pool_id_list):
         sims = sim_matrix[i].copy()
         sims[i] = -1
-        topk_idx = np.argpartition(sims, -k)[-k:]
+        topk_idx = np.argpartition(sims, -k_eff)[-k_eff:]
         D_values[pid] = float(np.mean(sims[topk_idx]))
 
     # normalize to [0,1]
@@ -497,6 +557,7 @@ def main():
     print(f"\n{'='*60}")
     print(f"  Goldilocks Campaign")
     print(f"  Pool: {len(pool)}, Teacher: {Path(teacher_ckpt).name}")
+    print(f"  Artifact root: {ARTIFACT_ROOT}")
     print(f"  {time.strftime('%Y-%m-%d %H:%M:%S')}")
     print(f"{'='*60}\n")
 

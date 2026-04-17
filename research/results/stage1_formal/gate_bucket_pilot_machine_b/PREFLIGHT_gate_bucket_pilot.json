@@ -1,0 +1,35 @@
+{
+  "task_name": "stage1_formal_gate_bucket_pilot_machine_b",
+  "config_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\configs\\runtime\\stage1_formal_gate_bucket_pilot_machine_b.json",
+  "teacher_ratio_id": "hn00",
+  "teacher_checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_gate\\yolo11m_gate2_formal_200ep\\weights\\epoch_078.pt",
+  "teacher_best_epoch": 78,
+  "teacher_tau_r995": 0.28,
+  "teacher_tau_r990": 0.31,
+  "fixed_budget_count": 151,
+  "candidate_top_k": 250,
+  "experiments_planned": [
+    "C-Q3",
+    "C-Q4",
+    "C-Q5",
+    "D-Q1",
+    "D-Q2",
+    "D-Q3",
+    "D-Q4",
+    "D-Q5"
+  ],
+  "feature_dir": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\$out\\scratch\\stage1_formal\\gate_bucket_pilot\\teacher_train_features",
+  "score_output_dir": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\research\\materials\\stage1_formal\\gate_bucket_pilot\\score_inputs",
+  "dataset_view_root": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\datasets\\stage1_formal_gate_bucket_pilot",
+  "results_dir": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\research\\results\\stage1_formal\\gate_bucket_pilot_machine_b",
+  "required_inputs": {
+    "source_dataset": true,
+    "split_csv": true,
+    "teacher_summary_dir": true,
+    "teacher_best_manifest": true,
+    "teacher_checkpoint_path": true,
+    "hn_summary_csv": true,
+    "pool_top_csv": true
+  },
+  "ready_for_full_train": true
+}
