@@ -68,3 +68,5 @@ research/materials/stage1_formal/**/epoch_cls6_dashboard.png
 research/materials/stage1_formal/gate_hn_assets/
 research/results/stage1_formal/gate_capacity/stage1_gate_top1_per_epoch.csv
 research/results/stage1_formal/gate_capacity/stage1_gate_top1_summary.csv
+research/results/stage1_formal/gate_goldilocks_campaign/_runtime_logs/
+research/results/stage1_formal/gate_goldilocks_campaign/machineA_*.log
