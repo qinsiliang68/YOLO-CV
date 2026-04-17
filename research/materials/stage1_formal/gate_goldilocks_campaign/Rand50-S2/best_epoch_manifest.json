@@ -1,0 +1,16 @@
+{
+  "epoch": 36,
+  "checkpoint_file": "epoch35.pt",
+  "checkpoint_path": "D:\\YOLO-CV-generated\\YOLOv11\\runs\\stage1_goldilocks\\Rand50-S2\\weights\\epoch35.pt",
+  "temperature_T": 2.043202,
+  "tau_r995": 0.34,
+  "tau_r990": 0.38,
+  "spec_at_r995": 0.583333,
+  "spec_at_r990": 0.607143,
+  "prec_at_r990": 0.926503,
+  "ptr_at_r990": 0.890873,
+  "tn_at_r995": 49,
+  "fn_at_r995": 2,
+  "tn_at_r990": 51,
+  "fn_at_r990": 4
+}
