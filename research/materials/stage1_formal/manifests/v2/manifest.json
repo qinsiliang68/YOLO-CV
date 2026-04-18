@@ -1,0 +1,26 @@
+{
+  "protocol_version": "v2",
+  "seed": 20260606,
+  "generated_at": "2026-04-18T07:05:35.442959+00:00",
+  "train_strategy": "sub-class balanced: 3500 per main class (rarity-priority) + 3500 Normal = 24500 total (Normal:defect_total = 1:6)",
+  "val_test_source": "v1 (natural distribution, copied for eval-time realism)",
+  "splits": {
+    "train": {
+      "n_frames": 24500,
+      "y_ratio": 0.8571,
+      "sha256": "70b5070ac24fb75dc4a1afd572cf67a5d11436f627e4b9c35314656e9d3cdd62"
+    },
+    "val_cal": {
+      "source": "v1/val_cal_ids.csv",
+      "sha256": "de42dee4b723abd5aeaa67d2f0ab58a95a84a7f80b14c79259ac09c49e35202e"
+    },
+    "val_op": {
+      "source": "v1/val_op_ids.csv",
+      "sha256": "3de2ad55b916a3a9aa5bbec1fe66c599fe2344e3557aea4fd29ca2673bc8c4c9"
+    },
+    "test": {
+      "source": "v1/test_ids.csv",
+      "sha256": "ac8f3e1adff80216060d6f10108f11f1cb0240eb323b9bedd5efc3f5c26700dd"
+    }
+  }
+}
