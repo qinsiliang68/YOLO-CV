@@ -1,1 +1,0 @@
-# table_hn_top1_vs_gatebest_by_ratio\n\nThe current HN material level does not contain a reliable trainer-side per-ratio top1 summary in `all_checkpoints_index.csv`.\nTherefore this conditional artifact is intentionally not generated.\n

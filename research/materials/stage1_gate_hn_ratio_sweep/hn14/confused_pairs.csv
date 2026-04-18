@@ -1,3 +1,0 @@
-gt_label,pred_label,count,rate_within_gt
-Normal,Abnormal,34,0.283333
-Abnormal,Normal,16,0.026667

@@ -163,20 +163,22 @@ def compute_T_signal(pool: list[dict]) -> dict[str, float]:
         cache_path.write_text(json.dumps(T_values, indent=2), encoding="utf-8")
         return T_values
 
-    # IMPORTANT: val_op predictions contain VALIDATION samples, but pool samples
-    # are from TRAINING set. We need to check if there's any overlap.
-    # If not, we need per-checkpoint inference on training samples instead.
+    # BUG-HISTORY (2026-04-16): val_op predictions contain VALIDATION samples,
+    # but pool samples are from TRAINING set — zero overlap guaranteed.
+    # This caused T to silently fall back to R in Machine A campaign (34.5h),
+    # making T-W01..T-W11 identical copies of R-W01..R-W11 (11 runs wasted).
+    # FIX: T signal MUST be computed by stage1_extract_T_signal.py BEFORE
+    # the campaign. That script runs inference on training candidates at
+    # multiple checkpoints and writes T_signal_cache.json with real values.
+    # The fallback below should RAISE instead of silently proceeding.
     pool_matched = sum(1 for pid in pool_ids if any(sample_logits[pid]))
     if pool_matched == 0:
-        print("  WARNING: val_op predictions have zero overlap with pool samples")
-        print("  (pool = training normals, val_op = validation samples)")
-        print("  T signal requires per-checkpoint inference on training candidates.")
-        print("  Falling back to R as proxy for T.")
-        print("  To compute real T: run stage1_extract_T_signal.py before campaign.")
-        T_values = {r["image_id"]: float(r["R"]) for r in pool}
-        cache_path.parent.mkdir(parents=True, exist_ok=True)
-        cache_path.write_text(json.dumps(T_values, indent=2), encoding="utf-8")
-        return T_values
+        raise RuntimeError(
+            "T signal fallback triggered: val_op has zero overlap with pool "
+            "(pool = training normals, val_op = validation samples). "
+            "Run stage1_extract_T_signal.py BEFORE the campaign to compute "
+            "real T signal via per-checkpoint inference on training candidates."
+        )
 
     beta_T = 2.0  # bandwidth for boundary relevance
     sigma_T_sq = 0.5  # variance penalty

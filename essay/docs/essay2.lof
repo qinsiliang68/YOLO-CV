@@ -1,0 +1,38 @@
+\addvspace {10.0pt}
+\addvspace {10.0pt}
+\contentsline {figure}{\numberline {2.1}{\ignorespaces YOLO 检测系统流程：缩放输入图像、运行卷积网络、非极大值抑制（图片来源于文献 \cite {redmon2016yolo}）}}{9}{figure.caption.9}%
+\contentsline {figure}{\numberline {2.2}{\ignorespaces YOLO 网格检测原理：将图像划分为 $S \times S$ 网格，每个单元预测边界框与类别概率，最终融合为检测结果（图片来源于文献 \cite {redmon2016yolo}）}}{10}{figure.caption.10}%
+\contentsline {figure}{\numberline {2.3}{\ignorespaces YOLO 网络结构：包含卷积层、最大池化层和全连接层（图片来源于文献 \cite {redmon2016yolo}）}}{10}{figure.caption.11}%
+\contentsline {figure}{\numberline {2.4}{\ignorespaces YOLO11 多任务架构概览：骨干网络包含 C3k2、C2PSA 和 SPPF 等核心模块，支持检测、分割、分类等多种视觉任务（图片来源于 Ultralytics 官方文档 \cite {jocher2023ultralytics}）}}{11}{figure.caption.12}%
+\contentsline {figure}{\numberline {2.5}{\ignorespaces YOLO 各版本在 COCO 数据集上的 mAP-延迟性能对比（图片来源于 Ultralytics 官方文档 \cite {jocher2023ultralytics}）}}{12}{figure.caption.13}%
+\addvspace {10.0pt}
+\addvspace {10.0pt}
+\contentsline {figure}{\numberline {4.1}{\ignorespaces 二分类门控容量扫描基线主指标对比（扩展验证集，707 正常样本）。基线 Spec@R99.5 在 0.17--0.34 区间内，五个容量差距较小，容量与门控性能之间不存在单调正比关系。}}{26}{figure.caption.21}%
+\contentsline {figure}{\numberline {4.2}{\ignorespaces 五模型 \texttt {Spec@R99.5} 随 epoch 的演化曲线}}{27}{figure.caption.23}%
+\contentsline {figure}{\numberline {4.3}{\ignorespaces 五模型 \texttt {Spec@R99.0} 随 epoch 的演化曲线}}{27}{figure.caption.24}%
+\contentsline {figure}{\numberline {4.4}{\ignorespaces 以 \texttt {yolo11m-cls} 与 \texttt {yolo11l-cls} 为例的 \texttt {top1} 与 gate 指标错位}}{28}{figure.caption.26}%
+\contentsline {figure}{\numberline {4.5}{\ignorespaces 六类源域视图容量扫描对比。\texttt {yolo11x-cls} 以 Acc = 0.700 排在第一,与二分类门控视图中 \texttt {yolo11m-cls} 排在第一形成跨视图排序错位。}}{29}{figure.caption.28}%
+\contentsline {figure}{\numberline {4.6}{\ignorespaces 六类源域视图与二分类门控的排序错位可视化}}{30}{figure.caption.30}%
+\addvspace {10.0pt}
+\contentsline {figure}{\numberline {5.1}{\ignorespaces \texttt {yolo11n-cls} HN 比例扫描四项 gate 指标曲线（扩展验证集，707 正常样本）。基线 hn00 即为排序第一（Spec@R99.5 = 0.3267），所有 HN 比例均未超越基线，表明小容量模型无法从 HN 回流中获益。}}{32}{figure.caption.32}%
+\contentsline {figure}{\numberline {5.2}{\ignorespaces HN 比例扫描下的容量依赖性证据}}{33}{figure.caption.34}%
+\contentsline {figure}{\numberline {5.3}{\ignorespaces \texttt {yolo11m-cls} HN 比例扫描四项 gate 指标曲线（扩展验证集）。hn12 达 Spec@R99.5 = 0.3310（$+$0.1612），中间偏高比例（hn04--hn16）普遍优于基线，呈中段隆起形态。}}{34}{figure.caption.36}%
+\contentsline {figure}{\numberline {5.4}{\ignorespaces 五容量 $\times $ 11 比例的 $\Delta $Spec@R99.5 热力图（扩展验证集，707 正常样本）。红色 = 正增益，蓝色 = 负增益。小容量（n/s）全面蓝色（HN 无益），大容量（m/l）呈中段红色隆起，★ 标记各模型 winner。l+hn10（$\Delta = +0.2447$）为全局最大增益。}}{36}{figure.caption.39}%
+\contentsline {figure}{\numberline {5.5}{\ignorespaces \texttt {yolo11n-cls} 的门控最优轮次随 HN 比例的变化}}{37}{figure.caption.40}%
+\contentsline {figure}{\numberline {5.6}{\ignorespaces \texttt {yolo11m-cls} 的门控最优轮次随 HN 比例的变化}}{37}{figure.caption.41}%
+\contentsline {figure}{\numberline {5.7}{\ignorespaces \texttt {hn00}、\texttt {yolo11n-cls} 当前排序第一设置与高比例尾部设置的训练轨迹对比}}{38}{figure.caption.42}%
+\contentsline {figure}{\numberline {5.8}{\ignorespaces \texttt {hn00}、当前排序第一设置与高比例尾部设置的训练轨迹对比}}{38}{figure.caption.43}%
+\contentsline {figure}{\numberline {5.9}{\ignorespaces \texttt {yolo11m-cls} 与 \texttt {yolo11x-cls} 在 \texttt {hn00} 到 \texttt {hn02} 间的跨容量方向性对比}}{40}{figure.caption.46}%
+\contentsline {figure}{\numberline {5.10}{\ignorespaces 训练正常样本的异常分数分布与困难正常样本选择阈值}}{41}{figure.caption.48}%
+\contentsline {figure}{\numberline {5.11}{\ignorespaces 从容量扫描、HN 最优比例点到固定预算样本重分配的问题收缩链}}{41}{figure.caption.50}%
+\addvspace {10.0pt}
+\contentsline {figure}{\numberline {6.1}{\ignorespaces 单调加权假设的反证。(a) 假设采用 $\pi _i \propto R_i^2$ 的单调评分，84\% 以上的采样预算将集中在 Q1（最高 $R$ 值样本）。(b) 分位数消融表明 Q1 的 Spec@R99.5 低于 G0 基线（$-$0.0238），而 Q2 才是 peak（$+$0.0714）。单调加权将预算系统性地投向最低价值分位桶。}}{45}{figure.caption.52}%
+\contentsline {figure}{\numberline {6.2}{\ignorespaces 三信号分位数分层消融的非单调价值--信号响应（Goldilocks pattern）。$R$ 信号 peak 落在 Q2（$+$0.0714,6 个正常样本），$C$ 信号 peak 落在 Q4（$+$0.0595），$D$ 信号 peak 落在 Q3（$+$0.0595）。$R$-Q1（最高边界风险）的 Spec@R99.5 反而低于 G0 基线。拟合二次曲线可视化非单调 shape。}}{46}{figure.caption.53}%
+\addvspace {10.0pt}
+\addvspace {10.0pt}
+\addvspace {10.0pt}
+\addvspace {10.0pt}
+\contentsline {figure}{\numberline {C.1}{\ignorespaces 各 HN ratio 相对 \texttt {hn00} 的增量热力图}}{55}{figure.caption.63}%
+\contentsline {figure}{\numberline {C.2}{\ignorespaces 训练正常样本的异常分数分布与困难正常样本选择阈值}}{55}{figure.caption.65}%
+\addvspace {10.0pt}
+\addvspace {10.0pt}

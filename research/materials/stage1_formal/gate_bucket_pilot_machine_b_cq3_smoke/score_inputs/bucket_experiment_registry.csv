@@ -1,2 +1,0 @@
-﻿"experiment_id","signal","bucket","bucket_rank_start","bucket_rank_end","setting_name","candidate_scores_csv","metadata_json","n_unique","n_replay"
-"C-Q3","C","Q3","101","150","c_q3_bucket_uniform151","C:\Users\ASUS\Desktop\YOLOv11\YOLO-CV\research\materials\stage1_formal\gate_bucket_pilot\score_inputs\experiments\C-Q3_candidate_scores.csv","C:\Users\ASUS\Desktop\YOLOv11\YOLO-CV\research\materials\stage1_formal\gate_bucket_pilot\score_inputs\metadata\C-Q3_bucket_metadata.json","50","151"

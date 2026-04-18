@@ -141,7 +141,7 @@
 
 围绕这一目标，本文首先完成直接二分类门控与六类源域视图两套容量扫描，并采用温度校准、工作点搜索和外部评估器进行统一比较。结果表明，门控视图与六类源域视图的容量排序并不一致，说明源域分类表现不能替代高召回门控下的模型选择。在当前数据划分与当前随机种子下，\texttt{yolo11m-cls} 在门控视图中排在第一，\texttt{yolo11x-cls} 作为第二对照模型保留。
 
-在主模型固定后，本文在 n/s/m/l 四个容量上分别完成 11 点 HN 比例全量扫描（hard-negative ratio sweep），共计 55 个独立训练 run。结果表明，HN 增益具有非单调性（non-monotonic gain）、模型相关性（model-dependent gain）和形态异质性（shape heterogeneity）：四个容量的最优比例点互不相同（n$\to$hn08, s$\to$hn20, m$\to$hn14, l$\to$hn08），sweep 曲线形态两两不同（bimodal / late-peak-with-dip / flat-negative），且 HN 增益随容量递减至零（l 的增益精确为零），支持容量阶梯不可跨越假说。
+在主模型固定后，本文在 n/s/m/l/x 五个容量上分别完成 11 点 HN 比例全量扫描（hard-negative ratio sweep），共计 55 个独立训练 run，并在扩展验证集（707 个正常样本）上统一重新评估。结果表明，HN 增益具有显著的\textbf{容量依赖性}：小容量模型（n/s）几乎无法从 HN 回流中获益（$\Delta\mathrm{Spec} \approx 0$），而大容量模型可获得中等至巨幅增益，其中 l+hn10 以 $\Delta\mathrm{Spec@R99.5} = +0.2447$ 成为全局最优。五个容量的最优比例点互不相同（n$\to$hn00, s$\to$hn20, m$\to$hn12, l$\to$hn10, x$\to$hn02），表明不存在通用最优 HN 比例，必须逐模型搜索。
 
 在此基础上，本文提出门控导向样本效用评分框架（GAEIS），将候选池样本按校准后边界风险 $R$、TTA 预测稳定性 $C$ 和特征空间 kNN 密度 $D$ 三个正交信号进行分位数分层消融（quintile-stratified ablation），共执行 16 组独立实验。三个信号均呈现非单调价值--信号响应（Goldilocks pattern）：极端信号值样本（第一分位）的门控性能低于中等信号值样本（第二至四分位），其中 $R$-Q2 以 $\Delta\mathrm{Spec@R99.5} = +0.0714$（6 个正常样本）显著优于均匀基线，而 $R$-Q1（最靠近门控边界的样本）反而低于基线。该 Goldilocks 效应在三个正交信号上独立复现，构成跨信号交叉验证。综上，本文建立了一条从等条件容量扫描、HN 全量比例扫描到样本价值信号分解与 Goldilocks 效应验证的完整第一阶段证据链。
 \keywords{地下排水管道；高召回门控；容量扫描；难负样本回流；高价值困难样本评估；温度校准；检查点选模；CCTV 图像}
@@ -152,7 +152,7 @@ This thesis studies stage-1 model selection and training-side enhancement for se
 
 The thesis first reports two capacity scans: a direct binary-gate scan over five YOLO11 classification backbones, and a six-class source-side scan used only as an auxiliary reference. Temperature scaling and operating-point evaluation are applied consistently to every checkpoint. The two views do not yield the same ranking, which shows that source-side classification quality cannot replace gate-oriented checkpoint selection. Under the current split and seed, \texttt{yolo11m-cls} ranks first in the binary-gate view, while \texttt{yolo11x-cls} is retained as the main secondary comparison model.
 
-The thesis then reports a full hard-negative (HN) ratio sweep on four capacity tiers (n/s/m/l), producing 55 independent training runs under the shared protocol. The results reveal three regularities: (1)~HN gains are non-monotonic and model-dependent, with optimal ratios differing across all four capacities; (2)~sweep-curve shapes exhibit cross-capacity heterogeneity (bimodal, late-peak-with-dip, flat-negative); (3)~HN gains diminish to zero at the l-capacity tier, supporting a capacity-ladder non-crossing hypothesis under the shared protocol.
+The thesis then reports a full hard-negative (HN) ratio sweep on five capacity tiers (n/s/m/l/x), producing 55 independent training runs under the shared protocol, re-evaluated on an extended validation set (707~normal samples). The results reveal a strong \textbf{capacity-dependent} HN gain pattern: small-capacity models (n/s) derive virtually no benefit from HN replay ($\Delta\mathrm{Spec} \approx 0$), whereas large-capacity models achieve substantial gains, with l+hn10 reaching the global optimum ($\Delta\mathrm{Spec@R99.5} = +0.2447$). Optimal ratios differ across all five capacities (n$\to$hn00, s$\to$hn20, m$\to$hn12, l$\to$hn10, x$\to$hn02), confirming that no universal optimal ratio exists.
 
 Building on these findings, the thesis proposes a gate-aligned sample valuation framework and conducts a quintile-stratified ablation across three orthogonal signals: calibrated boundary risk~($R$), TTA prediction consistency~($C$), and feature-space kNN density~($D$). All three signals exhibit a non-monotonic value--signal response (Goldilocks pattern): extreme-signal samples (Q1, closest to the gate boundary) underperform moderate-signal samples (Q2--Q4), with $R$-Q2 outperforming the uniform baseline by $\Delta\mathrm{Spec@R99.5} = +0.0714$ (6~normal samples) while $R$-Q1 falls \emph{below} it. The Goldilocks pattern independently replicates across all three orthogonal dimensions, providing cross-signal cross-validation without requiring multi-seed repetition. The thesis thus establishes a complete stage-1 evidence chain from ceteris paribus capacity sweep, to exhaustive HN ratio sweep, to quintile-stratified Goldilocks-effect verification.
 \engkeywords{sewer inspection, high-recall gate, capacity sweep, hard-negative ratio sweep, sample valuation, Goldilocks effect, quintile-stratified ablation, temperature scaling, CCTV imagery}
@@ -265,7 +265,7 @@ YOLO 系列因具备较好的实时性和工程成熟度，已成为管道缺陷
 \item \textbf{非单调价值--信号响应}（non-monotonic value--signal response）：极端信号值样本是否一定优于中等信号值样本？三个信号是否均呈现 \textbf{Goldilocks pattern}——中间层样本价值高于两端？
 \end{enumerate}
 
-据此，本文的研究目标为：（1）建立可复现、可审计的第一阶段等条件选模协议；（2）在五个容量梯度（5.4M--56M 参数）上完成 HN 比例全量扫描（hard-negative ratio sweep），确定各容量的最优比例点与增益上界，并在跨容量维度上验证\textbf{容量阶梯不可跨越假说}（capacity-ladder non-crossing hypothesis）；（3）提出\textbf{门控导向样本效用评分}（gate-aligned sample valuation）框架，在固定预算下通过\textbf{分位数分层消融}（quintile-stratified ablation）验证 $R$/$C$/$D$ 三信号的排序力与 Goldilocks 效应。
+据此，本文的研究目标为：（1）建立可复现、可审计的第一阶段等条件选模协议；（2）在五个容量梯度（5.4M--57M 参数）上完成 HN 比例全量扫描（hard-negative ratio sweep），确定各容量的最优比例点与增益上界，并刻画 HN 增益的\textbf{容量依赖性}（capacity-dependent gain）；（3）提出\textbf{门控导向样本效用评分}（gate-aligned sample valuation）框架，在固定预算下通过\textbf{分位数分层消融}（quintile-stratified ablation）验证 $R$/$C$/$D$ 三信号的排序力与 Goldilocks 效应。
 
 \section{研究内容与技术路线}
 本文的技术路线由四个递进阶段组成。\textbf{第一阶段（等条件容量扫描）}：在直接二分类门控与六类源域两个视图上分别执行容量扫描，通过温度校准与外部评估器确定骨干网络排序。\textbf{第二阶段（HN 比例全量扫描）}：以 \texttt{yolo11m-cls} 为主线，在 \texttt{yolo11n/s/l/x-cls} 四个对照容量上完成 $r \in \{0\%,2\%,\ldots,20\%\}$ 共 11 个比例点的全量扫描（hard-negative ratio sweep），共计 55 个独立训练 run，刻画 HN 增益的非单调性与模型相关性。\textbf{第三阶段（样本价值信号分解与 Goldilocks 验证）}：将候选池 250 个样本按 $R$/$C$/$D$ 三信号各自排序后均分为 5 个分位桶（quintile bucket），加上均匀基线 G0，共执行 16 组分位数分层消融（quintile-stratified ablation），验证各信号的独立排序力与非单调价值--信号响应。\textbf{第四阶段（负结果诊断与边界界定）}：基于 lite 版样本重分配的负结果，结合分位数消融的 Goldilocks 发现，定位失败主因并界定当前方法边界。
@@ -275,7 +275,7 @@ YOLO 系列因具备较好的实时性和工程成熟度，已成为管道缺陷
 
 \noindent\textbf{创新点一：门控导向等条件评估协议。}将第一阶段重新界定为式~\eqref{eq:gate-objective} 的召回约束门控，建立由温度校准、校准集/工作点评估集划分（val-cal/val-op split）、逐 epoch 外部评估和四元排序规则（$\mathrm{Spec@R99.5} \succ \mathrm{Spec@R99.0} \succ \mathrm{Prec@R99.0} \succ \mathrm{PTR@R99.0}$）共同构成的评价协议，并在五个容量梯度 $\times$ 11 个 HN 比例的 55 个独立 run 上保持等条件共享训练协议。
 
-\noindent\textbf{创新点二：跨容量 HN 比例全量扫描与容量阶梯假说。}在四个已完成容量（n/s/m/l）上各自执行 11 点比例全量扫描，发现 HN 增益具有\textbf{非单调性}（各容量最优比例点互不相同）、\textbf{模型相关性}（$\Delta\mathrm{Spec}$ 随容量变化）和\textbf{形态异质性}（sweep 曲线形态两两不同），且较大容量 l 仅在最低非零比例（hn02）取得微弱增益（$+$0.0357），中高比例零扰动至退化，支持容量阶梯不可跨越假说。
+\noindent\textbf{创新点二：跨容量 HN 比例全量扫描与容量依赖性发现。}在五个容量（n/s/m/l/x）上各自执行 11 点比例全量扫描（共 55 个独立 run），发现 HN 增益具有显著的\textbf{容量依赖性}：小容量模型（n/s）几乎无法从 HN 回流中获益（$\Delta\mathrm{Spec} \approx 0$），而大容量模型（m/l/x）则可获得中等至巨幅增益（$\Delta\mathrm{Spec}$ 最高达 $+$0.2447，l+hn10）。各容量最优比例点互不相同（n→hn00, s→hn20, m→hn12, l→hn10, x→hn02），呈现\textbf{非单调性}与\textbf{形态异质性}。
 
 \noindent\textbf{创新点三：三信号分位数分层消融与 Goldilocks 效应发现。}提出门控导向样本效用评分框架，将候选池样本按 $R$/$C$/$D$ 三个正交信号分层并执行 16 组分位数消融。三个信号均呈现\textbf{非单调价值--信号响应}（Goldilocks pattern）：极端信号值样本（第一分位）的门控性能\emph{低于}中等信号值样本（第二至四分位），表明困难样本价值并非信号强度的单调函数，而是存在最优中间层（Goldilocks zone）。
 
@@ -634,9 +634,9 @@ S = (s_1 \cdot s_2 \cdots s_n)^{1/n}.
 \section{数据来源与数据组织}
 本文使用两套源域数据集来支撑当前第一阶段研究。第一套是直接二分类门控数据集 \texttt{sewerml\_gate2\_train7200}，共 7200 张图像，其中训练集 6480 张、验证集 720 张；类别分布为异常 6000 张、正常 1200 张。第二套是六类源域数据集 \texttt{sewerml\_cls6\_train7200}，同样包含 7200 张图像，并被均衡组织为六个类别，每类 1200 张，训练集与验证集分别为 6480 与 720 张。
 
-对于二分类门控协议，全部 720 张验证图像进一步按类别分层拆分为校准集和工作点评估集两部分，其中校准集（val-cal）为 216 张，工作点评估集（val-op）为 504 张；对应的异常/正常划分分别为 180/36 与 420/84。该拆分仅用于温度参数拟合与工作点报告，不参与训练。
+对于二分类门控协议，本文构建了扩展验证集（extended validation set），从 SewerML 训练池中随机抽取与训练集不重叠的 5518 张图像（1000 正常 + 4518 异常，多标签保留），按 30\%/70\% 分层拆分为校准集（val-cal，1655 张，293 正常）和工作点评估集（val-op，3863 张，707 正常）。该拆分仅用于温度参数拟合与工作点报告，不参与训练。
 
-后文 \formalmetric{Spec@R99.5} 与 \formalmetric{Spec@R99.0} 的排序均建立在工作点评估集的 $n = 84$ 个正常样本之上，specificity 的最小步长为 $1/84 \approx 0.0119$。为量化有限样本带来的不确定性，本文对关键排序点报告 Wilson 置信区间 \cite{wilson1927probable}：
+后文 \formalmetric{Spec@R99.5} 与 \formalmetric{Spec@R99.0} 的排序均建立在工作点评估集的 $n = 707$ 个正常样本之上，specificity 的最小步长为 $1/707 \approx 0.0014$。为量化有限样本带来的不确定性，本文对关键排序点报告 Wilson 置信区间 \cite{wilson1927probable}：
 \begin{equation}
 \label{eq:wilson-ci}
 \hat{p}_{\pm} = \frac{\hat{p} + \dfrac{z_\alpha^2}{2n} \pm z_\alpha\sqrt{\dfrac{\hat{p}(1-\hat{p})}{n} + \dfrac{z_\alpha^2}{4n^2}}}{\;1 + \dfrac{z_\alpha^2}{n}\;},
@@ -735,18 +735,18 @@ HN 候选池来源：以主模型 \texttt{yolo11m-cls} 的 \texttt{hn00} 基线�
 \section{二分类门控容量扫描}
 \begin{table}[H]
     \centering
-    \caption{等条件共享协议下的二分类门控容量扫描。\texttt{yolo11m-cls}（25M）以 Spec@R99.5 = 0.5952 排在第一,领先第二名 \texttt{yolo11x-cls}（56M）0.0476（4 个正常样本）。容量与门控性能之间不存在单调正比关系。\textbf{加粗}为 best,\underline{下划线}为 second-best。}
+    \caption{等条件共享协议下的二分类门控容量扫描（扩展验证集，707 正常样本）。\texttt{yolo11s-cls} 以 Spec@R99.5 = 0.3395 排在第一，\texttt{yolo11n-cls} 紧随其后（0.3267）。基线容量排序在扩展验证集上发生变化，但差距极小。\textbf{加粗}为 best，\underline{下划线}为 second-best。}
     \label{tab:stage1-formal-gate-capacity}
     \resizebox{\textwidth}{!}{%
-    \begin{tabular}{lcccccccc}
+    \begin{tabular}{lccccccccc}
         \toprule
-        Model & Best Epoch & Spec@R99.5 & Spec@R99.0 & Prec@R99.0 & PTR@R99.0 & $\tau_{99.5}$ & $\tau_{99.0}$ & Rank \\
+        Model & Best Epoch & Spec@R99.5 & tn/707 & Spec@R99.0 & Prec@R99.0 & PTR@R99.0 & $\tau_{99.5}$ & $\tau_{99.0}$ & Rank \\
         \midrule
-        \textbf{yolo11m-cls} & \textbf{78}  & \textbf{0.5952} & \textbf{0.6548} & \textbf{0.9348} & \textbf{0.8829} & 0.2800 & 0.3100 & \textbf{1} \\
-        \underline{yolo11x-cls} & \underline{125} & \underline{0.5476} & \underline{0.5952} & \underline{0.9244} & \underline{0.8929} & 0.2900 & 0.3600 & \underline{2} \\
-        yolo11l-cls & 54  & 0.5238 & 0.5714 & 0.9205 & 0.8988 & 0.2800 & 0.3000 & 3 \\
-        yolo11s-cls & 77  & 0.5238 & 0.5357 & 0.9143 & 0.9028 & 0.2500 & 0.2600 & 4 \\
-        yolo11n-cls & 76  & 0.5119 & 0.5833 & 0.9224 & 0.8948 & 0.2500 & 0.3600 & 5 \\
+        \textbf{yolo11s-cls} & \textbf{77}  & \textbf{0.3395} & \textbf{240} & \textbf{0.4455} & \textbf{0.8885} & 0.9104 & 0.1700 & 0.2900 & \textbf{1} \\
+        \underline{yolo11n-cls} & \underline{76}  & \underline{0.3267} & \underline{231} & 0.4371 & 0.8870 & 0.9120 & 0.1800 & 0.2800 & \underline{2} \\
+        yolo11x-cls & 125 & 0.3140 & 222 & \underline{0.4710} & \underline{0.8931} & \underline{0.9060} & 0.1200 & 0.2700 & 3 \\
+        yolo11l-cls & 54  & 0.2065 & 146 & 0.3805 & 0.8771 & 0.9223 & 0.0900 & 0.2200 & 4 \\
+        yolo11m-cls & 78  & 0.1697 & 120 & 0.3140 & 0.8657 & 0.9350 & 0.0900 & 0.1600 & 5 \\
         \bottomrule
     \end{tabular}
     }
@@ -755,31 +755,31 @@ HN 候选池来源：以主模型 \texttt{yolo11m-cls} 的 \texttt{hn00} 基线�
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.92\textwidth]{research/results/stage1_formal/capacity_scan/paper_main/figures/fig_stage1_gate_capacity_bar.png}
-    \caption{二分类门控容量扫描主指标对比。\texttt{yolo11m-cls} 在四项指标上均排在第一,但 l（24M）与 s（10M）在 Spec@R99.5 上持平（均为 0.5238）,表明参数量翻倍未必带来门控性能提升。}
+    \caption{二分类门控容量扫描基线主指标对比（扩展验证集，707 正常样本）。基线 Spec@R99.5 在 0.17--0.34 区间内，五个容量差距较小，容量与门控性能之间不存在单调正比关系。}
     \label{fig:stage1-formal-gate-bar}
 \end{figure}
 
-表~\ref{tab:stage1-formal-gate-capacity} 显示，在等条件共享协议下，\texttt{yolo11m-cls}（25M 参数）以 \formalmetric{Spec@R99.5} = 0.5952 排在第一，\texttt{yolo11x-cls}（56M）以 0.5476 排在第二。两者差距为 0.0476（4 个正常样本），对应的 95\% Wilson 置信区间见表~\ref{tab:stage1-key-wilson}。容量并非单调递增排序：l（24M）与 s（10M）均为 0.5238，n（5.4M）为 0.5119，表明参数量与门控性能之间不存在简单的正比关系。
+表~\ref{tab:stage1-formal-gate-capacity} 显示，在等条件共享协议下基线（hn00）的 Spec@R99.5 在 0.17--0.34 区间内，五个容量差距较小。\texttt{yolo11s-cls} 以 0.3395 排在第一，\texttt{yolo11n-cls} 以 0.3267 紧随其后。容量与基线门控性能之间不存在简单的正比关系——m（20M）和 l（24M）的基线反而低于 n（5.4M）和 s（9M），表明较大容量模型在基线状态下的表征未必更适合门控任务。然而，如第 5 章所示，大容量模型在 HN 回流后可获得远超小容量模型的增益。
 
 \begin{table}[H]
     \centering
-    \caption{关键排序结果对应的 normal 正确数与 95\% Wilson 区间}
+    \caption{关键排序结果对应的 normal 正确数与 95\% Wilson 区间（扩展验证集，$n = 707$）}
     \label{tab:stage1-key-wilson}
     \begin{tabular}{lccc}
         \toprule
-        设置 & Spec@R99.5 & 工作点评估集上判对的正常样本数 & 95\% Wilson 区间 \\
+        设置 & Spec@R99.5 & 判对的正常样本数 & 95\% Wilson 区间 \\
         \midrule
-        yolo11x-cls & 0.5476 & 46 / 84 & [0.4414, 0.6496] \\
-        yolo11m-cls & 0.5952 & 50 / 84 & [0.4883, 0.6938] \\
-        hn00        & 0.5952 & 50 / 84 & [0.4883, 0.6938] \\
-        hn14        & 0.6429 & 54 / 84 & [0.5362, 0.7370] \\
-        A4          & 0.5595 & 47 / 84 & [0.4531, 0.6608] \\
-        A1          & 0.6429 & 54 / 84 & [0.5362, 0.7370] \\
+        yolo11s-cls 基线 & 0.3395 & 240 / 707 & [0.3051, 0.3757] \\
+        yolo11n-cls 基线 & 0.3267 & 231 / 707 & [0.2927, 0.3626] \\
+        yolo11x-cls 基线 & 0.3140 & 222 / 707 & [0.2806, 0.3495] \\
+        m+hn12              & 0.3310 & 234 / 707 & [0.2968, 0.3670] \\
+        l+hn10              & 0.4512 & 319 / 707 & [0.4148, 0.4881] \\
+        x+hn02              & 0.3734 & 264 / 707 & [0.3382, 0.4101] \\
         \bottomrule
     \end{tabular}
 \end{table}
 
-\noindent 表 \ref{tab:stage1-key-wilson} 进一步说明，当前最关键的几组比较在工作点评估集的 84 个正常样本上只对应 4 到 7 个样本的差别，且区间存在明显重叠。例如，\texttt{yolo11m-cls} 相对 \texttt{yolo11x-cls} 的优势只对应多判对 4 个正常样本；\texttt{hn14} 相对 \texttt{hn00} 的提升同样也是 4 个正常样本。因而，本文后文把这些结果解释为“当前数据划分下的排序线索”和“后续问题收缩依据”，而不把它们写成已经具有统计显著性的容量定论。
+\noindent 表~\ref{tab:stage1-key-wilson} 显示，扩展验证集（$n = 707$）上的 95\% Wilson 区间显著收窄。例如，l+hn10 的 Spec@R99.5 = 0.4512，95\% CI = [0.4148, 0.4881]，与基线排序第一的 s（0.3395，CI = [0.3051, 0.3757]）\textbf{无重叠}，差异具有统计显著性。这一精度水平是旧验证集（84 个正常样本，CI 宽度 $\pm$0.10）无法达到的。
 
 \section{门控最优检查点的训练动态}
 \begin{figure}[H]
@@ -808,11 +808,11 @@ HN 候选池来源：以主模型 \texttt{yolo11m-cls} 的 \texttt{hn00} 基线�
         \toprule
         Model & Top1-Best Epoch & Top1-Best Top1 & Gate-Best Epoch & Gate-Best Spec@R99.5 & Gate-Best Spec@R99.0 & $\Delta$Epoch & Same \\
         \midrule
-        yolo11n-cls & 120 & 0.9250 & 76  & 0.5119 & 0.5833 & 44  & No \\
-        yolo11s-cls & 88  & 0.9208 & 77  & 0.5238 & 0.5357 & 11  & No \\
-        yolo11m-cls & 197 & 0.9347 & 78  & 0.5952 & 0.6548 & 119 & No \\
-        yolo11l-cls & 103 & 0.9306 & 54  & 0.5238 & 0.5714 & 49  & No \\
-        yolo11x-cls & 120 & 0.9319 & 125 & 0.5476 & 0.5952 & -5  & No \\
+        yolo11n-cls & 120 & 0.9250 & 76  & 0.3267 & 0.4371 & 44  & No \\
+        yolo11s-cls & 88  & 0.9208 & 77  & 0.3395 & 0.4455 & 11  & No \\
+        yolo11m-cls & 197 & 0.9347 & 78  & 0.1697 & 0.3140 & 119 & No \\
+        yolo11l-cls & 103 & 0.9306 & 54  & 0.2065 & 0.3805 & 49  & No \\
+        yolo11x-cls & 120 & 0.9319 & 125 & 0.3140 & 0.4710 & -5  & No \\
         \bottomrule
     \end{tabular}
     }
@@ -909,17 +909,17 @@ HN 回流的实验设置（候选池来源、比例定义 $r = |\mathcal{S}_\mat
         \toprule
         Ratio & Best Epoch & Spec@R99.5 & $\Delta$Spec@R99.5 & Spec@R99.0 & Rank \\
         \midrule
-        hn00 & 76  & 0.5119 & 0.0000  & 0.5833 & 11 \\
-        hn02 & 43  & 0.5595 & $+$0.0476 & 0.5833 & 3 \\
-        hn04 & 72  & 0.5238 & $+$0.0119 & 0.6071 & 9 \\
-        hn06 & 1   & 0.5357 & $+$0.0238 & 0.5952 & 8 \\
-        \textbf{hn08} & \textbf{100} & \textbf{0.5833} & $\boldsymbol{+}$\textbf{0.0714} & \textbf{0.5833} & \textbf{1} \\
-        hn10 & 1   & 0.5476 & $+$0.0357 & 0.5833 & 6 \\
-        hn12 & 1   & 0.5476 & $+$0.0357 & 0.5952 & 5 \\
-        hn14 & 87  & 0.5238 & $+$0.0119 & 0.5357 & 10 \\
-        hn16 & 1   & 0.5476 & $+$0.0357 & 0.5595 & 7 \\
-        hn18 & 1   & 0.5714 & $+$0.0595 & 0.5833 & 2 \\
-        hn20 & 1   & 0.5595 & $+$0.0476 & 0.5833 & 4 \\
+        \textbf{hn00} & \textbf{76}  & \textbf{0.3267} & \textbf{0.0000}  & \textbf{0.4371} & \textbf{1} \\
+        hn02 & 43  & 0.1485 & $-$0.1782 & 0.2334 & 11 \\
+        hn04 & 72  & 0.1768 & $-$0.1499 & 0.3678 & 10 \\
+        hn06 & 1   & 0.2871 & $-$0.0396 & 0.3904 & 5 \\
+        hn08 & 100 & 0.2843 & $-$0.0424 & 0.4130 & 7 \\
+        hn10 & 1   & 0.3168 & $-$0.0099 & 0.4201 & 2 \\
+        hn12 & 1   & 0.2956 & $-$0.0311 & 0.4272 & 3 \\
+        hn14 & 87  & 0.2008 & $-$0.1259 & 0.3550 & 9 \\
+        hn16 & 1   & 0.2447 & $-$0.0820 & 0.3621 & 8 \\
+        hn18 & 1   & 0.2857 & $-$0.0410 & 0.4215 & 6 \\
+        hn20 & 1   & 0.2900 & $-$0.0368 & 0.4031 & 4 \\
         \bottomrule
     \end{tabular}
 \end{table}
@@ -927,11 +927,11 @@ HN 回流的实验设置（候选池来源、比例定义 $r = |\mathcal{S}_\mat
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.92\textwidth]{research/results/stage1_formal/gate_hn_paper/figures/fig_hn_n_ratio_metric_curves_panel.png}
-    \caption{\texttt{yolo11n-cls} HN 比例扫描四项 gate 指标曲线。Spec@R99.5 在 hn08 处达到峰值 0.5833（$+$0.0714），呈双峰非单调形态，6/11 个 ratio 的 best\_epoch = 1。}
+    \caption{\texttt{yolo11n-cls} HN 比例扫描四项 gate 指标曲线（扩展验证集，707 正常样本）。基线 hn00 即为排序第一（Spec@R99.5 = 0.3267），所有 HN 比例均未超越基线，表明小容量模型无法从 HN 回流中获益。}
     \label{fig:hn-n-ratio-metrics}
 \end{figure}
 
-表 \ref{tab:hn-n-main-ranking} 与图 \ref{fig:hn-n-ratio-metrics} 表明，较小容量模型上的 HN 收益同样不是单调的。按与容量扫描一致的排序规则，\texttt{hn08} 是 \texttt{yolo11n-cls} 的当前排序第一设置；\texttt{hn18} 与 \texttt{hn02} 虽然也带来明显提升，但都没有在四指标联合排序下超过 \texttt{hn08}。这组结果说明，即使在较小容量模型上，HN 回流也并非”比例越高越好”，而是同样存在受训练轨迹与候选池状态共同影响的最优比例点。
+表~\ref{tab:hn-n-main-ranking} 与图~\ref{fig:hn-n-ratio-metrics} 表明，在扩展验证集（707 个正常样本）上重新评估后，\texttt{yolo11n-cls} 的\textbf{基线 hn00 即为排序第一}，所有 HN 比例均导致 Spec@R99.5 下降（最大降幅 $-$0.1782，hn02）。这一结果与旧验证集（84 个正常样本）上的虚高增益形成鲜明对比，说明小容量模型（5.4M 参数）的表征空间不足以从 HN 回流中获益——回流样本反而引入噪声干扰。
 
 \medskip
 \noindent\textbf{较小容量参考模型 \texttt{yolo11s-cls}.}
@@ -944,29 +944,27 @@ HN 回流的实验设置（候选池来源、比例定义 $r = |\mathcal{S}_\mat
         \toprule
         Ratio & Best Epoch & Spec@R99.5 & $\Delta$Spec@R99.5 & Spec@R99.0 & Rank \\
         \midrule
-        hn00 & 77 & 0.5238 & 0.0000  & 0.5357 & 9 \\
-        hn02 & 8  & 0.5119 & $-$0.0119 & 0.5119 & 10 \\
-        hn04 & 28 & 0.5595 & $+$0.0357 & 0.5595 & 3 \\
-        hn06 & 54 & 0.5000 & $-$0.0238 & 0.5238 & 11 \\
-        hn08 & 1  & 0.5357 & $+$0.0119 & 0.5714 & 7 \\
-        hn10 & 36 & 0.5833 & $+$0.0595 & 0.5952 & 2 \\
-        hn12 & 1  & 0.5238 & 0.0000  & 0.5357 & 8 \\
-        hn14 & 75 & 0.5357 & $+$0.0119 & 0.5833 & 6 \\
-        hn16 & 1  & 0.5476 & $+$0.0238 & 0.5714 & 4 \\
-        hn18 & 1  & 0.5476 & $+$0.0238 & 0.5714 & 5 \\
-        \textbf{hn20} & \textbf{66} & \textbf{0.5952} & $\boldsymbol{+}$\textbf{0.0714} & \textbf{0.6071} & \textbf{1} \\
+        hn00 & 77 & 0.3395 & 0.0000  & 0.4455 & 2 \\
+        hn02 & 8  & 0.3182 & $-$0.0212 & 0.4201 & 4 \\
+        hn04 & 28 & 0.3126 & $-$0.0269 & 0.4356 & 5 \\
+        hn06 & 54 & 0.3310 & $-$0.0085 & 0.4399 & 3 \\
+        hn08 & 1  & 0.2857 & $-$0.0537 & 0.4243 & 9 \\
+        hn10 & 36 & 0.2192 & $-$0.1202 & 0.3479 & 11 \\
+        hn12 & 1  & 0.2744 & $-$0.0651 & 0.4116 & 10 \\
+        hn14 & 75 & 0.3083 & $-$0.0311 & 0.4045 & 6 \\
+        hn16 & 1  & 0.2928 & $-$0.0467 & 0.4484 & 8 \\
+        hn18 & 1  & 0.3013 & $-$0.0382 & 0.4427 & 7 \\
+        \textbf{hn20} & \textbf{66} & \textbf{0.3409} & $\boldsymbol{+}$\textbf{0.0014} & \textbf{0.4484} & \textbf{1} \\
         \bottomrule
     \end{tabular}
 \end{table}
 
-\textbf{\texttt{yolo11s-cls} 在 HN 响应曲线形态上明显不同于 n 和 m。} 它的当前排序第一比例点位于扫描的最大值 \texttt{hn20}，相对 \texttt{hn00} 取得 \formalmetric{Spec@R99.5}$+$0.0714（即工作点评估集上多正确拦截 6 个正常样本），且四项 gate 指标同步改善 —— 这是 33 个数据点中唯一一个全指标对称提升的最优设置。但形态上，\texttt{yolo11s-cls} 在 \texttt{hn02} 反而比基线下降 0.0119，在 \texttt{hn06} 跌至全表最低 0.5000，与 n 和 m 共享的"低比例 \texttt{hn02} 起步收益"形态正好相反。这条"低比例反向 $+$ 中段塌陷 $+$ 后峰"的曲线把"HN 收益模型相关"从比较 winner 落点的弱判断，加强为响应曲线形态差异的强判断。
-
-进一步地，\texttt{yolo11s-cls + hn20} 的 \formalmetric{Spec@R99.5} 精确追平 \texttt{yolo11m-cls} 基线 \texttt{hn00}（均为 0.5952，对应工作点评估集上 50/84 个正常样本被正确拦截），说明充分回流后的较小容量模型可以在主指标上达到未回流主模型的拦截能力 —— 但在 \formalmetric{Spec@R99.0} 上仍低 0.0476（4 个正常样本），揭示 HN 无法消除容量本身在次级约束上的差距。换言之，HN 是一种把较小容量模型推到主模型基线水平的训练侧机制，而不是一种能让较小容量模型替代主模型的训练侧机制。
+\textbf{\texttt{yolo11s-cls} 的 HN 增益在扩展验证集上接近于零。} 排序第一的 \texttt{hn20} 仅以 $\Delta\mathrm{Spec@R99.5} = +0.0014$（1 个正常样本之差）微弱领先基线 \texttt{hn00}，在统计上不具备显著性。其余 10 个 HN 比例全部低于基线（最大降幅 $-$0.1202，hn10）。与 \texttt{yolo11n-cls} 相似，\texttt{yolo11s-cls}（9.0M 参数）同样无法从 HN 回流中有效获益，进一步支持小容量模型对 HN 的吸收能力不足的结论。
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=\textwidth]{research/results/stage1_formal/gate_hn_paper/figures/fig_hn_capacity_curves_panel.png}
-    \caption[HN 比例扫描下的容量异质性证据]{\textbf{HN 比例扫描下的容量异质性证据 (n / s / m).} (a) \formalmetric{Spec@R99.5} vs HN ratio：三个容量模型的最优 ratio（★）分别落在 \texttt{hn08} (n)、\texttt{hn14} (m)、\texttt{hn20} (s)，完全不在同一位置；\texttt{m+hn14}（顶部虚线，0.6429）是 33 个数据点中的全局最优，任何较小容量配置都未能突破；\texttt{s+hn20} 恰好落在 \texttt{m+hn00} 主线基线（下部虚线，0.5952）上，说明充分回流的较小容量可在主指标上追平未回流的主模型，但仍未追平主模型自身的最优。(b) Best epoch vs HN ratio：\texttt{best\_ep=1} 的 X 标记数量随容量减小而增多 (n=6/11、s=4/11、m=2/11)，揭示较小容量模型在多数比例下于第一个 epoch 即触顶后退化的早熟训练动力学。}
+    \caption[HN 比例扫描下的容量依赖性证据]{\textbf{HN 比例扫描下的容量依赖性证据（五模型）。}(a) Spec@R99.5 vs HN ratio：小容量模型（n/s）所有 HN 比例均未超越基线，大容量模型（m/l/x）获得显著增益，l+hn10（★）以 0.4512 成为全局最优。(b) Gate-best epoch vs HN ratio：× 标记表示 best\_epoch = 1 的早熟设置。}
     \label{fig:hn-capacity-curves-panel}
 \end{figure}
 
@@ -975,23 +973,23 @@ HN 回流的实验设置（候选池来源、比例定义 $r = |\mathcal{S}_\mat
 
 \begin{table}[H]
     \centering
-    \caption{\texttt{yolo11m-cls} HN 比例扫描：主排序指标与增量。hn02 与 hn14 均达 $\Delta$Spec@R99.5 = $+$0.0476，hn14 以 Spec@R99.0 优势排在第一。}
+    \caption{\texttt{yolo11m-cls} HN 比例扫描：主排序指标与增量（扩展验证集）。hn12 以 $\Delta$Spec@R99.5 = $+$0.1612 排在第一，显著优于基线。}
     \label{tab:hn-m-main-ranking}
     \begin{tabular}{lccccc}
         \toprule
         Ratio & Best Epoch & Spec@R99.5 & $\Delta$Spec@R99.5 & Spec@R99.0 & Rank \\
         \midrule
-        hn00 & 78  & 0.5952 & 0.0000  & 0.6548 & 3 \\
-        hn02 & 51  & 0.6429 & $+$0.0476 & 0.6429 & 2 \\
-        hn04 & 144 & 0.5595 & $-$0.0357 & 0.6071 & 7 \\
-        hn06 & 96  & 0.5952 & 0.0000  & 0.6190 & 4 \\
-        hn08 & 1   & 0.5833 & $-$0.0119 & 0.6548 & 5 \\
-        hn10 & 29  & 0.5238 & $-$0.0714 & 0.5357 & 11 \\
-        hn12 & 115 & 0.5357 & $-$0.0595 & 0.5714 & 10 \\
-        \textbf{hn14} & \textbf{74} & \textbf{0.6429} & $\boldsymbol{+}$\textbf{0.0476} & \textbf{0.6548} & \textbf{1} \\
-        hn16 & 118 & 0.5714 & $-$0.0238 & 0.5714 & 6 \\
-        hn18 & 48  & 0.5476 & $-$0.0476 & 0.5476 & 9 \\
-        hn20 & 1   & 0.5595 & $-$0.0357 & 0.5952 & 8 \\
+        hn00 & 78  & 0.1697 & 0.0000  & 0.3140 & 8 \\
+        hn02 & 51  & 0.1810 & $+$0.0113 & 0.3663 & 6 \\
+        hn04 & 144 & 0.3112 & $+$0.1414 & 0.4569 & 2 \\
+        hn06 & 96  & 0.3027 & $+$0.1330 & 0.4158 & 4 \\
+        hn08 & 1   & 0.1584 & $-$0.0113 & 0.3154 & 9 \\
+        hn10 & 29  & 0.0764 & $-$0.0934 & 0.3083 & 11 \\
+        \textbf{hn12} & \textbf{115} & \textbf{0.3310} & $\boldsymbol{+}$\textbf{0.1612} & \textbf{0.4215} & \textbf{1} \\
+        hn14 & 74  & 0.3055 & $+$0.1358 & 0.4356 & 3 \\
+        hn16 & 118 & 0.2687 & $+$0.0990 & 0.4215 & 5 \\
+        hn18 & 48  & 0.1782 & $+$0.0085 & 0.3451 & 7 \\
+        hn20 & 1   & 0.1231 & $-$0.0467 & 0.2546 & 10 \\
         \bottomrule
     \end{tabular}
 \end{table}
@@ -999,57 +997,58 @@ HN 回流的实验设置（候选池来源、比例定义 $r = |\mathcal{S}_\mat
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.92\textwidth]{research/results/stage1_formal/gate_hn_paper/figures/fig_hn_m_ratio_metric_curves_panel.png}
-    \caption{\texttt{yolo11m-cls} HN 比例扫描四项 gate 指标曲线。hn02 与 hn14 均达 Spec@R99.5 = 0.6429（$+$0.0476），中间比例（hn04--hn12）低于基线，呈双峰非单调形态。}
+    \caption{\texttt{yolo11m-cls} HN 比例扫描四项 gate 指标曲线（扩展验证集）。hn12 达 Spec@R99.5 = 0.3310（$+$0.1612），中间偏高比例（hn04--hn16）普遍优于基线，呈中段隆起形态。}
     \label{fig:hn-m-ratio-metrics}
 \end{figure}
 
-表~\ref{tab:hn-m-main-ranking} 与图~\ref{fig:hn-m-ratio-metrics} 表明，\texttt{yolo11m-cls} 的 HN 增益呈\textbf{双峰非单调}（bimodal non-monotonic）形态：\texttt{hn02} 与 \texttt{hn14} 均达到 $\Delta\mathrm{Spec@R99.5} = +0.0476$（4 个正常样本），中间比例（hn04--hn12）反而低于基线。按四元排序规则，\texttt{hn14} 以 \formalmetric{Spec@R99.0} 优势排在第一。
+表~\ref{tab:hn-m-main-ranking} 与图~\ref{fig:hn-m-ratio-metrics} 表明，\texttt{yolo11m-cls} 在扩展验证集上的 HN 增益呈\textbf{中段隆起}形态：\texttt{hn04}--\texttt{hn16} 区间普遍优于基线，\texttt{hn12} 以 $\Delta\mathrm{Spec@R99.5} = +0.1612$（114 个正常样本）排在第一。与旧验证集上的双峰形态不同，扩展验证集揭示出更连续的增益分布，且增益幅度远大于旧评估。基线 \texttt{hn00} 的 Spec@R99.5 仅为 0.1697（仅拦截 120/707 个正常样本），说明 m 的未回流基线在更大样本上表现较弱，而 HN 回流可将其推高近一倍。
 
 \subsection{\texttt{yolo11l-cls} 的 HN 比例扫描}
 
 \begin{table}[H]
     \centering
-    \caption{\texttt{yolo11l-cls} HN 比例扫描：主排序指标与增量（完整四指标表见附录表~\ref{tab:hn-l-full-sweep}）}
+    \caption{\texttt{yolo11l-cls} HN 比例扫描：主排序指标与增量（扩展验证集）。hn10 以 $\Delta$Spec@R99.5 = $+$0.2447 排在第一，为五个容量中最大增益。}
     \label{tab:hn-l-main-ranking}
     \begin{tabular}{lccccc}
         \toprule
         Ratio & Best Epoch & Spec@R99.5 & $\Delta$Spec@R99.5 & Spec@R99.0 & Rank \\
         \midrule
-        hn00 & 54  & 0.5238 & 0.0000  & 0.5714 & 4 \\
-        \textbf{hn02} & \textbf{64} & \textbf{0.5595} & $\boldsymbol{+}$\textbf{0.0357} & \textbf{0.5833} & \textbf{1} \\
-        hn04 & 115 & 0.5357 & $+$0.0119 & 0.5357 & 2 \\
-        hn06 & 16  & 0.5238 & 0.0000  & 0.5833 & 5 \\
-        hn08 & 14  & 0.5238 & 0.0000  & 0.5714 & 6 \\
-        hn10 & 48  & 0.5238 & 0.0000  & 0.5238 & 7 \\
-        hn12 & 5   & 0.5238 & 0.0000  & 0.5476 & 8 \\
-        hn14 & 86  & 0.5119 & $-$0.0119 & 0.5714 & 9 \\
-        hn16 & 54  & 0.5000 & $-$0.0238 & 0.5119 & 10 \\
-        hn18 & 1   & 0.4762 & $-$0.0476 & 0.5119 & 11 \\
-        hn20 & 5   & 0.5238 & 0.0000  & 0.5595 & 3 \\
+        hn00 & 54  & 0.2065 & 0.0000  & 0.3805 & 10 \\
+        hn02 & 64  & 0.2984 & $+$0.0919 & 0.4045 & 6 \\
+        hn04 & 115 & 0.2617 & $+$0.0552 & 0.3890 & 8 \\
+        hn06 & 16  & 0.1825 & $-$0.0240 & 0.3140 & 11 \\
+        hn08 & 14  & 0.3522 & $+$0.1457 & 0.4272 & 2 \\
+        \textbf{hn10} & \textbf{48} & \textbf{0.4512} & $\boldsymbol{+}$\textbf{0.2447} & \textbf{0.4979} & \textbf{1} \\
+        hn12 & 5   & 0.3352 & $+$0.1287 & 0.4187 & 3 \\
+        hn14 & 86  & 0.3098 & $+$0.1033 & 0.4130 & 4 \\
+        hn16 & 54  & 0.2772 & $+$0.0707 & 0.3960 & 7 \\
+        hn18 & 1   & 0.2390 & $+$0.0325 & 0.4045 & 9 \\
+        hn20 & 5   & 0.3083 & $+$0.1018 & 0.4116 & 5 \\
         \bottomrule
     \end{tabular}
 \end{table}
 
-\texttt{yolo11l-cls}（24M 参数）的 HN 比例扫描结果呈现\textbf{尖刺衰减}（spike-and-decay）形态。\texttt{hn02} 以 \formalmetric{Spec@R99.5} = 0.5595（$\Delta = +0.0357$，3 个正常样本）排在第一，是 l 唯一取得正增益的比例点；\texttt{hn04} 微增 0.0119 后，hn06--hn12 六个比例全部锁死在基线 0.5238（tn = 44 不变），hn14 起开始退化，hn18 跌至全表最低 0.4762 且 best\_epoch = 1。
+\texttt{yolo11l-cls}（24M 参数）在扩展验证集上的 HN 增益呈现\textbf{单峰隆起}形态，且增幅为五个容量中最大。\texttt{hn10} 以 \formalmetric{Spec@R99.5} = 0.4512（$\Delta = +0.2447$，拦截 319/707 个正常样本）排在第一，是全局最优设置。hn08--hn14 区间均取得超过 $+$0.10 的显著增益，基线 \texttt{hn00} 仅拦截 146/707（20.7\%），而 \texttt{hn10} 将其推升至 45.1\%，增幅超过一倍。这说明大容量模型（24M 参数）具有充分的表征空间来吸收 HN 回流样本，且最优比例落在中等水平（10\%），而非极端低比例。
 
 该形态与 n/s/m 截然不同：l 只在最低非零比例 hn02 处获得微弱增益，之后 HN 回流对决策边界\textbf{零扰动}（hn06--hn12 六个点 tn 完全一致），直到 hn14 噪声积累到足以推歪边界才出现退化。11 个比例中仅 1 个 best\_epoch = 1（9\%），远低于 n 的 55\%，表明 l 并非"训练太快"，而是表征过于僵硬、中等剂量 HN 无梯度效应。
 
-\texttt{yolo11l-cls} 的最优表现（0.5595）不仅低于 \texttt{yolo11m-cls} 的 HN 最优（m+hn14 = 0.6429，差距 0.0833），也低于 \texttt{yolo11m-cls} 的无 HN 基线（m+hn00 = 0.5952，差距 0.0357）。这一结果支持\textbf{容量阶梯不可跨越假说}：在等条件共享协议下，更大的骨干网络容量不能通过 HN 回流弥补与中等容量模型之间的性能阶差。
+在扩展验证集上，\texttt{yolo11l-cls + hn10} 以 Spec@R99.5 = 0.4512 成为\textbf{五个容量中的全局最优}，超越所有其他模型与比例组合。这一发现与旧验证集上 l 表现最弱的结论截然相反，揭示了大容量模型在充足 HN 回流下的真实潜力：其基线虽低（0.2065），但对 HN 回流的吸收能力远超小容量模型（$\Delta = +0.2447$ vs n/s 的 $\Delta \approx 0$）。
 
 \section{跨容量 HN 增益对比与形态分类}
 
 \begin{table}[H]
     \centering
-    \caption{等条件共享协议下四个容量的 HN 比例扫描跨容量对比（cross-capacity HN gain summary）}
+    \caption{等条件共享协议下五个容量的 HN 比例扫描跨容量对比（扩展验证集，707 正常样本）}
     \label{tab:hn-cross-capacity-summary}
-    \begin{tabular}{lcccccc}
+    \begin{tabular}{lccccccc}
         \toprule
-        Model & Params & Baseline & Best Ratio & $\Delta$Spec@R99.5 & Shape & best\_ep=1 率 \\
+        Model & Params & Baseline & tn/707 & Best Ratio & $\Delta$Spec@R99.5 & HN 效果 \\
         \midrule
-        yolo11n-cls & 5.4M  & 0.5119 & hn08 & $+$0.0714 & bimodal & 6/11 (55\%) \\
-        yolo11s-cls & 10M   & 0.5238 & hn20 & $+$0.0714 & late-peak-with-dip & 4/11 (36\%) \\
-        yolo11m-cls & 25M   & 0.5952 & hn14 & $+$0.0476 & bimodal & 2/11 (18\%) \\
-        yolo11l-cls & 24M   & 0.5238 & hn02 & $+$0.0357 & spike-and-decay & 1/11 (9\%) \\
+        yolo11n-cls & 5.4M  & 0.3267 & 231 & hn00 & $\approx$0 & 无增益 \\
+        yolo11s-cls & 9.0M  & 0.3395 & 240 & hn20 & $+$0.0014 & 无增益 \\
+        yolo11m-cls & 20M   & 0.1697 & 120 & hn12 & $+$0.1612 & 大幅增益 \\
+        \textbf{yolo11l-cls} & \textbf{24M} & \textbf{0.2065} & \textbf{146} & \textbf{hn10} & $\boldsymbol{+}$\textbf{0.2447} & \textbf{巨幅增益} \\
+        yolo11x-cls & 57M   & 0.3140 & 222 & hn02 & $+$0.0594 & 中等增益 \\
         \bottomrule
     \end{tabular}
 \end{table}
@@ -1057,17 +1056,17 @@ HN 回流的实验设置（候选池来源、比例定义 $r = |\mathcal{S}_\mat
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.95\textwidth]{research/results/stage1_formal/gate_hn_paper/figures/fig_hn_sweep_heatmap.png}
-    \caption{四容量 $\times$ 11 比例的 $\Delta$Spec@R99.5 热力图。红色 = 正增益，蓝色 = 负增益，白色 = 零。n 和 m 呈双峰正增益（hn02/hn08 和 hn02/hn14），s 的正增益集中在高比例尾部（hn10--hn20），l 仅 hn02 微增后六点 flat 再退化。四种形态在同一张图中直接可比。}
+    \caption{五容量 $\times$ 11 比例的 $\Delta$Spec@R99.5 热力图（扩展验证集，707 正常样本）。红色 = 正增益，蓝色 = 负增益。小容量（n/s）全面蓝色（HN 无益），大容量（m/l）呈中段红色隆起，★ 标记各模型 winner。l+hn10（$\Delta = +0.2447$）为全局最大增益。}
     \label{fig:hn-sweep-heatmap}
 \end{figure}
 
-表~\ref{tab:hn-cross-capacity-summary} 汇总了四个容量在等条件协议下的 HN 全量扫描结果，揭示三个关键规律：
+表~\ref{tab:hn-cross-capacity-summary} 汇总了五个容量在等条件协议下的 HN 全量扫描结果（基于扩展验证集，707 个正常样本），揭示三个关键规律：
 
-\textbf{（1）最优比例点不可迁移（non-transferable optimal ratio）。}n、s、m、l 的 winner ratio 分别为 hn08、hn20、hn14、hn08，四个容量无一相同（s 的 hn20 尤其反直觉），表明 HN 增益具有强烈的\textbf{模型相关性}（model-dependent gain）。
+\textbf{（1）HN 增益具有强容量依赖性（capacity-dependent gain）。}小容量模型（n/s，5--9M 参数）几乎无法从 HN 回流中获益（$\Delta\mathrm{Spec} \approx 0$），而大容量模型（m/l/x，20--57M 参数）则可获得中等至巨幅增益。这说明充分的表征空间是 HN 吸收的前提条件。
 
-\textbf{（2）sweep 曲线形态两两异质（shape heterogeneity）。}n 和 m 均呈双峰（bimodal），s 呈后置单峰伴中段塌陷（late-peak-with-dip），l 呈尖刺衰减（spike-and-decay，仅 hn02 微增后六点 flat 再退化）。这四种形态无法由单一超参数（如比例大小）统一解释，而是反映了不同容量模型对 HN 注入的不同训练动力学响应。
+\textbf{（2）最优比例点不可迁移（non-transferable optimal ratio）。}有效获益的三个容量（m/l/x）的 winner ratio 分别为 hn12、hn10、hn02，互不相同，表明不存在通用最优 HN 比例，必须逐模型搜索。
 
-\textbf{（3）HN 增益随容量递减（diminishing gain）。}$\Delta\mathrm{Spec@R99.5}$ 从 n/s 的 $+$0.0714 下降至 m 的 $+$0.0476，再降至 l 的仅 $+$0.0357（且仅在最低非零比例 hn02 处取得）。l 的 hn06--hn12 六个比例对门控性能\textbf{零扰动}（tn 完全一致），hn14 起退化。较大容量模型在等条件协议下对 HN 的吸收能力显著弱于中小容量。
+\textbf{（3）大容量模型反超（capacity reversal）。}\texttt{yolo11l-cls + hn10} 以 Spec@R99.5 = 0.4512 成为全局最优，超越 m 和 x 的所有 HN 设置。l 的基线虽为最弱之一（0.2065），但其巨幅增益（$+$0.2447）说明大容量模型的潜力需要 HN 回流来激发。这一发现与旧验证集上"HN 增益随容量递减"的结论相反，突显了扩展验证集对消除小样本偏差的重要性。
 
 \section{相对 \texttt{hn00} 的增量解释与训练动力学}
 \begin{figure}[H]
@@ -1077,7 +1076,7 @@ HN 回流的实验设置（候选池来源、比例定义 $r = |\mathcal{S}_\mat
     \label{fig:hn-n-best-epoch-vs-ratio}
 \end{figure}
 
-图 \ref{fig:hn-n-best-epoch-vs-ratio} 表明，\texttt{yolo11n-cls} 的门控最优轮次同样会随 HN 比例发生明显移动。其中，当前排序第一的 \texttt{hn08} 将最优轮次推迟到第 100 轮，而多个较高比例设置却在训练初期就达到各自最优检查点。这说明 HN 对小容量模型的影响也不仅体现在最终快照上，而是会重塑训练过程中工作点指标的上升与平台阶段。
+图~\ref{fig:hn-n-best-epoch-vs-ratio} 表明，\texttt{yolo11n-cls} 的门控最优轮次随 HN 比例发生明显移动。尽管在扩展验证集上 n 的所有 HN 比例均未超越基线，但训练动力学仍呈现差异化模式——多个比例的最优检查点落在第 1 轮（早熟），而 hn08 推迟到第 100 轮。
 
 \begin{figure}[H]
     \centering
@@ -1110,23 +1109,23 @@ HN 回流的实验设置（候选池来源、比例定义 $r = |\mathcal{S}_\mat
 \section{与基线主线的衔接及跨容量验证}
 \begin{table}[H]
     \centering
-    \caption{基线主线与 HN 锚点的桥接对照}
+    \caption{基线与 HN 最优设置的桥接对照（扩展验证集，op = 3863 张，707 正常样本）}
     \label{tab:hn-bridge}
     \resizebox{\textwidth}{!}{%
-    \begin{tabular}{lccccc}
+    \begin{tabular}{lcccccc}
         \toprule
-        Setting & Best Epoch & Spec@R99.5 & Spec@R99.0 & Prec@R99.0 & PTR@R99.0 \\
+        Setting & Best Epoch & Spec@R99.5 & tn/707 & Spec@R99.0 & Prec@R99.0 & PTR@R99.0 \\
         \midrule
-        yolo11n 基线（hn00） & 76  & 0.5119 & 0.5833 & 0.9224 & 0.8948 \\
-        yolo11n + hn08          & 100 & 0.5833 & 0.5833 & 0.9227 & 0.8988 \\
-        yolo11s 基线（hn00） & 77  & 0.5238 & 0.5357 & 0.9143 & 0.9028 \\
-        yolo11s + hn20          & 66  & 0.5952 & 0.6071 & 0.9267 & 0.8929 \\
-        yolo11m 基线（hn00） & 78  & 0.5952 & 0.6548 & 0.9348 & 0.8829 \\
-        yolo11m + hn14          & 74  & 0.6429 & 0.6548 & 0.9350 & 0.8849 \\
-        yolo11l 基线（hn00） & 54  & 0.5238 & 0.5714 & 0.9205 & 0.8988 \\
-        yolo11l + hn02          & 64  & 0.5595 & 0.5833 & 0.9224 & 0.8948 \\
-        yolo11x 基线（hn00） & 125 & 0.5476 & 0.5952 & 0.9244 & 0.8929 \\
-        yolo11x + hn02          & 1   & 0.5238 & 0.5476 & 0.9163 & 0.9008 \\
+        yolo11n 基线（hn00） & 76  & 0.3267 & 231 & 0.4371 & 0.8870 & 0.9120 \\
+        yolo11n HN 无增益      & --  & --     & --  & --     & --     & --     \\
+        yolo11s 基线（hn00） & 77  & 0.3395 & 240 & 0.4455 & 0.8885 & 0.9104 \\
+        yolo11s + hn20          & 66  & 0.3409 & 241 & 0.4484 & 0.8892 & 0.9112 \\
+        yolo11m 基线（hn00） & 78  & 0.1697 & 120 & 0.3140 & 0.8657 & 0.9350 \\
+        yolo11m + hn12          & 115 & 0.3310 & 234 & 0.4215 & 0.8843 & 0.9154 \\
+        \textbf{yolo11l 基线（hn00）} & 54  & 0.2065 & 146 & 0.3805 & 0.8771 & 0.9223 \\
+        \textbf{yolo11l + hn10} & \textbf{48} & \textbf{0.4512} & \textbf{319} & \textbf{0.4979} & \textbf{0.8981} & \textbf{0.9016} \\
+        yolo11x 基线（hn00） & 125 & 0.3140 & 222 & 0.4710 & 0.8931 & 0.9060 \\
+        yolo11x + hn02          & 59  & 0.3734 & 264 & 0.4682 & 0.8926 & 0.9065 \\
         \bottomrule
     \end{tabular}
     }
@@ -1134,14 +1133,23 @@ HN 回流的实验设置（候选池来源、比例定义 $r = |\mathcal{S}_\mat
 
 \begin{table}[H]
     \centering
-    \caption{\texttt{yolo11x-cls} 的轻量跨容量 HN 验证}
+    \caption{\texttt{yolo11x-cls} HN 比例扫描：主排序指标与增量（扩展验证集）}
     \label{tab:hn-x-crosscheck}
     \begin{tabular}{lccccc}
         \toprule
-        Ratio & Best Epoch & Spec@R99.5 & Spec@R99.0 & Prec@R99.0 & PTR@R99.0 \\
+        Ratio & Best Epoch & Spec@R99.5 & $\Delta$Spec@R99.5 & Spec@R99.0 & Rank \\
         \midrule
-        hn00 & 125 & 0.5476 & 0.5952 & 0.9244 & 0.8929 \\
-        hn02 & 1   & 0.5238 & 0.5476 & 0.9163 & 0.9008 \\
+        hn00 & 125 & 0.3140 & 0.0000  & 0.4710 & 6 \\
+        \textbf{hn02} & \textbf{59} & \textbf{0.3734} & $\boldsymbol{+}$\textbf{0.0594} & \textbf{0.4682} & \textbf{1} \\
+        hn04 & 1   & 0.3267 & $+$0.0127 & 0.4540 & 4 \\
+        hn06 & 172 & 0.3451 & $+$0.0311 & 0.4922 & 2 \\
+        hn08 & 107 & 0.2999 & $-$0.0141 & 0.4342 & 7 \\
+        hn10 & 63  & 0.2645 & $-$0.0495 & 0.4682 & 10 \\
+        hn12 & 1   & 0.3409 & $+$0.0269 & 0.4696 & 3 \\
+        hn14 & 117 & 0.2645 & $-$0.0495 & 0.4342 & 11 \\
+        hn16 & 107 & 0.3267 & $+$0.0127 & 0.4554 & 5 \\
+        hn18 & 70  & 0.2744 & $-$0.0396 & 0.4300 & 9 \\
+        hn20 & 1   & 0.2900 & $-$0.0240 & 0.4470 & 8 \\
         \bottomrule
     \end{tabular}
 \end{table}
@@ -1245,7 +1253,7 @@ HN 回流的实验设置（候选池来源、比例定义 $r = |\mathcal{S}_\mat
 
 \begin{table}[H]
     \centering
-    \caption{三信号分位数分层消融主结果：\formalmetric{Spec@R99.5}（G0 = 0.5476）。加粗为各信号的 peak bucket，$\Delta$ 为相对 G0 的增量。三个信号的 peak 均不在 Q1（最高信号值），而分别落在 Q2（$R$）、Q4（$C$）和 Q3（$D$），呈现非单调价值--信号响应（Goldilocks pattern）。}
+    \caption{三信号分位数分层消融主结果：\formalmetric{Spec@R99.5}。加粗为各信号的 peak bucket，$\Delta$ 为相对 G0 的增量。三个信号的 peak 均不在 Q1（最高信号值），而分别落在 Q2（$R$）、Q4（$C$）和 Q3（$D$），呈现非单调价值--信号响应（Goldilocks pattern）。\textbf{注：本表数据待在扩展验证集（707 正常样本）上重新评估。}}
     \label{tab:bucket-pilot-main}
     \begin{tabular}{lcccccc|cc}
         \toprule
@@ -1302,20 +1310,20 @@ Goldilocks pattern 直接否定了\textbf{单调加权假设}（monotonic weight
         容量扫描 & 谁是第一阶段主模型 & \texttt{yolo11m-cls} 为主模型，\texttt{yolo11x-cls} 为第二对照 & 已完成 \\
         检查点错位 & 训练器指标能否直接选模 & 5 个模型的训练器最优轮次均与门控最优轮次不一致 & 已完成 \\
         跨视图错位 & 六类视图能否替代门控视图 & 六类源域视图仅为辅助参考，不能替代门控选模 & 已完成 \\
-        HN 比例扫描 & HN 是否存在最优比例点 & 三个容量模型最优点彼此不同：\texttt{yolo11m-cls + hn14}（主线）、\texttt{yolo11n-cls + hn08}、\texttt{yolo11s-cls + hn20} & 已完成 \\
-        高价值样本直接评估 & 固定预算下能否直接评估并优先利用高价值困难样本 & 已提出 lite 版实现；A4 为变体最优但当前仍未超过 \texttt{uniform\_hn14} & 已完成 \\
+        HN 比例扫描 & HN 是否存在最优比例点 & 五个容量最优点互不相同：\texttt{l+hn10}（全局最优）、\texttt{m+hn12}、\texttt{x+hn02}；n/s 无增益 & 已完成 \\
+        高价值样本直接评估 & 固定预算下能否直接评估并优先利用高价值困难样本 & 已提出 lite 版实现；Goldilocks Campaign R-W02 验证甜点区效应 & 已完成 \\
         \bottomrule
     \end{tabularx}
 \end{table}
 
 表 \ref{tab:stage1-evidence-chain} 汇总了五条相互衔接的证据环节。所有排序均为当前数据划分与当前随机种子下的点估计（具体不确定性见表 \ref{tab:stage1-key-wilson}）。其中 lite 路线的贡献不是给出胜出策略，而是把“固定预算下高价值困难样本的直接评估”建立为一个可审计、带清晰边界的研究问题。
 
-\section{容量阶梯假说与 HN 增益的模型相关性}
-表~\ref{tab:hn-cross-capacity-summary} 的跨容量对比表明，在等条件共享协议下，HN 增益呈\textbf{递减至零}的趋势：$\Delta\mathrm{Spec@R99.5}$ 从 n 的 $+$0.0714 下降至 l 的 0。m+hn14 = 0.6429 为 55 个数据点的全局最强，l 的最优表现（0.5238）甚至低于 m 的无 HN 基线（0.5952），差距为 6 个正常样本。该结果支持\textbf{容量阶梯不可跨越假说}：在 shared-protocol 下，更大的骨干网络容量不能通过 HN 回流弥补与中等容量模型之间的性能阶差。
+\section{HN 增益的容量依赖性}
+表~\ref{tab:hn-cross-capacity-summary} 的跨容量对比（基于扩展验证集，707 个正常样本）揭示了 HN 增益的\textbf{强容量依赖性}：小容量模型（n/s，5--9M 参数）几乎无法从 HN 回流中获益（$\Delta\mathrm{Spec} \approx 0$），而大容量模型则获得显著增益——l+hn10 以 $\Delta\mathrm{Spec@R99.5} = +0.2447$（拦截 319/707 个正常样本）成为 55 个数据点的全局最优，m+hn12 增益 $+$0.1612，x+hn02 增益 $+$0.0594。
 
-四个容量的 sweep 曲线形态两两不同（bimodal / late-peak-with-dip / spike-and-decay），winner ratio 无一相同（n$\to$hn08, s$\to$hn20, m$\to$hn14, l$\to$hn02），表明 HN 增益具有强烈的模型相关性与形态异质性。这些差异不能由单一超参数解释，而是反映了不同容量模型对 HN 注入的不同训练动力学响应。
+五个容量的 winner ratio 互不相同（n$\to$hn00, s$\to$hn20, m$\to$hn12, l$\to$hn10, x$\to$hn02），表明不存在通用最优 HN 比例，必须逐模型搜索。这些差异不能由单一超参数解释，而是反映了不同容量模型对 HN 注入的不同训练动力学响应。
 
-需要强调的是，上述结论严格限定在等条件共享协议的 scope 内。l/x 在 batch=24 / 200 epoch / lr-auto 下可能未充分收敛；在 model-specific 调参下，较大容量模型是否仍然无法跨越容量阶梯，有待后续验证。
+值得注意的是，旧验证集（84 个正常样本）曾给出"HN 增益随容量递减至零"的结论，扩展验证集将其推翻：l 从旧评估中表现最弱的模型反转为全局冠军。这一反转突显了充分验证集规模对消除小样本偏差的重要性，也说明在安全关键场景下，84 个正常样本不足以支撑可靠的模型选择结论。
 
 \section{Goldilocks 效应的理论意义}
 第~\ref{sec:bucket-pilot} 节的分位数分层消融揭示了样本价值建模中的一个核心发现：\textbf{三个正交信号均呈非单调价值--信号响应}。这一 Goldilocks pattern 与 Swayamdipta 等人在 Dataset Cartography \cite{swayamdipta2020cartography} 中报告的”ambiguous 样本训练价值高于 hard-to-learn 样本”高度一致，但本文在两个方面扩展了原有发现：（1）Dataset Cartography 的分类基于训练轨迹的时变性（跨 epoch 方差），本文的 $R$/$C$/$D$ 三个信号均为静态一次性打分，表明 Goldilocks 效应在静态评估框架下同样成立；（2）Goldilocks pattern 在三个测量不同物理量的正交信号上独立复现，构成跨信号交叉验证（cross-signal cross-validation），而非依赖单一信号的观察。
@@ -1332,8 +1340,8 @@ Goldilocks pattern 直接否定了\textbf{单调加权假设}（monotonic weight
         问题类型 & 当前结论 & 是否已闭合 \\
         \midrule
         第一阶段选模 & 已通过二分类门控协议闭合 & 是 \\
-        HN 最优比例点 & 已在 \texttt{yolo11m-cls} 上闭合到 \texttt{hn14} & 是 \\
-        HN 跨容量稳定性 & n/s/m/l 四模型全量扫描已完成，增益呈模型相关性与形态异质性 & 是 \\
+        HN 最优比例点 & 全局最优为 \texttt{yolo11l-cls + hn10}；m 最优为 \texttt{hn12} & 是 \\
+        HN 跨容量稳定性 & n/s/m/l/x 五模型全量扫描已完成，增益呈容量依赖性（小容量无增益，大容量巨幅增益） & 是 \\
         Goldilocks 效应 & 三信号分位数分层消融均呈非单调价值--信号响应 & 是 \\
         高价值困难样本直接评估 & lite 版 A0--A4 负结果；Goldilocks 归因已定位失败主因 & 部分 \\
         完整两阶段系统优于单阶段检测器 & 当前不作结论 & 否 \\
@@ -1397,37 +1405,22 @@ Goldilocks pattern 直接否定了\textbf{单调加权假设}（monotonic weight
 \section{HN 检查点与材料覆盖}
 \begin{table}[H]
     \centering
-    \caption{\texttt{yolo11m-cls}、\texttt{yolo11s-cls} 与 \texttt{yolo11x-cls} 的 HN 最优检查点汇总}
+    \caption{五模型 HN 最优检查点汇总（扩展验证集，707 正常样本）。仅列出各模型基线与排序第一设置。}
     \label{tab:hn-registry-clean}
     \resizebox{\textwidth}{!}{%
-    \begin{tabular}{lcccccc}
+    \begin{tabular}{lccccccc}
         \toprule
-        模型 & 比例 & 最优轮次 & Spec@R99.5 & Spec@R99.0 & Prec@R99.0 & PTR@R99.0 \\
+        模型 & 比例 & 最优轮次 & Spec@R99.5 & tn/707 & Spec@R99.0 & Prec@R99.0 & PTR@R99.0 \\
         \midrule
-        yolo11m-cls & hn00 & 78  & 0.5952 & 0.6548 & 0.9348 & 0.8829 \\
-        yolo11m-cls & hn02 & 51  & 0.6429 & 0.6429 & 0.9330 & 0.8889 \\
-        yolo11m-cls & hn04 & 144 & 0.5595 & 0.6071 & 0.9265 & 0.8909 \\
-        yolo11m-cls & hn06 & 96  & 0.5952 & 0.6190 & 0.9286 & 0.8889 \\
-        yolo11m-cls & hn08 & 1   & 0.5833 & 0.6548 & 0.9348 & 0.8829 \\
-        yolo11m-cls & hn10 & 29  & 0.5238 & 0.5357 & 0.9145 & 0.9048 \\
-        yolo11m-cls & hn12 & 115 & 0.5357 & 0.5714 & 0.9204 & 0.8968 \\
-        yolo11m-cls & hn14 & 74  & 0.6429 & 0.6548 & 0.9350 & 0.8849 \\
-        yolo11m-cls & hn16 & 118 & 0.5714 & 0.5714 & 0.9207 & 0.9008 \\
-        yolo11m-cls & hn18 & 48  & 0.5476 & 0.5476 & 0.9167 & 0.9048 \\
-        yolo11m-cls & hn20 & 1   & 0.5595 & 0.5952 & 0.9246 & 0.8948 \\
-        yolo11s-cls & hn00 & 77  & 0.5238 & 0.5357 & 0.9143 & 0.9028 \\
-        yolo11s-cls & hn02 & 8   & 0.5119 & 0.5119 & 0.9107 & 0.9107 \\
-        yolo11s-cls & hn04 & 28  & 0.5595 & 0.5595 & 0.9187 & 0.9028 \\
-        yolo11s-cls & hn06 & 54  & 0.5000 & 0.5238 & 0.9123 & 0.9048 \\
-        yolo11s-cls & hn08 & 1   & 0.5357 & 0.5714 & 0.9204 & 0.8968 \\
-        yolo11s-cls & hn10 & 36  & 0.5833 & 0.5952 & 0.9246 & 0.8948 \\
-        yolo11s-cls & hn12 & 1   & 0.5238 & 0.5357 & 0.9145 & 0.9048 \\
-        yolo11s-cls & hn14 & 75  & 0.5357 & 0.5833 & 0.9224 & 0.8948 \\
-        yolo11s-cls & hn16 & 1   & 0.5476 & 0.5714 & 0.9205 & 0.8988 \\
-        yolo11s-cls & hn18 & 1   & 0.5476 & 0.5714 & 0.9205 & 0.8988 \\
-        yolo11s-cls & hn20 & 66  & 0.5952 & 0.6071 & 0.9267 & 0.8929 \\
-        yolo11x-cls & hn00 & 125 & 0.5476 & 0.5952 & 0.9244 & 0.8929 \\
-        yolo11x-cls & hn02 & 1   & 0.5238 & 0.5476 & 0.9163 & 0.9008 \\
+        yolo11n-cls & hn00 & 76  & 0.3267 & 231 & 0.4371 & 0.8870 & 0.9120 \\
+        yolo11s-cls & hn00 & 77  & 0.3395 & 240 & 0.4455 & 0.8885 & 0.9104 \\
+        yolo11s-cls & hn20 & 66  & 0.3409 & 241 & 0.4484 & 0.8892 & 0.9112 \\
+        yolo11m-cls & hn00 & 78  & 0.1697 & 120 & 0.3140 & 0.8657 & 0.9350 \\
+        yolo11m-cls & hn12 & 115 & 0.3310 & 234 & 0.4215 & 0.8843 & 0.9154 \\
+        yolo11l-cls & hn00 & 54  & 0.2065 & 146 & 0.3805 & 0.8771 & 0.9223 \\
+        \textbf{yolo11l-cls} & \textbf{hn10} & \textbf{48} & \textbf{0.4512} & \textbf{319} & \textbf{0.4979} & \textbf{0.8981} & \textbf{0.9016} \\
+        yolo11x-cls & hn00 & 125 & 0.3140 & 222 & 0.4710 & 0.8931 & 0.9060 \\
+        yolo11x-cls & hn02 & 59  & 0.3734 & 264 & 0.4682 & 0.8926 & 0.9065 \\
         \bottomrule
     \end{tabular}
     }
@@ -1435,76 +1428,80 @@ Goldilocks pattern 直接否定了\textbf{单调加权假设}（monotonic weight
 
 \begin{table}[H]
     \centering
-    \caption{\texttt{yolo11n-cls} 的全量 HN 比例扫描结果}
+    \caption{\texttt{yolo11n-cls} 的全量 HN 比例扫描结果（扩展验证集，707 正常样本）}
     \label{tab:hn-n-full-sweep}
     \resizebox{\textwidth}{!}{%
     \begin{tabular}{lcccccc}
         \toprule
         比例 & 最优轮次 & Spec@R99.5 & Spec@R99.0 & Prec@R99.0 & PTR@R99.0 & 备注 \\
         \midrule
-        hn00 & 76  & 0.5119 & 0.5833 & 0.9224 & 0.8948 & 基线 \\
-        hn02 & 43  & 0.5595 & 0.5833 & 0.9226 & 0.8968 &  \\
-        hn04 & 72  & 0.5238 & 0.6071 & 0.9265 & 0.8909 &  \\
-        hn06 & 1   & 0.5357 & 0.5952 & 0.9244 & 0.8929 &  \\
-        hn08 & 100 & 0.5833 & 0.5833 & 0.9227 & 0.8988 & 当前排序第一 \\
-        hn10 & 1   & 0.5476 & 0.5833 & 0.9224 & 0.8948 &  \\
-        hn12 & 1   & 0.5476 & 0.5952 & 0.9244 & 0.8929 &  \\
-        hn14 & 87  & 0.5238 & 0.5357 & 0.9145 & 0.9048 &  \\
-        hn16 & 1   & 0.5476 & 0.5595 & 0.9185 & 0.9008 &  \\
-        hn18 & 1   & 0.5714 & 0.5833 & 0.9226 & 0.8968 &  \\
-        hn20 & 1   & 0.5595 & 0.5833 & 0.9224 & 0.8948 &  \\
+        hn00 & 76  & 0.3267 & 0.4371 & 0.8870 & 0.9120 & 基线（排序第一） \\
+        hn02 & 43  & 0.1485 & 0.2334 & 0.8523 & 0.9498 &  \\
+        hn04 & 72  & 0.1768 & 0.3678 & 0.8749 & 0.9252 &  \\
+        hn06 & 1   & 0.2871 & 0.3904 & 0.8788 & 0.9205 &  \\
+        hn08 & 100 & 0.2843 & 0.4130 & 0.8828 & 0.9164 &  \\
+        hn10 & 1   & 0.3168 & 0.4201 & 0.8840 & 0.9151 &  \\
+        hn12 & 1   & 0.2956 & 0.4272 & 0.8853 & 0.9141 &  \\
+        hn14 & 87  & 0.2008 & 0.3550 & 0.8727 & 0.9270 &  \\
+        hn16 & 1   & 0.2447 & 0.3621 & 0.8739 & 0.9260 &  \\
+        hn18 & 1   & 0.2857 & 0.4215 & 0.8843 & 0.9154 &  \\
+        hn20 & 1   & 0.2900 & 0.4031 & 0.8810 & 0.9182 &  \\
         \bottomrule
     \end{tabular}
     }
 \end{table}
 
-\noindent 表 \ref{tab:hn-n-full-sweep} 由外部归档导入的 HN 汇总结果生成，并已同步到仓库的 \texttt{research/results/stage1\_formal/gate\_hn\_n\_sweep/}。按与正文一致的排序规则，\texttt{yolo11n-cls} 的当前最优比例点出现在 \texttt{hn08}，说明较小容量模型上的 HN 最优比例点与主模型 \texttt{yolo11m-cls} 并不相同。
+\noindent 表~\ref{tab:hn-n-full-sweep} 为扩展验证集上的完整评估结果。\texttt{yolo11n-cls} 的基线 hn00 即为排序第一，所有 HN 比例均导致 Spec@R99.5 下降，表明小容量模型无法从 HN 回流中获益。
 
 \begin{table}[H]
     \centering
-    \caption{\texttt{yolo11s-cls} 的全量 HN 比例扫描结果}
+    \caption{\texttt{yolo11s-cls} 的全量 HN 比例扫描结果（扩展验证集，707 正常样本）}
     \label{tab:hn-s-full-sweep}
     \resizebox{\textwidth}{!}{%
     \begin{tabular}{lcccccc}
         \toprule
         比例 & 最优轮次 & Spec@R99.5 & Spec@R99.0 & Prec@R99.0 & PTR@R99.0 & 备注 \\
         \midrule
-        hn00 & 77 & 0.5238 & 0.5357 & 0.9143 & 0.9028 & 基线 \\
-        hn02 & 8  & 0.5119 & 0.5119 & 0.9107 & 0.9107 &  \\
-        hn04 & 28 & 0.5595 & 0.5595 & 0.9187 & 0.9028 &  \\
-        hn06 & 54 & 0.5000 & 0.5238 & 0.9123 & 0.9048 &  \\
-        hn08 & 1  & 0.5357 & 0.5714 & 0.9204 & 0.8968 &  \\
-        hn10 & 36 & 0.5833 & 0.5952 & 0.9246 & 0.8948 &  \\
-        hn12 & 1  & 0.5238 & 0.5357 & 0.9145 & 0.9048 &  \\
-        hn14 & 75 & 0.5357 & 0.5833 & 0.9224 & 0.8948 &  \\
-        hn16 & 1  & 0.5476 & 0.5714 & 0.9205 & 0.8988 &  \\
-        hn18 & 1  & 0.5476 & 0.5714 & 0.9205 & 0.8988 &  \\
-        hn20 & 66 & 0.5952 & 0.6071 & 0.9267 & 0.8929 & 当前排序第一 \\
+        hn00 & 77 & 0.3395 & 0.4455 & 0.8885 & 0.9104 & 基线 \\
+        hn02 & 8  & 0.3182 & 0.4201 & 0.8841 & 0.9154 &  \\
+        hn04 & 28 & 0.3126 & 0.4356 & 0.8868 & 0.9128 &  \\
+        hn06 & 54 & 0.3310 & 0.4399 & 0.8875 & 0.9115 &  \\
+        hn08 & 1  & 0.2857 & 0.4243 & 0.8848 & 0.9143 &  \\
+        hn10 & 36 & 0.2192 & 0.3479 & 0.8714 & 0.9283 &  \\
+        hn12 & 1  & 0.2744 & 0.4116 & 0.8826 & 0.9172 &  \\
+        hn14 & 75 & 0.3083 & 0.4045 & 0.8813 & 0.9179 &  \\
+        hn16 & 1  & 0.2928 & 0.4484 & 0.8890 & 0.9099 &  \\
+        hn18 & 1  & 0.3013 & 0.4427 & 0.8880 & 0.9110 &  \\
+        hn20 & 66 & 0.3409 & 0.4484 & 0.8892 & 0.9112 & 排序第一（$\Delta$+0.0014） \\
         \bottomrule
     \end{tabular}
     }
 \end{table}
 
-\noindent 表 \ref{tab:hn-s-full-sweep} 由外部归档导入的 HN 汇总结果生成，并已同步到仓库的 \texttt{research/results/stage1\_formal/gate\_hn\_s\_sweep/}。按与正文一致的排序规则，\texttt{yolo11s-cls} 的当前最优比例点出现在 \texttt{hn20}，与 \texttt{yolo11n-cls} 的 \texttt{hn08} 和 \texttt{yolo11m-cls} 的 \texttt{hn14} 都不相同，进一步说明三个容量模型在均匀回流路线下的最优比例点彼此分离。
+\noindent 表~\ref{tab:hn-s-full-sweep} 显示 \texttt{yolo11s-cls} 的 hn20 仅以 $\Delta = +0.0014$ 微弱领先基线，在统计上不具备显著性，与 n 共同支持小容量模型无法从 HN 获益的结论。
 
-\noindent 全部 HN 比例扫描的逐轮评估汇总（epoch\_gate\_summary）、最优轮次清单（best\_epoch\_manifest）与检查点索引（all\_checkpoints\_index）均以 CSV / JSON / Markdown 三格式归档于 \texttt{research/materials/stage1\_formal/gate\_hn\_\{n,s,m,l\}\_sweep/} 各比例子目录中。
+\noindent 全部 HN 比例扫描的逐轮评估汇总（epoch\_gate\_summary）、最优轮次清单（best\_epoch\_manifest）与检查点索引（all\_checkpoints\_index）均以 CSV / JSON / Markdown 三格式归档于 \texttt{research/materials/stage1\_formal/gate\_hn\_\{n,s,m,l,x\}\_sweep/} 各比例子目录中。
 
 \section{yolo11l-cls 完整 HN 比例扫描}
 \begin{table}[H]
     \centering
-    \caption{\texttt{yolo11l-cls} HN 比例扫描完整四指标表（$r \in \{8\%,\ldots,20\%\}$，hn00 基线复用自容量扫描）}
+    \caption{\texttt{yolo11l-cls} HN 比例扫描完整四指标表（扩展验证集，707 正常样本）}
     \label{tab:hn-l-full-sweep}
     \begin{tabular}{lcccccc}
         \toprule
         Ratio & Best Epoch & Spec@R99.5 & Spec@R99.0 & Prec@R99.0 & PTR@R99.0 & $\Delta$Spec@R99.5 \\
         \midrule
-        hn08 & 14  & 0.5238 & 0.5714 & 0.9204 & 0.8968 & 0 \\
-        hn10 & 48  & 0.5238 & 0.5238 & 0.9127 & 0.9087 & 0 \\
-        hn12 & 5   & 0.5238 & 0.5476 & 0.9163 & 0.9008 & 0 \\
-        hn14 & 86  & 0.5119 & 0.5714 & 0.9204 & 0.8968 & $-$0.0119 \\
-        hn16 & 54  & 0.5000 & 0.5119 & 0.9105 & 0.9087 & $-$0.0238 \\
-        hn18 & 1   & 0.4762 & 0.5119 & 0.9105 & 0.9087 & $-$0.0476 \\
-        hn20 & 5   & 0.5238 & 0.5595 & 0.9183 & 0.8988 & 0 \\
+        hn00 & 54  & 0.2065 & 0.3805 & 0.8771 & 0.9223 & 0 \\
+        hn02 & 64  & 0.2984 & 0.4045 & 0.8813 & 0.9182 & $+$0.0919 \\
+        hn04 & 115 & 0.2617 & 0.3890 & 0.8785 & 0.9208 & $+$0.0552 \\
+        hn06 & 16  & 0.1825 & 0.3140 & 0.8657 & 0.9347 & $-$0.0240 \\
+        hn08 & 14  & 0.3522 & 0.4272 & 0.8853 & 0.9138 & $+$0.1457 \\
+        \textbf{hn10} & \textbf{48} & \textbf{0.4512} & \textbf{0.4979} & \textbf{0.8981} & \textbf{0.9016} & $\boldsymbol{+}$\textbf{0.2447} \\
+        hn12 & 5   & 0.3352 & 0.4187 & 0.8838 & 0.9154 & $+$0.1287 \\
+        hn14 & 86  & 0.3098 & 0.4130 & 0.8828 & 0.9164 & $+$0.1033 \\
+        hn16 & 54  & 0.2772 & 0.3960 & 0.8799 & 0.9195 & $+$0.0707 \\
+        hn18 & 1   & 0.2390 & 0.4045 & 0.8814 & 0.9187 & $+$0.0325 \\
+        hn20 & 5   & 0.3083 & 0.4116 & 0.8825 & 0.9166 & $+$0.1018 \\
         \bottomrule
     \end{tabular}
 \end{table}

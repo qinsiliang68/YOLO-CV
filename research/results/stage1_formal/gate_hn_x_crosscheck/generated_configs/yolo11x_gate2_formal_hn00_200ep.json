@@ -1,7 +1,0 @@
-{
-  "mode": "baseline_reuse",
-  "model": "D:\\BaiduNetdiskDownload\\yolo11x_gate2_formal_best_epoch125.pt",
-  "data": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\datasets\\sewerml_gate2_train7200",
-  "project": "D:\\BaiduNetdiskDownload\\stage1_formal_gate_hn_x\\YOLOv11\\runs\\stage1_formal_gate_hn",
-  "name": "yolo11x_gate2_formal_hn00_200ep"
-}

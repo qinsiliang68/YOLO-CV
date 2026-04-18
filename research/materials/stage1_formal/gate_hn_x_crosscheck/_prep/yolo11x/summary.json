@@ -1,7 +1,0 @@
-{
-  "weights": "D:\\BaiduNetdiskDownload\\yolo11x_gate2_formal_best_epoch125.pt",
-  "data_root": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\datasets\\sewerml_gate2_train7200",
-  "score_device": "0",
-  "total_train_normals": 1080,
-  "top_k": 216
-}

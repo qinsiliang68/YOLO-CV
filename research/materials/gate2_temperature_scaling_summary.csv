@@ -1,3 +1,0 @@
-run_name,temperature,val_cal_count,val_op_count,val_cal_abnormal,val_cal_normal,val_op_abnormal,val_op_normal,ece_before,ece_after,brier_before,brier_after,auroc_before,auroc_after,ap_before,ap_after,spec_r995_before,spec_r995_after,spec_r990_before,spec_r990_after,prec_r990_before,prec_r990_after,ptr_r990_before,ptr_r990_after
-yolo11l_gate2_train7200,2.222655,216,504,180,36,420,84,0.040708,0.030792,0.058129,0.05808,0.945238,0.945238,0.986853,0.986853,0.404762,0.428571,0.464286,0.47619,0.902597,0.904348,0.916667,0.912698
-yolo11m_gate2_train7200,2.837092,216,504,180,36,420,84,0.05791,0.028544,0.066954,0.062189,0.945663,0.945663,0.988284,0.988284,0.345238,0.345238,0.452381,0.452381,0.900433,0.900433,0.916667,0.916667

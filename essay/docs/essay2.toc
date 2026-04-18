@@ -1,0 +1,106 @@
+\contentsline {chapter}{摘要}{i}{chapter*.1}%
+\contentsline {chapter}{Abstract}{ii}{chapter*.2}%
+\contentsline {chapter}{主要符号与缩略语说明}{xi}{chapter*.6}%
+\contentsline {chapter}{\numberline {第1章\hspace {.3em}}绪论}{1}{chapter.1}%
+\contentsline {section}{\numberline {1.1}研究背景与工程意义}{1}{section.1.1}%
+\contentsline {section}{\numberline {1.2}国内外研究现状}{1}{section.1.2}%
+\contentsline {subsection}{\numberline {1.2.1}排水管道缺陷视觉识别}{1}{subsection.1.2.1}%
+\contentsline {subsection}{\numberline {1.2.2}YOLO 路线与排水管道场景适配}{2}{subsection.1.2.2}%
+\contentsline {subsection}{\numberline {1.2.3}两阶段预筛、概率校准与召回约束评价}{2}{subsection.1.2.3}%
+\contentsline {subsection}{\numberline {1.2.4}难样本挖掘、数据剪枝与样本效用建模研究}{3}{subsection.1.2.4}%
+\contentsline {section}{\numberline {1.3}研究问题与研究目标}{4}{section.1.3}%
+\contentsline {subsection}{\numberline {1.3.1}本文的任务边界}{4}{subsection.1.3.1}%
+\contentsline {subsection}{\numberline {1.3.2}核心科学问题与研究目标}{5}{subsection.1.3.2}%
+\contentsline {section}{\numberline {1.4}研究内容与技术路线}{5}{section.1.4}%
+\contentsline {section}{\numberline {1.5}主要创新点}{6}{section.1.5}%
+\contentsline {section}{\numberline {1.6}论文组织结构}{6}{section.1.6}%
+\contentsline {chapter}{\numberline {第2章\hspace {.3em}}理论基础与关键技术}{7}{chapter.2}%
+\contentsline {section}{\numberline {2.1}卷积神经网络基础}{7}{section.2.1}%
+\contentsline {subsection}{\numberline {2.1.1}卷积层与特征提取}{7}{subsection.2.1.1}%
+\contentsline {subsection}{\numberline {2.1.2}激活函数}{7}{subsection.2.1.2}%
+\contentsline {subsection}{\numberline {2.1.3}池化层}{8}{subsection.2.1.3}%
+\contentsline {subsection}{\numberline {2.1.4}全连接层与分类输出}{8}{subsection.2.1.4}%
+\contentsline {subsection}{\numberline {2.1.5}典型卷积网络架构的演进}{9}{subsection.2.1.5}%
+\contentsline {section}{\numberline {2.2}YOLO 系列算法与分类骨干网络}{9}{section.2.2}%
+\contentsline {subsection}{\numberline {2.2.1}目标检测的两条技术路线}{9}{subsection.2.2.1}%
+\contentsline {subsection}{\numberline {2.2.2}YOLO 算法的核心思想与版本演进}{9}{subsection.2.2.2}%
+\contentsline {subsection}{\numberline {2.2.3}YOLO11 分类模型}{11}{subsection.2.2.3}%
+\contentsline {section}{\numberline {2.3}迁移学习与预训练策略}{12}{section.2.3}%
+\contentsline {section}{\numberline {2.4}第一阶段高召回门控的目标定义}{12}{section.2.4}%
+\contentsline {section}{\numberline {2.5}评价指标定义}{13}{section.2.5}%
+\contentsline {subsection}{\numberline {2.5.1}二分类混淆矩阵基础}{13}{subsection.2.5.1}%
+\contentsline {subsection}{\numberline {2.5.2}基础指标定义}{13}{subsection.2.5.2}%
+\contentsline {subsection}{\numberline {2.5.3}本文的门控导向指标}{14}{subsection.2.5.3}%
+\contentsline {section}{\numberline {2.6}温度校准与门控导向的检查点选择}{15}{section.2.6}%
+\contentsline {subsection}{\numberline {2.6.1}logit 与 sigmoid 变换}{15}{subsection.2.6.1}%
+\contentsline {subsection}{\numberline {2.6.2}单标量温度缩放}{15}{subsection.2.6.2}%
+\contentsline {subsection}{\numberline {2.6.3}检查点选择流程}{15}{subsection.2.6.3}%
+\contentsline {section}{\numberline {2.7}高召回约束下的非对称学习问题}{16}{section.2.7}%
+\contentsline {section}{\numberline {2.8}难样本挖掘与样本效用建模}{16}{section.2.8}%
+\contentsline {subsection}{\numberline {2.8.1}难负样本回流的定义与动机}{16}{subsection.2.8.1}%
+\contentsline {subsection}{\numberline {2.8.2}校准后风险与门控边界相关性}{17}{subsection.2.8.2}%
+\contentsline {subsection}{\numberline {2.8.3}训练动态与样本价值的时变性}{17}{subsection.2.8.3}%
+\contentsline {subsection}{\numberline {2.8.4}测试时增强与预测稳定性}{17}{subsection.2.8.4}%
+\contentsline {subsection}{\numberline {2.8.5}特征空间结构支撑与孤立点识别}{18}{subsection.2.8.5}%
+\contentsline {subsection}{\numberline {2.8.6}覆盖度、多样性与预算塌缩}{19}{subsection.2.8.6}%
+\contentsline {subsection}{\numberline {2.8.7}几何平均作为联合约束逻辑}{19}{subsection.2.8.7}%
+\contentsline {subsection}{\numberline {2.8.8}数据归因与影响分析}{19}{subsection.2.8.8}%
+\contentsline {subsection}{\numberline {2.8.9}五维信号的正交结构}{20}{subsection.2.8.9}%
+\contentsline {subsection}{\numberline {2.8.10}非单调价值--信号响应的理论预期}{20}{subsection.2.8.10}%
+\contentsline {section}{\numberline {2.9}教师模型质量与评分输入偏差}{21}{section.2.9}%
+\contentsline {section}{\numberline {2.10}六类源域视图的辅助地位}{21}{section.2.10}%
+\contentsline {chapter}{\numberline {第3章\hspace {.3em}}数据集构建、实验平台与工作流}{22}{chapter.3}%
+\contentsline {section}{\numberline {3.1}数据来源与数据组织}{22}{section.3.1}%
+\contentsline {section}{\numberline {3.2}等条件共享训练协议}{23}{section.3.2}%
+\contentsline {section}{\numberline {3.3}门控导向评估流程}{24}{section.3.3}%
+\contentsline {section}{\numberline {3.4}HN 回流设置与候选池来源}{24}{section.3.4}%
+\contentsline {section}{\numberline {3.5}结果留档与可复现性}{24}{section.3.5}%
+\contentsline {chapter}{\numberline {第4章\hspace {.3em}}高召回门控的选模与容量扫描}{25}{chapter.4}%
+\contentsline {section}{\numberline {4.1}第一阶段任务重定义与双视图结构}{25}{section.4.1}%
+\contentsline {section}{\numberline {4.2}二分类门控容量扫描}{25}{section.4.2}%
+\contentsline {section}{\numberline {4.3}门控最优检查点的训练动态}{27}{section.4.3}%
+\contentsline {section}{\numberline {4.4}训练器 \texttt {top1-best} 与门控最优检查点的系统性错位}{28}{section.4.4}%
+\contentsline {section}{\numberline {4.5}六类源域视图容量扫描}{28}{section.4.5}%
+\contentsline {subsection}{\numberline {4.5.1}六类源域视图主结果}{28}{subsection.4.5.1}%
+\contentsline {section}{\numberline {4.6}跨视图排序错位分析}{29}{section.4.6}%
+\contentsline {section}{\numberline {4.7}第一阶段主模型与第二对照模型的确定}{30}{section.4.7}%
+\contentsline {chapter}{\numberline {第5章\hspace {.3em}}基于 HN 回流的第一阶段训练侧增强与问题收缩}{31}{chapter.5}%
+\contentsline {section}{\numberline {5.1}各容量模型的 HN 比例全量扫描结果}{31}{section.5.1}%
+\contentsline {subsection}{\numberline {5.1.1}\texttt {yolo11l-cls} 的 HN 比例扫描}{35}{subsection.5.1.1}%
+\contentsline {section}{\numberline {5.2}跨容量 HN 增益对比与形态分类}{36}{section.5.2}%
+\contentsline {section}{\numberline {5.3}相对 \texttt {hn00} 的增量解释与训练动力学}{37}{section.5.3}%
+\contentsline {section}{\numberline {5.4}代表性比例的训练轨迹对比}{38}{section.5.4}%
+\contentsline {section}{\numberline {5.5}与基线主线的衔接及跨容量验证}{39}{section.5.5}%
+\contentsline {section}{\numberline {5.6}HN 样本来源的可追溯性}{40}{section.5.6}%
+\contentsline {section}{\numberline {5.7}HN 回流的已知边界}{41}{section.5.7}%
+\contentsline {chapter}{\numberline {第6章\hspace {.3em}}高价值困难样本的信号分解与 Goldilocks 效应验证}{43}{chapter.6}%
+\contentsline {section}{\numberline {6.1}从 HN 非单调性到样本价值信号假设}{43}{section.6.1}%
+\contentsline {section}{\numberline {6.2}候选池构建}{44}{section.6.2}%
+\contentsline {section}{\numberline {6.3}分位数分层消融与 Goldilocks 效应验证}{44}{section.6.3}%
+\contentsline {subsection}{\numberline {6.3.1}实验设计}{44}{subsection.6.3.1}%
+\contentsline {subsection}{\numberline {6.3.2}主结果}{44}{subsection.6.3.2}%
+\contentsline {subsection}{\numberline {6.3.3}Goldilocks 效应分析}{44}{subsection.6.3.3}%
+\contentsline {subsection}{\numberline {6.3.4}单调加权假设的反证}{45}{subsection.6.3.4}%
+\contentsline {chapter}{\numberline {第7章\hspace {.3em}}综合讨论与工程启示}{47}{chapter.7}%
+\contentsline {section}{\numberline {7.1}已建立的第一阶段证据链}{47}{section.7.1}%
+\contentsline {section}{\numberline {7.2}HN 增益的容量依赖性}{47}{section.7.2}%
+\contentsline {section}{\numberline {7.3}Goldilocks 效应的理论意义}{48}{section.7.3}%
+\contentsline {section}{\numberline {7.4}当前方法边界与后续方向}{49}{section.7.4}%
+\contentsline {chapter}{\numberline {附录 A\hspace {.3em}}第一阶段协议与符号表}{50}{appendix.A}%
+\contentsline {chapter}{\numberline {附录 B\hspace {.3em}}容量扫描补充材料}{51}{appendix.B}%
+\contentsline {section}{\numberline {B.1}五模型检查点关键索引}{51}{section.B.1}%
+\contentsline {section}{\numberline {B.2}容量扫描补充说明}{51}{section.B.2}%
+\contentsline {chapter}{\numberline {附录 C\hspace {.3em}}HN 比例扫描与困难正常样本来源补充材料}{52}{appendix.C}%
+\contentsline {section}{\numberline {C.1}HN 检查点与材料覆盖}{52}{section.C.1}%
+\contentsline {section}{\numberline {C.2}yolo11l-cls 完整 HN 比例扫描}{53}{section.C.2}%
+\contentsline {section}{\numberline {C.3}分位数分层消融完整结果}{54}{section.C.3}%
+\contentsline {section}{\numberline {C.4}HN sweep 的整体形态}{55}{section.C.4}%
+\contentsline {section}{\numberline {C.5}HN 样本来源证明}{55}{section.C.5}%
+\contentsline {section}{\numberline {C.6}关于比例级 \texttt {top1} 与门控最优检查点的说明}{55}{section.C.6}%
+\contentsline {chapter}{\numberline {附录 D\hspace {.3em}}有效信息量评分函数、消融接口与样本清单}{57}{appendix.D}%
+\contentsline {section}{\numberline {D.1}lite 版评分函数摘要}{57}{section.D.1}%
+\contentsline {section}{\numberline {D.2}样本清单与固定预算接口}{57}{section.D.2}%
+\contentsline {chapter}{\numberline {附录 E\hspace {.3em}}复现实验入口、目录结构与溯源清单}{58}{appendix.E}%
+\contentsline {section}{\numberline {E.1}训练脚本与运行入口}{58}{section.E.1}%
+\contentsline {section}{\numberline {E.2}目录结构与溯源清单}{58}{section.E.2}%
+\contentsline {section}{\numberline {E.3}产物保留与清理规则}{59}{section.E.3}%
