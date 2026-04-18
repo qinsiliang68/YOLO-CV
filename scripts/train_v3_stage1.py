@@ -1,43 +1,35 @@
 """
-train_v3_stage1.py — End-to-end Stage 1 training + exhaustive external evaluation.
+train_v3_stage1.py — Stage 1 training + raw-material dump (no derivatives saved).
 
-Design: save EVERY reusable artifact per run so no future analysis requires
-re-training. 20TB cloud storage justifies the extra files.
+**Save discipline** — linearly independent base materials ONLY:
+    what is saved = what cannot be re-derived without re-running this script.
 
-Pipeline:
-  1. Ensure data/ has train/+val/ (val symlink/junction to val_cal)
-  2. YOLO11{capacity}-cls train N epochs, save_period=1 (200 ckpts preserved)
-  3. Per-epoch external evaluation:
-     - Inference on val_cal -> save raw logits + fit T* (NLL on multiclass)
-     - Inference on val_op -> save raw logits + calibrated binary probs
-     - Search tau* under Recall >= 0.995 and 0.990
-     - Record Spec@R99.5, Spec@R99.0, Prec@R99.0, PTR@R99.0, T*, tau*
-  4. Lex-rank across 200 epochs; pick best
-  5. Best-epoch rich dump:
-     - Test inference (logits saved)
-     - Penultimate embeddings saved for train + val_op + test
-     - Confusion matrix (7x7) + per-class recall on test
-     - Full tau-spec-recall sweep curve on val_op
-  6. Write run_meta.json (git commit, env, timestamps)
-
-Outputs (all under output-dir):
-  weights/epoch*.pt                       200 checkpoints (by ultralytics)
-  per_epoch_metrics.csv                   200 rows of (T*, tau*, Spec, Prec, PTR, ...)
+Saved per run (all under output-dir):
+  weights/epoch0.pt ... epoch{N-1}.pt    200 checkpoints (save_period=1)
   per_epoch_logits/
-    val_cal_epoch{i}.npz                  logits (N_cal, C), labels, image_ids
-    val_op_epoch{i}.npz                   logits (N_op, C), labels, image_ids
-  best_epoch.json                         best-epoch selection + lex-rank log
+    val_cal_epoch{i}.npz                 (logits, labels, image_ids)  N epochs
+    val_op_epoch{i}.npz                  (logits, labels, image_ids)  N epochs
   best_epoch/
-    test_logits.npz                       test inference (logits, labels, image_ids, calibrated_p_defect)
-    embeddings_train.npz                  (N_train, D_embed), image_ids
-    embeddings_val_op.npz                 (N_val_op, D_embed), image_ids
-    embeddings_test.npz                   (N_test, D_embed), image_ids
-    confusion_matrix_test.csv             7x7
-    per_class_recall_test.csv             6 rows (PF/DE/FS/RB/AF/OB) + overall
-    tau_spec_curve_val_op.csv             full tau sweep (tau, recall, spec, prec, ptr)
-  final_test_metrics.json                 final Spec@R99.5/R99.0 + Wilson CI
-  run_meta.json                           git/env/time metadata
-  args.yaml, results.csv                  ultralytics internal
+    test_logits.npz                      (logits, labels, image_ids) on test @ best ckpt
+    embeddings_train.npz                 (features, labels, image_ids) penultimate
+    embeddings_val_op.npz                same
+    embeddings_test.npz                  same
+  run_meta.json                          git commit / host / GPU / time / duration
+  args.yaml, results.csv                 ultralytics internal (kept as-is)
+
+**Not saved** (derivable from the above — recompute via
+scripts/aggregate_capacity_results.py):
+  per_epoch_metrics.csv   best_epoch.json   final_test_metrics.json
+  confusion_matrix_*.csv  per_class_recall_*.csv  tau_spec_curve_*.csv
+  T*, tau*, Spec, Recall, Prec, PTR at any recall target, etc.
+
+Pipeline steps performed during run (console output only, not persisted as derivatives):
+  1. Train YOLO11{capacity}-cls for N epochs
+  2. Per-epoch: infer on val_cal + val_op, save raw logits
+  3. In-memory: fit T*, search tau*, lex-rank to pick best epoch (for test inference
+     only — the values ARE re-derivable from saved logits)
+  4. Run test inference on best ckpt, save raw logits
+  5. Run embedding extraction on train/val_op/test via penultimate-layer hook, save raw features
 
 Usage:
     uv run python scripts/train_v3_stage1.py --capacity n --data-dir DATA --output-dir OUT
@@ -298,16 +290,17 @@ def evaluate_epoch(ckpt, val_cal_dir, val_op_dir, imgsz, batch, device, normal_i
     if save_dir is not None:
         save_dir.mkdir(parents=True, exist_ok=True)
         ep_tag = ckpt.stem  # e.g. "epoch5" or "last"
+        # Save ONLY raw materials — T*, tau*, metrics are all derivable from
+        # (logits, labels) and are intentionally NOT persisted.
         np.savez_compressed(
             save_dir / f"val_cal_{ep_tag}.npz",
             logits=cal_logits.numpy(), labels=cal_labels.numpy(),
-            image_ids=np.array(cal_ids, dtype=object), T_star=T,
+            image_ids=np.array(cal_ids, dtype=object),
         )
         np.savez_compressed(
             save_dir / f"val_op_{ep_tag}.npz",
             logits=op_logits.numpy(), labels=op_labels.numpy(),
             image_ids=np.array(op_ids, dtype=object),
-            T_star=T, tau_995=tau_995, tau_990=tau_990,
         )
 
     return {
@@ -390,53 +383,29 @@ def main():
         print(f"  [eval] {ckpt.name}  T={metrics['T_star']:.3f}  "
               f"tau995={metrics['tau_995']}  spec@R995={metrics['spec@R995']:.4f}")
 
-    per_epoch_csv = output_dir / "per_epoch_metrics.csv"
-    pd.DataFrame(rows).to_csv(per_epoch_csv, index=False)
-    print(f"\n[save] per_epoch_metrics.csv ({len(rows)} rows)")
-
-    # ---- best epoch selection ----
+    # In-memory lex-rank selection (NOT persisted — derivable from per_epoch_logits/)
     ranked = lex_rank_best(rows)
     best = ranked[0]
     best_ckpt = weights_dir / best["checkpoint"]
-    best_info = {
-        "best_epoch": best["epoch"],
-        "best_checkpoint": best["checkpoint"],
-        "lex_rank": {
-            "spec@R995": best["spec@R995"],
-            "spec@R990": best["spec@R990"],
-            "prec@R990": best["prec@R990"],
-            "-ptr@R990": -best["ptr@R990"],
-        },
-        "T_star": best["T_star"],
-        "tau_995": best["tau_995"],
-        "tau_990": best["tau_990"],
-    }
-    (output_dir / "best_epoch.json").write_text(
-        json.dumps(best_info, indent=2), encoding="utf-8")
-    print(f"[best] epoch={best['epoch']}  spec@R995={best['spec@R995']:.4f}")
-
-    # ---- best epoch rich dump ----
-    best_dir.mkdir(parents=True, exist_ok=True)
     T_best = best["T_star"]
-    tau995_best = best["tau_995"]
-    tau990_best = best["tau_990"]
+    print(f"\n[best] epoch={best['epoch']}  spec@R995={best['spec@R995']:.4f}  T*={T_best:.3f}")
 
-    # 1. test logits
+    # ---- best-epoch raw dump ONLY (derivatives intentionally not persisted) ----
+    best_dir.mkdir(parents=True, exist_ok=True)
+
+    # test logits (raw) — labels + image_ids enough to recompute everything
     t_logits, t_labels, t_ids, _ = infer_logits(best_ckpt, test_dir, args.imgsz, args.batch, device)
-    t_p = compute_binary_prob(t_logits, T_best, normal_idx)
-    t_y = binary_labels(t_labels, normal_idx)
     np.savez_compressed(
         best_dir / "test_logits.npz",
         logits=t_logits.numpy(), labels=t_labels.numpy(),
         image_ids=np.array(t_ids, dtype=object),
-        p_defect=t_p, y_binary=t_y,
-        T_star=T_best, tau_995=tau995_best, tau_990=tau990_best,
     )
-    print(f"[best_dump] test_logits.npz")
+    print(f"[best_raw] test_logits.npz (raw logits only)")
 
-    # 2. embeddings: train, val_op, test
+    # embeddings on train + val_op + test (raw features, only way to get them
+    # without re-running inference with the hook)
     for split_name, split_dir in [("train", train_dir), ("val_op", val_op_dir), ("test", test_dir)]:
-        print(f"[best_dump] extracting embeddings on {split_name} ...")
+        print(f"[best_raw] extracting embeddings on {split_name} ...")
         feats, labs, ids = infer_embeddings(best_ckpt, split_dir, args.imgsz, args.batch, device)
         np.savez_compressed(
             best_dir / f"embeddings_{split_name}.npz",
@@ -445,67 +414,22 @@ def main():
         )
         print(f"           embeddings_{split_name}.npz  shape={tuple(feats.shape)}")
 
-    # 3. confusion matrix + per-class recall on test
-    t_pred_class = torch.softmax(t_logits / T_best, dim=-1).argmax(dim=-1).numpy()
-    t_true_class = t_labels.numpy()
-    n_cls = len(class_names)
-    conf = confusion_matrix_multi(t_pred_class, t_true_class, n_cls)
-    conf_df = pd.DataFrame(conf, index=[f"true_{c}" for c in class_names],
-                           columns=[f"pred_{c}" for c in class_names])
-    conf_df.to_csv(best_dir / "confusion_matrix_test.csv")
-    # binary recall per main class (for PF/DE/...)
-    # class is "positive" if it's NOT Normal
-    per_class_rows = []
-    for cls_name in class_names:
-        if cls_name == "Normal":
-            continue
-        cls_idx = class_names.index(cls_name)
-        mask = (t_true_class == cls_idx)
-        if mask.sum() == 0:
-            continue
-        # under binary gate (p_defect >= tau_995)
-        pred_binary_995 = (t_p >= tau995_best).astype(int)
-        recall_cls = pred_binary_995[mask].mean()
-        per_class_rows.append({"class": cls_name, "n_test": int(mask.sum()),
-                                "recall_at_R99.5": float(recall_cls)})
-    pd.DataFrame(per_class_rows).to_csv(best_dir / "per_class_recall_test.csv", index=False)
-    print(f"[best_dump] confusion_matrix_test.csv, per_class_recall_test.csv")
-
-    # 4. full tau-spec-recall sweep on val_op
-    op_logits_file = per_epoch_logits_dir / f"val_op_{best_ckpt.stem}.npz"
-    op_data = np.load(op_logits_file, allow_pickle=True)
-    op_p_sweep = compute_binary_prob(torch.from_numpy(op_data["logits"]), T_best, normal_idx)
-    op_y_sweep = binary_labels(torch.from_numpy(op_data["labels"]), normal_idx)
-    tau_sweep = full_tau_sweep(op_p_sweep, op_y_sweep, n_points=200)
-    tau_sweep.to_csv(best_dir / "tau_spec_curve_val_op.csv", index=False)
-    print(f"[best_dump] tau_spec_curve_val_op.csv ({len(tau_sweep)} rows)")
-
-    # 5. final_test_metrics.json
+    # console-only final-test report (NOT persisted — recomputable from test_logits.npz
+    # via scripts/aggregate_capacity_results.py)
+    tau995_best = best["tau_995"]
+    tau990_best = best["tau_990"]
+    t_p = compute_binary_prob(t_logits, T_best, normal_idx)
+    t_y = binary_labels(t_labels, normal_idx)
     m_t995 = binary_metrics(t_p, t_y, tau995_best) if tau995_best is not None else {}
     m_t990 = binary_metrics(t_p, t_y, tau990_best) if tau990_best is not None else {}
     n_neg = int((t_y == 0).sum())
-    final = {
-        "capacity": args.capacity,
-        "best_epoch": best["epoch"],
-        "T_star": T_best,
-        "tau_995": tau995_best,
-        "tau_990": tau990_best,
-        "test_n": len(t_y),
-        "test_n_negative": n_neg,
-        "test_n_positive": int((t_y == 1).sum()),
-        "spec@R995_test": m_t995.get("spec", 0.0),
-        "spec@R990_test": m_t990.get("spec", 0.0),
-        "prec@R990_test": m_t990.get("prec", 0.0),
-        "ptr@R990_test":  m_t990.get("ptr", 0.0),
-        "recall@R995_test": m_t995.get("recall", 0.0),
-        "recall@R990_test": m_t990.get("recall", 0.0),
-        "wilson_half_width_pp@p=0.5": wilson_half_width(n_neg) * 100,
-    }
-    (output_dir / "final_test_metrics.json").write_text(
-        json.dumps(final, indent=2), encoding="utf-8")
-    print(f"\n[TEST] {args.capacity}/epoch={best['epoch']}: "
-          f"spec@R995={final['spec@R995_test']:.4f}  "
-          f"spec@R990={final['spec@R990_test']:.4f}")
+    print(f"\n[TEST console] {args.capacity}/epoch={best['epoch']}:")
+    print(f"    spec@R99.5 = {m_t995.get('spec', 0.0):.4f}")
+    print(f"    spec@R99.0 = {m_t990.get('spec', 0.0):.4f}")
+    print(f"    Wilson hw  = {wilson_half_width(n_neg) * 100:.2f} pp  (n_neg = {n_neg})")
+    print(f"    T* = {T_best:.3f}  tau995 = {tau995_best}  tau990 = {tau990_best}")
+    print(f"(these numbers are NOT saved — compute from best_epoch/test_logits.npz + T* from "
+          f"per_epoch_logits/val_cal_{best_ckpt.stem}.npz if needed)")
 
     # ---- run metadata ----
     t_end = datetime.now(timezone.utc)
