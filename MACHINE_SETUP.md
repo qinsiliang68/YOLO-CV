@@ -132,19 +132,38 @@ machine. Delete `./runs_smoke/` and proceed to the full run.
 
 ## 6 · After training — what to upload
 
-Zip the `runs/yolo11{capacity}/` folder and upload to shared storage. This
-folder contains everything needed for the aggregator:
+Zip the **entire `runs/yolo11{capacity}/` folder** and upload. Do NOT cherry-pick;
+all files are kept intentionally for future analyses:
 
 ```
 runs/yolo11{capacity}/
 ├── weights/
-│   ├── epoch0.pt, epoch1.pt, ..., epoch199.pt     (200 ckpts × ~5-100 MB each)
-│   ├── best.pt, last.pt
-├── per_epoch_metrics.csv     (200 rows, all epoch metrics)
-├── best_epoch.json           (best epoch + frozen T*/τ*)
-├── final_test_metrics.json   (final test Spec@R99.5, etc.)
+│   ├── epoch0.pt, epoch1.pt, ..., epoch199.pt     (200 ckpts, save_period=1)
+│   ├── best.pt, last.pt                           (ultralytics convention)
+├── per_epoch_logits/                               (for post-hoc tau refit)
+│   ├── val_cal_epoch{i}.npz                       (logits, labels, image_ids, T*)
+│   └── val_op_epoch{i}.npz                        (logits, labels, image_ids, T*, tau*)
+├── best_epoch/                                     (best-ckpt rich dump)
+│   ├── test_logits.npz                            (test logits + calibrated p_defect)
+│   ├── embeddings_train.npz                       (penultimate features, for RDTC D signal)
+│   ├── embeddings_val_op.npz
+│   ├── embeddings_test.npz
+│   ├── confusion_matrix_test.csv                  (7x7 on test)
+│   ├── per_class_recall_test.csv                  (6 rows PF/DE/.../OB + recall at R=99.5%)
+│   └── tau_spec_curve_val_op.csv                  (full tau sweep, 201 rows)
+├── per_epoch_metrics.csv     (200 rows: T*, tau*, Spec, Prec, PTR per epoch)
+├── best_epoch.json           (best epoch id + lex-rank log + frozen (T*, tau*))
+├── final_test_metrics.json   (final test Spec@R99.5, Wilson CI, etc.)
+├── run_meta.json             (git commit, hostname, device, timestamps, duration)
 ├── args.yaml, results.csv    (ultralytics internal)
 ```
+
+Expected total size per capacity (approximate):
+- n: ~2 GB   (200 × 6 MB ckpts + ~500 MB extras)
+- s: ~5 GB   (200 × 20 MB ckpts + ~800 MB)
+- m: ~9 GB   (200 × 40 MB + ~1 GB)
+- l: ~11 GB  (200 × 50 MB + ~1.2 GB)
+- x: ~24 GB  (200 × 110 MB + ~2 GB)
 
 **What NOT to do** (the local operator handles these, not the machine AIs):
 - Do NOT aggregate results across capacities — that's `aggregate_capacity_results.py`
