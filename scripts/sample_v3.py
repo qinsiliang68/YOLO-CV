@@ -4,14 +4,14 @@ sample_v3.py — v3 two-stage balanced sampling.
 Design philosophy: train-side intervention, eval-side observation.
 
 Stage 1 (essay3, binary gate):
-    - 12,000 train = 6,000 defect + 6,000 Normal (1:1 balanced)
-    - 1000/main class × 6, rarity-priority assignment
-    - Addresses rare-class underlearning in v1 natural (PF 208 → 1000)
+    - 24,000 train = 12,000 defect + 12,000 Normal (1:1 balanced)
+    - 2000/main class × 6, rarity-priority assignment
+    - Addresses rare-class underlearning in v1 natural (PF 208 → 2000)
 
 Stage 2 (essay4, object detection, future):
-    - 8,000 train = 6,000 defect (same) + 2,000 Normal (1:3 pos:neg)
-    - normal_stage2 is STRICT SUBSET of normal_stage1 (first 2,000)
-    - One defect sample serves both stages; only Normal count differs
+    - 16,000 train = 12,000 defect (same pool) + 4,000 Normal (3:1 defect:normal)
+    - normal_stage2 is STRICT SUBSET of normal_stage1 (first 4,000 after shuffle)
+    - One defect pool serves both stages; only Normal count differs
 
 Val / Test: copied from v1 verbatim (natural distribution).
     - test: mirrors deployment
@@ -44,9 +44,9 @@ MAIN_CLASSES = ["PF", "DE", "FS", "RB", "AF", "OB"]
 HOLDOUT_CLASSES = ["BE", "RO", "IN", "FO"]
 PRIORITY = ["PF", "DE", "RB", "AF", "OB", "FS"]
 
-K_PER_CLASS = 1_000
-N_NORMAL_STAGE1 = 6_000
-N_NORMAL_STAGE2 = 2_000
+K_PER_CLASS = 2_000
+N_NORMAL_STAGE1 = 12_000
+N_NORMAL_STAGE2 = 4_000
 
 
 def sha256_of_file(path: Path) -> str:
@@ -232,7 +232,7 @@ def main():
                 "train_files": ["defect_ids.csv", "normal_stage2_ids.csv"],
                 "n_total": K_PER_CLASS * 6 + N_NORMAL_STAGE2,
                 "pos_neg_ratio": "3:1 defect:normal (normal as background)",
-                "note": "normal_stage2 is strict subset of normal_stage1 (first 2000 after shuffle)",
+                "note": "normal_stage2 is strict subset of normal_stage1 (first 4000 after shuffle)",
             },
         },
         "val_test_source": "v1 (natural distribution, copied verbatim)",
@@ -260,17 +260,17 @@ Seed: {SEED}
 
 **Train-side intervention, eval-side observation.**
 
-### Stage 1 (essay3, binary gate) — 12,000 train
+### Stage 1 (essay3, binary gate) — 24,000 train
 
-- 6,000 defect (1000/class × 6) + 6,000 Normal
+- 12,000 defect (2000/class × 6) + 12,000 Normal
 - 1:1 pos:neg balance
-- Each main class guaranteed 1,000 (vs v1 natural's PF=208/DE=402)
+- Each main class guaranteed 2,000 (vs v1 natural's PF=208/DE=402)
 
-### Stage 2 (essay4, object detection, future) — 8,000 train
+### Stage 2 (essay4, object detection, future) — 16,000 train
 
-- 6,000 defect (same pool as Stage 1) + 2,000 Normal
-- 1:3 pos:neg (Normal as background)
-- normal_stage2 is STRICT SUBSET of normal_stage1 (first 2,000 after shuffle)
+- 12,000 defect (same pool as Stage 1) + 4,000 Normal
+- 3:1 defect:normal (detection needs positive-heavy with background)
+- normal_stage2 is STRICT SUBSET of normal_stage1 (first 4,000 after shuffle)
 
 ## Val / Test (copied from v1)
 

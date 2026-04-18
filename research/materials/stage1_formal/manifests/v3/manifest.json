@@ -1,7 +1,7 @@
 {
   "protocol_version": "v3",
   "seed": 20260606,
-  "generated_at": "2026-04-18T16:12:35.973862+00:00",
+  "generated_at": "2026-04-18T16:27:58.192857+00:00",
   "design_philosophy": "train-side intervention, eval-side observation",
   "stages": {
     "stage1_binary_gate_essay3": {
@@ -9,7 +9,7 @@
         "defect_ids.csv",
         "normal_stage1_ids.csv"
       ],
-      "n_total": 12000,
+      "n_total": 24000,
       "pos_neg_ratio": "1:1"
     },
     "stage2_detection_essay4_future": {
@@ -17,25 +17,25 @@
         "defect_ids.csv",
         "normal_stage2_ids.csv"
       ],
-      "n_total": 8000,
+      "n_total": 16000,
       "pos_neg_ratio": "3:1 defect:normal (normal as background)",
-      "note": "normal_stage2 is strict subset of normal_stage1 (first 2000 after shuffle)"
+      "note": "normal_stage2 is strict subset of normal_stage1 (first 4000 after shuffle)"
     }
   },
   "val_test_source": "v1 (natural distribution, copied verbatim)",
   "pools": {
     "defect_ids": {
-      "n": 6000,
-      "k_per_class": 1000,
-      "sha256": "435b92cec7f9a0ee65261e4dbd6fb238d7b50da399063e47c6684afe7f8e6a60"
+      "n": 12000,
+      "k_per_class": 2000,
+      "sha256": "3d7d68154b43923db1f0b0f21615a69d30902be3f6c4f225dea8693214e8fa91"
     },
     "normal_stage1_ids": {
-      "n": 6000,
-      "sha256": "a6c00f16f39a8b75a27017a4cff0324db9c90e40365add56eea38871126e5d43"
+      "n": 12000,
+      "sha256": "5d808eb4e7d1f41f301fcb04742105649c593db41d7f2c21e81dfb9896a28f67"
     },
     "normal_stage2_ids": {
-      "n": 2000,
-      "sha256": "8e3bf2d16293caa76a5b74fab802e2ff34ae67e301bc1c86afd689079b231a78",
+      "n": 4000,
+      "sha256": "32dda62deb337ec73d2d487bb2ea3648ef0c57ecd759c516f5c77a545fae3132",
       "note": "strict subset of normal_stage1"
     },
     "val_cal": {

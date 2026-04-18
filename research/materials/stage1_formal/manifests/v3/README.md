@@ -1,23 +1,23 @@
 # v3 Sampling Output (Two-stage Balanced)
 
-Generated: 2026-04-18T16:12:35.973862+00:00
+Generated: 2026-04-18T16:27:58.192857+00:00
 Seed: 20260606
 
 ## Design Philosophy
 
 **Train-side intervention, eval-side observation.**
 
-### Stage 1 (essay3, binary gate) — 12,000 train
+### Stage 1 (essay3, binary gate) — 24,000 train
 
-- 6,000 defect (1000/class × 6) + 6,000 Normal
+- 12,000 defect (2000/class × 6) + 12,000 Normal
 - 1:1 pos:neg balance
-- Each main class guaranteed 1,000 (vs v1 natural's PF=208/DE=402)
+- Each main class guaranteed 2,000 (vs v1 natural's PF=208/DE=402)
 
-### Stage 2 (essay4, object detection, future) — 8,000 train
+### Stage 2 (essay4, object detection, future) — 16,000 train
 
-- 6,000 defect (same pool as Stage 1) + 2,000 Normal
-- 1:3 pos:neg (Normal as background)
-- normal_stage2 is STRICT SUBSET of normal_stage1 (first 2,000 after shuffle)
+- 12,000 defect (same pool as Stage 1) + 4,000 Normal
+- 3:1 defect:normal (detection needs positive-heavy with background)
+- normal_stage2 is STRICT SUBSET of normal_stage1 (first 4,000 after shuffle)
 
 ## Val / Test (copied from v1)
 
