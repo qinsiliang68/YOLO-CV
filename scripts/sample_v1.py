@@ -3,7 +3,7 @@ sample_v1.py — Sewer-ML gate binary task sampling (protocol v1).
 
 Implements sampling_protocol_v1:
 - Source: SewerML_Train.csv (single pool)
-- Method: frame-level simple random sampling, seed=20260417
+- Method: frame-level simple random sampling, seed=20260606
 - No stratification, no groupwise, no per-inspection cap
 - Outputs: 4 split CSVs + cooccurrence matrix + manifest.json + README.md
 - Validation: 6 integrity assertions, fail-fast
@@ -23,7 +23,7 @@ import pandas as pd
 
 # ---- fixed configuration (mirrors sampling_protocol_v1.yaml) ----
 VERSION = "v1"
-SEED = 20260417
+SEED = 20260606
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 SOURCE_CSV = REPO_ROOT / "YOLOv11" / "datasets" / "sewerml_annotations" / "SewerML_Train.csv"
@@ -156,7 +156,7 @@ def assert_integrity(splits, img_dir: Path):
         assert not missing, f"{name}: {len(missing)} images missing on disk, e.g. {list(missing)[:3]}"
 
     # 6. seed recorded
-    assert SEED == 20260417
+    assert SEED == 20260606
 
     print("[assert] ALL 6 CHECKS PASSED")
 

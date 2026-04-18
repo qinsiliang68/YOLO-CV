@@ -35,7 +35,7 @@
 
 ### L1-2 frame-level 随机划分
 
-一次性无重复随机采样,固定 seed `20260417`。**不做分层、不做 groupwise、不做 per-inspection cap**。
+一次性无重复随机采样,固定 seed `20260606`。**不做分层、不做 groupwise、不做 per-inspection cap**。
 
 *过去版本曾讨论过的 inspection 级 groupwise split、stratification、K 帧数上限,在本版中全部放弃*,因其前提(inspection\_id 可得)不成立。不假装具有已知不存在的保证。
 
@@ -63,7 +63,7 @@ sampling_output/v1/
 # 3. y_ratio in [0.30, 0.70] per split
 # 4. size matches target exactly
 # 5. sampled image files physically present on disk
-# 6. seed == 20260417
+# 6. seed == 20260606
 ```
 
 ---

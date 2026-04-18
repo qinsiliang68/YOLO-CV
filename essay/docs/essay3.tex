@@ -662,7 +662,7 @@ Sewer-ML 中的 OK 与 PH 两个标签对应\textbf{采集过程的失败}而非
 保留多标签帧的同时需要防范\textbf{任务定义污染}：当一张帧的主任务类（如 PF 破裂）仅为次要视觉内容，而 holdout 类（如 BE 结垢）在画面中视觉主导时，二分类门控若简单将其判为 $y = 1$，事实上可能学到"结垢 = 异常"的判别面而非"破裂 = 异常"，在纯净单类帧上的泛化将因此下降。本文不对"视觉主导"做主观删选（该判定不可复现），而采取显式披露策略：附录将给出 $\mathcal{D}_{\rm train}$、$\mathcal{D}_{\rm val}$、$\mathcal{D}_{\rm test}$ 各自的\textbf{"主任务类 $\times$ holdout 类"共现矩阵}与多标签帧占比；若后续章节发现 per-class recall 在某一稀少主任务类上异常偏低，将在结果讨论中回溯至该共现矩阵进行归因。
 
 \subsection{采样流程}
-本文采用随机采样（uniform random sampling）从采样池中抽取训练、验证与测试集。\textbf{采样种子固定}为 20260417，保证数据集构建可重现。采样过程为一次性完成：先抽取训练集所需样本数，再从剩余池中抽取验证集，最后从再剩余池中抽取测试集，三者逻辑上严格不重叠。该一次性采样流程相较于"先合并采样再划分"的做法具备两项优势：其一，避免划分边界上的数据泄漏风险；其二，便于在不同规模实验中扩展训练集而不影响既有验证与测试集的独立性。
+本文采用随机采样（uniform random sampling）从采样池中抽取训练、验证与测试集。\textbf{采样种子固定}为 20260606，保证数据集构建可重现。采样过程为一次性完成：先抽取训练集所需样本数，再从剩余池中抽取验证集，最后从再剩余池中抽取测试集，三者逻辑上严格不重叠。该一次性采样流程相较于"先合并采样再划分"的做法具备两项优势：其一，避免划分边界上的数据泄漏风险；其二，便于在不同规模实验中扩展训练集而不影响既有验证与测试集的独立性。
 
 \section{数据集划分与规模决策}
 \label{sec:split-sizes}
@@ -755,7 +755,7 @@ CCTV 排水管道检测数据的一项关键特性是\textbf{帧间强相关}：
 该选择带来一项相应的独立性处理约束：Sewer-ML Train 内部的 inspection（管段）粒度 metadata 未在 \texttt{SewerML\_Train.csv} 的任何字段中给出，帧 filename 为 \texttt{00000001.png} 至 \texttt{01300201.png} 的全局顺序编号，不含 inspection\_id 信息。因此，本文\textbf{不声称四子集之间具有 inspection 级独立性}，而采取以下三项可审计的工程处理：
 \begin{itemize}[leftmargin=2em,nosep]
 \item \textbf{自然稀释}：四子集总规模 $\approx 52{,}000$ 张，占 Sewer-ML Train 分划（$\approx 1.04$M 张）的 5.0\%。即使同 inspection 帧的典型规模为数十至数百张量级，被同时分配到 $\mathcal{D}_{\rm train}$ 与 $\mathcal{D}_{\rm test}$ 的期望发生率亦随整体抽取率线性下降。
-\item \textbf{frame-level 随机划分}：以固定种子 \texttt{20260417} 对 Sewer-ML Train 的合格样本池做一次性无重复随机抽样，不引入任何启发式分组或分层，亦不做 per-inspection 帧数上限（后者在无 inspection\_id 时不可实现）。
+\item \textbf{frame-level 随机划分}：以固定种子 \texttt{20260606} 对 Sewer-ML Train 的合格样本池做一次性无重复随机抽样，不引入任何启发式分组或分层，亦不做 per-inspection 帧数上限（后者在无 inspection\_id 时不可实现）。
 \item \textbf{残留相关性的显式量化}：\ref{sec:stat-limitations} 节同时给出基于独立同分布假设的 Wilson 半宽度与基于 filename-连续块的 block bootstrap 区间，以量化同 inspection 残留相关性对置信区间宽度的影响。
 \end{itemize}
 

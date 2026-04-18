@@ -7,7 +7,7 @@
 >
 > **冻结状态**: `pending` → 本文件 commit 后改为 `frozen`,hash 记入 `manifest.json`
 > **版本**: v1 · 2026-04-18
-> **seed**: `20260417`(全流程固定,不改)
+> **seed**: `20260606`(全流程固定,不改)
 
 ---
 
@@ -16,7 +16,7 @@
 ```yaml
 # sampling_protocol_v1.yaml
 version: v1
-seed: 20260417
+seed: 20260606
 
 source:
   csv:        "YOLOv11/datasets/sewerml_annotations/SewerML_Train.csv"
@@ -107,7 +107,7 @@ df["image_id"] = df["Filename"].str.replace(".png", "", regex=False)
 ```python
 import numpy as np
 
-SEED = 20260417
+SEED = 20260606
 N_TRAIN, N_VAL_CAL, N_VAL_OP, N_TEST = 24000, 2400, 5600, 20000
 N_TOTAL = N_TRAIN + N_VAL_CAL + N_VAL_OP + N_TEST  # 52000
 
@@ -154,7 +154,7 @@ v1/
 {
   "protocol_version": "v1",
   "protocol_sha256": "<hash of sampling_protocol_v1.yaml>",
-  "seed": 20260417,
+  "seed": 20260606,
   "freeze_commit": "<git commit hash at freeze>",
   "generated_at": "2026-04-18T...",
   "source_pool": {
@@ -198,7 +198,7 @@ def assert_integrity(splits: dict):
         missing = [i for i in df.image_id.head(100) if not (IMG_DIR / f"{i}.png").exists()]
         assert not missing, f"{name}: {len(missing)}/100 sampled images missing on disk"
     # 6. seed recorded
-    assert SEED == 20260417
+    assert SEED == 20260606
 ```
 
 ---
@@ -207,7 +207,7 @@ def assert_integrity(splits: dict):
 
 - [ ] 路径正确:`SewerML_Train.csv` 在 `C:/GitHub/YOLO-CV/YOLOv11/datasets/sewerml_annotations/`
 - [ ] 图像目录: `C:/baidunetdiskdownload/sewerml_train_images/` 含 1,040,129 张
-- [ ] `seed = 20260417` 确认
+- [ ] `seed = 20260606` 确认
 - [ ] target 规模 (24k/2.4k/5.6k/20k) 与 essay3 §3.6 表 3.2 一致
 - [ ] `holdout_keep` 与 `quality_drop` 清单与 essay3 §3.2 / §3.4 一致
 - [ ] `output_dir` 已建空目录,没有前一版(`extended_*_split.csv` 等)残留混入

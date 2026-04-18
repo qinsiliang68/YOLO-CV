@@ -1,8 +1,8 @@
 {
   "protocol_version": "v1",
-  "protocol_sha256": "03f40e6438c3e49d21c9082a0eaa500dba4c5297d634248bb9262c959b0dbb5c",
-  "seed": 20260417,
-  "generated_at": "2026-04-18T06:11:19.500705+00:00",
+  "protocol_sha256": "6e9d70aa714b21979b2e036efeb5a069e9173c514f1d4d0da606b87b277ecd1c",
+  "seed": 20260606,
+  "generated_at": "2026-04-18T06:32:35.521319+00:00",
   "source_pool": {
     "csv_path": "C:\\GitHub\\YOLO-CV\\YOLOv11\\datasets\\sewerml_annotations\\SewerML_Train.csv",
     "n_raw": 1040129,
@@ -13,23 +13,23 @@
   "splits": {
     "train": {
       "n_frames": 24000,
-      "y_ratio": 0.3249,
-      "sha256": "83b45c40754b2f79555af08b1c8542b387b62d9fe48479b82fe96a4b73b38322"
+      "y_ratio": 0.3325,
+      "sha256": "699e1fa5251d98dc7cea223b38a5406d1ec04b884e73da29ee704e170b16e180"
     },
     "val_cal": {
       "n_frames": 2400,
-      "y_ratio": 0.3196,
-      "sha256": "65f81e3b9152bf45ab9b4e2ca3641a9cda4e66c4a79d2fc5aaa11f6aae88d999"
+      "y_ratio": 0.3508,
+      "sha256": "de42dee4b723abd5aeaa67d2f0ab58a95a84a7f80b14c79259ac09c49e35202e"
     },
     "val_op": {
       "n_frames": 5600,
-      "y_ratio": 0.3193,
-      "sha256": "5a9e2a57c74e1f0535b9634032596ad765315d81365d32bb9323e972d3e9e8c4"
+      "y_ratio": 0.3377,
+      "sha256": "3de2ad55b916a3a9aa5bbec1fe66c599fe2344e3557aea4fd29ca2673bc8c4c9"
     },
     "test": {
       "n_frames": 20000,
-      "y_ratio": 0.3296,
-      "sha256": "1bbc5934d47776500e90a1488ae27ecb4c1216ca92cb5d3401873f2ec3214332"
+      "y_ratio": 0.3255,
+      "sha256": "ac8f3e1adff80216060d6f10108f11f1cb0240eb323b9bedd5efc3f5c26700dd"
     }
   }
 }
