@@ -114,6 +114,7 @@ def run_training(capacity, data_dir, output_dir, epochs, batch, imgsz):
         imgsz=imgsz,
         batch=batch,
         workers=4,
+        close_mosaic=0,
         save_period=1,
         patience=0,
         project=project,
