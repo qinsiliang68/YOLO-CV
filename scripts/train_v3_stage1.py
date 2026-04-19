@@ -113,6 +113,7 @@ def run_training(capacity, data_dir, output_dir, epochs, batch, imgsz):
         epochs=epochs,
         imgsz=imgsz,
         batch=batch,
+        workers=4,
         save_period=1,
         patience=0,
         project=project,

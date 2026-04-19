@@ -662,7 +662,15 @@ Sewer-ML 中的 OK 与 PH 两个标签对应\textbf{采集过程的失败}而非
 保留多标签帧的同时需要防范\textbf{任务定义污染}：当一张帧的主任务类（如 PF 破裂）仅为次要视觉内容，而 holdout 类（如 BE 结垢）在画面中视觉主导时，二分类门控若简单将其判为 $y = 1$，事实上可能学到"结垢 = 异常"的判别面而非"破裂 = 异常"，在纯净单类帧上的泛化将因此下降。本文不对"视觉主导"做主观删选（该判定不可复现），而采取显式披露策略：附录将给出 $\mathcal{D}_{\rm train}$、$\mathcal{D}_{\rm val}$、$\mathcal{D}_{\rm test}$ 各自的\textbf{"主任务类 $\times$ holdout 类"共现矩阵}与多标签帧占比；若后续章节发现 per-class recall 在某一稀少主任务类上异常偏低，将在结果讨论中回溯至该共现矩阵进行归因。
 
 \subsection{采样流程}
-本文采用随机采样（uniform random sampling）从采样池中抽取训练、验证与测试集。\textbf{采样种子固定}为 20260606，保证数据集构建可重现。采样过程为一次性完成：先抽取训练集所需样本数，再从剩余池中抽取验证集，最后从再剩余池中抽取测试集，三者逻辑上严格不重叠。该一次性采样流程相较于"先合并采样再划分"的做法具备两项优势：其一，避免划分边界上的数据泄漏风险；其二，便于在不同规模实验中扩展训练集而不影响既有验证与测试集的独立性。
+本文采用随机采样（uniform random sampling）从采样池中抽取训练、验证与测试集，\textbf{采样种子固定}为 20260606，保证数据集构建可重现。采样不是一次性整体抽取，而是按训练侧与评估侧分别遵循不同原则的两步：
+
+\textbf{训练集（24{,}000 张）的构成}。训练集需服务于二分类门控任务，其类别先验由研究人员主动设定为 1:1 平衡（详见 \ref{sec:split-sizes}），具体分解为 12{,}000 张缺陷帧 + 12{,}000 张正常帧。缺陷部分按"每类 2{,}000 张"配额（PF/DE/FS/RB/AF/OB 六类合 12{,}000）从采样池中抽取；考虑多标签共现，本文采用\textbf{rarity-priority} 消歧机制：对每张多标签帧按"稀有类优先"顺序 PF $\succ$ DE $\succ$ RB $\succ$ AF $\succ$ OB $\succ$ FS 唯一归类一次，从而避免高频缺陷在配额中重复占位、压制稀有类的实际入选数量。该顺序由 Sewer-ML 训练池的标注频率统计反向排序确定（PF、DE 为最稀有类）。正常部分则从 Defect=0 帧池中独立无放回抽取 12{,}000 张。
+
+\textbf{验证集与测试集（合计 28{,}000 张）的构成}。验证与测试集服务于校准、阈值搜索与最终报告，其类别分布需\textbf{忠实反映真实部署场景}（详见 \ref{sec:eval-impl}），故不做 1:1 平衡，而采用与采样池一致的自然分布（正常帧约 67\%，缺陷帧约 33\%）。本文这部分子集直接\textbf{沿用前期已生成的 v1 自然分布划分}：val-cal（2{,}400 张）、val-op（5{,}600 张）、test（20{,}000 张）三个子集与 v1 版本字节级一致，不重新抽样，确保前后两版数据集的评估结果在评估侧完全可比。
+
+\textbf{两步采样的合理性}。训练侧主动干预（1:1 平衡）与评估侧被动观察（自然分布）的分离，是本文数据集构建的核心设计取舍——前者避免类不平衡导致的训练梯度偏向正常类，后者使 Spec@R$_0$ 等工作点指标的分母与部署现场的样本流量匹配，二者在角色上不冲突。\ref{sec:split-sizes} 节将就该取舍展开规模决策的下界—上界分析。
+
+\textbf{后续目标检测任务的数据预留}。本文聚焦二分类门控（第一阶段），但同一采样池亦支持后续的目标检测任务（第二阶段，留作未来工作）。届时可\textbf{复用同一 12{,}000 张缺陷帧}并配以 4{,}000 张正常帧子集（约 3:1 缺陷:正常），以适配检测任务的样本预算特征；该预留不影响本文数据集的任何使用方式，但保证两阶段任务共享同一缺陷样本集，避免缺陷帧在两阶段间因独立抽取而引入的人工差异。
 
 \section{数据集划分与规模决策}
 \label{sec:split-sizes}
@@ -697,7 +705,7 @@ n_{\rm train} \cdot p_{\rm PF} \geq 300 \;\Rightarrow\; n_{\rm train} \geq 300 /
 
 \textbf{约束二：迁移学习规模规律的上界提示}。Hestness 等\cite{hestness2017scaling} 通过跨领域实证发现，在固定模型架构下，测试误差与训练样本量近似服从幂律下降：$\varepsilon(n) \sim \alpha + \beta n^{-\gamma}$，其中图像分类任务上 $\gamma$ 的实测范围约为 0.07--0.35。Sun 等\cite{sun2017revisiting} 在 JFT-300M 上的大规模实证进一步支持了视觉识别任务中性能随训练数据呈对数线性增长的规律——这一规律意味着从 $n = 10^4$ 扩大到 $n = 10^5$ 所能带来的性能提升并非数量级改善。在迁移学习的具体场景下，Kornblith 等\cite{kornblith2019better} 对 12 个下游视觉任务的实证表明，ImageNet 预训练骨干在目标任务数据规模达到万量级时已能学到相对稳定的任务特定判别面。这三项工作共同提示：$n = 10^4$ 量级是迁移学习的合理起点，继续扩大训练集的收益按幂律下降而非线性增长。
 
-\textbf{约束三：计算预算的上界}。本文需在五种容量上分别完成训练（第 4 章），后续章节还需在同一协议下开展 HN 比例扫描与 RDTC 信号消融，累计训练 run 数在数十至上百量级。单次训练耗时近似与 $n_{\rm train}$ 线性相关——$n = 24{,}000$、$\mathrm{imgsz} = 224$、$\mathrm{batch} = 24$、200 epoch 的配置在单卡 RTX 3090 上约需 4--6 小时。若扩大至 $n = 10^5$，单次训练耗时增至 20--30 小时，整体实验周期将超出本研究可承担的计算预算。
+\textbf{约束三：计算预算的上界}。本文需在五种容量上分别完成训练（第 4 章），后续章节还需在同一协议下开展 HN 比例扫描与 RDTC 信号消融，累计训练 run 数在数十至上百量级。单次训练耗时近似与 $n_{\rm train}$ 线性相关——$n = 24{,}000$、$\mathrm{imgsz} = 224$、$\mathrm{batch} = 64$、200 epoch 的配置在单卡 RTX 3090 / 4090（24GB 显存）上约需 2--3 小时。若扩大至 $n = 10^5$，单次训练耗时增至 10--15 小时，整体实验周期将超出本研究可承担的计算预算。
 
 综合上述三项约束，$n_{\rm train} = 24{,}000$ 落在下界（采样覆盖，约 1.5 万）与上界（计算预算，约 5--8 万）之间的合理区间内，同时位于迁移学习边际收益递减区间的起点，满足"足以学到任务特定判别面但不陷入过量数据导致的实验周期膨胀"的综合目标。
 
@@ -788,7 +796,8 @@ CCTV 排水管道检测数据的一项关键特性是\textbf{帧间强相关}：
         \midrule
         初始权重 & ImageNet 预训练 & 迁移学习\cite{yosinski2014transferable}；见 2.6 节 \\
         输入分辨率 imgsz & 224                & YOLO11-cls 预训练原始分辨率\cite{jocher2023ultralytics} \\
-        批大小 batch & 24                     & 四种容量在单 GPU 显存允许的统一上限 \\
+        批大小 batch & 64                     & 五种容量在 24GB 显存（3090 / 4090）允许的统一上限 \\
+        DataLoader workers & 4                & 共享内存与 RAM 在 24GB 主机的稳定值（worker $= 8$ 在多机实测中触发共享内存耗尽） \\
         训练轮次 epochs & 200                 & 覆盖从拟合到过拟合的完整轨迹 \\
         优化器 & auto (SGD)                   & Ultralytics 默认，基于 batch 与样本量自动选择 \\
         学习率 & $\mathrm{auto}$              & Ultralytics 基于 batch 自动估计 \\
@@ -869,6 +878,24 @@ T^{\ast}(\theta) = \arg\min_{T > 0}\; \sum_{(x, y) \in \mathcal{D}_{\rm val\text
     \caption{评估协议实施流程。前三步在验证集上完成（用于选模与调阈），第四步在测试集上冻结参数一次性评估。}
     \label{fig:ch3-eval-pipeline}
 \end{figure}
+
+\subsection{训练产物的存储纪律与本地聚合}
+\label{sec:artifact-discipline}
+评估协议（图~\ref{fig:ch3-eval-pipeline}）的四个步骤均为\textbf{后训练计算}：温度拟合（$T^{\ast}$）、阈值搜索（$\tau_{R_0}$）、字典序选模（$\theta^{\ast}$）以及最终测试指标，本质上都是 logit 与标签的函数。这一观察驱动本文采取一条工程纪律——\textbf{只持久化"线性无关的原材料"，所有派生量均由本地脚本现算}。
+
+\textbf{存储原则}。对每次训练 run（每容量 $\times$ 每种子）保留的内容仅限于"不重跑训练就无法重建"的最小集合：
+
+\begin{itemize}[leftmargin=2em,nosep]
+\item 200 个 epoch 检查点权重 \texttt{weights/epoch\{i\}.pt}；
+\item 每个 epoch 的 val-cal 与 val-op 原始 logits、标签与 image\_id（\texttt{per\_epoch\_logits/val\_cal\_epoch\{i\}.npz} 与 \texttt{val\_op\_epoch\{i\}.npz}）；
+\item 最优检查点 $\theta^{\ast}$ 在 test 上的原始 logits、标签与 image\_id（\texttt{best\_epoch/test\_logits.npz}）；
+\item $\theta^{\ast}$ 在 train、val-op、test 上的倒数第二层特征（\texttt{best\_epoch/embeddings\_*.npz}），用于 RDTC 中的 $D$ 信号计算；
+\item 训练元信息 \texttt{run\_meta.json}（git commit、host、GPU 型号、起止时间、总耗时），用于复现性审计。
+\end{itemize}
+
+明确\textbf{不持久化}的内容包括：每 epoch 的 $T^{\ast}$ 与 $\tau_{R_0}$、Spec/Prec/PTR/Recall 与 Wilson 区间、混淆矩阵、per-class recall、$\tau$-Spec 曲线、最优 epoch 指针、跨容量对比表——这些全部为 logits 与标签的确定性函数，由本地聚合脚本 \texttt{scripts/aggregate\_capacity\_results.py} 在分钟级时间内重算得到。
+
+\textbf{设计动机}。该纪律的直接收益是\textbf{分析侧的实验自由度}：调整召回目标（$R_0 = 99.5\%$ 改为 $99\%$ 或 $98\%$）、调整字典序优先级、新增 ECE 或 Brier 等评价指标、提高块 bootstrap 重采样次数（$B = 2000$ 改为 $10000$），均无需重跑训练，仅需重新执行聚合脚本。这一解耦把"高代价的训练"与"低代价的分析"分离至两个独立环节，使后续章节的多视角对比与消融实验可以在不重新征用 GPU 资源的前提下迭代完成。冗余存储（如同时落盘 logits 和 $T^{\ast}$）从形式上无害，却引入"哪个数字是权威"的歧义并增加版本管理负担，本文一律去除。
 
 \subsection{统计推断的局限与处理}
 \label{sec:stat-limitations}
