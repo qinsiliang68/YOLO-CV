@@ -1,63 +1,46 @@
 """
-machine_B.py — Machine B pipeline launcher.
+machine_B.py — v3 Stage 1 BINARY gate capacity scan (l, x).
 
-Runs capacity scan for yolo11m (medium capacity, ~21M params).
+Human workflow on Machine B:
+    cd <repo-root>
+    uv run python scripts/machines/machine_B.py
 
-Produces:
-    runs/yolo11m/weights/epoch*.pt
-    runs/yolo11m/per_epoch_metrics.csv
-    runs/yolo11m/best_epoch.json
-    runs/yolo11m/final_test_metrics.json
+Chain:
+    1. git pull
+    2. build 2-class hardlink view  (data/sewerml_gate_v3_stage1_binary/)
+    3. train yolo11l  (~5-6 h)
+    4. train yolo11x  (~7-9 h)
 
-Usage:
-    uv run python scripts/machines/machine_B.py \\
-        --data-dir /path/to/sewerml_gate_v3_stage1 \\
-        --output-dir ./runs
-
-After completion, zip `./runs/yolo11m` and upload to shared storage.
+Output: research/materials/v3_stage1_binary/yolo11{l,x}/
 """
-import argparse
 import subprocess
+import sys
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-TRAIN_SCRIPT = REPO_ROOT / "scripts" / "train_v3_stage1.py"
+DATA_DIR = REPO_ROOT / "data" / "sewerml_gate_v3_stage1_binary"
+OUT_ROOT = REPO_ROOT / "research" / "materials" / "v3_stage1_binary"
+CAPACITIES = ["l", "x"]
 
-CAPACITIES = ["m"]
 
-
-def run(capacity, data_dir, output_dir, smoke):
-    out = output_dir / f"yolo11{capacity}"
-    cmd = [
-        "uv", "run", "python", str(TRAIN_SCRIPT),
-        "--capacity", capacity,
-        "--data-dir", str(data_dir),
-        "--output-dir", str(out),
-    ]
-    if smoke:
-        cmd.append("--smoke")
-    print(f"\n{'=' * 70}\n[Machine B] capacity={capacity}\n{'=' * 70}")
-    print(f"[cmd] {' '.join(cmd)}")
+def run(cmd):
+    print(f"\n>>> {' '.join(map(str, cmd))}")
     r = subprocess.run(cmd, cwd=str(REPO_ROOT))
     if r.returncode != 0:
-        raise RuntimeError(f"capacity {capacity} training failed with code {r.returncode}")
+        sys.exit(f"[Machine B] FAILED at: {cmd}")
 
 
 def main():
-    ap = argparse.ArgumentParser()
-    ap.add_argument("--data-dir", required=True, type=Path)
-    ap.add_argument("--output-dir", type=Path, default=Path("./runs"))
-    ap.add_argument("--smoke", action="store_true")
-    args = ap.parse_args()
-
-    args.output_dir.mkdir(parents=True, exist_ok=True)
-
+    run(["git", "pull"])
+    run(["uv", "run", "python", "scripts/build_v3_stage1_binary_view.py"])
     for cap in CAPACITIES:
-        run(cap, args.data_dir.resolve(), args.output_dir.resolve(), args.smoke)
-
-    print(f"\n{'=' * 70}\n[Machine B] ALL DONE. Zip and upload:\n{'=' * 70}")
-    for cap in CAPACITIES:
-        print(f"  {args.output_dir.resolve() / ('yolo11' + cap)}")
+        run([
+            "uv", "run", "python", "scripts/train_v3_stage1.py",
+            "--capacity", cap,
+            "--data-dir", str(DATA_DIR),
+            "--output-dir", str(OUT_ROOT / f"yolo11{cap}"),
+        ])
+    print(f"\n[Machine B] ALL DONE — {OUT_ROOT}")
 
 
 if __name__ == "__main__":

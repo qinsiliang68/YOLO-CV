@@ -21,6 +21,7 @@ dependencies = [
     "torchvision",
     "ultralytics-thop>=2.0.0",
     "albumentations>=1.4.6",
+    "scikit-learn>=1.8.0",
 ]
 
 [project.optional-dependencies]

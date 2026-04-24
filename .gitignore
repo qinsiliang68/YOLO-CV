@@ -55,6 +55,9 @@ YOLOv11/weights/*
 YOLOv11/runs/*
 !YOLOv11/runs/.gitkeep
 
+# v3 stage1 capacity scan raw materials (linearly independent, local only)
+research/materials/v3_stage1/
+
 # Formal scan raw materials kept local only
 YOLOv11/runs/stage1_formal_gate/
 YOLOv11/runs/stage1_formal_cls6/
