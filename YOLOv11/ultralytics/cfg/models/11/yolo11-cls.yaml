@@ -3,11 +3,19 @@
 # Ultralytics YOLO11-cls image classification model
 # Model docs: https://docs.ultralytics.com/models/yolo11
 # Task docs: https://docs.ultralytics.com/tasks/classify
+#
+# 中文说明：
+# 这个文件只定义 YOLO11 分类模型结构，不是训练脚本，也不是训练超参数文件。
+# 训练轮数、batch、学习率、增强等参数主要来自 ultralytics/cfg/default.yaml 或 train() 调用参数。
 
 # Parameters
 nc: 1000 # number of classes
+# 默认 nc=1000 对应 ImageNet 预训练分类头；实际训练自定义数据集时，
+# ClassificationTrainer 会根据数据集类别数覆盖分类头输出，例如 SewerML 六类会覆盖为 nc=6。
 scales: # model compound scaling constants, i.e. 'model=yolo11n-cls.yaml' will call yolo11-cls.yaml with scale 'n'
   # [depth, width, max_channels]
+  # depth 控制模块重复深度，width 控制通道宽度，max_channels 控制最大通道上限。
+  # 选择 yolo11n/s/m/l/x-cls 时，官方会从文件名推断 n/s/m/l/x，并套用下面对应缩放。
   n: [0.50, 0.25, 1024] # summary: 86 layers, 1633584 parameters, 1633584 gradients, 0.5 GFLOPs
   s: [0.50, 0.50, 1024] # summary: 86 layers, 5545488 parameters, 5545488 gradients, 1.6 GFLOPs
   m: [0.50, 1.00, 512] # summary: 106 layers, 10455696 parameters, 10455696 gradients, 5.0 GFLOPs
@@ -15,6 +23,9 @@ scales: # model compound scaling constants, i.e. 'model=yolo11n-cls.yaml' will c
   x: [1.00, 1.50, 512] # summary: 176 layers, 28458544 parameters, 28458544 gradients, 13.7 GFLOPs
 
 # YOLO11n backbone
+# backbone 是特征提取网络；每一行格式都是 [from, repeats, module, args]。
+# from=-1 表示接上一层输出；repeats 是基础重复次数，会受 scales.depth 影响；
+# module 是模块名；args 是模块参数。Conv 中 stride=2 表示下采样一半。
 backbone:
   # [from, repeats, module, args]
   - [-1, 1, Conv, [64, 3, 2]] # 0-P1/2
@@ -29,5 +40,7 @@ backbone:
   - [-1, 2, C2PSA, [1024]] # 9
 
 # YOLO11n head
+# 分类模型的 head 只输出类别概率，不输出检测框、mask 或关键点。
+# Classify 会把最后的特征图做全局平均池化，再接线性层输出 nc 个类别分数。
 head:
   - [-1, 1, Classify, [nc]] # Classify
