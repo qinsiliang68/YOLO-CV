@@ -17,7 +17,13 @@ wandb/
 tensorboard/
 
 # Large assets
-data/
+/data/
+!/data/
+/data/*
+!/data/final_sewerml_dataset/
+/data/final_sewerml_dataset/*
+!/data/final_sewerml_dataset/manifests/
+!/data/final_sewerml_dataset/manifests/*.csv
 checkpoints/
 *.pt
 *.onnx
@@ -50,10 +56,14 @@ build/
 # Per-version working directories
 YOLOv11/datasets/*
 !YOLOv11/datasets/.gitkeep
+!YOLOv11/datasets/sewerml_annotations/
+YOLOv11/datasets/sewerml_annotations/*
+!YOLOv11/datasets/sewerml_annotations/*.csv
 YOLOv11/weights/*
 !YOLOv11/weights/.gitkeep
 YOLOv11/runs/*
 !YOLOv11/runs/.gitkeep
+YOLOv11/ultralytics/data/
 
 # v3 stage1 capacity scan raw materials (linearly independent, local only)
 research/materials/v3_stage1/

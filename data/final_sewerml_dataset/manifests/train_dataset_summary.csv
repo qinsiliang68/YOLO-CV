@@ -1,0 +1,32 @@
+﻿key,value
+sample_version,final_sewerml_train_v1
+created_at_local,2026-06-12T13:18:49
+source_csv,C:\GitHub\YOLO-CV\YOLOv11\datasets\sewerml_annotations\SewerML_Train.csv
+source_image_dir,C:\Sewer-ML\sewerml_train_images
+output_root,C:\GitHub\YOLO-CV\data\final_sewerml_dataset
+canonical_train_image_dir,C:\GitHub\YOLO-CV\data\final_sewerml_dataset\Det\images\train
+canonical_train_label_dir_reserved,C:\GitHub\YOLO-CV\data\final_sewerml_dataset\Det\labels\train
+excluded_manifests,C:\GitHub\YOLO-CV\data\final_sewerml_dataset\manifests\test_manifest.csv;C:\GitHub\YOLO-CV\data\final_sewerml_dataset\manifests\val_cal_manifest.csv;C:\GitHub\YOLO-CV\data\final_sewerml_dataset\manifests\val_op_manifest.csv
+sample_seed,20260606
+requested_train_primary_images_per_class,10000
+target_classes,PF;DE;FS;RB;AF;OB
+class_sampling_order_rarest_first,PF;DE;RB;AF;OB;FS
+copied_train_unique_images,60000
+actual_source_image_files,759586
+matched_source_csv_rows,759586
+source_defect_rows,322729
+source_normal_rows,436857
+source_rows_with_any_target_label_before_split_sampling,322729
+source_rows_with_multiple_target_labels_before_split_sampling,159668
+excluded_previous_split_unique_images,60000
+remaining_rows_with_any_target_label_after_exclusion,262729
+remaining_rows_with_multiple_target_labels_after_exclusion,129915
+remaining_rows_with_OK_colabel_retained_for_audit,61948
+remaining_rows_with_PH_colabel_retained_for_audit,14390
+train_rows_with_multiple_target_labels,33889
+train_rows_with_OK_colabel_retained_for_audit,15634
+train_rows_with_PH_colabel_retained_for_audit,3336
+copied_bytes,15586310228
+copied_gib,14.5159
+sampling_policy,"Train is sampled after excluding test, val_cal, and val_op filenames. It uses class-balanced primary buckets: 10000 unique images per target class, sampled rarest-first with seed 20260606. Multi-label co-labels are preserved in original columns and may make raw label counts exceed primary counts."
+storage_policy,One canonical Det image pool is stored. Classification and detection training directories should be assembled temporarily from manifests.
