@@ -1,7 +1,0 @@
-label,material_dir,best_variant,best_spec_at_r995,best_spec_at_r990,best_prec_at_r990,best_ptr_at_r990,p0_spec_at_r995,p0_spec_at_r990,p2_spec_at_r995,p2_spec_at_r990,tn_at_r995,fn_at_r995,tn_at_r990,fn_at_r990
-H0 current best hn02 + P2,C:\Users\ASUS\Desktop\YOLOv11\YOLO-CV\research\materials\stage1_ptsg\yolo11l_gate2_hn02,P2,0.52381,0.559524,0.918322,0.89881,0.5,0.547619,0.52381,0.559524,44,2,47,4
-Selective / recall-constrained loss,C:\Users\ASUS\Desktop\YOLOv11\YOLO-CV\research\materials\stage1_gate_maxfilter\yolo11l_gate2_hn02_selective,P1,0.488095,0.52381,0.912473,0.906746,0.488095,0.52381,0.464286,0.511905,41,1,44,3
-Hard positive + hard normal mining,C:\Users\ASUS\Desktop\YOLOv11\YOLO-CV\research\materials\stage1_gate_maxfilter\yolo11l_gate2_hn02_hardmix,P0,0.52381,0.583333,0.922395,0.894841,0.52381,0.583333,0.464286,0.559524,44,2,49,4
-Weighted BCE,C:\Users\ASUS\Desktop\YOLOv11\YOLO-CV\research\materials\stage1_gate_maxfilter\yolo11l_gate2_hn02_wbce_suite,P0,0.488095,0.559524,0.918322,0.89881,0.488095,0.559524,0.440476,0.535714,41,2,47,4
-Focal BCE,C:\Users\ASUS\Desktop\YOLOv11\YOLO-CV\research\materials\stage1_gate_maxfilter\yolo11l_gate2_hn02_focal_suite,P2,0.440476,0.535714,0.914286,0.902778,0.428571,0.535714,0.440476,0.535714,37,2,45,4
-Defect oversampling,C:\Users\ASUS\Desktop\YOLOv11\YOLO-CV\research\materials\stage1_gate_maxfilter\yolo11l_gate2_hn02_defectos,P3,0.404762,0.535714,0.914286,0.902778,0.380952,0.559524,0.380952,0.47619,34,2,45,4

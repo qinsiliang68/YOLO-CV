@@ -1,6 +1,0 @@
-task,model,summary_dir,best_epoch,best_checkpoint_path,checkpoint_exists,accuracy,auroc,auprc
-cls6,yolo11x-cls,C:\GitHub\YOLO-CV\research\materials\stage1_formal\cls6_capacity\yolo11x_cls6_formal,161,C:\Users\ASUS\Desktop\YOLOv11\YOLO-CV\YOLOv11\runs\stage1_formal_cls6\yolo11x_cls6_formal_200ep\weights\epoch_161.pt,false,0.7000,0.9484,0.9885
-cls6,yolo11m-cls,C:\GitHub\YOLO-CV\research\materials\stage1_formal\cls6_capacity\yolo11m_cls6_formal,130,C:\Users\ASUS\Desktop\YOLOv11\YOLO-CV\YOLOv11\runs\stage1_formal_cls6\yolo11m_cls6_formal_200ep\weights\epoch_130.pt,false,0.6958,0.9387,0.9848
-cls6,yolo11l-cls,C:\GitHub\YOLO-CV\research\materials\stage1_formal\cls6_capacity\yolo11l_cls6_formal,104,C:\Users\ASUS\Desktop\YOLOv11\YOLO-CV\YOLOv11\runs\stage1_formal_cls6\yolo11l_cls6_formal_200ep\weights\epoch_104.pt,false,0.6944,0.9400,0.9862
-cls6,yolo11s-cls,C:\GitHub\YOLO-CV\research\materials\stage1_formal\cls6_capacity\yolo11s_cls6_formal,167,C:\Users\ASUS\Desktop\YOLOv11\YOLO-CV\YOLOv11\runs\stage1_formal_cls6\yolo11s_cls6_formal_200ep\weights\epoch_167.pt,false,0.6917,0.9406,0.9854
-cls6,yolo11n-cls,C:\GitHub\YOLO-CV\research\materials\stage1_formal\cls6_capacity\yolo11n_cls6_formal,117,C:\Users\ASUS\Desktop\YOLOv11\YOLO-CV\YOLOv11\runs\stage1_formal_cls6\yolo11n_cls6_formal_200ep\weights\epoch_117.pt,false,0.6833,0.9421,0.9870

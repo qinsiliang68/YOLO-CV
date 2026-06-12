@@ -1,7 +1,0 @@
-{
-  "weights": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\cls_gate_source\\yolo11s_gate2_train7200\\weights\\best.pt",
-  "data_root": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\datasets\\sewerml_gate2_train7200",
-  "score_device": "0",
-  "total_train_normals": 1080,
-  "top_k": 22
-}

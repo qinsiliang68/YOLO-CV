@@ -1,6 +1,0 @@
-Model,Best Epoch,Accuracy,AUROC,AUPRC,Rank
-yolo11x-cls,161,0.7000,0.9484,0.9885,1
-yolo11m-cls,130,0.6958,0.9387,0.9848,2
-yolo11l-cls,104,0.6944,0.9400,0.9862,3
-yolo11s-cls,167,0.6917,0.9406,0.9854,4
-yolo11n-cls,117,0.6833,0.9421,0.9870,5

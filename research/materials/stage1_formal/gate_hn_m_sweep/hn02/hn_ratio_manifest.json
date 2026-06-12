@@ -1,9 +1,0 @@
-{
-  "ratio_id": "hn02",
-  "ratio_percent": 2,
-  "backflow_count": 22,
-  "model": "yolo11m-cls",
-  "run_name": "yolo11m_gate2_formal_hn02_200ep",
-  "dataset_root": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\datasets\\stage1_formal_gate_hn\\yolo11m_gate2_formal_hn02",
-  "reuse_existing": false
-}

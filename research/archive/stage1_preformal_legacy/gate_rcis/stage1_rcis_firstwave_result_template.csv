@@ -1,5 +1,0 @@
-group,label,best_variant,spec_at_r995,spec_at_r990,prec_at_r990,ptr_at_r990,tn_at_r995,fn_at_r995,tn_at_r990,fn_at_r990,verdict
-G4,current best HardMix + P0,P0,TBD,TBD,TBD,TBD,TBD,TBD,TBD,TBD,baseline
-R1,RCIS boundary-only sampling,TBD,TBD,TBD,TBD,TBD,TBD,TBD,TBD,TBD,TBD
-R2,RCIS core linear information sampling,TBD,TBD,TBD,TBD,TBD,TBD,TBD,TBD,TBD,TBD
-R3,RCIS full exploratory information sampling,TBD,TBD,TBD,TBD,TBD,TBD,TBD,TBD,TBD,TBD

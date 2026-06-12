@@ -1,5 +1,0 @@
-label,material_dir,best_variant,best_spec_at_r995,best_spec_at_r990,best_prec_at_r990,best_ptr_at_r990,p0_spec_at_r995,p0_spec_at_r990,p2_spec_at_r995,p2_spec_at_r990,tn_at_r995,fn_at_r995,tn_at_r990,fn_at_r990
-G4 current best HardMix + P0,C:\Users\ASUS\Desktop\YOLOv11\YOLO-CV\research\materials\stage1_gate_maxfilter\yolo11l_gate2_hn02_hardmix,P0,0.52381,0.583333,0.922395,0.894841,0.52381,0.583333,0.464286,0.559524,44,2,49,4
-RCIS boundary-only sampling,C:\Users\ASUS\Desktop\YOLOv11\YOLO-CV\research\materials\stage1_gate_rcis\yolo11l_gate2_hn02_rcis_boundary,P3,0.47619,0.559524,0.918322,0.89881,0.464286,0.583333,0.452381,0.583333,40,2,47,4
-RCIS core linear information sampling,C:\Users\ASUS\Desktop\YOLOv11\YOLO-CV\research\materials\stage1_gate_rcis\yolo11l_gate2_hn02_rcis_core,P1,0.52381,0.607143,0.926503,0.890873,0.511905,0.607143,0.47619,0.595238,44,2,51,4
-RCIS full exploratory information sampling,C:\Users\ASUS\Desktop\YOLOv11\YOLO-CV\research\materials\stage1_gate_rcis\yolo11l_gate2_hn02_rcis_full,P1,0.52381,0.571429,0.920354,0.896825,0.52381,0.547619,0.369048,0.547619,44,2,48,4

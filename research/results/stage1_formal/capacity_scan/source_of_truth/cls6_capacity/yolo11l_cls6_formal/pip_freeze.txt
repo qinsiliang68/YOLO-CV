@@ -1,1 +1,0 @@
-# pip freeze unavailable: Command '['C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\.venv\\Scripts\\python.exe', '-m', 'pip', 'freeze']' returned non-zero exit status 1.

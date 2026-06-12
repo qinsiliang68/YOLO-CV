@@ -1,9 +1,0 @@
-{
-  "ratio_id": "hn00",
-  "ratio_percent": 0,
-  "backflow_count": 0,
-  "model": "yolo11x-cls",
-  "run_name": "yolo11x_gate2_formal_200ep",
-  "dataset_root": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\datasets\\sewerml_gate2_train7200",
-  "reuse_existing": true
-}

@@ -1,8 +1,0 @@
-{
-  "machine_name": "TBD",
-  "commit_hash": "TBD",
-  "python_version": "TBD",
-  "torch_version": "TBD",
-  "cuda_version": "TBD",
-  "notes": "Fill on the training machine before or immediately after formal launch."
-}

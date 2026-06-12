@@ -1,8 +1,0 @@
-{
-  "epoch": 104,
-  "checkpoint_file": "epoch103.pt",
-  "checkpoint_path": "C:\\Users\\ASUS\\Desktop\\YOLOv11\\YOLO-CV\\YOLOv11\\runs\\stage1_formal_cls6\\yolo11l_cls6_formal_200ep\\weights\\epoch_104.pt",
-  "accuracy": 0.694444,
-  "auroc": 0.939951,
-  "auprc": 0.986201
-}

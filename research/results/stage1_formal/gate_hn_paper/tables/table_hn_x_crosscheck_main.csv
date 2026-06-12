@@ -1,3 +1,0 @@
-﻿model,hn_ratio,best_epoch,Spec@R99.5,Spec@R99.0,Prec@R99.0,PTR@R99.0,delta_vs_hn00
-yolo11x-cls,hn00,125,0.547619,0.595238,0.924444,0.892857,delta Spec@R99.5=0.0000; delta Spec@R99.0=0.0000; delta Prec@R99.0=0.0000; delta PTR@R99.0=0.0000
-yolo11x-cls,hn02,1,0.52381,0.547619,0.9163,0.900794,delta Spec@R99.5=-0.0238; delta Spec@R99.0=-0.0476; delta Prec@R99.0=-0.0081; delta PTR@R99.0=0.0079
