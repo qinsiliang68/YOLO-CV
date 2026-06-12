@@ -1,76 +1,44 @@
 # YOLO-CV
 
-This repository is the training workspace for the YOLOv11 sewer-defect research line.
-Only code, configs, scripts, and notes are tracked in Git. Images, datasets, weights,
-and run outputs stay local.
+This workspace has been reset for the final dataset:
 
-## Layout
+- new active direction: one final dataset, not a v1/v2/v3/v4 sequence
+- target defect pool: `PF / DE / FS / RB / AF / OB`, 15,000 images per class
+- additional Normal images will be sampled according to the next gate/detection
+  experiment design
+- raw image source is preserved outside the repository at
+  `C:\Sewer-ML\sewerml_train_images\`
+- source annotation CSV is preserved at
+  `YOLOv11/datasets/sewerml_annotations/SewerML_Train.csv`
 
-- `PROJECT_MEMORY.md`: long-term project memory and stable decisions
-- `YOLOv11/`: local YOLOv11 source tree plus runtime configs
-- `scripts/`: workflow entrypoints, sync helpers, calibration and analysis scripts
-- `research/`: experiment materials, result summaries, runbook, project memory and pipeline notes
-- `essay/`: thesis sources, figures and generated PDF
-- `data/`: local-only raw data and intermediate results, ignored by Git
+Old v1/v3/stage-1 materials, thesis drafts, scripts, runtime configs and evidence
+notes were archived under:
 
-## Project Memory
+`_recycle_bin/pre_final_dataset_reset/`
 
-Before editing code, thesis, configs, or long-running experiment scripts, read:
+Start with:
 
-- `PROJECT_MEMORY.md`
-- `research/project_memory/stage1_formal_protocol.md`
-- `research/project_memory/decision_log.md`
-- `research/archive/stage1_preformal_legacy/archive_manifest.md`
+- `_recycle_bin/pre_final_dataset_reset/CONCLUSIONS.md`
+- `_recycle_bin/pre_final_dataset_reset/FILE_MANIFEST.md`
 
-These files store the current thesis direction, the formal stage-1 rules, stable decisions, and the traceable location of archived legacy notes.
+## Active Rules
 
-## Synchronization Workflow
+Do not delete or move:
 
-This repository uses a **single main branch** for both the local working machine and the training machine.
+- `C:\Sewer-ML\sewerml_train_images\`
+- `YOLOv11/datasets/sewerml_annotations/SewerML_Train.csv`
+- YOLO source code under `YOLOv11/`
+- pretrained base weights in the repository root
 
-- Local working machine:
-  - updates code, configs, scripts and thesis
-  - pushes curated changes to `main`
-- Training machine:
-  - syncs from `main`
-  - runs experiments
-  - pushes only `research/materials` and `research/results`
+New generated datasets should use a new path, for example:
 
-Helper scripts:
+- `research/materials/final_dataset/`
+- `research/results/final_dataset/`
+- `C:\Sewer-ML\final_dataset\`
 
-- sync local machine to latest main  
-  `powershell -ExecutionPolicy Bypass -File .\scripts\git_sync_main.ps1`
-- push only experiment outputs  
-  `powershell -ExecutionPolicy Bypass -File .\scripts\git_push_results_main.ps1`
+The repository `data/` folder must not contain large image datasets. Keep all
+large raw, intermediate and exported datasets under `C:\Sewer-ML\` so editors do
+not scan hundreds of thousands of files inside the repository.
 
-## Training Machine Flow
-
-1. `powershell -ExecutionPolicy Bypass -File .\scripts\git_sync_main.ps1`
-2. `.\scripts\setup.ps1 -Backend cu128`
-3. `.\scripts\check.ps1`
-4. Move datasets into the fixed local-only paths described in `research/training_machine_runbook.md`
-5. Run `uv run main_A.py` on the gate machine or `uv run main_B.py` on the cls6 machine
-
-## Main Entry Points
-
-- Computer A formal binary gate entrypoint: `uv run main_A.py`
-- Computer B formal cls6 entrypoint: `uv run main_B.py`
-- Explicit formal gate task: `uv run main.py --task stage1_formal_gate_capacity`
-- Explicit formal cls6 task: `uv run main.py --task stage1_formal_cls6_capacity`
-- Shared exploratory/default entrypoint: `uv run main.py`
-- Active task selector: `YOLOv11/configs/runtime/main_entry.json`
-- Current committed exploratory default task: `stage1_gate_rcis_suite`
-- Run the uniform five-scale CLS6 sweep explicitly: `uv run main.py --task cls6_sweep --rerun`
-- Compatibility wrapper for the same sweep: `uv run main_cls6_sweep.py --rerun`
-- Source classification pretraining: `.\scripts\cls_pretrain.ps1`
-- Extract the only active 3000-image source set directly from raw SewerML: `.\scripts\extract_sewerml_cls6_train3000.ps1 -Clean`
-- Target classification fine-tuning: `.\scripts\cls_finetune_target.ps1`
-- CAM export: `.\scripts\export_cam.ps1`
-- CAM to pseudo boxes: `.\scripts\cam_to_pseudobox.ps1`
-- Research figures: `.\scripts\plot_research_figures.ps1 -Mode sewerml`
-- Detector training: `.\YOLOv11\scripts\train.ps1`
-- Detector validation: `.\YOLOv11\scripts\val.ps1`
-- Detector test: `.\YOLOv11\scripts\test.ps1`
-- Detector predict: `.\YOLOv11\scripts\predict.ps1`
-
-See `research/training_machine_runbook.md` for the fixed dataset paths and recommended commands.
+SewerML is multi-label. New manifests should preserve all original label columns
+and may add a `primary_class` only for export/folder layout convenience.
