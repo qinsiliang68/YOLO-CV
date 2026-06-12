@@ -1,0 +1,27 @@
+﻿key,value
+sample_version,final_sewerml_test_v1
+created_at_local,2026-06-12T12:14:33
+source_csv,C:\GitHub\YOLO-CV\YOLOv11\datasets\sewerml_annotations\SewerML_Train.csv
+source_image_dir,C:\Sewer-ML\sewerml_train_images
+output_root,C:\GitHub\YOLO-CV\data\final_sewerml_dataset
+canonical_test_image_dir,C:\GitHub\YOLO-CV\data\final_sewerml_dataset\Det\images\test
+canonical_test_label_dir_reserved,C:\GitHub\YOLO-CV\data\final_sewerml_dataset\Det\labels\test
+sample_seed,20260606
+requested_test_unique_images,20000
+copied_test_unique_images,20000
+actual_source_image_files,759586
+matched_source_csv_rows,759586
+source_defect_rows,322729
+source_normal_rows,436857
+source_rows_with_any_target_label_before_split_sampling,322729
+source_rows_with_multiple_target_labels_before_split_sampling,159668
+source_rows_with_OK_colabel_retained_for_audit,76367
+source_rows_with_PH_colabel_retained_for_audit,17693
+excluded_previous_split_rows,0
+test_rows_with_multiple_target_labels,9886
+test_rows_with_OK_colabel_retained_for_audit,4817
+test_rows_with_PH_colabel_retained_for_audit,1148
+copied_bytes,4927058531
+copied_gib,4.5887
+sampling_policy,Splits are sampled sequentially from images containing at least one target class PF/DE/FS/RB/AF/OB. OK/PH-only images are excluded because they have no target label; OK/PH co-labels are retained in original columns for audit. Val excludes all test filenames.
+storage_policy,One canonical Det image pool is stored. Classification and detection training directories should be assembled temporarily from manifests.

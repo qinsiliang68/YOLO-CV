@@ -1,0 +1,7 @@
+﻿label,source_candidate_count_before_any_split,remaining_label_count_after_test_val_cal_val_op_exclusion,available_unique_candidates_at_class_sampling,train_primary_class_count,train_original_label_count_after_selection,train_original_label_ratio_per_image
+PF,15769,12862,12862,10000,10458,0.17430000
+DE,18221,14859,12911,10000,12041,0.20068333
+FS,225862,183768,162959,10000,30809,0.51348333
+RB,36323,29602,29366,10000,12371,0.20618333
+AF,59159,48090,45444,10000,14803,0.24671667
+OB,157698,128452,119241,10000,24051,0.40085000

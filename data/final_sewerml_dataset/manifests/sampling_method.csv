@@ -1,0 +1,10 @@
+﻿step,description
+1,Start from the original SewerML annotation source and local image pool.
+2,"Use the local effective image pool under C:\Sewer-ML\sewerml_train_images, which contains 759586 images available for this project."
+3,Use SewerML_Train.csv as the annotation source; the official test split is not used for development sampling.
+4,"Target classes are PF, DE, FS, RB, AF, and OB. Pure OK/PH images without any target class are excluded; OK/PH co-labels on target images are retained in CSV for audit."
+5,"Sample test first, then val_cal, then val_op. Each later evaluation split excludes all previous split filenames."
+6,"test, val_cal, and val_op use random sampling without replacement with seed 20260606, preserving the natural multi-label long-tail distribution in expectation."
+7,"Sample train last after excluding test, val_cal, and val_op. Train uses class-balanced primary buckets with 10000 unique images per target class and seed 20260606."
+8,val_cal is for fitting calibration functions. val_op is for choosing operating thresholds after calibration. test is held out for final evaluation.
+9,Only one canonical image copy is stored under Det/images/{split}. Classification or detection layouts should be generated as temporary exports from manifests.
