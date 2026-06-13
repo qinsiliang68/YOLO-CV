@@ -1,0 +1,7 @@
+label,remaining_candidate_count_before_val_model_sampling,available_unique_candidates_at_class_sampling,val_model_primary_class_count,val_model_original_label_count_after_selection,val_model_original_label_ratio_per_image
+PF,2404,2404,2000,2019,0.16825000
+DE,2818,2716,2000,2110,0.17583333
+FS,152959,148905,2000,6054,0.50450000
+RB,17231,17204,2000,2410,0.20083333
+AF,33287,32814,2000,2910,0.24250000
+OB,104401,102714,2000,4617,0.38475000

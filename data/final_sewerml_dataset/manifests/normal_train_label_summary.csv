@@ -1,0 +1,22 @@
+label,selected_count,note
+Normal,60000,primary training class assigned by sampling
+VA,0,original SewerML column count among selected normal_train images
+RB,0,original SewerML column count among selected normal_train images
+OB,0,original SewerML column count among selected normal_train images
+PF,0,original SewerML column count among selected normal_train images
+DE,0,original SewerML column count among selected normal_train images
+FS,0,original SewerML column count among selected normal_train images
+IS,0,original SewerML column count among selected normal_train images
+RO,0,original SewerML column count among selected normal_train images
+IN,0,original SewerML column count among selected normal_train images
+AF,0,original SewerML column count among selected normal_train images
+BE,0,original SewerML column count among selected normal_train images
+FO,0,original SewerML column count among selected normal_train images
+GR,0,original SewerML column count among selected normal_train images
+PH,0,original SewerML column count among selected normal_train images
+PB,0,original SewerML column count among selected normal_train images
+OS,0,original SewerML column count among selected normal_train images
+OP,0,original SewerML column count among selected normal_train images
+OK,0,original SewerML column count among selected normal_train images
+ND,60000,original SewerML column count among selected normal_train images
+Defect,0,original SewerML column count among selected normal_train images

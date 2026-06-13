@@ -1,0 +1,23 @@
+key,value
+sample_version,final_sewerml_normal_test_v1
+created_at_local,2026-06-12T22:31:12
+source_csv,C:\GitHub\YOLO-CV\YOLOv11\datasets\sewerml_annotations\SewerML_Train.csv
+source_image_dir,C:\Sewer-ML\sewerml_train_images
+output_root,C:\GitHub\YOLO-CV\data\final_sewerml_dataset
+canonical_normal_test_image_dir,C:\GitHub\YOLO-CV\data\final_sewerml_dataset\Det\images\normal_test
+canonical_normal_test_label_dir_reserved,C:\GitHub\YOLO-CV\data\final_sewerml_dataset\Det\labels\normal_test
+sample_seed,20260606
+requested_normal_test_images,20000
+copied_normal_test_unique_images,20000
+normal_definition,Defect=0 and PF=DE=FS=RB=AF=OB=0
+target_classes_excluded,PF;DE;FS;RB;AF;OB
+source_csv_rows,1040129
+source_image_files,759586
+initial_excluded_existing_split_unique_images,0
+candidate_rows_defect0_target0_before_local_image_filter,552820
+candidate_rows_defect0_target0_with_local_image,436857
+candidate_rows_excluded_by_existing_manifests_before_eval_sampling,60000
+available_unique_normal_candidates_after_initial_exclusion,376857
+copied_bytes,3970935214
+copied_gib,3.6982
+storage_policy,Normal normal_test images are stored separately under Det/images/normal_test. Classification or detection layouts should be generated temporarily from manifests.

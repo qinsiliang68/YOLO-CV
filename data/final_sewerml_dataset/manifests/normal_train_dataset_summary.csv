@@ -1,0 +1,23 @@
+key,value
+sample_version,final_sewerml_normal_train_v1
+created_at_local,2026-06-12T22:24:51
+source_csv,C:\GitHub\YOLO-CV\YOLOv11\datasets\sewerml_annotations\SewerML_Train.csv
+source_image_dir,C:\Sewer-ML\sewerml_train_images
+output_root,C:\GitHub\YOLO-CV\data\final_sewerml_dataset
+canonical_normal_train_image_dir,C:\GitHub\YOLO-CV\data\final_sewerml_dataset\Det\images\normal_train
+canonical_normal_train_label_dir_reserved,C:\GitHub\YOLO-CV\data\final_sewerml_dataset\Det\labels\normal_train
+sample_seed,20260606
+requested_normal_train_images,60000
+copied_normal_unique_images,60000
+normal_definition,Defect=0 and PF=DE=FS=RB=AF=OB=0
+target_classes_excluded,PF;DE;FS;RB;AF;OB
+source_csv_rows,1040129
+source_image_files,759586
+excluded_existing_split_unique_images,120000
+candidate_rows_defect0_target0_before_local_image_filter,552820
+candidate_rows_defect0_target0_with_local_image,436857
+candidate_rows_excluded_existing_split,0
+available_normal_candidates_after_exclusion,436857
+copied_bytes,11909200607
+copied_gib,11.0913
+storage_policy,Normal training images are stored separately under Det/images/normal_train. Classification or detection layouts should be generated temporarily from manifests.

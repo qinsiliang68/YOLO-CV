@@ -22,6 +22,7 @@ dependencies = [
     "ultralytics-thop>=2.0.0",
     "albumentations>=1.4.6",
     "scikit-learn>=1.8.0",
+    "polars>=1.41.2",
 ]
 
 [project.optional-dependencies]

@@ -8,3 +8,9 @@
 7,"Sample train last after excluding test, val_cal, and val_op. Train uses class-balanced primary buckets with 10000 unique images per target class and seed 20260606."
 8,val_cal is for fitting calibration functions. val_op is for choosing operating thresholds after calibration. test is held out for final evaluation.
 9,Only one canonical image copy is stored under Det/images/{split}. Classification or detection layouts should be generated as temporary exports from manifests.
+10,"Sample normal_train separately for the binary defect-vs-normal baseline. normal_train uses Defect=0 and PF=DE=FS=RB=AF=OB=0, excludes all existing train/val_cal/val_op/test filenames, and uses seed 20260606."
+11,"Store normal_train images under Det/images/normal_train, separate from the six-defect train images under Det/images/train. Rebuild temporary classification directories from manifests."
+12,"Sample normal_test, normal_val_cal, and normal_val_op for the binary defect-vs-normal evaluation path. Each uses Defect=0 and PF=DE=FS=RB=AF=OB=0, excludes existing defect splits and normal_train, and uses seed 20260606."
+13,"Sample normal evaluation splits without overlap in the order normal_test, normal_val_cal, then normal_val_op; store images under Det/images/{normal_test,normal_val_cal,normal_val_op}."
+14,val_model uses class-balanced primary buckets with 2000 unique images per target class after excluding all existing train/val_cal/val_op/test and normal split filenames; seed 20260606.
+15,normal_val_model samples 12000 Defect=0 and PF=DE=FS=RB=AF=OB=0 images after excluding all existing splits and val_model defect filenames; seed 20260606.

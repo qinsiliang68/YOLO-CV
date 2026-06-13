@@ -1,0 +1,19 @@
+key,value
+sample_version,final_sewerml_val_model_v1
+created_at_local,2026-06-13T21:12:02
+source_csv,C:\GitHub\YOLO-CV\YOLOv11\datasets\sewerml_annotations\SewerML_Train.csv
+source_image_dir,C:\Sewer-ML\sewerml_train_images
+output_root,C:\GitHub\YOLO-CV\data\final_sewerml_dataset
+canonical_val_model_image_dir,C:\GitHub\YOLO-CV\data\final_sewerml_dataset\Det\images\val_model
+sample_seed,20260606
+requested_val_model_primary_images_per_class,2000
+target_classes,PF;DE;FS;RB;AF;OB
+class_sampling_order_rarest_first,PF;DE;RB;AF;OB;FS
+excluded_existing_split_unique_images,240000
+source_image_files,759586
+matched_source_csv_rows,759586
+remaining_rows_with_any_target_label_after_exclusion,202729
+copied_val_model_unique_images,12000
+copied_bytes,3108989074
+copied_gib,2.8955
+sampling_policy,"val_model is sampled after excluding all existing train/val/test/cal/op and normal split filenames. It uses class-balanced primary buckets: 2000 unique images per target class, sampled rarest-first with seed 20260606. Multi-label co-labels are preserved in original columns and may make raw label counts exceed primary counts."

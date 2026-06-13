@@ -1,0 +1,22 @@
+label,selected_count,note
+Normal,20000,primary evaluation class assigned by sampling
+VA,0,original SewerML column count among selected normal_test images
+RB,0,original SewerML column count among selected normal_test images
+OB,0,original SewerML column count among selected normal_test images
+PF,0,original SewerML column count among selected normal_test images
+DE,0,original SewerML column count among selected normal_test images
+FS,0,original SewerML column count among selected normal_test images
+IS,0,original SewerML column count among selected normal_test images
+RO,0,original SewerML column count among selected normal_test images
+IN,0,original SewerML column count among selected normal_test images
+AF,0,original SewerML column count among selected normal_test images
+BE,0,original SewerML column count among selected normal_test images
+FO,0,original SewerML column count among selected normal_test images
+GR,0,original SewerML column count among selected normal_test images
+PH,0,original SewerML column count among selected normal_test images
+PB,0,original SewerML column count among selected normal_test images
+OS,0,original SewerML column count among selected normal_test images
+OP,0,original SewerML column count among selected normal_test images
+OK,0,original SewerML column count among selected normal_test images
+ND,20000,original SewerML column count among selected normal_test images
+Defect,0,original SewerML column count among selected normal_test images
