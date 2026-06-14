@@ -54,15 +54,59 @@ MODEL_WEIGHTS = {
     "x": "yolo11x-cls.pt",
 }
 
+# =========================
+# 路径和材料文件名集中配置
+# =========================
+# 这些变量是给人和机器改的：换训练机、换硬盘、换归档文件名时，优先改这里。
+# 命令行参数和环境变量仍然可用；它们的优先级高于这里的默认值。
+
+# YOLOv11 官方源码目录。默认在仓库根目录下。
+DEFAULT_YOLO_ROOT = Path("YOLOv11")
+
+# 最终数据集目录。这里不放临时训练目录，只放已经抽样完成的数据集和 manifests。
+DEFAULT_DATASET_ROOT = Path("data") / "final_sewerml_dataset"
+
+# YOLO-cls 临时目录。脚本会在这里组装 train/no_target、train/target_defect 等目录。
+DEFAULT_WORK_ROOT = Path("data") / "stage1_cls_workdir"
+
+# 每个训练 run 的输出根目录。所有 best.pt、last.pt、日志、meta、清单都在这里下面。
+# DEFAULT_RUNS_SUBDIR 是相对 YOLO 根目录的子路径；DEFAULT_RUNS_ROOT 是仓库默认完整相对路径。
+DEFAULT_RUNS_SUBDIR = Path("runs") / "stage1_cls_sweep"
+DEFAULT_RUNS_ROOT = DEFAULT_YOLO_ROOT / DEFAULT_RUNS_SUBDIR
+
+# summary CSV 文件名。smoke 和 full 分开，避免小测试记录混进正式训练记录。
+SUMMARY_FILENAMES = {
+    "smoke": "smoke_summary.csv",
+    "full": "summary.csv",
+}
+
+# run 目录内的材料文件名。
+TRAIN_LOG_FILENAME = "train_log.txt"
+RUN_META_FILENAME = "run_meta.json"
+ARTIFACT_MANIFEST_CSV_FILENAME = "artifact_manifest.csv"
+ARTIFACT_MANIFEST_JSON_FILENAME = "artifact_manifest.json"
+RESULTS_CSV_FILENAME = "results.csv"
+ARGS_YAML_FILENAME = "args.yaml"
+
+# 训练时日志先写到 runs_root/_logs，训练结束后再移动进最终 run 目录。
+# 这样即使 YOLO 还没创建 run_dir，日志也不会丢。
+TEMP_LOG_DIRNAME = "_logs"
+TEMP_LOG_SUFFIX = ".train_log.txt"
+
+# YOLO 默认权重目录名和关键权重文件名。
+WEIGHTS_DIRNAME = "weights"
+BEST_WEIGHT_FILENAME = "best.pt"
+LAST_WEIGHT_FILENAME = "last.pt"
+
 # 训练结束后必须检查的最小正交材料。
 # 这些文件要么重新获取成本很高，要么是后续推断训练过程和结果的基础。
 REQUIRED_ARTIFACTS = (
-    "weights/best.pt",
-    "weights/last.pt",
-    "results.csv",
-    "args.yaml",
-    "train_log.txt",
-    "run_meta.json",
+    f"{WEIGHTS_DIRNAME}/{BEST_WEIGHT_FILENAME}",
+    f"{WEIGHTS_DIRNAME}/{LAST_WEIGHT_FILENAME}",
+    RESULTS_CSV_FILENAME,
+    ARGS_YAML_FILENAME,
+    TRAIN_LOG_FILENAME,
+    RUN_META_FILENAME,
 )
 
 # 这些 manifest 是数据侧的复现材料。训练 run_meta 会记录它们的 hash，
@@ -177,11 +221,16 @@ def build_paths(args: argparse.Namespace) -> Paths:
     repo_root = repo_root_from_script()
 
     # `resolve()` 会把相对路径转成绝对路径，后面打印和排错更清楚。
-    yolo_root = Path(args.yolo_root).resolve() if args.yolo_root else repo_root / "YOLOv11"
-    dataset_root = Path(args.dataset_root).resolve() if args.dataset_root else repo_root / "data" / "final_sewerml_dataset"
+    yolo_root = Path(args.yolo_root).resolve() if args.yolo_root else repo_root / DEFAULT_YOLO_ROOT
+    dataset_root = Path(args.dataset_root).resolve() if args.dataset_root else repo_root / DEFAULT_DATASET_ROOT
     manifest_dir = dataset_root / "manifests"
-    work_root = Path(args.work_root).resolve() if args.work_root else repo_root / "data" / "stage1_cls_workdir"
-    runs_root = Path(args.runs_root).resolve() if args.runs_root else yolo_root / "runs" / "stage1_cls_sweep"
+    work_root = Path(args.work_root).resolve() if args.work_root else repo_root / DEFAULT_WORK_ROOT
+    if args.runs_root:
+        runs_root = Path(args.runs_root).resolve()
+    elif args.yolo_root:
+        runs_root = yolo_root / DEFAULT_RUNS_SUBDIR
+    else:
+        runs_root = repo_root / DEFAULT_RUNS_ROOT
     return Paths(
         repo_root=repo_root,
         yolo_root=yolo_root,
@@ -552,7 +601,7 @@ def finalize_train_log(temp_log_path: Path, run_dir: Path) -> Path:
     """把临时训练日志移动到 run 目录里的固定文件名。"""
 
     run_dir.mkdir(parents=True, exist_ok=True)
-    final_log = run_dir / "train_log.txt"
+    final_log = run_dir / TRAIN_LOG_FILENAME
     if temp_log_path.exists():
         if final_log.exists():
             final_log.unlink()
@@ -641,7 +690,7 @@ def write_run_meta(
         },
         "manifests": manifest_records(paths),
     }
-    path = run_dir / "run_meta.json"
+    path = run_dir / RUN_META_FILENAME
     path.write_text(json.dumps(meta, ensure_ascii=False, indent=2), encoding="utf-8")
     return path
 
@@ -664,7 +713,7 @@ def write_artifact_manifest(run_dir: Path) -> tuple[Path, Path, list[str]]:
 
     for path in sorted(p for p in run_dir.rglob("*") if p.is_file()):
         rel_path = str(path.relative_to(run_dir)).replace("\\", "/")
-        if rel_path in seen or rel_path in {"artifact_manifest.csv", "artifact_manifest.json"}:
+        if rel_path in seen or rel_path in {ARTIFACT_MANIFEST_CSV_FILENAME, ARTIFACT_MANIFEST_JSON_FILENAME}:
             continue
         row = file_record(path, run_dir)
         row["category"] = "optional"
@@ -688,13 +737,13 @@ def write_artifact_manifest(run_dir: Path) -> tuple[Path, Path, list[str]]:
         "sha256",
         "modified_time",
     ]
-    csv_path = run_dir / "artifact_manifest.csv"
+    csv_path = run_dir / ARTIFACT_MANIFEST_CSV_FILENAME
     with csv_path.open("w", newline="", encoding="utf-8") as f:
         writer = csv.DictWriter(f, fieldnames=fields, extrasaction="ignore")
         writer.writeheader()
         writer.writerows(rows)
 
-    json_path = run_dir / "artifact_manifest.json"
+    json_path = run_dir / ARTIFACT_MANIFEST_JSON_FILENAME
     json_path.write_text(
         json.dumps(
             {
@@ -714,7 +763,7 @@ def write_artifact_manifest(run_dir: Path) -> tuple[Path, Path, list[str]]:
 def summary_path(paths: Paths, mode: str) -> Path:
     """根据 smoke/full 返回本轮 summary CSV 的路径。"""
 
-    name = "smoke_summary.csv" if mode == "smoke" else "summary.csv"
+    name = SUMMARY_FILENAMES[mode]
     return paths.runs_root / name
 
 
@@ -816,7 +865,7 @@ def train_one_model(model_key: str, paths: Paths, cfg: TrainConfig, dataset_dir:
     run_stamp = datetime.now().strftime("%Y%m%d-%H%M%S")
     run_name = f"{cfg.mode}_yolo11{model_key}_cls_{run_stamp}"
     run_dir = paths.runs_root / run_name
-    temp_log_path = paths.runs_root / "_logs" / f"{run_name}.train_log.txt"
+    temp_log_path = paths.runs_root / TEMP_LOG_DIRNAME / f"{run_name}{TEMP_LOG_SUFFIX}"
 
     # 默认先认为失败；只有 YOLO 训练完整跑完后才改成 ok。
     status = "failed"
@@ -915,10 +964,10 @@ def train_one_model(model_key: str, paths: Paths, cfg: TrainConfig, dataset_dir:
                 "dataset_dir": str(dataset_dir),
                 "run_dir": str(run_dir),
                 # 这些布尔列能快速判断本轮是否真的产出了关键结果文件。
-                "best_pt_exists": str((run_dir / "weights" / "best.pt").exists()),
-                "last_pt_exists": str((run_dir / "weights" / "last.pt").exists()),
-                "results_csv_exists": str((run_dir / "results.csv").exists()),
-                "args_yaml_exists": str((run_dir / "args.yaml").exists()),
+                "best_pt_exists": str((run_dir / WEIGHTS_DIRNAME / BEST_WEIGHT_FILENAME).exists()),
+                "last_pt_exists": str((run_dir / WEIGHTS_DIRNAME / LAST_WEIGHT_FILENAME).exists()),
+                "results_csv_exists": str((run_dir / RESULTS_CSV_FILENAME).exists()),
+                "args_yaml_exists": str((run_dir / ARGS_YAML_FILENAME).exists()),
                 "train_log_exists": str(train_log_path.exists()),
                 "run_meta_exists": str(run_meta_path.exists()),
                 "artifact_manifest_csv_exists": str(artifact_manifest_csv.exists()),
