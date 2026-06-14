@@ -13,10 +13,16 @@
 from __future__ import annotations
 
 import argparse
+import contextlib
 import csv
+import hashlib
+import importlib.metadata
+import json
 import os
+import platform
 import random
 import shutil
+import subprocess
 import sys
 import time
 import traceback
@@ -47,6 +53,26 @@ MODEL_WEIGHTS = {
     "l": "yolo11l-cls.pt",
     "x": "yolo11x-cls.pt",
 }
+
+# 训练结束后必须检查的最小正交材料。
+# 这些文件要么重新获取成本很高，要么是后续推断训练过程和结果的基础。
+REQUIRED_ARTIFACTS = (
+    "weights/best.pt",
+    "weights/last.pt",
+    "results.csv",
+    "args.yaml",
+    "train_log.txt",
+    "run_meta.json",
+)
+
+# 这些 manifest 是数据侧的复现材料。训练 run_meta 会记录它们的 hash，
+# 以后别人拿到同一批 CSV 和原始图片，就能知道本次训练用的是哪批图。
+TRAIN_MANIFEST_FILES = (
+    "train_manifest.csv",
+    "normal_train_manifest.csv",
+    "val_model_manifest.csv",
+    "normal_val_model_manifest.csv",
+)
 
 # smoke test 默认图片数量。这个数量故意很小：
 # 目的不是训练出好模型，只是验证流程能不能正常生成 best.pt/results.csv。
@@ -104,6 +130,8 @@ class TrainConfig:
     batch: int
     # DataLoader 工作线程。Windows 上先用 0 最稳，避免多进程额外问题。
     workers: int
+    # 每隔多少个 epoch 保存一次 checkpoint。1 表示每轮都留，-1 表示只留 best/last。
+    save_period: int
     # GPU/CPU 选择。一般 "0" 表示第 0 张显卡，"cpu" 表示不用显卡。
     device: str
     # True 表示训练前重建临时数据目录；False 表示复用已有临时目录。
@@ -380,6 +408,309 @@ def weight_path(paths: Paths, model_key: str) -> Path:
     raise FileNotFoundError(f"Missing model weight {filename}; checked: {candidates}")
 
 
+class Tee:
+    """把同一段输出同时写到终端和日志文件。
+
+    YOLO 训练时会往 stdout/stderr 打印很多重要信息。这个类让人能在终端实时看，
+    同时也把它保存成 `train_log.txt`，避免训练完以后只剩权重、不知道过程。
+    """
+
+    def __init__(self, *streams):
+        self.streams = streams
+
+    def write(self, text: str) -> int:
+        for stream in self.streams:
+            stream.write(text)
+            stream.flush()
+        return len(text)
+
+    def flush(self) -> None:
+        for stream in self.streams:
+            stream.flush()
+
+
+@contextlib.contextmanager
+def tee_output(log_path: Path):
+    """临时把 stdout/stderr 复制一份到日志文件。"""
+
+    log_path.parent.mkdir(parents=True, exist_ok=True)
+    old_stdout = sys.stdout
+    old_stderr = sys.stderr
+    with log_path.open("w", encoding="utf-8", errors="replace") as log_file:
+        sys.stdout = Tee(old_stdout, log_file)
+        sys.stderr = Tee(old_stderr, log_file)
+        try:
+            yield
+        finally:
+            sys.stdout = old_stdout
+            sys.stderr = old_stderr
+
+
+def sha256_file(path: Path) -> str:
+    """计算文件 sha256，用来确认材料没有被篡改或传输损坏。"""
+
+    digest = hashlib.sha256()
+    with path.open("rb") as f:
+        for chunk in iter(lambda: f.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def file_record(path: Path, base_dir: Path | None = None) -> dict[str, str]:
+    """把一个文件整理成 manifest 里的一行记录。"""
+
+    exists = path.exists()
+    rel = path
+    if base_dir is not None:
+        try:
+            rel = path.relative_to(base_dir)
+        except ValueError:
+            rel = path
+    return {
+        "path": str(path),
+        "relative_path": str(rel).replace("\\", "/"),
+        "exists": str(exists),
+        "size_bytes": str(path.stat().st_size) if exists else "",
+        "sha256": sha256_file(path) if exists and path.is_file() else "",
+        "modified_time": datetime.fromtimestamp(path.stat().st_mtime).isoformat(timespec="seconds") if exists else "",
+    }
+
+
+def run_command(args: list[str], cwd: Path) -> str:
+    """执行一个只读命令并返回输出；失败时返回错误文本而不是中断训练。"""
+
+    try:
+        result = subprocess.run(args, cwd=cwd, text=True, capture_output=True, check=False, timeout=30)
+    except Exception as exc:
+        return f"<error: {exc}>"
+    output = (result.stdout or "").strip()
+    error = (result.stderr or "").strip()
+    if result.returncode == 0:
+        return output
+    return f"<exit {result.returncode}> {output} {error}".strip()
+
+
+def package_version(package_name: str) -> str:
+    """读取 Python 包版本；包不存在时返回空字符串。"""
+
+    try:
+        return importlib.metadata.version(package_name)
+    except importlib.metadata.PackageNotFoundError:
+        return ""
+
+
+def torch_environment() -> dict[str, object]:
+    """记录 torch/CUDA/GPU 信息。
+
+    这部分写进 run_meta，方便以后解释“同一代码在不同机器上为什么结果略有差异”。
+    """
+
+    try:
+        import torch  # noqa: PLC0415
+    except Exception as exc:
+        return {"torch_import_error": str(exc)}
+
+    gpu_names: list[str] = []
+    if torch.cuda.is_available():
+        gpu_names = [torch.cuda.get_device_name(i) for i in range(torch.cuda.device_count())]
+    return {
+        "torch_version": getattr(torch, "__version__", ""),
+        "cuda_available": torch.cuda.is_available(),
+        "torch_cuda_version": getattr(torch.version, "cuda", ""),
+        "cudnn_version": torch.backends.cudnn.version() if torch.backends.cudnn.is_available() else "",
+        "gpu_count": torch.cuda.device_count() if torch.cuda.is_available() else 0,
+        "gpu_names": gpu_names,
+    }
+
+
+def manifest_records(paths: Paths) -> list[dict[str, str]]:
+    """记录训练用 CSV manifest 的文件 hash。"""
+
+    records = []
+    for filename in TRAIN_MANIFEST_FILES:
+        path = paths.manifest_dir / filename
+        record = file_record(path, paths.dataset_root)
+        record["kind"] = "train_manifest"
+        records.append(record)
+    return records
+
+
+def git_info(repo_root: Path) -> dict[str, str]:
+    """记录代码版本。"""
+
+    status = run_command(["git", "status", "--short"], repo_root)
+    return {
+        "branch": run_command(["git", "branch", "--show-current"], repo_root),
+        "commit": run_command(["git", "rev-parse", "HEAD"], repo_root),
+        "commit_short": run_command(["git", "rev-parse", "--short", "HEAD"], repo_root),
+        "dirty": str(bool(status)),
+        "status_short": status,
+    }
+
+
+def finalize_train_log(temp_log_path: Path, run_dir: Path) -> Path:
+    """把临时训练日志移动到 run 目录里的固定文件名。"""
+
+    run_dir.mkdir(parents=True, exist_ok=True)
+    final_log = run_dir / "train_log.txt"
+    if temp_log_path.exists():
+        if final_log.exists():
+            final_log.unlink()
+        shutil.move(str(temp_log_path), str(final_log))
+    elif not final_log.exists():
+        final_log.write_text("", encoding="utf-8")
+    return final_log
+
+
+def write_run_meta(
+    paths: Paths,
+    cfg: TrainConfig,
+    counts: DatasetCounts,
+    model_key: str,
+    model_weight: Path,
+    dataset_dir: Path,
+    run_dir: Path,
+    run_name: str,
+    status: str,
+    error: str,
+    started_at: str,
+    ended_at: str,
+    duration: float,
+    train_log_path: Path,
+) -> Path:
+    """写 `run_meta.json`。
+
+    它是本次训练的身份证：代码、数据、命令、环境、输出目录都在这里。
+    """
+
+    meta = {
+        "run_name": run_name,
+        "model_key": model_key,
+        "model_weight": str(model_weight),
+        "status": status,
+        "error": error,
+        "started_at": started_at,
+        "ended_at": ended_at,
+        "duration_sec": round(duration, 2),
+        "command": " ".join(sys.argv),
+        "paths": {
+            "repo_root": str(paths.repo_root),
+            "yolo_root": str(paths.yolo_root),
+            "dataset_root": str(paths.dataset_root),
+            "manifest_dir": str(paths.manifest_dir),
+            "dataset_dir": str(dataset_dir),
+            "run_dir": str(run_dir),
+            "train_log": str(train_log_path),
+        },
+        "config": {
+            "mode": cfg.mode,
+            "models": list(cfg.models),
+            "seed": cfg.seed,
+            "epochs": cfg.epochs,
+            "imgsz": cfg.imgsz,
+            "batch": cfg.batch,
+            "workers": cfg.workers,
+            "save_period": cfg.save_period,
+            "device": cfg.device,
+            "rebuild_data": cfg.rebuild_data,
+            "train_per_class": cfg.train_per_class,
+            "val_per_class": cfg.val_per_class,
+            "dry_run": cfg.dry_run,
+            "exist_ok": cfg.exist_ok,
+        },
+        "dataset_counts": {
+            "train_no_target": counts.train_no_target,
+            "train_target_defect": counts.train_target_defect,
+            "val_no_target": counts.val_no_target,
+            "val_target_defect": counts.val_target_defect,
+        },
+        "git": git_info(paths.repo_root),
+        "environment": {
+            "python_version": platform.python_version(),
+            "python_executable": sys.executable,
+            "platform": platform.platform(),
+            "processor": platform.processor(),
+            "packages": {
+                "ultralytics": package_version("ultralytics"),
+                "torch": package_version("torch"),
+                "torchvision": package_version("torchvision"),
+                "numpy": package_version("numpy"),
+                "opencv-python": package_version("opencv-python"),
+            },
+            "torch": torch_environment(),
+        },
+        "manifests": manifest_records(paths),
+    }
+    path = run_dir / "run_meta.json"
+    path.write_text(json.dumps(meta, ensure_ascii=False, indent=2), encoding="utf-8")
+    return path
+
+
+def write_artifact_manifest(run_dir: Path) -> tuple[Path, Path, list[str]]:
+    """扫描 run 目录，写材料清单 CSV/JSON，并返回缺失的必需材料。"""
+
+    run_dir.mkdir(parents=True, exist_ok=True)
+    required_set = set(REQUIRED_ARTIFACTS)
+    rows: list[dict[str, str]] = []
+    seen: set[str] = set()
+
+    for rel_path in REQUIRED_ARTIFACTS:
+        path = run_dir / rel_path
+        row = file_record(path, run_dir)
+        row["category"] = "required"
+        row["required"] = "True"
+        rows.append(row)
+        seen.add(rel_path)
+
+    for path in sorted(p for p in run_dir.rglob("*") if p.is_file()):
+        rel_path = str(path.relative_to(run_dir)).replace("\\", "/")
+        if rel_path in seen or rel_path in {"artifact_manifest.csv", "artifact_manifest.json"}:
+            continue
+        row = file_record(path, run_dir)
+        row["category"] = "optional"
+        row["required"] = "False"
+        rows.append(row)
+        seen.add(rel_path)
+
+    missing_required = [
+        row["relative_path"]
+        for row in rows
+        if row["relative_path"] in required_set and row["exists"] != "True"
+    ]
+
+    fields = [
+        "relative_path",
+        "path",
+        "category",
+        "required",
+        "exists",
+        "size_bytes",
+        "sha256",
+        "modified_time",
+    ]
+    csv_path = run_dir / "artifact_manifest.csv"
+    with csv_path.open("w", newline="", encoding="utf-8") as f:
+        writer = csv.DictWriter(f, fieldnames=fields, extrasaction="ignore")
+        writer.writeheader()
+        writer.writerows(rows)
+
+    json_path = run_dir / "artifact_manifest.json"
+    json_path.write_text(
+        json.dumps(
+            {
+                "run_dir": str(run_dir),
+                "required_artifacts": list(REQUIRED_ARTIFACTS),
+                "missing_required_artifacts": missing_required,
+                "artifacts": rows,
+            },
+            ensure_ascii=False,
+            indent=2,
+        ),
+        encoding="utf-8",
+    )
+    return csv_path, json_path, missing_required
+
+
 def summary_path(paths: Paths, mode: str) -> Path:
     """根据 smoke/full 返回本轮 summary CSV 的路径。"""
 
@@ -407,6 +738,7 @@ def append_summary(paths: Paths, cfg: TrainConfig, counts: DatasetCounts, row: d
         "imgsz",
         "batch",
         "workers",
+        "save_period",
         "device",
         "seed",
         "dataset_dir",
@@ -419,6 +751,11 @@ def append_summary(paths: Paths, cfg: TrainConfig, counts: DatasetCounts, row: d
         "last_pt_exists",
         "results_csv_exists",
         "args_yaml_exists",
+        "train_log_exists",
+        "run_meta_exists",
+        "artifact_manifest_csv_exists",
+        "artifact_manifest_json_exists",
+        "missing_required_artifacts",
         "status",
         "error",
         "duration_sec",
@@ -433,6 +770,7 @@ def append_summary(paths: Paths, cfg: TrainConfig, counts: DatasetCounts, row: d
         "imgsz": str(cfg.imgsz),
         "batch": str(cfg.batch),
         "workers": str(cfg.workers),
+        "save_period": str(cfg.save_period),
         "device": cfg.device,
         "seed": str(cfg.seed),
         "train_no_target": str(counts.train_no_target),
@@ -441,6 +779,20 @@ def append_summary(paths: Paths, cfg: TrainConfig, counts: DatasetCounts, row: d
         "val_target_defect": str(counts.val_target_defect),
         **row,
     }
+    if path.exists():
+        with path.open("r", newline="", encoding="utf-8") as f:
+            reader = csv.DictReader(f)
+            existing_rows = list(reader)
+            existing_fields = reader.fieldnames or []
+        if existing_fields != fields:
+            # summary 的列可能随脚本升级而增加。这里重写旧行，避免新旧列错位。
+            with path.open("w", newline="", encoding="utf-8") as f:
+                writer = csv.DictWriter(f, fieldnames=fields, extrasaction="ignore")
+                writer.writeheader()
+                writer.writerows(existing_rows)
+                writer.writerow(full_row)
+            return
+
     exists = path.exists()
     with path.open("a", newline="", encoding="utf-8") as f:
         writer = csv.DictWriter(f, fieldnames=fields, extrasaction="ignore")
@@ -457,68 +809,102 @@ def train_one_model(model_key: str, paths: Paths, cfg: TrainConfig, dataset_dir:
     """
 
     started = time.time()
+    started_at = datetime.now().isoformat(timespec="seconds")
     model_weight = weight_path(paths, model_key)
 
     # 每次 run 名里加时间戳，避免覆盖旧结果。
     run_stamp = datetime.now().strftime("%Y%m%d-%H%M%S")
     run_name = f"{cfg.mode}_yolo11{model_key}_cls_{run_stamp}"
     run_dir = paths.runs_root / run_name
+    temp_log_path = paths.runs_root / "_logs" / f"{run_name}.train_log.txt"
 
     # 默认先认为失败；只有 YOLO 训练完整跑完后才改成 ok。
     status = "failed"
     error = ""
+    model = None
     try:
-        if cfg.dry_run:
-            # dry-run 只检查数据准备和权重路径，不真正占用 GPU 训练。
-            print(f"[dry-run] would train {model_key} with {model_weight}")
-            status = "dry_run"
-        else:
-            YOLO = import_local_ultralytics(paths.yolo_root)
+        with tee_output(temp_log_path):
+            if cfg.dry_run:
+                # dry-run 只检查数据准备和权重路径，不真正占用 GPU 训练。
+                print(f"[dry-run] would train {model_key} with {model_weight}")
+                status = "dry_run"
+            else:
+                YOLO = import_local_ultralytics(paths.yolo_root)
 
-            # 从预训练分类权重初始化模型；这就是后面正式训练的起点。
-            model = YOLO(str(model_weight))
+                # 从预训练分类权重初始化模型；这就是后面正式训练的起点。
+                model = YOLO(str(model_weight))
 
-            # 这一段是 Ultralytics 官方训练入口。真正的训练循环在 YOLOv11 源码里。
-            model.train(
-                # data 指向刚刚临时组装好的 YOLO-cls 数据目录。
-                data=str(dataset_dir),
-                # 训练轮数。full 默认 200，smoke 默认 2。
-                epochs=cfg.epochs,
-                # 输入图片尺寸。
-                imgsz=cfg.imgsz,
-                # batch 越大通常越快，但显存占用也越大。
-                batch=cfg.batch,
-                # Windows 上 workers=0 最稳；训练机稳定后可以再调大。
-                workers=cfg.workers,
-                # 选择训练设备，例如 "0" 表示第 0 张 GPU。
-                device=cfg.device,
-                # project/name 共同决定输出目录。
-                project=str(paths.runs_root),
-                name=run_name,
-                # 默认 False，避免同名目录被复用；需要复用时手动传 --exist-ok。
-                exist_ok=cfg.exist_ok,
-                # 保证训练可复现性；仍然可能受 CUDA/驱动等底层因素影响。
-                seed=cfg.seed,
-                deterministic=True,
-                # 不把图片缓存进内存/磁盘，避免额外占空间。
-                cache=False,
-                # 每轮训练后在 val_model 上验证。
-                val=True,
-                # 生成 results.png、confusion_matrix.png 等图表。
-                plots=True,
-                verbose=True,
-                # 明确告诉 Ultralytics 这是分类任务，不是检测/分割任务。
-                task="classify",
-            )
-            status = "ok"
+                # 这一段是 Ultralytics 官方训练入口。真正的训练循环在 YOLOv11 源码里。
+                model.train(
+                    # data 指向刚刚临时组装好的 YOLO-cls 数据目录。
+                    data=str(dataset_dir),
+                    # 训练轮数。full 默认 200，smoke 默认 2。
+                    epochs=cfg.epochs,
+                    # 输入图片尺寸。
+                    imgsz=cfg.imgsz,
+                    # batch 越大通常越快，但显存占用也越大。
+                    batch=cfg.batch,
+                    # Windows 上 workers=0 最稳；训练机稳定后可以再调大。
+                    workers=cfg.workers,
+                    # 每个 epoch 都保存 checkpoint，10TB 网盘场景下优先保留不可再生材料。
+                    save_period=cfg.save_period,
+                    # 选择训练设备，例如 "0" 表示第 0 张 GPU。
+                    device=cfg.device,
+                    # project/name 共同决定输出目录。
+                    project=str(paths.runs_root),
+                    name=run_name,
+                    # 默认 False，避免同名目录被复用；需要复用时手动传 --exist-ok。
+                    exist_ok=cfg.exist_ok,
+                    # 保证训练可复现性；仍然可能受 CUDA/驱动等底层因素影响。
+                    seed=cfg.seed,
+                    deterministic=True,
+                    # 不把图片缓存进内存/磁盘，避免额外占空间。
+                    cache=False,
+                    # 每轮训练后在 val_model 上验证。
+                    val=True,
+                    # 生成 results.png、confusion_matrix.png 等图表。
+                    plots=True,
+                    verbose=True,
+                    # 明确告诉 Ultralytics 这是分类任务，不是检测/分割任务。
+                    task="classify",
+                )
+                trainer = getattr(model, "trainer", None)
+                save_dir = getattr(trainer, "save_dir", None)
+                if save_dir:
+                    run_dir = Path(save_dir)
+                status = "ok"
     except Exception as exc:  # keep summary even when smoke exposes a bug
         # 训练失败时先把简短错误写入 summary，再把完整 traceback 打印出来。
         error = "".join(traceback.format_exception_only(type(exc), exc)).strip()
-        print(traceback.format_exc())
+        full_traceback = traceback.format_exc()
+        if temp_log_path.exists():
+            with temp_log_path.open("a", encoding="utf-8", errors="replace") as f:
+                f.write("\n\n=== Python traceback ===\n")
+                f.write(full_traceback)
+        print(full_traceback)
         raise
     finally:
         # finally 无论成功/失败都会执行，所以 summary 不会因为异常丢失。
         duration = time.time() - started
+        ended_at = datetime.now().isoformat(timespec="seconds")
+        train_log_path = finalize_train_log(temp_log_path, run_dir)
+        run_meta_path = write_run_meta(
+            paths,
+            cfg,
+            counts,
+            model_key,
+            model_weight,
+            dataset_dir,
+            run_dir,
+            run_name,
+            status,
+            error,
+            started_at,
+            ended_at,
+            duration,
+            train_log_path,
+        )
+        artifact_manifest_csv, artifact_manifest_json, missing_required = write_artifact_manifest(run_dir)
         append_summary(
             paths,
             cfg,
@@ -533,6 +919,11 @@ def train_one_model(model_key: str, paths: Paths, cfg: TrainConfig, dataset_dir:
                 "last_pt_exists": str((run_dir / "weights" / "last.pt").exists()),
                 "results_csv_exists": str((run_dir / "results.csv").exists()),
                 "args_yaml_exists": str((run_dir / "args.yaml").exists()),
+                "train_log_exists": str(train_log_path.exists()),
+                "run_meta_exists": str(run_meta_path.exists()),
+                "artifact_manifest_csv_exists": str(artifact_manifest_csv.exists()),
+                "artifact_manifest_json_exists": str(artifact_manifest_json.exists()),
+                "missing_required_artifacts": ";".join(missing_required),
                 "status": status,
                 "error": error,
                 "duration_sec": f"{duration:.2f}",
@@ -625,6 +1016,12 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--imgsz", type=int, default=int(os.environ.get("STAGE1_IMGSZ", DEFAULT_IMGSZ)))
     parser.add_argument("--batch", type=int, default=int(os.environ.get("STAGE1_BATCH", 8)))
     parser.add_argument("--workers", type=int, default=int(os.environ.get("STAGE1_WORKERS", 0)))
+    parser.add_argument(
+        "--save-period",
+        type=int,
+        default=int(os.environ.get("STAGE1_SAVE_PERIOD", 1)),
+        help="Save checkpoint every N epochs. Use -1 to keep only best.pt and last.pt.",
+    )
     parser.add_argument("--device", default=os.environ.get("STAGE1_DEVICE", "0"))
 
     # smoke 模式专用：控制每类抽多少小样本。
@@ -672,6 +1069,7 @@ def main() -> int:
         imgsz=args.imgsz,
         batch=args.batch,
         workers=args.workers,
+        save_period=args.save_period,
         device=args.device,
         rebuild_data=not args.keep_data,
         train_per_class=train_per_class,
@@ -688,7 +1086,7 @@ def main() -> int:
     print(f"yolo_root={paths.yolo_root}")
     print(f"dataset_root={paths.dataset_root}")
     print(f"runs_root={paths.runs_root}")
-    print(f"mode={cfg.mode} models={','.join(cfg.models)} epochs={cfg.epochs}")
+    print(f"mode={cfg.mode} models={','.join(cfg.models)} epochs={cfg.epochs} save_period={cfg.save_period}")
 
     # 真正开始：准备 YOLO-cls 临时数据目录，并按 models 顺序训练。
     run_dirs = run_selected_models(paths, cfg)
