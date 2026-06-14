@@ -1063,8 +1063,8 @@ def parse_args() -> argparse.Namespace:
     # 训练超参数。epochs 不给时，main() 会根据 mode 自动填 2 或 200。
     parser.add_argument("--epochs", type=int, default=None, help="Defaults to 2 for smoke and 200 for full.")
     parser.add_argument("--imgsz", type=int, default=int(os.environ.get("STAGE1_IMGSZ", DEFAULT_IMGSZ)))
-    parser.add_argument("--batch", type=int, default=int(os.environ.get("STAGE1_BATCH", 8)))
-    parser.add_argument("--workers", type=int, default=int(os.environ.get("STAGE1_WORKERS", 0)))
+    parser.add_argument("--batch", type=int, default=int(os.environ.get("STAGE1_BATCH", 128)))
+    parser.add_argument("--workers", type=int, default=int(os.environ.get("STAGE1_WORKERS", 4)))
     parser.add_argument(
         "--save-period",
         type=int,
