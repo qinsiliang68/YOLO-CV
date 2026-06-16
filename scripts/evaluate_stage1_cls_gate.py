@@ -11,6 +11,14 @@ This script is deliberately separate from training:
 The most important output is the per-image prediction CSV. It is the reusable
 material for later sample-value analysis because every row keeps the original
 manifest identifiers and the model score.
+
+Path guide for humans and future agents:
+- --weights is the trained model checkpoint to evaluate, usually best.pt or last.pt.
+- --dataset-root is the final sampled dataset root that contains Det/ and manifests/.
+- --yolo-root is the local Ultralytics YOLOv11 source tree used for import.
+- --output-root is where this script writes evaluation runs and manifests.
+- On another Windows machine, keep the same dataset structure but override paths
+  with CLI arguments or STAGE1_* environment variables instead of editing code.
 """
 
 from __future__ import annotations
@@ -38,9 +46,24 @@ TARGET_CLASS_NAME = "target_defect"
 NORMAL_CLASS_NAME = "no_target"
 TARGET_LABEL_COLUMNS = ("PF", "DE", "FS", "RB", "AF", "OB")
 
+# =========================
+# Path defaults
+# =========================
+# These defaults are repository-relative. They are intentionally not hard-coded
+# to C:\GitHub\YOLO-CV because the training/evaluation machines may use
+# different drive letters or parent folders.
+#
+# Override examples:
+#   --weights D:\ssh\AI\runs\stage1_cls_sweep\...\weights\best.pt
+#   --dataset-root D:\ssh\AI\data\final_sewerml_dataset
+#   --yolo-root D:\ssh\AI\YOLOv11
+#   --output-root D:\ssh\AI\runs\stage1_cls_eval
 DEFAULT_YOLO_ROOT = Path("YOLOv11")
 DEFAULT_DATASET_ROOT = Path("data") / "final_sewerml_dataset"
 DEFAULT_OUTPUT_ROOT = DEFAULT_YOLO_ROOT / "runs" / "stage1_cls_eval"
+
+ARTIFACT_MANIFEST_CSV_FILENAME = "artifact_manifest.csv"
+ARTIFACT_MANIFEST_JSON_FILENAME = "artifact_manifest.json"
 
 SPLIT_MANIFESTS = {
     "val_model": ("val_model_manifest.csv", "normal_val_model_manifest.csv"),
@@ -446,6 +469,42 @@ def write_json(path: Path, payload: dict) -> None:
         f.write("\n")
 
 
+def collect_artifact_rows(run_dir: Path) -> list[dict[str, str]]:
+    rows: list[dict[str, str]] = []
+    ignored = {ARTIFACT_MANIFEST_CSV_FILENAME, ARTIFACT_MANIFEST_JSON_FILENAME}
+    for path in sorted(p for p in run_dir.rglob("*") if p.is_file()):
+        relative_path = path.relative_to(run_dir).as_posix()
+        if relative_path in ignored:
+            continue
+        stat = path.stat()
+        rows.append(
+            {
+                "relative_path": relative_path,
+                "size_bytes": str(stat.st_size),
+                "sha256": file_sha256(path),
+                "modified_at_local": datetime.fromtimestamp(stat.st_mtime).isoformat(timespec="seconds"),
+            }
+        )
+    return rows
+
+
+def write_artifact_manifest(run_dir: Path) -> tuple[Path, Path]:
+    rows = collect_artifact_rows(run_dir)
+    csv_path = run_dir / ARTIFACT_MANIFEST_CSV_FILENAME
+    json_path = run_dir / ARTIFACT_MANIFEST_JSON_FILENAME
+    write_csv(csv_path, rows, ("relative_path", "size_bytes", "sha256", "modified_at_local"))
+    write_json(
+        json_path,
+        {
+            "created_at": datetime.now().isoformat(timespec="seconds"),
+            "run_dir": str(run_dir),
+            "artifact_count": len(rows),
+            "artifacts": rows,
+        },
+    )
+    return csv_path, json_path
+
+
 def create_run_dir(paths: Paths, cfg: EvalConfig) -> Path:
     run_dir = paths.output_root / cfg.run_name
     if run_dir.exists() and not cfg.exist_ok:
@@ -476,6 +535,7 @@ Files:
 - `threshold.json`: threshold selected on val_op.
 - `metrics_at_selected_threshold.csv`: metrics for each split at the selected threshold.
 - `run_config.json`: reproducibility snapshot for this evaluation run.
+- `artifact_manifest.csv/json`: output file inventory with size and SHA-256.
 """
     (run_dir / "README.md").write_text(text, encoding="utf-8")
 
@@ -490,8 +550,12 @@ def parse_splits(raw: str) -> tuple[str, ...]:
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Evaluate a stage-1 YOLO11-cls binary gate.")
-    parser.add_argument("--weights", required=True, help="Path to a trained best.pt or last.pt.")
-    parser.add_argument("--run-name", default=None, help="Output run directory name.")
+    parser.add_argument(
+        "--weights",
+        required=True,
+        help="Input checkpoint path, usually a trained weights/best.pt or weights/last.pt.",
+    )
+    parser.add_argument("--run-name", default=None, help="Name of the output run directory under --output-root.")
     parser.add_argument("--splits", default="val_model,val_cal,val_op,test")
     parser.add_argument("--seed", type=int, default=int(os.environ.get("STAGE1_EVAL_SEED", SEED)))
     parser.add_argument("--imgsz", type=int, default=int(os.environ.get("STAGE1_EVAL_IMGSZ", 224)))
@@ -507,9 +571,21 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument("--dry-run", action="store_true", help="Only verify manifests and write run_config.json.")
     parser.add_argument("--exist-ok", action="store_true")
-    parser.add_argument("--dataset-root", default=os.environ.get("STAGE1_DATASET_ROOT"))
-    parser.add_argument("--yolo-root", default=os.environ.get("STAGE1_YOLO_ROOT"))
-    parser.add_argument("--output-root", default=os.environ.get("STAGE1_EVAL_OUTPUT_ROOT"))
+    parser.add_argument(
+        "--dataset-root",
+        default=os.environ.get("STAGE1_DATASET_ROOT"),
+        help="Final sampled dataset root containing Det/ and manifests/. Defaults to data/final_sewerml_dataset.",
+    )
+    parser.add_argument(
+        "--yolo-root",
+        default=os.environ.get("STAGE1_YOLO_ROOT"),
+        help="Local YOLOv11 source directory used for importing ultralytics. Defaults to YOLOv11.",
+    )
+    parser.add_argument(
+        "--output-root",
+        default=os.environ.get("STAGE1_EVAL_OUTPUT_ROOT"),
+        help="Directory where evaluation runs are written. Defaults to YOLOv11/runs/stage1_cls_eval.",
+    )
     return parser.parse_args()
 
 
@@ -570,6 +646,7 @@ def main() -> int:
     write_json(run_dir / "run_config.json", run_config)
 
     if cfg.dry_run:
+        write_artifact_manifest(run_dir)
         print("dry_run=true; prediction skipped")
         return 0
 
@@ -633,6 +710,9 @@ def main() -> int:
         },
     )
     write_readme(run_dir, cfg, paths, threshold)
+    artifact_manifest_csv, artifact_manifest_json = write_artifact_manifest(run_dir)
+    print(f"artifact_manifest_csv={artifact_manifest_csv}")
+    print(f"artifact_manifest_json={artifact_manifest_json}")
     print(f"metrics={run_dir / 'metrics_at_selected_threshold.csv'}")
     print(f"duration_sec={time.time() - started:.2f}")
     return 0
