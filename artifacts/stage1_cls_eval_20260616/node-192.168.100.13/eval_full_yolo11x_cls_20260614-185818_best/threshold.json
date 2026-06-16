@@ -1,0 +1,22 @@
+{
+  "selection_split": "val_op",
+  "score_column": "p_defect_operational",
+  "target_recall": 0.995,
+  "selected_threshold": 0.0031708324,
+  "val_op_metrics": {
+    "n": 40000,
+    "positive_n": 20000,
+    "negative_n": 20000,
+    "tp": 19900,
+    "fp": 6642,
+    "tn": 13358,
+    "fn": 100,
+    "recall": 0.995,
+    "specificity": 0.6679,
+    "precision": 0.7497551051164193,
+    "accuracy": 0.83145,
+    "f1": 0.8551415925400715,
+    "fpr": 0.33209999999999995,
+    "predicted_positive_rate": 0.66355
+  }
+}

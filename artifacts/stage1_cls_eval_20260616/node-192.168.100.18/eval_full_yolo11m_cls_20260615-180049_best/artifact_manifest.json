@@ -1,0 +1,61 @@
+{
+  "created_at": "2026-06-16T11:11:04",
+  "run_dir": "D:\\ssh\\AI\\runs\\stage1_cls_eval\\eval_full_yolo11m_cls_20260615-180049_best",
+  "artifact_count": 9,
+  "artifacts": [
+    {
+      "relative_path": "calibration.json",
+      "size_bytes": "266",
+      "sha256": "0d041f7212209b2e6892f653342e6c3c27428adac8dbfd43e5e0bc7f791f9e91",
+      "modified_at_local": "2026-06-16T11:11:03"
+    },
+    {
+      "relative_path": "metrics_at_selected_threshold.csv",
+      "size_bytes": "1173",
+      "sha256": "38a761a6cd64a7293ebce99a6f3caeb601abf800623a6d67682bf2b59a9f0fda",
+      "modified_at_local": "2026-06-16T11:11:03"
+    },
+    {
+      "relative_path": "predictions_test.csv",
+      "size_bytes": "15019890",
+      "sha256": "14c54565971090b2e12e78fcbcb30095204d82794719ad43cec575c231f35ae0",
+      "modified_at_local": "2026-06-16T11:11:03"
+    },
+    {
+      "relative_path": "predictions_val_cal.csv",
+      "size_bytes": "15619663",
+      "sha256": "a6ee3de508abf6bcf1ef684c019a40812258cf4f47a308a0b91b98421536b6ad",
+      "modified_at_local": "2026-06-16T11:11:03"
+    },
+    {
+      "relative_path": "predictions_val_model.csv",
+      "size_bytes": "9606157",
+      "sha256": "3b1552607d0673a3a983335d9e4437feaacf6ca45af119b7174f11968e9d6e79",
+      "modified_at_local": "2026-06-16T11:11:03"
+    },
+    {
+      "relative_path": "predictions_val_op.csv",
+      "size_bytes": "15420215",
+      "sha256": "ecda1a221f52cb0b8be74361a03053c691f479564e7502c61056dbed9dbfdc69",
+      "modified_at_local": "2026-06-16T11:11:03"
+    },
+    {
+      "relative_path": "README.md",
+      "size_bytes": "898",
+      "sha256": "b31aee59a636611e8f5a4a908d2934c9cfe0ee41727f44043d89dd49727a901f",
+      "modified_at_local": "2026-06-16T11:11:03"
+    },
+    {
+      "relative_path": "run_config.json",
+      "size_bytes": "1064",
+      "sha256": "421af1abda829e00622bb914a6691232c916feffce0f8402f5dfe64fe8fd529e",
+      "modified_at_local": "2026-06-16T10:54:08"
+    },
+    {
+      "relative_path": "threshold.json",
+      "size_bytes": "534",
+      "sha256": "13ed92df33f1d4dc73ee4488fb7bcb14c37c2438860692dadaa22dfe2761d4c3",
+      "modified_at_local": "2026-06-16T11:11:03"
+    }
+  ]
+}
