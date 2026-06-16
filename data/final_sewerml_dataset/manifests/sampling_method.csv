@@ -14,3 +14,5 @@
 13,"Sample normal evaluation splits without overlap in the order normal_test, normal_val_cal, then normal_val_op; store images under Det/images/{normal_test,normal_val_cal,normal_val_op}."
 14,val_model uses class-balanced primary buckets with 2000 unique images per target class after excluding all existing train/val_cal/val_op/test and normal split filenames; seed 20260606.
 15,normal_val_model samples 12000 Defect=0 and PF=DE=FS=RB=AF=OB=0 images after excluding all existing splits and val_model defect filenames; seed 20260606.
+16,"Final operational split allocation: normal_val_cal, normal_val_op, and normal_test each contain 100000 normal images, paired with 20000 long-tail defect images, giving a clean 1:5 defect-to-normal ratio for calibration, operating-threshold selection, and final testing. Seed 20260606."
+17,"For the final allocation, normal_test was reduced from 180000 to 100000; 80000 seed-selected normal_test expansion images were moved to normal_val_cal; normal_val_op received 80000 newly sampled unused normal images. train and val_model remain 1:1 binary balanced."
