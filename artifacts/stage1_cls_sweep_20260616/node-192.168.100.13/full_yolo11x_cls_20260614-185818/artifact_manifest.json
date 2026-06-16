@@ -1,0 +1,2224 @@
+{
+  "run_dir": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818",
+  "required_artifacts": [
+    "weights/best.pt",
+    "weights/last.pt",
+    "results.csv",
+    "args.yaml",
+    "train_log.txt",
+    "run_meta.json"
+  ],
+  "missing_required_artifacts": [],
+  "artifacts": [
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\best.pt",
+      "relative_path": "weights/best.pt",
+      "exists": "True",
+      "size_bytes": "57026744",
+      "sha256": "8ad33e38ca58cf34c71da714227f40051a90c1a16c977e81d184fe507d4efa04",
+      "modified_time": "2026-06-15T12:28:30",
+      "category": "required",
+      "required": "True"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\last.pt",
+      "relative_path": "weights/last.pt",
+      "exists": "True",
+      "size_bytes": "57026744",
+      "sha256": "1fb7737c5915ea6a42df9b39b281e540b87254f480d5843955e5654afbb8a95d",
+      "modified_time": "2026-06-15T12:28:29",
+      "category": "required",
+      "required": "True"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\results.csv",
+      "relative_path": "results.csv",
+      "exists": "True",
+      "size_bytes": "22888",
+      "sha256": "6adf6a52ae042795e66a866ad78caf803fb0d77f8ed44a53c02b5a373c8456c1",
+      "modified_time": "2026-06-15T12:28:24",
+      "category": "required",
+      "required": "True"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\args.yaml",
+      "relative_path": "args.yaml",
+      "exists": "True",
+      "size_bytes": "1880",
+      "sha256": "d06c927a55a9707eecfa8932a456f7743046c2c8715c4dce3309d494bd5fda59",
+      "modified_time": "2026-06-14T18:58:25",
+      "category": "required",
+      "required": "True"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\train_log.txt",
+      "relative_path": "train_log.txt",
+      "exists": "True",
+      "size_bytes": "26069964",
+      "sha256": "72b520cd2cf1d555372c0491759db31a10eccbbeb826bbc6809e41bc1614855b",
+      "modified_time": "2026-06-15T12:28:55",
+      "category": "required",
+      "required": "True"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\run_meta.json",
+      "relative_path": "run_meta.json",
+      "exists": "True",
+      "size_bytes": "4765",
+      "sha256": "58c91e11cd26e9a059ec4aac3a79b89c3b9342b69e7ef773abf56fdedf35f99a",
+      "modified_time": "2026-06-15T12:28:57",
+      "category": "required",
+      "required": "True"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\confusion_matrix.png",
+      "relative_path": "confusion_matrix.png",
+      "exists": "True",
+      "size_bytes": "120153",
+      "sha256": "923e435046e3c376ca45228857a658598164f387f2c026587cff5deae98a695b",
+      "modified_time": "2026-06-15T12:28:55",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\confusion_matrix_normalized.png",
+      "relative_path": "confusion_matrix_normalized.png",
+      "exists": "True",
+      "size_bytes": "115582",
+      "sha256": "e68413303d66985c2a8513102fdffd8d708500327bbabefcdd0f2fa1c866c92b",
+      "modified_time": "2026-06-15T12:28:55",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\results.png",
+      "relative_path": "results.png",
+      "exists": "True",
+      "size_bytes": "120245",
+      "sha256": "30613082d1c6eda38d83d6af3b796c4877e53a5189285c86f3e882419279de28",
+      "modified_time": "2026-06-15T12:28:57",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\train_batch0.jpg",
+      "relative_path": "train_batch0.jpg",
+      "exists": "True",
+      "size_bytes": "134898",
+      "sha256": "0d3c06be6293a3aaa2562d36e737d4564094db47b6fd5b03e31f4ab9cd79def5",
+      "modified_time": "2026-06-14T18:59:04",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\train_batch1.jpg",
+      "relative_path": "train_batch1.jpg",
+      "exists": "True",
+      "size_bytes": "127703",
+      "sha256": "5f10e0b5244cd2e726649d0f90431277a0a6bf37e58aa7657f6ae341657cae6d",
+      "modified_time": "2026-06-14T18:59:04",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\train_batch178220.jpg",
+      "relative_path": "train_batch178220.jpg",
+      "exists": "True",
+      "size_bytes": "124253",
+      "sha256": "b699c62a335dd4d7eff16faf986510d4d4f11f874ab927c03dab9a694d22bd22",
+      "modified_time": "2026-06-15T11:36:40",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\train_batch178221.jpg",
+      "relative_path": "train_batch178221.jpg",
+      "exists": "True",
+      "size_bytes": "135274",
+      "sha256": "aacf88b9ff3fc6b398930469a4037260cce93dbd3aa5d15fd881bde2d09ee348",
+      "modified_time": "2026-06-15T11:36:41",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\train_batch178222.jpg",
+      "relative_path": "train_batch178222.jpg",
+      "exists": "True",
+      "size_bytes": "128015",
+      "sha256": "75ae1502d68125358237b10fe4ad0a509fce8d5b00847d1b2ed123f699e5c3b8",
+      "modified_time": "2026-06-15T11:36:41",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\train_batch2.jpg",
+      "relative_path": "train_batch2.jpg",
+      "exists": "True",
+      "size_bytes": "124435",
+      "sha256": "e03f18b03f75d53097fc4c6bf43417bd4bc663568abc4d6938eee3b1de5502c3",
+      "modified_time": "2026-06-14T18:59:05",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\val_batch0_labels.jpg",
+      "relative_path": "val_batch0_labels.jpg",
+      "exists": "True",
+      "size_bytes": "124590",
+      "sha256": "05c9f256ba438052e4ae59d1bef608b239dd09e1a5c255c9a17201f1160632dc",
+      "modified_time": "2026-06-15T12:28:32",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\val_batch0_pred.jpg",
+      "relative_path": "val_batch0_pred.jpg",
+      "exists": "True",
+      "size_bytes": "125639",
+      "sha256": "475e43f38be41391da431fcdc457eb1de30d48c0a92dc79ff923f6654028a4a0",
+      "modified_time": "2026-06-15T12:28:32",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\val_batch1_labels.jpg",
+      "relative_path": "val_batch1_labels.jpg",
+      "exists": "True",
+      "size_bytes": "129230",
+      "sha256": "d7276274a9e563f8df56a85ccca9199c74f247c71b7b3ca0c0269022a1b883a8",
+      "modified_time": "2026-06-15T12:28:32",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\val_batch1_pred.jpg",
+      "relative_path": "val_batch1_pred.jpg",
+      "exists": "True",
+      "size_bytes": "130489",
+      "sha256": "01127c4348ba89986e57d5d21e4945932be10c21c3f78cfaa5cf62c267298e65",
+      "modified_time": "2026-06-15T12:28:32",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\val_batch2_labels.jpg",
+      "relative_path": "val_batch2_labels.jpg",
+      "exists": "True",
+      "size_bytes": "125187",
+      "sha256": "fa85c213e25b56495321aac1addea8025b5d8c1780427d165fe1d6e7fcf4c18b",
+      "modified_time": "2026-06-15T12:28:32",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\val_batch2_pred.jpg",
+      "relative_path": "val_batch2_pred.jpg",
+      "exists": "True",
+      "size_bytes": "126772",
+      "sha256": "c23c0c05f97413acc19606503f5772e2f0d55f8b2d795f5653e0ed2e7ad0e2da",
+      "modified_time": "2026-06-15T12:28:32",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch0.pt",
+      "relative_path": "weights/epoch0.pt",
+      "exists": "True",
+      "size_bytes": "170476167",
+      "sha256": "93b31c043c9bfa06cb5692105376dc54c3b82e766f6508f7d18f2e72d958ffd4",
+      "modified_time": "2026-06-14T19:05:42",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch1.pt",
+      "relative_path": "weights/epoch1.pt",
+      "exists": "True",
+      "size_bytes": "170476295",
+      "sha256": "99a022c6d2d8bb99313c5f252462139ef2d5fdafbfa8d1ae4ba36567e8e16014",
+      "modified_time": "2026-06-14T19:11:17",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch10.pt",
+      "relative_path": "weights/epoch10.pt",
+      "exists": "True",
+      "size_bytes": "170476871",
+      "sha256": "4c1b318923621c11aff241920bdc09c67f15c050228a2291b3db820676265814",
+      "modified_time": "2026-06-14T19:59:17",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch100.pt",
+      "relative_path": "weights/epoch100.pt",
+      "exists": "True",
+      "size_bytes": "170486919",
+      "sha256": "2a9159ae0889c2c0e179f325cb490768b146128625b9eaf0ca42bdabd26b04e7",
+      "modified_time": "2026-06-15T03:50:56",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch101.pt",
+      "relative_path": "weights/epoch101.pt",
+      "exists": "True",
+      "size_bytes": "170487047",
+      "sha256": "d3f7db0faf994e634b4176843a10390e70342900e3c6b2f5bd4f6b306addad69",
+      "modified_time": "2026-06-15T03:56:12",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch102.pt",
+      "relative_path": "weights/epoch102.pt",
+      "exists": "True",
+      "size_bytes": "170487175",
+      "sha256": "ab21f494e759396baf84215560b8f8154d98e6ed51625db66f40260711d5ff51",
+      "modified_time": "2026-06-15T04:01:28",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch103.pt",
+      "relative_path": "weights/epoch103.pt",
+      "exists": "True",
+      "size_bytes": "170487239",
+      "sha256": "9e394dbbbffd2f8a69b60490e976f5d13ed6d143d5c54b2afd1da09f7e592c0a",
+      "modified_time": "2026-06-15T04:06:45",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch104.pt",
+      "relative_path": "weights/epoch104.pt",
+      "exists": "True",
+      "size_bytes": "170487367",
+      "sha256": "44bb4d0fa3357f108fbdabdab3f50154a6501f371c7738c400b2d4297948a7ed",
+      "modified_time": "2026-06-15T04:12:01",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch105.pt",
+      "relative_path": "weights/epoch105.pt",
+      "exists": "True",
+      "size_bytes": "170487495",
+      "sha256": "371b05793c229c72d73a57aa9e663649675ab15e6ef28fcce062f748ccf9f176",
+      "modified_time": "2026-06-15T04:17:18",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch106.pt",
+      "relative_path": "weights/epoch106.pt",
+      "exists": "True",
+      "size_bytes": "170487623",
+      "sha256": "0d25cce67471db4d6c4ba117a11ba08e173b871e8f28666b38e68acff9de3e8a",
+      "modified_time": "2026-06-15T04:22:35",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch107.pt",
+      "relative_path": "weights/epoch107.pt",
+      "exists": "True",
+      "size_bytes": "170487687",
+      "sha256": "fa28db18a56ec75a56229fbc5d59ed20732d4719dc53782478808a5616191707",
+      "modified_time": "2026-06-15T04:27:51",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch108.pt",
+      "relative_path": "weights/epoch108.pt",
+      "exists": "True",
+      "size_bytes": "170487815",
+      "sha256": "e29192c4c42f0b6267dd9f11b154844baddf0289fb41196ab0918cbc3e1c344c",
+      "modified_time": "2026-06-15T04:33:08",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch109.pt",
+      "relative_path": "weights/epoch109.pt",
+      "exists": "True",
+      "size_bytes": "170487943",
+      "sha256": "03e5df9edf3c9bc7d59023dc6b48b8a8b5a4e023f191e5cab90f169cfa8ca30f",
+      "modified_time": "2026-06-15T04:38:25",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch11.pt",
+      "relative_path": "weights/epoch11.pt",
+      "exists": "True",
+      "size_bytes": "170476935",
+      "sha256": "5db150903df05617c45deb9cb410bec7d3d3838770c1851697d2b169808060ef",
+      "modified_time": "2026-06-14T20:04:30",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch110.pt",
+      "relative_path": "weights/epoch110.pt",
+      "exists": "True",
+      "size_bytes": "170488071",
+      "sha256": "f798d9e228e3606054077eba0f54197f5ffc56f15f429aa8b61d1c1762b3c68b",
+      "modified_time": "2026-06-15T04:43:40",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch111.pt",
+      "relative_path": "weights/epoch111.pt",
+      "exists": "True",
+      "size_bytes": "170488135",
+      "sha256": "225e0401ac11b14fc131dfe3c5b6647d795d8d515e1c7faf770975d12444bb28",
+      "modified_time": "2026-06-15T04:48:56",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch112.pt",
+      "relative_path": "weights/epoch112.pt",
+      "exists": "True",
+      "size_bytes": "170488263",
+      "sha256": "2fb6be6dde9fde170c7d25f1449eaebd06d13e83984e7a59b7f9b8b9e2db05a3",
+      "modified_time": "2026-06-15T04:54:12",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch113.pt",
+      "relative_path": "weights/epoch113.pt",
+      "exists": "True",
+      "size_bytes": "170488391",
+      "sha256": "a31cc0d6f190faef49aecbb3a1134aee7b9021b78b0446d23026035461ae6a28",
+      "modified_time": "2026-06-15T04:59:28",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch114.pt",
+      "relative_path": "weights/epoch114.pt",
+      "exists": "True",
+      "size_bytes": "170488519",
+      "sha256": "8e5424d9d6faf7ac9043d642dd1a59857074caf0eae275063c8f22f1492d4892",
+      "modified_time": "2026-06-15T05:04:45",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch115.pt",
+      "relative_path": "weights/epoch115.pt",
+      "exists": "True",
+      "size_bytes": "170488583",
+      "sha256": "7e261a372c3d79ac88719272eedc83f8bdb60bbcae59098fc3d1ec68e060c3f1",
+      "modified_time": "2026-06-15T05:10:01",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch116.pt",
+      "relative_path": "weights/epoch116.pt",
+      "exists": "True",
+      "size_bytes": "170488711",
+      "sha256": "34f7624008153da99ab443d2389592eaaa3a83e747e0f10fb1c05a68213ff052",
+      "modified_time": "2026-06-15T05:15:18",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch117.pt",
+      "relative_path": "weights/epoch117.pt",
+      "exists": "True",
+      "size_bytes": "170488839",
+      "sha256": "9037b0e08dac2ee7d81c36642839a5eb926a7940a400a7ce1dc37c07d0703cfd",
+      "modified_time": "2026-06-15T05:20:34",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch118.pt",
+      "relative_path": "weights/epoch118.pt",
+      "exists": "True",
+      "size_bytes": "170488967",
+      "sha256": "3ac7ea303b5aaa04142c982a710fa1befea0f69cb0c41272ef1f2c5591b98c78",
+      "modified_time": "2026-06-15T05:25:50",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch119.pt",
+      "relative_path": "weights/epoch119.pt",
+      "exists": "True",
+      "size_bytes": "170489031",
+      "sha256": "0e8db983a475b3a9d054cda26a4498cb46c9c5ba2060a6e68c325eac434f393c",
+      "modified_time": "2026-06-15T05:31:07",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch12.pt",
+      "relative_path": "weights/epoch12.pt",
+      "exists": "True",
+      "size_bytes": "170477063",
+      "sha256": "010b9822f418956805ae47bcf7628e84597e3c7d2bc9fa7a4a008956b1138349",
+      "modified_time": "2026-06-14T20:09:43",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch120.pt",
+      "relative_path": "weights/epoch120.pt",
+      "exists": "True",
+      "size_bytes": "170489159",
+      "sha256": "6148ec97c7bf3d6aab97f64ac3c834f1ee46847b55f430df191f5091002c3f7c",
+      "modified_time": "2026-06-15T05:36:23",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch121.pt",
+      "relative_path": "weights/epoch121.pt",
+      "exists": "True",
+      "size_bytes": "170489287",
+      "sha256": "d9a73462aaca603dad8e121cc084f2609777f74d68fd481e4cdc91b352a2b926",
+      "modified_time": "2026-06-15T05:41:41",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch122.pt",
+      "relative_path": "weights/epoch122.pt",
+      "exists": "True",
+      "size_bytes": "170489415",
+      "sha256": "ef85491ad675e782b116fdcbcf9e06626abd0009f57654b843446c99cfd6f866",
+      "modified_time": "2026-06-15T05:46:57",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch123.pt",
+      "relative_path": "weights/epoch123.pt",
+      "exists": "True",
+      "size_bytes": "170489479",
+      "sha256": "718a8548c6fd37fea7a5efb4f91de5d07fdfa1c96ed8a9faa67d2a69ae18d55d",
+      "modified_time": "2026-06-15T05:52:13",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch124.pt",
+      "relative_path": "weights/epoch124.pt",
+      "exists": "True",
+      "size_bytes": "170489607",
+      "sha256": "0f6cc9350295fab1178e3b5572d4aadd45463f8b7cd7bfb7f579b0f0a359b4c9",
+      "modified_time": "2026-06-15T05:57:31",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch125.pt",
+      "relative_path": "weights/epoch125.pt",
+      "exists": "True",
+      "size_bytes": "170489735",
+      "sha256": "c5ad87a2dea1e2dbb39625a2ed47a78079fae16e35adcaddba1598666891efce",
+      "modified_time": "2026-06-15T06:02:48",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch126.pt",
+      "relative_path": "weights/epoch126.pt",
+      "exists": "True",
+      "size_bytes": "170489863",
+      "sha256": "0f9a28ffb14921e0f5fbb2172ee6c368230b18e6a00d15979a14a6607856d56c",
+      "modified_time": "2026-06-15T06:08:05",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch127.pt",
+      "relative_path": "weights/epoch127.pt",
+      "exists": "True",
+      "size_bytes": "170489927",
+      "sha256": "2506965128ea56189689446502ba0757fb3523da2d6792d7c9d6e3bec0352a96",
+      "modified_time": "2026-06-15T06:13:21",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch128.pt",
+      "relative_path": "weights/epoch128.pt",
+      "exists": "True",
+      "size_bytes": "170490055",
+      "sha256": "dd6d7b51044f35dca480f7726250650d92633a3038fb8e69176f2f8acbadb1a7",
+      "modified_time": "2026-06-15T06:18:38",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch129.pt",
+      "relative_path": "weights/epoch129.pt",
+      "exists": "True",
+      "size_bytes": "170490183",
+      "sha256": "470b80fd60df7f852bfc1047e6a0a6745dbf6e663a40cfe64c21bc3ae17f5092",
+      "modified_time": "2026-06-15T06:23:55",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch13.pt",
+      "relative_path": "weights/epoch13.pt",
+      "exists": "True",
+      "size_bytes": "170477191",
+      "sha256": "72ec98048aa80a74a275142ff8e4120e25069b33f83d761b135a09afc13ee6f8",
+      "modified_time": "2026-06-14T20:14:58",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch130.pt",
+      "relative_path": "weights/epoch130.pt",
+      "exists": "True",
+      "size_bytes": "170490311",
+      "sha256": "294bcf3f4088da14f5ba5d451afb055f0ee61b83ba0f258d351215a1c71ae301",
+      "modified_time": "2026-06-15T06:29:12",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch131.pt",
+      "relative_path": "weights/epoch131.pt",
+      "exists": "True",
+      "size_bytes": "170490375",
+      "sha256": "9ba9e85e8e0dae65b3733f6ca45899dcf4d65e3faeb1aa1dbc9f0baae2bd70d6",
+      "modified_time": "2026-06-15T06:34:30",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch132.pt",
+      "relative_path": "weights/epoch132.pt",
+      "exists": "True",
+      "size_bytes": "170490503",
+      "sha256": "9b465ad557e1c5dca05a2155e54b472a910f7d497479fef82775e7de1eec7812",
+      "modified_time": "2026-06-15T06:39:48",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch133.pt",
+      "relative_path": "weights/epoch133.pt",
+      "exists": "True",
+      "size_bytes": "170490631",
+      "sha256": "8b8ef54adfdb17376214aeaede0ec7f5d69996e961492a0f43cd03b3533f0f13",
+      "modified_time": "2026-06-15T06:45:06",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch134.pt",
+      "relative_path": "weights/epoch134.pt",
+      "exists": "True",
+      "size_bytes": "170490759",
+      "sha256": "ecc81ecf5af91a027255bfa4e97f43f34062111ff0f0c1c1b33627b2d71bcd12",
+      "modified_time": "2026-06-15T06:50:22",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch135.pt",
+      "relative_path": "weights/epoch135.pt",
+      "exists": "True",
+      "size_bytes": "170490823",
+      "sha256": "46bc7d630bd6cb2734a16d5f92ef010d7a69f663ffb7fcfedfb1998151f27ecf",
+      "modified_time": "2026-06-15T06:55:38",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch136.pt",
+      "relative_path": "weights/epoch136.pt",
+      "exists": "True",
+      "size_bytes": "170490951",
+      "sha256": "4bf840b66adb65c12d572bec393969960f08a29f5595f9011e22d3bd1bfbad71",
+      "modified_time": "2026-06-15T07:00:55",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch137.pt",
+      "relative_path": "weights/epoch137.pt",
+      "exists": "True",
+      "size_bytes": "170491079",
+      "sha256": "849231babe02b613c0df77c4ebdd83d80d58630d7ae039771c3248f861636f4f",
+      "modified_time": "2026-06-15T07:06:12",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch138.pt",
+      "relative_path": "weights/epoch138.pt",
+      "exists": "True",
+      "size_bytes": "170491207",
+      "sha256": "29a0405bc4bcd89af136b1282d5f1baaf2204ab72e74ac0cdba9f802a30de448",
+      "modified_time": "2026-06-15T07:11:29",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch139.pt",
+      "relative_path": "weights/epoch139.pt",
+      "exists": "True",
+      "size_bytes": "170491271",
+      "sha256": "1dfce774ded08f16a04fcb9dd2dc50559a99ccfbc6524e59e0bd2037dedb3f49",
+      "modified_time": "2026-06-15T07:16:46",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch14.pt",
+      "relative_path": "weights/epoch14.pt",
+      "exists": "True",
+      "size_bytes": "170477319",
+      "sha256": "c335402c3bd1518a36f880d28c79a699fd4e346a98a80f67966e1a01d75a0bd5",
+      "modified_time": "2026-06-14T20:20:09",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch140.pt",
+      "relative_path": "weights/epoch140.pt",
+      "exists": "True",
+      "size_bytes": "170491399",
+      "sha256": "c87ad9c8968935428f255813c8d99dadbe4d6621ed956fe79793ed64d09537f0",
+      "modified_time": "2026-06-15T07:22:03",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch141.pt",
+      "relative_path": "weights/epoch141.pt",
+      "exists": "True",
+      "size_bytes": "170491527",
+      "sha256": "55f5fc312eae66a8403b24587e0dab79d1d3ab96d6623c8383ace451721b773d",
+      "modified_time": "2026-06-15T07:27:20",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch142.pt",
+      "relative_path": "weights/epoch142.pt",
+      "exists": "True",
+      "size_bytes": "170491655",
+      "sha256": "f5bc12057ec7403290b66794cd4a2bbb741d84f898ed9f0b7df0d72e645be792",
+      "modified_time": "2026-06-15T07:32:35",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch143.pt",
+      "relative_path": "weights/epoch143.pt",
+      "exists": "True",
+      "size_bytes": "170491719",
+      "sha256": "2424e0f229e7b38fa9681cc4d0fea06ad4caca4a278664159bb2d4db1cb3f79d",
+      "modified_time": "2026-06-15T07:37:49",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch144.pt",
+      "relative_path": "weights/epoch144.pt",
+      "exists": "True",
+      "size_bytes": "170491847",
+      "sha256": "f7599dd6118047c783800e4b32237d5e9afdf59d4d97514b06c8d0cdcfbdb927",
+      "modified_time": "2026-06-15T07:43:04",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch145.pt",
+      "relative_path": "weights/epoch145.pt",
+      "exists": "True",
+      "size_bytes": "170491975",
+      "sha256": "1f9d0e4166b646c7afa67d442e42141f17f493fe34a021dd2996f228350fce33",
+      "modified_time": "2026-06-15T07:48:19",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch146.pt",
+      "relative_path": "weights/epoch146.pt",
+      "exists": "True",
+      "size_bytes": "170492103",
+      "sha256": "f2df50e6baed118ea46a627882d1c479f9a66ab5c40357daed288250e5c19dbe",
+      "modified_time": "2026-06-15T07:53:33",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch147.pt",
+      "relative_path": "weights/epoch147.pt",
+      "exists": "True",
+      "size_bytes": "170492167",
+      "sha256": "ea700fd910a4148a482af3dc265ac3c90577aa150729db1704c6a3fdf45eb7aa",
+      "modified_time": "2026-06-15T07:58:47",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch148.pt",
+      "relative_path": "weights/epoch148.pt",
+      "exists": "True",
+      "size_bytes": "170492295",
+      "sha256": "658a23e4395b46278b06f71ff69e6c50f128b2c5f38f4bb08b14c572c2c168d2",
+      "modified_time": "2026-06-15T08:04:03",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch149.pt",
+      "relative_path": "weights/epoch149.pt",
+      "exists": "True",
+      "size_bytes": "170492423",
+      "sha256": "3fb9da2fb1c3713a3ed6f1f2e579130c798b9c0d2b09817d22438131ee20ab51",
+      "modified_time": "2026-06-15T08:09:16",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch15.pt",
+      "relative_path": "weights/epoch15.pt",
+      "exists": "True",
+      "size_bytes": "170477383",
+      "sha256": "5aec3a75a65b9626bf065b0e2c9f45d85a28b249664548375e8fc23ac66495d4",
+      "modified_time": "2026-06-14T20:25:22",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch150.pt",
+      "relative_path": "weights/epoch150.pt",
+      "exists": "True",
+      "size_bytes": "170492551",
+      "sha256": "f46ae02abee3d94e051487ab7df554e3e1501c8a16419a01a3195da8aa52e79a",
+      "modified_time": "2026-06-15T08:14:28",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch151.pt",
+      "relative_path": "weights/epoch151.pt",
+      "exists": "True",
+      "size_bytes": "170492615",
+      "sha256": "4dafc1d4d7ec51f8b7c9b68d8937a1885a112940439d6f1b564b0448e2680ae4",
+      "modified_time": "2026-06-15T08:19:38",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch152.pt",
+      "relative_path": "weights/epoch152.pt",
+      "exists": "True",
+      "size_bytes": "170492743",
+      "sha256": "651aba3d9f4c777a8fe23b281ea5cfbe46f2ecee1f5c7f266d01feaff476690e",
+      "modified_time": "2026-06-15T08:24:50",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch153.pt",
+      "relative_path": "weights/epoch153.pt",
+      "exists": "True",
+      "size_bytes": "170492871",
+      "sha256": "b2adb590e219db3812181aa11e8e80034becb790707b9652ab464c6a51cfbc7a",
+      "modified_time": "2026-06-15T08:30:03",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch154.pt",
+      "relative_path": "weights/epoch154.pt",
+      "exists": "True",
+      "size_bytes": "170492999",
+      "sha256": "94d9c08d4f8e92108ff29b88c02481079609d24698f0d6da28c490ad37bfa97a",
+      "modified_time": "2026-06-15T08:35:16",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch155.pt",
+      "relative_path": "weights/epoch155.pt",
+      "exists": "True",
+      "size_bytes": "170493063",
+      "sha256": "ecd6dd03dfae8bd83bc9e1c9460115036c4aad673ba3650b4254ea4cd2923cf2",
+      "modified_time": "2026-06-15T08:40:25",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch156.pt",
+      "relative_path": "weights/epoch156.pt",
+      "exists": "True",
+      "size_bytes": "170493191",
+      "sha256": "93dc4858f06b4b896a0417a25a76962ea6b03d8e1b788897349e9419572e2ba6",
+      "modified_time": "2026-06-15T08:45:37",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch157.pt",
+      "relative_path": "weights/epoch157.pt",
+      "exists": "True",
+      "size_bytes": "170493319",
+      "sha256": "6618c40fd4f78597da97925256238616674f3956cceb2f321b363a47ae21188f",
+      "modified_time": "2026-06-15T08:50:49",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch158.pt",
+      "relative_path": "weights/epoch158.pt",
+      "exists": "True",
+      "size_bytes": "170493447",
+      "sha256": "ed14dfc820c3a3fdce63de38676b9b0bb7388aad60857b35c634a26e80e14987",
+      "modified_time": "2026-06-15T08:56:00",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch159.pt",
+      "relative_path": "weights/epoch159.pt",
+      "exists": "True",
+      "size_bytes": "170493511",
+      "sha256": "ffbe8647d301887a4fcb537221cc52eb5be2dc172f3e13e904e136d1a1380483",
+      "modified_time": "2026-06-15T09:01:11",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch16.pt",
+      "relative_path": "weights/epoch16.pt",
+      "exists": "True",
+      "size_bytes": "170477511",
+      "sha256": "984b84845e970bc9421cc95e86ee55398bd34df1e50311873deaf73cadf73229",
+      "modified_time": "2026-06-14T20:30:34",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch160.pt",
+      "relative_path": "weights/epoch160.pt",
+      "exists": "True",
+      "size_bytes": "170493639",
+      "sha256": "fa389ff72c386b82567ac0b4a31040b420b1007716a8fc7da6ecd2f97b7629df",
+      "modified_time": "2026-06-15T09:06:22",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch161.pt",
+      "relative_path": "weights/epoch161.pt",
+      "exists": "True",
+      "size_bytes": "170493767",
+      "sha256": "c6d69787ae4e754694c21be115fd4afeff73803a66e9f0c68e08a9272eb94665",
+      "modified_time": "2026-06-15T09:11:31",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch162.pt",
+      "relative_path": "weights/epoch162.pt",
+      "exists": "True",
+      "size_bytes": "170493895",
+      "sha256": "94940af8d08d123b27f237e7f69b1a3a48ee8755322f853ff86e536e7e34d38a",
+      "modified_time": "2026-06-15T09:16:43",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch163.pt",
+      "relative_path": "weights/epoch163.pt",
+      "exists": "True",
+      "size_bytes": "170493959",
+      "sha256": "35c4e9824f68919e3ab6fda6404c5a2e1e855919bae04eecd7b0e627d7e4236d",
+      "modified_time": "2026-06-15T09:21:54",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch164.pt",
+      "relative_path": "weights/epoch164.pt",
+      "exists": "True",
+      "size_bytes": "170494087",
+      "sha256": "1bfb148104946303dd747471ba2e864aabbc1ab4ac772df45a2d93da6344647f",
+      "modified_time": "2026-06-15T09:27:02",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch165.pt",
+      "relative_path": "weights/epoch165.pt",
+      "exists": "True",
+      "size_bytes": "170494215",
+      "sha256": "92b68fcf106352eb2d0bb7aa84c8fe976d04b5b91e609488e1629f7f352a78fa",
+      "modified_time": "2026-06-15T09:32:11",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch166.pt",
+      "relative_path": "weights/epoch166.pt",
+      "exists": "True",
+      "size_bytes": "170494343",
+      "sha256": "ef1c7780202253851ca0951f85a72c663c321c24de741b7566096fd360ca243f",
+      "modified_time": "2026-06-15T09:37:18",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch167.pt",
+      "relative_path": "weights/epoch167.pt",
+      "exists": "True",
+      "size_bytes": "170494407",
+      "sha256": "40c6183b4f17a857e945cfa9780948f80c2402d5fac91153e4160529adc39642",
+      "modified_time": "2026-06-15T09:42:26",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch168.pt",
+      "relative_path": "weights/epoch168.pt",
+      "exists": "True",
+      "size_bytes": "170494535",
+      "sha256": "6422cc9b26ea2cc676e1f1c358252ba65b328727994888da5fcb3b76a39346f6",
+      "modified_time": "2026-06-15T09:47:34",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch169.pt",
+      "relative_path": "weights/epoch169.pt",
+      "exists": "True",
+      "size_bytes": "170494663",
+      "sha256": "730f7c297ead019a6411a064990f3f108859ab763e1707b6bb312fdb802cb23d",
+      "modified_time": "2026-06-15T09:52:40",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch17.pt",
+      "relative_path": "weights/epoch17.pt",
+      "exists": "True",
+      "size_bytes": "170477639",
+      "sha256": "d1a49fbf66bb602b242c55553431d17b7861d8ed0eafcedf11cf5fd0b72ed2f2",
+      "modified_time": "2026-06-14T20:35:47",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch170.pt",
+      "relative_path": "weights/epoch170.pt",
+      "exists": "True",
+      "size_bytes": "170494791",
+      "sha256": "35b8d8ef4511d4aa75e1ef57325a5ff9276e7c1f6ef27f310350296f25daacbb",
+      "modified_time": "2026-06-15T09:57:47",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch171.pt",
+      "relative_path": "weights/epoch171.pt",
+      "exists": "True",
+      "size_bytes": "170494855",
+      "sha256": "293007a9f980879603a66523980a315f218ea5f88400f21d7f9328375823b1ee",
+      "modified_time": "2026-06-15T10:02:54",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch172.pt",
+      "relative_path": "weights/epoch172.pt",
+      "exists": "True",
+      "size_bytes": "170494983",
+      "sha256": "2924e541224a8568588085acc802f384cba0f7bfacadd6e9bdbd0266bcf12bd1",
+      "modified_time": "2026-06-15T10:08:01",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch173.pt",
+      "relative_path": "weights/epoch173.pt",
+      "exists": "True",
+      "size_bytes": "170495111",
+      "sha256": "00097c45fff5cfad788981008d023d39710d34d5e35ef19f566c46a531cc11b9",
+      "modified_time": "2026-06-15T10:13:06",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch174.pt",
+      "relative_path": "weights/epoch174.pt",
+      "exists": "True",
+      "size_bytes": "170495239",
+      "sha256": "1cd4f0c66360de0892599b76999e3f1dc39d5046502304dc3e4ff258576da3f7",
+      "modified_time": "2026-06-15T10:18:15",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch175.pt",
+      "relative_path": "weights/epoch175.pt",
+      "exists": "True",
+      "size_bytes": "170495303",
+      "sha256": "1b540cb293a7be07f64c198bd516e3acf62c640ed10b3d8ff23dd458d0f33d95",
+      "modified_time": "2026-06-15T10:23:25",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch176.pt",
+      "relative_path": "weights/epoch176.pt",
+      "exists": "True",
+      "size_bytes": "170495431",
+      "sha256": "73fc560c7015f541ec724f48361a11978486e77f351a233de0214b5e9a61e126",
+      "modified_time": "2026-06-15T10:28:36",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch177.pt",
+      "relative_path": "weights/epoch177.pt",
+      "exists": "True",
+      "size_bytes": "170495559",
+      "sha256": "c4107488b5304f87996c6e1511499745ea9ca4c5d371cb21c65ce1aa29f7b0dd",
+      "modified_time": "2026-06-15T10:33:48",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch178.pt",
+      "relative_path": "weights/epoch178.pt",
+      "exists": "True",
+      "size_bytes": "170495687",
+      "sha256": "5f3d0fc7628d84ae174eec7b3f1b07d2471a1fdeec4652484558baa69150dd4d",
+      "modified_time": "2026-06-15T10:38:58",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch179.pt",
+      "relative_path": "weights/epoch179.pt",
+      "exists": "True",
+      "size_bytes": "170495751",
+      "sha256": "7373f06aba90192fe28868213759d646e37eea181d6745d3d568b212a20576bb",
+      "modified_time": "2026-06-15T10:44:08",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch18.pt",
+      "relative_path": "weights/epoch18.pt",
+      "exists": "True",
+      "size_bytes": "170477767",
+      "sha256": "68cde48ee60068f59c0fb86e00c96dbd8ec502e341ac8e689f579b25336c1d2c",
+      "modified_time": "2026-06-14T20:41:00",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch180.pt",
+      "relative_path": "weights/epoch180.pt",
+      "exists": "True",
+      "size_bytes": "170495879",
+      "sha256": "75cfefc08b7dc43df628ab74866cd32581bc84ee9f4909f4dba930997cdc178c",
+      "modified_time": "2026-06-15T10:49:17",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch181.pt",
+      "relative_path": "weights/epoch181.pt",
+      "exists": "True",
+      "size_bytes": "170496007",
+      "sha256": "c4e6c77d23d2728fd21535f9e7294eae246e52e9e983f62b1482039254234182",
+      "modified_time": "2026-06-15T10:54:28",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch182.pt",
+      "relative_path": "weights/epoch182.pt",
+      "exists": "True",
+      "size_bytes": "170496135",
+      "sha256": "1f9eaa3d58ad75d1be438283ff54ea5bfec504e2ea93f55094e6b3afa4d6570d",
+      "modified_time": "2026-06-15T10:59:40",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch183.pt",
+      "relative_path": "weights/epoch183.pt",
+      "exists": "True",
+      "size_bytes": "170496199",
+      "sha256": "9e36fde174b93519002cb436ae419702db62f192cc8d9421695192cd95f68254",
+      "modified_time": "2026-06-15T11:04:53",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch184.pt",
+      "relative_path": "weights/epoch184.pt",
+      "exists": "True",
+      "size_bytes": "170496327",
+      "sha256": "5508cc7238945adb764a03985581e830ab8d271babe9d235655051cad71d10bb",
+      "modified_time": "2026-06-15T11:10:06",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch185.pt",
+      "relative_path": "weights/epoch185.pt",
+      "exists": "True",
+      "size_bytes": "170496455",
+      "sha256": "55550297d7ed1beab4f669c7dc783e2478195632f6c2960b457b6ed525559c3d",
+      "modified_time": "2026-06-15T11:15:17",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch186.pt",
+      "relative_path": "weights/epoch186.pt",
+      "exists": "True",
+      "size_bytes": "170496583",
+      "sha256": "50585b433e71b5aefc75458c5c7095681243eb33aa39ae1c3a39b66fa56cf534",
+      "modified_time": "2026-06-15T11:20:40",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch187.pt",
+      "relative_path": "weights/epoch187.pt",
+      "exists": "True",
+      "size_bytes": "170496647",
+      "sha256": "3daaad3abcbd3ccc5362632de9fa799590946544b2beb16cae02ecf800ba621a",
+      "modified_time": "2026-06-15T11:25:55",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch188.pt",
+      "relative_path": "weights/epoch188.pt",
+      "exists": "True",
+      "size_bytes": "170496775",
+      "sha256": "171b7fa34c23dab7a851e57af61e0fa4ba3798431e72adc7bb7bfd3b9fad572d",
+      "modified_time": "2026-06-15T11:31:07",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch189.pt",
+      "relative_path": "weights/epoch189.pt",
+      "exists": "True",
+      "size_bytes": "170496903",
+      "sha256": "af53bd500c141d86cde9579f80f5f48a0bb3cc7bf12f61c7e6e9239497d6e160",
+      "modified_time": "2026-06-15T11:36:23",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch19.pt",
+      "relative_path": "weights/epoch19.pt",
+      "exists": "True",
+      "size_bytes": "170477831",
+      "sha256": "8feb502d43c5f469e4898c4104d1f9d222f562536fd0d181cfaa60a8398c352d",
+      "modified_time": "2026-06-14T20:46:14",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch190.pt",
+      "relative_path": "weights/epoch190.pt",
+      "exists": "True",
+      "size_bytes": "170497031",
+      "sha256": "2a0e0be3791a10ea59801f1062c6a6d208ed4e831bdba93587438fe31b7f05b7",
+      "modified_time": "2026-06-15T11:41:49",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch191.pt",
+      "relative_path": "weights/epoch191.pt",
+      "exists": "True",
+      "size_bytes": "170497095",
+      "sha256": "1fdfce028a2741f9190f8bfebc75d018b0f5cc0e2ff2985d78ddf282a764de1e",
+      "modified_time": "2026-06-15T11:47:02",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch192.pt",
+      "relative_path": "weights/epoch192.pt",
+      "exists": "True",
+      "size_bytes": "170497223",
+      "sha256": "278fc34e49580ddb1d0e6dc0b903de80dea04c99dfe272f1982b91232a8b3849",
+      "modified_time": "2026-06-15T11:52:12",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch193.pt",
+      "relative_path": "weights/epoch193.pt",
+      "exists": "True",
+      "size_bytes": "170497351",
+      "sha256": "d7213fe7fc30da2ace8c62baa19fc2d5829adb0dafb62d096ac5e695444cd32f",
+      "modified_time": "2026-06-15T11:57:23",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch194.pt",
+      "relative_path": "weights/epoch194.pt",
+      "exists": "True",
+      "size_bytes": "170497479",
+      "sha256": "6754e511257de5ab37a3666d59c5dbe6bad73c688b0a0d52837310cfc6f82229",
+      "modified_time": "2026-06-15T12:02:34",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch195.pt",
+      "relative_path": "weights/epoch195.pt",
+      "exists": "True",
+      "size_bytes": "170497543",
+      "sha256": "96618f7f5b517af3a960fd2185e0f0d397570ef9ea0f7466a4d381a941c80483",
+      "modified_time": "2026-06-15T12:07:45",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch196.pt",
+      "relative_path": "weights/epoch196.pt",
+      "exists": "True",
+      "size_bytes": "170497671",
+      "sha256": "7dddfcf16152037ae54fd1e1293a9d721017243032154b3fccc0f0e67c32727a",
+      "modified_time": "2026-06-15T12:12:55",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch197.pt",
+      "relative_path": "weights/epoch197.pt",
+      "exists": "True",
+      "size_bytes": "170497799",
+      "sha256": "9d6b772ee092caae5ae63c0004e04e075f9957e3786d1d1bf47d1a883e188b82",
+      "modified_time": "2026-06-15T12:18:07",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch198.pt",
+      "relative_path": "weights/epoch198.pt",
+      "exists": "True",
+      "size_bytes": "170497927",
+      "sha256": "de0ae3c618b5f8cda9e348819eca587f7dc6e3514b1543e53d2b1c073b7c73bb",
+      "modified_time": "2026-06-15T12:23:17",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch199.pt",
+      "relative_path": "weights/epoch199.pt",
+      "exists": "True",
+      "size_bytes": "170497991",
+      "sha256": "44b655ab92184ae26cd7be6c08abec38eccd257b54f8c35f665816126f91ddd3",
+      "modified_time": "2026-06-15T12:28:28",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch2.pt",
+      "relative_path": "weights/epoch2.pt",
+      "exists": "True",
+      "size_bytes": "170476423",
+      "sha256": "33b9493a805515a15f0288bddfae0cb637c5ebf0f2486ff203939e5535809b58",
+      "modified_time": "2026-06-14T19:16:49",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch20.pt",
+      "relative_path": "weights/epoch20.pt",
+      "exists": "True",
+      "size_bytes": "170477959",
+      "sha256": "67f68c3b7490449cc3785d51fe08ca4c9633342800b8f41681ea592f77adcdff",
+      "modified_time": "2026-06-14T20:51:27",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch21.pt",
+      "relative_path": "weights/epoch21.pt",
+      "exists": "True",
+      "size_bytes": "170478087",
+      "sha256": "390b6beafdfd782d18c9193ed6431bcfb68007a58434cd65e6c72bc682a5a001",
+      "modified_time": "2026-06-14T20:56:40",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch22.pt",
+      "relative_path": "weights/epoch22.pt",
+      "exists": "True",
+      "size_bytes": "170478215",
+      "sha256": "0caa5cce9eaee15b9150ccf9f3d2bf4c304c2f2c7617945ad3471dca5030f7d9",
+      "modified_time": "2026-06-14T21:01:53",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch23.pt",
+      "relative_path": "weights/epoch23.pt",
+      "exists": "True",
+      "size_bytes": "170478279",
+      "sha256": "3315a069037a29fba73a44498f0216837905697fee8993ea65080908a972f9f3",
+      "modified_time": "2026-06-14T21:07:06",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch24.pt",
+      "relative_path": "weights/epoch24.pt",
+      "exists": "True",
+      "size_bytes": "170478407",
+      "sha256": "55c805657b2fb52edb91b0ebf3efe21423cd2f136cd18711e4685b0a015d817d",
+      "modified_time": "2026-06-14T21:12:18",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch25.pt",
+      "relative_path": "weights/epoch25.pt",
+      "exists": "True",
+      "size_bytes": "170478535",
+      "sha256": "362f9d85ab6e4de0bc813d8e6484445c23fe3c97dc7ef44885eaf39eb0c8f7a2",
+      "modified_time": "2026-06-14T21:17:32",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch26.pt",
+      "relative_path": "weights/epoch26.pt",
+      "exists": "True",
+      "size_bytes": "170478663",
+      "sha256": "eaaf3f83fa3f1f6d7d475c8a06a90cd6c3d58aac30b814bf913c0955c13f8ae2",
+      "modified_time": "2026-06-14T21:22:44",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch27.pt",
+      "relative_path": "weights/epoch27.pt",
+      "exists": "True",
+      "size_bytes": "170478727",
+      "sha256": "8d332ebd2e760859679598619c72e6b14087877bfd1666994c0dd9a14dd8ab42",
+      "modified_time": "2026-06-14T21:27:58",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch28.pt",
+      "relative_path": "weights/epoch28.pt",
+      "exists": "True",
+      "size_bytes": "170478855",
+      "sha256": "5bf0d1abcf3d7cdaa54e68335fe6452f2ac5318993c399c73134b2349faee332",
+      "modified_time": "2026-06-14T21:33:12",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch29.pt",
+      "relative_path": "weights/epoch29.pt",
+      "exists": "True",
+      "size_bytes": "170478983",
+      "sha256": "a9e2d2b74cff0877e09a686924a10fa16fd32629694483ff6269edceb335eca6",
+      "modified_time": "2026-06-14T21:38:25",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch3.pt",
+      "relative_path": "weights/epoch3.pt",
+      "exists": "True",
+      "size_bytes": "170476487",
+      "sha256": "ca8225356a645e8278ca2bcca571e20de4931a304221d6e9c8fa4565b5089635",
+      "modified_time": "2026-06-14T19:22:18",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch30.pt",
+      "relative_path": "weights/epoch30.pt",
+      "exists": "True",
+      "size_bytes": "170479111",
+      "sha256": "e0d27d4bb3d0a4b35994ad864e62acf70c1f372393776c5b7ae62cbdeee83427",
+      "modified_time": "2026-06-14T21:43:38",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch31.pt",
+      "relative_path": "weights/epoch31.pt",
+      "exists": "True",
+      "size_bytes": "170479175",
+      "sha256": "89b673b8280ecdc3d25603073311b7a6debc5fc16a74ec83df928017bdd20b4d",
+      "modified_time": "2026-06-14T21:48:51",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch32.pt",
+      "relative_path": "weights/epoch32.pt",
+      "exists": "True",
+      "size_bytes": "170479303",
+      "sha256": "c0539ac9d676e420a5c67516a9d9f7663e2560095f8b3a116c03bc3bf75df741",
+      "modified_time": "2026-06-14T21:54:05",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch33.pt",
+      "relative_path": "weights/epoch33.pt",
+      "exists": "True",
+      "size_bytes": "170479431",
+      "sha256": "478974dcbc7a3d575a099a7546e16dd33882362c91c5a5304780a4014e95a78a",
+      "modified_time": "2026-06-14T21:59:18",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch34.pt",
+      "relative_path": "weights/epoch34.pt",
+      "exists": "True",
+      "size_bytes": "170479559",
+      "sha256": "588242d71b6b12e1cab766772e8187b4c4673ff77c84c443638076b218eb4527",
+      "modified_time": "2026-06-14T22:04:32",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch35.pt",
+      "relative_path": "weights/epoch35.pt",
+      "exists": "True",
+      "size_bytes": "170479623",
+      "sha256": "c70c05dead0475d1dab4e772cea5e7bfdbd2e3b3f840e2647e6aad6b9ab14f20",
+      "modified_time": "2026-06-14T22:09:46",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch36.pt",
+      "relative_path": "weights/epoch36.pt",
+      "exists": "True",
+      "size_bytes": "170479751",
+      "sha256": "0a4c57a2e3d705b093cae3491b1b3268abd927fe1b87b61a2acacf82aed3e6fc",
+      "modified_time": "2026-06-14T22:14:59",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch37.pt",
+      "relative_path": "weights/epoch37.pt",
+      "exists": "True",
+      "size_bytes": "170479879",
+      "sha256": "e1c9b97e15dfc223f066aea8bd8ac61d9ff0b2ca828f6f22a5ba201fd58ef5a5",
+      "modified_time": "2026-06-14T22:20:13",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch38.pt",
+      "relative_path": "weights/epoch38.pt",
+      "exists": "True",
+      "size_bytes": "170480007",
+      "sha256": "f057d10b8eefd6d8c658addd61bf4b5ae45bee25706f3d9484c2f18e70792e02",
+      "modified_time": "2026-06-14T22:25:26",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch39.pt",
+      "relative_path": "weights/epoch39.pt",
+      "exists": "True",
+      "size_bytes": "170480071",
+      "sha256": "f6a1b9195789a5d7896a128c2dba434f126107dcecd48817b132a460a008ac6f",
+      "modified_time": "2026-06-14T22:30:40",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch4.pt",
+      "relative_path": "weights/epoch4.pt",
+      "exists": "True",
+      "size_bytes": "170476167",
+      "sha256": "21e755b1599c4e472f1d2cdb74969919d6edbdc500b6b200820a77151f8b9c6f",
+      "modified_time": "2026-06-14T19:27:42",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch40.pt",
+      "relative_path": "weights/epoch40.pt",
+      "exists": "True",
+      "size_bytes": "170480199",
+      "sha256": "19603d9120ddd0cf7384c8c080987c50b2632ac8706482b90d765fbf4c690135",
+      "modified_time": "2026-06-14T22:35:53",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch41.pt",
+      "relative_path": "weights/epoch41.pt",
+      "exists": "True",
+      "size_bytes": "170480327",
+      "sha256": "c913cc56f48132ee8acd884fedd7d005c75653ee53b7767df0118777bfa0b565",
+      "modified_time": "2026-06-14T22:41:06",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch42.pt",
+      "relative_path": "weights/epoch42.pt",
+      "exists": "True",
+      "size_bytes": "170480455",
+      "sha256": "74a3888e9efeecb85a591eb7d2387d25a69588a39b86316b4e768e895530d10c",
+      "modified_time": "2026-06-14T22:46:21",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch43.pt",
+      "relative_path": "weights/epoch43.pt",
+      "exists": "True",
+      "size_bytes": "170480519",
+      "sha256": "2e70c4cd3a3601eb373733034a0b89df9c34e0c51a7237e3ccebada1b1e0a3f5",
+      "modified_time": "2026-06-14T22:51:35",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch44.pt",
+      "relative_path": "weights/epoch44.pt",
+      "exists": "True",
+      "size_bytes": "170480647",
+      "sha256": "194335496856d2486059db1427a110dda69e295784549ffde473bb1c96b24a88",
+      "modified_time": "2026-06-14T22:56:49",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch45.pt",
+      "relative_path": "weights/epoch45.pt",
+      "exists": "True",
+      "size_bytes": "170480775",
+      "sha256": "d48f2b9dfcd0882037c79ba46829003ccf24661a32f781f2c61e55227b810715",
+      "modified_time": "2026-06-14T23:02:02",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch46.pt",
+      "relative_path": "weights/epoch46.pt",
+      "exists": "True",
+      "size_bytes": "170480903",
+      "sha256": "7308ea82e62cb18cb721b0e005fe8ee0f9c61085ace8859a8392875377428510",
+      "modified_time": "2026-06-14T23:07:17",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch47.pt",
+      "relative_path": "weights/epoch47.pt",
+      "exists": "True",
+      "size_bytes": "170480967",
+      "sha256": "a15bf8f2c7380cdf147e6bf5da630861cec0fc173d28475d96c2c8db08ca540f",
+      "modified_time": "2026-06-14T23:12:30",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch48.pt",
+      "relative_path": "weights/epoch48.pt",
+      "exists": "True",
+      "size_bytes": "170481095",
+      "sha256": "51a9e57286e49f336efa51abc72dc8a4d8278888b60499882f8a0b7a7cdc051a",
+      "modified_time": "2026-06-14T23:17:45",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch49.pt",
+      "relative_path": "weights/epoch49.pt",
+      "exists": "True",
+      "size_bytes": "170481223",
+      "sha256": "6ac7b90c3f6332073b2547768a67df6ca45056585c712090663a5651d5c53059",
+      "modified_time": "2026-06-14T23:22:58",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch5.pt",
+      "relative_path": "weights/epoch5.pt",
+      "exists": "True",
+      "size_bytes": "170476295",
+      "sha256": "adbf0933d48cc3424e97856652904331349e758590a8f45c996323f1c6dd0513",
+      "modified_time": "2026-06-14T19:33:02",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch50.pt",
+      "relative_path": "weights/epoch50.pt",
+      "exists": "True",
+      "size_bytes": "170481351",
+      "sha256": "79a2ef2e01cfa2468e6c88dbff610dd893069cbfee006c274b4db4e67276dce5",
+      "modified_time": "2026-06-14T23:28:12",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch51.pt",
+      "relative_path": "weights/epoch51.pt",
+      "exists": "True",
+      "size_bytes": "170481415",
+      "sha256": "7dd8df2169640bf8c48b68dc60d1d5e7d42a0836dd4bb1a3a74ba49d933affa2",
+      "modified_time": "2026-06-14T23:33:30",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch52.pt",
+      "relative_path": "weights/epoch52.pt",
+      "exists": "True",
+      "size_bytes": "170481543",
+      "sha256": "5e82fc81ded3308365901d37243dd1438f464295cd1b8d07955e9f9e8650e676",
+      "modified_time": "2026-06-14T23:38:44",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch53.pt",
+      "relative_path": "weights/epoch53.pt",
+      "exists": "True",
+      "size_bytes": "170481671",
+      "sha256": "4e964ced124a7682dc990b92a3229bf6db1aedbd1f3884a74646c4ebf1f2017a",
+      "modified_time": "2026-06-14T23:43:57",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch54.pt",
+      "relative_path": "weights/epoch54.pt",
+      "exists": "True",
+      "size_bytes": "170481799",
+      "sha256": "d8b14ba106259b062b532708e9a24e73530d4e2cd64eaeb41cb6b480a64d6efb",
+      "modified_time": "2026-06-14T23:49:11",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch55.pt",
+      "relative_path": "weights/epoch55.pt",
+      "exists": "True",
+      "size_bytes": "170481863",
+      "sha256": "1fe96535b733e06f4c9dabf875e268e8a309bf2be37399ce29b77c68f1aee73a",
+      "modified_time": "2026-06-14T23:54:25",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch56.pt",
+      "relative_path": "weights/epoch56.pt",
+      "exists": "True",
+      "size_bytes": "170481991",
+      "sha256": "1cbcada325cf7efee2bd720d5778d3be14169b5b9955e2098a2793250d42997a",
+      "modified_time": "2026-06-14T23:59:41",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch57.pt",
+      "relative_path": "weights/epoch57.pt",
+      "exists": "True",
+      "size_bytes": "170482119",
+      "sha256": "2c9b94a7ff62b7996e40fbf8fad0ccab936f835daed7d8636c4a60e48581cd5b",
+      "modified_time": "2026-06-15T00:04:58",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch58.pt",
+      "relative_path": "weights/epoch58.pt",
+      "exists": "True",
+      "size_bytes": "170482247",
+      "sha256": "dd10c794d9492e1e0c1debf54491dd285bd0de0a46290fc8a6cac3c6a839a9d4",
+      "modified_time": "2026-06-15T00:10:12",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch59.pt",
+      "relative_path": "weights/epoch59.pt",
+      "exists": "True",
+      "size_bytes": "170482311",
+      "sha256": "03bfd4aa4e8f0137c79074d66069f92dd8ce25a8c827365d989bef8402043df5",
+      "modified_time": "2026-06-15T00:15:27",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch6.pt",
+      "relative_path": "weights/epoch6.pt",
+      "exists": "True",
+      "size_bytes": "170476423",
+      "sha256": "9f62d30665c68a18d2d55bbef7ecfa6d6464307393aee61c7369f64f04b137e3",
+      "modified_time": "2026-06-14T19:38:18",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch60.pt",
+      "relative_path": "weights/epoch60.pt",
+      "exists": "True",
+      "size_bytes": "170482439",
+      "sha256": "028533c1290fd309ed648ee052203947c84c2ebee3ccc06ba78931d14a360d01",
+      "modified_time": "2026-06-15T00:20:42",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch61.pt",
+      "relative_path": "weights/epoch61.pt",
+      "exists": "True",
+      "size_bytes": "170482567",
+      "sha256": "f491b5957018daabafffa37ffb8737757eba1c5d76e15877ae753a9193071d0b",
+      "modified_time": "2026-06-15T00:25:56",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch62.pt",
+      "relative_path": "weights/epoch62.pt",
+      "exists": "True",
+      "size_bytes": "170482695",
+      "sha256": "11fa5325f097d5bbdce55f68b3e059d91e95f36d4aabec7bae48e7d4ef99b7bc",
+      "modified_time": "2026-06-15T00:31:10",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch63.pt",
+      "relative_path": "weights/epoch63.pt",
+      "exists": "True",
+      "size_bytes": "170482759",
+      "sha256": "fe82b4cb4bac0c723ae623547ee801163138f53c39b3a0bb0b1bbe341d3185f7",
+      "modified_time": "2026-06-15T00:36:24",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch64.pt",
+      "relative_path": "weights/epoch64.pt",
+      "exists": "True",
+      "size_bytes": "170482887",
+      "sha256": "fe68f952eaacfedb25ce88cb26a1a3a0997e85f3bc5b833e3b753b46cc29172e",
+      "modified_time": "2026-06-15T00:41:38",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch65.pt",
+      "relative_path": "weights/epoch65.pt",
+      "exists": "True",
+      "size_bytes": "170483015",
+      "sha256": "5ba22a6d3e69ee71ba8a12bd6fe21fe62004408c095fd14ee0be13daa6944a4c",
+      "modified_time": "2026-06-15T00:46:54",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch66.pt",
+      "relative_path": "weights/epoch66.pt",
+      "exists": "True",
+      "size_bytes": "170483143",
+      "sha256": "045b7adc2d125727149142d9ee29fc0db847ca0ffc5cf67ba78b9b5a7066765c",
+      "modified_time": "2026-06-15T00:52:08",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch67.pt",
+      "relative_path": "weights/epoch67.pt",
+      "exists": "True",
+      "size_bytes": "170483207",
+      "sha256": "1a6ab57480491b9f991d6113e70421cfd1228a35b0c045cfbf9f03e877d3fa7d",
+      "modified_time": "2026-06-15T00:57:23",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch68.pt",
+      "relative_path": "weights/epoch68.pt",
+      "exists": "True",
+      "size_bytes": "170483335",
+      "sha256": "371530bc48b01b567b6c59b53e022da6882be3848d82a748ddf175031a9e24e2",
+      "modified_time": "2026-06-15T01:02:38",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch69.pt",
+      "relative_path": "weights/epoch69.pt",
+      "exists": "True",
+      "size_bytes": "170483463",
+      "sha256": "e0cc22a7b9ac14de40325fb785b51254cda86b929d3645c78a4019af8e583c45",
+      "modified_time": "2026-06-15T01:07:52",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch7.pt",
+      "relative_path": "weights/epoch7.pt",
+      "exists": "True",
+      "size_bytes": "170476487",
+      "sha256": "6b551469a9c14659094371ccb27a2baa383bcfc24e12b380984e5cd6fd3fa698",
+      "modified_time": "2026-06-14T19:43:36",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch70.pt",
+      "relative_path": "weights/epoch70.pt",
+      "exists": "True",
+      "size_bytes": "170483591",
+      "sha256": "c66740ef95919c0569feec8bd2f656f2f8f03224cfeac9603f1a5837328e43a1",
+      "modified_time": "2026-06-15T01:13:07",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch71.pt",
+      "relative_path": "weights/epoch71.pt",
+      "exists": "True",
+      "size_bytes": "170483655",
+      "sha256": "33ea7e9b21e8d8c679a5829328f1c2a9711cd83d97d845a940950cd1906792b7",
+      "modified_time": "2026-06-15T01:18:22",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch72.pt",
+      "relative_path": "weights/epoch72.pt",
+      "exists": "True",
+      "size_bytes": "170483783",
+      "sha256": "7de258780d2b896d6942bef0b4556d36a66ebba1a90e49eb48009dc30d4b620d",
+      "modified_time": "2026-06-15T01:23:37",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch73.pt",
+      "relative_path": "weights/epoch73.pt",
+      "exists": "True",
+      "size_bytes": "170483911",
+      "sha256": "9d28c95ffd48e75a96a10cee1b97aa2b48576de7efda4f9117bd91eb9e792a82",
+      "modified_time": "2026-06-15T01:28:51",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch74.pt",
+      "relative_path": "weights/epoch74.pt",
+      "exists": "True",
+      "size_bytes": "170484039",
+      "sha256": "3484f0bd328804e49250c7eade537cd537526ffb3992d68162f290100a4a544f",
+      "modified_time": "2026-06-15T01:34:07",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch75.pt",
+      "relative_path": "weights/epoch75.pt",
+      "exists": "True",
+      "size_bytes": "170484103",
+      "sha256": "26177ff4908fe04fd1664dd2a665a648e8485b9e0eb5f404734677630ca4086e",
+      "modified_time": "2026-06-15T01:39:22",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch76.pt",
+      "relative_path": "weights/epoch76.pt",
+      "exists": "True",
+      "size_bytes": "170484231",
+      "sha256": "8c8ddedf538f9518fc6c1f090d23d176e1f1cfa26c6a685ffc13ec78fef38769",
+      "modified_time": "2026-06-15T01:44:38",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch77.pt",
+      "relative_path": "weights/epoch77.pt",
+      "exists": "True",
+      "size_bytes": "170484359",
+      "sha256": "465e61ce68c00e15061069ccd2da1ae8986d765f36bdad0ac617bb76eea989a8",
+      "modified_time": "2026-06-15T01:49:53",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch78.pt",
+      "relative_path": "weights/epoch78.pt",
+      "exists": "True",
+      "size_bytes": "170484487",
+      "sha256": "d5c71f67eebf9fb36bb753d6c0d8e3ee1472d20b0cf32743fdf6dd959cc16f08",
+      "modified_time": "2026-06-15T01:55:09",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch79.pt",
+      "relative_path": "weights/epoch79.pt",
+      "exists": "True",
+      "size_bytes": "170484551",
+      "sha256": "b84c7eb06aab9225f4b91b0cf49e0821eb5599baeceacb1299edd991edf4da07",
+      "modified_time": "2026-06-15T02:00:24",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch8.pt",
+      "relative_path": "weights/epoch8.pt",
+      "exists": "True",
+      "size_bytes": "170476615",
+      "sha256": "edd4dfc6fec54263bf64524537a8b462f63fc5681d2f274c4dde38957ed710ec",
+      "modified_time": "2026-06-14T19:48:51",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch80.pt",
+      "relative_path": "weights/epoch80.pt",
+      "exists": "True",
+      "size_bytes": "170484679",
+      "sha256": "062245a5e8d65d75ca1a8873f6bc4e0b84a574f3da521967d99863925e7f9fb8",
+      "modified_time": "2026-06-15T02:05:39",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch81.pt",
+      "relative_path": "weights/epoch81.pt",
+      "exists": "True",
+      "size_bytes": "170484807",
+      "sha256": "0c1aef88cdb728f32bb31bca9554b7b56213fb2b9cb648938cf731e682060bb7",
+      "modified_time": "2026-06-15T02:10:54",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch82.pt",
+      "relative_path": "weights/epoch82.pt",
+      "exists": "True",
+      "size_bytes": "170484935",
+      "sha256": "4394670dc7e303562d5e469d6d75e6d37f42e1ab5ac3236f1545e2b6c680a976",
+      "modified_time": "2026-06-15T02:16:09",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch83.pt",
+      "relative_path": "weights/epoch83.pt",
+      "exists": "True",
+      "size_bytes": "170484999",
+      "sha256": "62b0e4af4792e36c7c6b254102ad8d1ba877ed2d83e217dd6586a9ce7b721608",
+      "modified_time": "2026-06-15T02:21:24",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch84.pt",
+      "relative_path": "weights/epoch84.pt",
+      "exists": "True",
+      "size_bytes": "170485127",
+      "sha256": "4b96ae265ce3879e7749534b289fb6538c9a78613c5a46fd3684ebd06e3e3a6c",
+      "modified_time": "2026-06-15T02:26:39",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch85.pt",
+      "relative_path": "weights/epoch85.pt",
+      "exists": "True",
+      "size_bytes": "170485255",
+      "sha256": "3f09fd6d3d0bd73a60c64e4487843c01d4bce80c966042ae80b736465b692e8b",
+      "modified_time": "2026-06-15T02:31:55",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch86.pt",
+      "relative_path": "weights/epoch86.pt",
+      "exists": "True",
+      "size_bytes": "170485383",
+      "sha256": "08c6bc412599b96708a6d49df3dab739594227b8f85d310107f262022910cd95",
+      "modified_time": "2026-06-15T02:37:10",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch87.pt",
+      "relative_path": "weights/epoch87.pt",
+      "exists": "True",
+      "size_bytes": "170485447",
+      "sha256": "f2d4884f6b8d7432733e043086dab149e2defe26b28606b240088b982a1cb649",
+      "modified_time": "2026-06-15T02:42:26",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch88.pt",
+      "relative_path": "weights/epoch88.pt",
+      "exists": "True",
+      "size_bytes": "170485575",
+      "sha256": "3f88f6dcc89af82107c2cda705bc2d3f109996f9de39fd07f2c3d49465c9754b",
+      "modified_time": "2026-06-15T02:47:42",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch89.pt",
+      "relative_path": "weights/epoch89.pt",
+      "exists": "True",
+      "size_bytes": "170485703",
+      "sha256": "2544e9ef451d66663b9e38ba40f525aa6d3134569938ca40be1287053664241c",
+      "modified_time": "2026-06-15T02:52:58",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch9.pt",
+      "relative_path": "weights/epoch9.pt",
+      "exists": "True",
+      "size_bytes": "170476743",
+      "sha256": "8b857395c626b5beba8cce951f3c2b4fc35368fc7e6c1310fc1a69caac5b7e0f",
+      "modified_time": "2026-06-14T19:54:03",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch90.pt",
+      "relative_path": "weights/epoch90.pt",
+      "exists": "True",
+      "size_bytes": "170485831",
+      "sha256": "2dbd61c1df1949cbd7adb0cbf325f26362bf5c3b6019188327583f9bccd4b2b4",
+      "modified_time": "2026-06-15T02:58:13",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch91.pt",
+      "relative_path": "weights/epoch91.pt",
+      "exists": "True",
+      "size_bytes": "170485895",
+      "sha256": "557708b72afc109b8748899216d499a0598a292e8fe636b962f95ea0ec89113c",
+      "modified_time": "2026-06-15T03:03:30",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch92.pt",
+      "relative_path": "weights/epoch92.pt",
+      "exists": "True",
+      "size_bytes": "170486023",
+      "sha256": "5e5e55a3d8c4b2ae25137a33151506af9c44e5689236069cc2d446e6c63d2a5d",
+      "modified_time": "2026-06-15T03:08:46",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch93.pt",
+      "relative_path": "weights/epoch93.pt",
+      "exists": "True",
+      "size_bytes": "170486151",
+      "sha256": "6a0ad50c8d211a78e71cb615091a2de24ba1c3a4622eb1a14c5600e72272cd24",
+      "modified_time": "2026-06-15T03:14:01",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch94.pt",
+      "relative_path": "weights/epoch94.pt",
+      "exists": "True",
+      "size_bytes": "170486279",
+      "sha256": "4e0c4326617874bc175833372f590d5c2b4ae320ed4311277ef471906b475fdc",
+      "modified_time": "2026-06-15T03:19:16",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch95.pt",
+      "relative_path": "weights/epoch95.pt",
+      "exists": "True",
+      "size_bytes": "170486343",
+      "sha256": "e1ec2603ff00d76b2ca5cf1efffbe0d5954f7f7e05b1e149bfcd58f325c523e1",
+      "modified_time": "2026-06-15T03:24:33",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch96.pt",
+      "relative_path": "weights/epoch96.pt",
+      "exists": "True",
+      "size_bytes": "170486471",
+      "sha256": "1acf19568bd2ac61672cb3cd5e92b9cf7aa7dd9d369bdd1a6dd377cf750430cf",
+      "modified_time": "2026-06-15T03:29:49",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch97.pt",
+      "relative_path": "weights/epoch97.pt",
+      "exists": "True",
+      "size_bytes": "170486599",
+      "sha256": "a2f190530244d0ec095a5659f53078fe1efc65f954a4cca477ece2303b0ede80",
+      "modified_time": "2026-06-15T03:35:05",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch98.pt",
+      "relative_path": "weights/epoch98.pt",
+      "exists": "True",
+      "size_bytes": "170486727",
+      "sha256": "6e877507ae0666e70ac1ed7c2a74e373553286e9db47626aea50fc301c75659c",
+      "modified_time": "2026-06-15T03:40:22",
+      "category": "optional",
+      "required": "False"
+    },
+    {
+      "path": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11x_cls_20260614-185818\\weights\\epoch99.pt",
+      "relative_path": "weights/epoch99.pt",
+      "exists": "True",
+      "size_bytes": "170486791",
+      "sha256": "d5816f570ea725d03dc398ffd7f49eb8cee49507e399325efff0579c9054f2e7",
+      "modified_time": "2026-06-15T03:45:39",
+      "category": "optional",
+      "required": "False"
+    }
+  ]
+}

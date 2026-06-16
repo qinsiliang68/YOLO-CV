@@ -1,0 +1,114 @@
+{
+  "run_name": "full_yolo11n_cls_20260614-190411",
+  "model_key": "n",
+  "model_weight": "C:\\Users\\ASUS\\Desktop\\ssh\\AI\\projects\\YOLO-CV\\yolo11n-cls.pt",
+  "status": "ok",
+  "error": "",
+  "started_at": "2026-06-14T19:04:11",
+  "ended_at": "2026-06-15T06:34:17",
+  "duration_sec": 41405.72,
+  "command": "scripts/train_stage1_cls_sweep.py --mode full --models n,s,m --epochs 200 --imgsz 224 --batch 128 --workers 4 --save-period 1 --keep-data --device 0 --dataset-root C:\\Users\\ASUS\\Desktop\\ssh\\AI\\datasets\\final_sewerml_dataset --work-root C:\\Users\\ASUS\\Desktop\\ssh\\AI\\workdir\\stage1_cls_workdir --runs-root D:\\ssh\\AI\\runs\\stage1_cls_sweep --yolo-root C:\\Users\\ASUS\\Desktop\\ssh\\AI\\projects\\YOLO-CV\\YOLOv11",
+  "paths": {
+    "repo_root": "C:\\Users\\ASUS\\Desktop\\ssh\\AI\\projects\\YOLO-CV",
+    "yolo_root": "C:\\Users\\ASUS\\Desktop\\ssh\\AI\\projects\\YOLO-CV\\YOLOv11",
+    "dataset_root": "C:\\Users\\ASUS\\Desktop\\ssh\\AI\\datasets\\final_sewerml_dataset",
+    "manifest_dir": "C:\\Users\\ASUS\\Desktop\\ssh\\AI\\datasets\\final_sewerml_dataset\\manifests",
+    "dataset_dir": "C:\\Users\\ASUS\\Desktop\\ssh\\AI\\workdir\\stage1_cls_workdir\\full",
+    "run_dir": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11n_cls_20260614-190411",
+    "train_log": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11n_cls_20260614-190411\\train_log.txt"
+  },
+  "config": {
+    "mode": "full",
+    "models": [
+      "n",
+      "s",
+      "m"
+    ],
+    "seed": 20260606,
+    "epochs": 200,
+    "imgsz": 224,
+    "batch": 128,
+    "workers": 4,
+    "save_period": 1,
+    "device": "0",
+    "rebuild_data": false,
+    "train_per_class": null,
+    "val_per_class": null,
+    "dry_run": false,
+    "exist_ok": false
+  },
+  "dataset_counts": {
+    "train_no_target": 60000,
+    "train_target_defect": 60000,
+    "val_no_target": 12000,
+    "val_target_defect": 12000
+  },
+  "git": {
+    "branch": "<exit 128>  fatal: not a git repository (or any of the parent directories): .git",
+    "commit": "<exit 128>  fatal: not a git repository (or any of the parent directories): .git",
+    "commit_short": "<exit 128>  fatal: not a git repository (or any of the parent directories): .git",
+    "dirty": "True",
+    "status_short": "<exit 128>  fatal: not a git repository (or any of the parent directories): .git"
+  },
+  "environment": {
+    "python_version": "3.11.15",
+    "python_executable": "D:\\ssh\\AI\\projects\\YOLO-CV\\.venv\\Scripts\\python.exe",
+    "platform": "Windows-10-10.0.26200-SP0",
+    "processor": "Intel64 Family 6 Model 151 Stepping 2, GenuineIntel",
+    "packages": {
+      "ultralytics": "",
+      "torch": "2.11.0+cu128",
+      "torchvision": "0.26.0+cu128",
+      "numpy": "1.26.4",
+      "opencv-python": "4.11.0.86"
+    },
+    "torch": {
+      "torch_version": "2.11.0+cu128",
+      "cuda_available": true,
+      "torch_cuda_version": "12.8",
+      "cudnn_version": 91900,
+      "gpu_count": 1,
+      "gpu_names": [
+        "NVIDIA GeForce RTX 3090"
+      ]
+    }
+  },
+  "manifests": [
+    {
+      "path": "C:\\Users\\ASUS\\Desktop\\ssh\\AI\\datasets\\final_sewerml_dataset\\manifests\\train_manifest.csv",
+      "relative_path": "manifests/train_manifest.csv",
+      "exists": "True",
+      "size_bytes": "16703999",
+      "sha256": "964193654d91483ba5c28411f56716e4057b6e1d5c9a0da1ebbd24d30018c07c",
+      "modified_time": "2026-06-12T15:19:14",
+      "kind": "train_manifest"
+    },
+    {
+      "path": "C:\\Users\\ASUS\\Desktop\\ssh\\AI\\datasets\\final_sewerml_dataset\\manifests\\normal_train_manifest.csv",
+      "relative_path": "manifests/normal_train_manifest.csv",
+      "exists": "True",
+      "size_bytes": "24189732",
+      "sha256": "196474fc6eef08d982fbecee94dd544a4a5ac7220587dd58c9b2c186ead7652c",
+      "modified_time": "2026-06-12T22:24:50",
+      "kind": "train_manifest"
+    },
+    {
+      "path": "C:\\Users\\ASUS\\Desktop\\ssh\\AI\\datasets\\final_sewerml_dataset\\manifests\\val_model_manifest.csv",
+      "relative_path": "manifests/val_model_manifest.csv",
+      "exists": "True",
+      "size_bytes": "3468523",
+      "sha256": "9606ae90933008e49d7ee354616ba998351ccfb578aeff25f07c9d8b0058f2d9",
+      "modified_time": "2026-06-13T21:12:02",
+      "kind": "train_manifest"
+    },
+    {
+      "path": "C:\\Users\\ASUS\\Desktop\\ssh\\AI\\datasets\\final_sewerml_dataset\\manifests\\normal_val_model_manifest.csv",
+      "relative_path": "manifests/normal_val_model_manifest.csv",
+      "exists": "True",
+      "size_bytes": "5624569",
+      "sha256": "73b53c0498e74a76baf43f926de318cf3ab2179ffe2958f78a5333fe900d7ab4",
+      "modified_time": "2026-06-13T21:12:02",
+      "kind": "train_manifest"
+    }
+  ]
+}
