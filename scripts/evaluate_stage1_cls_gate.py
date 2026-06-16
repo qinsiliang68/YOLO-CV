@@ -289,44 +289,52 @@ def predict_records(model, records: list[dict[str, str]], cfg: EvalConfig) -> li
     defect_index = find_class_index(names, TARGET_CLASS_NAME)
     normal_index = next((idx for idx, name in names.items() if name == NORMAL_CLASS_NAME), None)
 
-    image_paths = [record["image_path"] for record in records]
-    results = model.predict(
-        source=image_paths,
-        imgsz=cfg.imgsz,
-        batch=cfg.batch,
-        device=cfg.device,
-        verbose=False,
-        stream=True,
-    )
-
     output: list[dict[str, str]] = []
-    for record, result in zip(records, results, strict=True):
-        probs_tensor = result.probs.data.detach().cpu()
-        probs = [float(x) for x in probs_tensor.tolist()]
-        p_defect = clip_probability(probs[defect_index])
-        p_normal = clip_probability(probs[normal_index]) if normal_index is not None else clip_probability(1.0 - p_defect)
-        y_true = int(record["y_true"])
-        y_pred = 1 if p_defect >= p_normal else 0
+    batch_size = max(1, cfg.batch)
 
-        enriched = dict(record)
-        enriched.update(
-            {
-                "y_pred_raw": str(y_pred),
-                "raw_correct": str(int(y_pred == y_true)),
-                "p_defect_raw": f"{p_defect:.10f}",
-                "p_normal_raw": f"{p_normal:.10f}",
-                "raw_logit": f"{logit(p_defect):.10f}",
-                "p_defect_cal": "",
-                "p_defect_operational": "",
-                "raw_cross_entropy": f"{cross_entropy(y_true, p_defect):.10f}",
-                "cal_cross_entropy": "",
-                "operational_cross_entropy": "",
-                "raw_uncertainty": f"{uncertainty(p_defect):.10f}",
-                "cal_uncertainty": "",
-                "operational_uncertainty": "",
-            }
+    for start in range(0, len(records), batch_size):
+        batch_records = records[start : start + batch_size]
+        image_paths = [record["image_path"] for record in batch_records]
+        results = model.predict(
+            source=image_paths,
+            imgsz=cfg.imgsz,
+            batch=batch_size,
+            device=cfg.device,
+            verbose=False,
+            stream=True,
         )
-        output.append(enriched)
+
+        for record, result in zip(batch_records, results, strict=True):
+            probs_tensor = result.probs.data.detach().cpu()
+            probs = [float(x) for x in probs_tensor.tolist()]
+            p_defect = clip_probability(probs[defect_index])
+            p_normal = clip_probability(probs[normal_index]) if normal_index is not None else clip_probability(1.0 - p_defect)
+            y_true = int(record["y_true"])
+            y_pred = 1 if p_defect >= p_normal else 0
+
+            enriched = dict(record)
+            enriched.update(
+                {
+                    "y_pred_raw": str(y_pred),
+                    "raw_correct": str(int(y_pred == y_true)),
+                    "p_defect_raw": f"{p_defect:.10f}",
+                    "p_normal_raw": f"{p_normal:.10f}",
+                    "raw_logit": f"{logit(p_defect):.10f}",
+                    "p_defect_cal": "",
+                    "p_defect_operational": "",
+                    "raw_cross_entropy": f"{cross_entropy(y_true, p_defect):.10f}",
+                    "cal_cross_entropy": "",
+                    "operational_cross_entropy": "",
+                    "raw_uncertainty": f"{uncertainty(p_defect):.10f}",
+                    "cal_uncertainty": "",
+                    "operational_uncertainty": "",
+                }
+            )
+            output.append(enriched)
+
+        batch_index = start // batch_size + 1
+        if batch_index == 1 or batch_index % 50 == 0 or len(output) == len(records):
+            print(f"predicted {len(output)}/{len(records)} images", flush=True)
     return output
 
 
