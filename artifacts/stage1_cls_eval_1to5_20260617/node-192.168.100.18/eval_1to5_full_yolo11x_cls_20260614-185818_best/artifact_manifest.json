@@ -1,0 +1,55 @@
+{
+  "created_at": "2026-06-17T17:25:32",
+  "run_dir": "D:\\ssh\\AI\\runs\\stage1_cls_eval_1to5\\eval_1to5_full_yolo11x_cls_20260614-185818_best",
+  "artifact_count": 8,
+  "artifacts": [
+    {
+      "relative_path": "calibration.json",
+      "size_bytes": "282",
+      "sha256": "14f512c82418649bc24b3f0554629a5d9a479eb7f87aaf6c648da305595edcc8",
+      "modified_at_local": "2026-06-17T17:25:32"
+    },
+    {
+      "relative_path": "metrics_at_selected_threshold.csv",
+      "size_bytes": "949",
+      "sha256": "68136758f6105ad08243bfd4012a0f558e3dbac64f8b77ec498acf3844c3178f",
+      "modified_at_local": "2026-06-17T17:25:32"
+    },
+    {
+      "relative_path": "predictions_test.csv",
+      "size_bytes": "42524888",
+      "sha256": "46c050319c77a722629099e9cb505617adc13c1c43b9c45ac257a5a1989e3f97",
+      "modified_at_local": "2026-06-17T17:25:32"
+    },
+    {
+      "relative_path": "predictions_val_cal.csv",
+      "size_bytes": "44324438",
+      "sha256": "4481dac1c1e0de9eb6beaa263617004bb464c9a07e216cb48ed3221d7b6576e8",
+      "modified_at_local": "2026-06-17T17:25:30"
+    },
+    {
+      "relative_path": "predictions_val_op.csv",
+      "size_bytes": "43725334",
+      "sha256": "bc51694afc01ce1eca165ec9bf91700abecbce516170ec2d91665d26c8769814",
+      "modified_at_local": "2026-06-17T17:25:31"
+    },
+    {
+      "relative_path": "README.md",
+      "size_bytes": "820",
+      "sha256": "b1ea793b174113191982e2752fcbccaa164b8e60f561a3c7ca10e7be35c48a8d",
+      "modified_at_local": "2026-06-17T17:25:32"
+    },
+    {
+      "relative_path": "run_config.json",
+      "size_bytes": "924",
+      "sha256": "07445cf194071013d52b161f21c3e03af2a3b5d1564f1d054087c7408f21e18b",
+      "modified_at_local": "2026-06-17T16:29:32"
+    },
+    {
+      "relative_path": "threshold.json",
+      "size_bytes": "545",
+      "sha256": "978ff7220f6b6fa9546e1d9afc04081fa37324d8dc7ae5c62902159941d7b334",
+      "modified_at_local": "2026-06-17T17:25:32"
+    }
+  ]
+}

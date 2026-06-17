@@ -1,0 +1,9 @@
+{
+  "method": "Platt scaling on logit(p_defect_raw)",
+  "fit_split": "val_cal",
+  "coef": 0.4138942814282579,
+  "intercept": -1.6332028495713264,
+  "source_prevalence": 0.16666666666666666,
+  "deployment_defect_prevalence": 0.1,
+  "prior_adjustment": -0.5877866649021186
+}

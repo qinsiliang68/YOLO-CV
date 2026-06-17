@@ -31,6 +31,7 @@ import math
 import os
 import random
 import sys
+import tempfile
 import time
 from dataclasses import dataclass
 from datetime import datetime
@@ -291,50 +292,82 @@ def predict_records(model, records: list[dict[str, str]], cfg: EvalConfig) -> li
 
     output: list[dict[str, str]] = []
     batch_size = max(1, cfg.batch)
+    progress_step = batch_size * 50
+    chunk_size = progress_step
 
-    for start in range(0, len(records), batch_size):
-        batch_records = records[start : start + batch_size]
-        image_paths = [record["image_path"] for record in batch_records]
-        results = model.predict(
-            source=image_paths,
-            imgsz=cfg.imgsz,
-            batch=batch_size,
-            device=cfg.device,
-            verbose=False,
-            stream=True,
-        )
+    for start in range(0, len(records), chunk_size):
+        chunk_records = records[start : start + chunk_size]
+        records_by_path = {str(Path(record["image_path"]).absolute()).casefold(): record for record in chunk_records}
+        temp_path: Path | None = None
 
-        for record, result in zip(batch_records, results, strict=True):
-            probs_tensor = result.probs.data.detach().cpu()
-            probs = [float(x) for x in probs_tensor.tolist()]
-            p_defect = clip_probability(probs[defect_index])
-            p_normal = clip_probability(probs[normal_index]) if normal_index is not None else clip_probability(1.0 - p_defect)
-            y_true = int(record["y_true"])
-            y_pred = 1 if p_defect >= p_normal else 0
+        try:
+            with tempfile.NamedTemporaryFile("w", suffix=".txt", delete=False, encoding="utf-8") as f:
+                temp_path = Path(f.name)
+                for record in chunk_records:
+                    f.write(record["image_path"])
+                    f.write("\n")
 
-            enriched = dict(record)
-            enriched.update(
-                {
-                    "y_pred_raw": str(y_pred),
-                    "raw_correct": str(int(y_pred == y_true)),
-                    "p_defect_raw": f"{p_defect:.10f}",
-                    "p_normal_raw": f"{p_normal:.10f}",
-                    "raw_logit": f"{logit(p_defect):.10f}",
-                    "p_defect_cal": "",
-                    "p_defect_operational": "",
-                    "raw_cross_entropy": f"{cross_entropy(y_true, p_defect):.10f}",
-                    "cal_cross_entropy": "",
-                    "operational_cross_entropy": "",
-                    "raw_uncertainty": f"{uncertainty(p_defect):.10f}",
-                    "cal_uncertainty": "",
-                    "operational_uncertainty": "",
-                }
+            results = model.predict(
+                source=str(temp_path),
+                imgsz=cfg.imgsz,
+                batch=batch_size,
+                device=cfg.device,
+                verbose=False,
+                stream=True,
             )
-            output.append(enriched)
 
-        batch_index = start // batch_size + 1
-        if batch_index == 1 or batch_index % 50 == 0 or len(output) == len(records):
+            predicted_in_chunk = 0
+            chunk_output_by_path: dict[str, dict[str, str]] = {}
+            for result in results:
+                result_key = str(Path(result.path).absolute()).casefold()
+                record = records_by_path.get(result_key)
+                if record is None:
+                    raise KeyError(f"Prediction result path not found in records: {result.path}")
+                if result_key in chunk_output_by_path:
+                    raise KeyError(f"Duplicate prediction result path: {result.path}")
+                probs_tensor = result.probs.data.detach().cpu()
+                probs = [float(x) for x in probs_tensor.tolist()]
+                p_defect = clip_probability(probs[defect_index])
+                p_normal = clip_probability(probs[normal_index]) if normal_index is not None else clip_probability(1.0 - p_defect)
+                y_true = int(record["y_true"])
+                y_pred = 1 if p_defect >= p_normal else 0
+
+                enriched = dict(record)
+                enriched.update(
+                    {
+                        "y_pred_raw": str(y_pred),
+                        "raw_correct": str(int(y_pred == y_true)),
+                        "p_defect_raw": f"{p_defect:.10f}",
+                        "p_normal_raw": f"{p_normal:.10f}",
+                        "raw_logit": f"{logit(p_defect):.10f}",
+                        "p_defect_cal": "",
+                        "p_defect_operational": "",
+                        "raw_cross_entropy": f"{cross_entropy(y_true, p_defect):.10f}",
+                        "cal_cross_entropy": "",
+                        "operational_cross_entropy": "",
+                        "raw_uncertainty": f"{uncertainty(p_defect):.10f}",
+                        "cal_uncertainty": "",
+                        "operational_uncertainty": "",
+                    }
+                )
+                chunk_output_by_path[result_key] = enriched
+                predicted_in_chunk += 1
+
+            if predicted_in_chunk != len(chunk_records):
+                raise RuntimeError(f"Predicted {predicted_in_chunk} rows for {len(chunk_records)} chunk records")
+
+            for record in chunk_records:
+                record_key = str(Path(record["image_path"]).absolute()).casefold()
+                output.append(chunk_output_by_path[record_key])
+        finally:
+            if temp_path is not None:
+                temp_path.unlink(missing_ok=True)
+
+        if len(output) == 1 or len(output) % progress_step == 0 or len(output) == len(records):
             print(f"predicted {len(output)}/{len(records)} images", flush=True)
+
+    if len(output) != len(records):
+        raise RuntimeError(f"Predicted {len(output)} rows for {len(records)} input records")
     return output
 
 

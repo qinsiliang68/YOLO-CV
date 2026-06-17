@@ -1,0 +1,28 @@
+{
+  "created_at": "2026-06-17T14:36:59",
+  "repo_root": "C:\\Users\\ASUS\\Desktop\\ssh\\AI\\projects\\YOLO-CV",
+  "yolo_root": "C:\\Users\\ASUS\\Desktop\\ssh\\AI\\projects\\YOLO-CV\\YOLOv11",
+  "dataset_root": "D:\\data\\final_sewerml_dataset",
+  "manifest_dir": "D:\\data\\final_sewerml_dataset\\manifests",
+  "output_root": "D:\\ssh\\AI\\runs\\stage1_cls_eval_1to5",
+  "weights": "D:\\ssh\\AI\\runs\\stage1_cls_sweep\\full_yolo11m_cls_20260615-180049\\weights\\best.pt",
+  "weights_sha256": "04594bd81795e20d4c947927eaf6cd06a6b14e28dc77c104a21c4ec2b4cd2c68",
+  "run_name": "eval_1to5_full_yolo11m_cls_20260615-180049_best",
+  "splits": [
+    "val_cal",
+    "val_op",
+    "test"
+  ],
+  "seed": 20260606,
+  "imgsz": 224,
+  "batch": 128,
+  "device": "0",
+  "limit_per_class": null,
+  "target_recall": 0.995,
+  "deployment_defect_prevalence": 0.1,
+  "split_counts": {
+    "val_cal": 120000,
+    "val_op": 120000,
+    "test": 120000
+  }
+}
