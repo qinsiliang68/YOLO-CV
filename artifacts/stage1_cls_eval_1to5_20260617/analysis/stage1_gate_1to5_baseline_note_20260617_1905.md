@@ -364,20 +364,33 @@
 
 ## 10. 关于旧材料
 
-旧的非本次 1:5 正式数据集产出的结果已经从正式 `artifacts` 区移到回收站：
+旧的 1:1 评估结果已经从正式 `artifacts` 区移到回收站：
 
 ```text
 _recycle_bin/non_current_stage1_results_20260617-1905/stage1_cls_eval_20260616
-_recycle_bin/non_current_stage1_results_20260617-1905/stage1_cls_sweep_20260616
 ```
 
-以后正式引用时只使用：
+这批旧评估材料保留用于追溯历史，但不作为论文最终比较依据。
+
+训练 sweep 材料保留在正式 `artifacts` 区：
+
+```text
+artifacts/stage1_cls_sweep_20260616
+```
+
+原因是训练 sweep 记录了 `yolo11n/s/m/l/x` 的训练来源、训练配置、训练曲线和模型选择依据，是后续复现实验和比较训练时长的重要证据，不应放入回收站。
+
+以后正式测试指标引用：
 
 ```text
 artifacts/stage1_cls_eval_1to5_20260617
 ```
 
-旧材料保留在 `_recycle_bin`，用于追溯历史，但不作为论文最终比较依据。
+以后模型训练来源和训练过程引用：
+
+```text
+artifacts/stage1_cls_sweep_20260616
+```
 
 ## 11. 后续写论文时可以直接使用的表述
 
