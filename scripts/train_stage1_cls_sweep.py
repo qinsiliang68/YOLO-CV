@@ -223,7 +223,7 @@ def build_paths(args: argparse.Namespace) -> Paths:
     # `resolve()` 会把相对路径转成绝对路径，后面打印和排错更清楚。
     yolo_root = Path(args.yolo_root).resolve() if args.yolo_root else repo_root / DEFAULT_YOLO_ROOT
     dataset_root = Path(args.dataset_root).resolve() if args.dataset_root else repo_root / DEFAULT_DATASET_ROOT
-    manifest_dir = dataset_root / "manifests"
+    manifest_dir = Path(args.manifest_dir).resolve() if args.manifest_dir else dataset_root / "manifests"
     work_root = Path(args.work_root).resolve() if args.work_root else repo_root / DEFAULT_WORK_ROOT
     if args.runs_root:
         runs_root = Path(args.runs_root).resolve()
@@ -1085,6 +1085,7 @@ def parse_args() -> argparse.Namespace:
 
     # 路径覆盖参数。默认都用本仓库约定目录；换机器时也可以用这些参数指向其他盘。
     parser.add_argument("--dataset-root", default=os.environ.get("STAGE1_DATASET_ROOT"))
+    parser.add_argument("--manifest-dir", default=os.environ.get("STAGE1_MANIFEST_DIR"))
     parser.add_argument("--work-root", default=os.environ.get("STAGE1_WORK_ROOT"))
     parser.add_argument("--runs-root", default=os.environ.get("STAGE1_RUNS_ROOT"))
     parser.add_argument("--yolo-root", default=os.environ.get("STAGE1_YOLO_ROOT"))
