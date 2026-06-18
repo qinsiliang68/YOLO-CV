@@ -11,8 +11,8 @@ This workspace has been reset for the final dataset:
 - sampling seed is fixed to `20260606`
 - raw image source is preserved outside the repository at
   `C:\Sewer-ML\sewerml_train_images\`
-- source annotation CSV is preserved at
-  `YOLOv11/datasets/sewerml_annotations/SewerML_Train.csv`
+- source annotation CSVs are preserved locally under
+  `YOLOv11/datasets/sewerml_annotations/` and are not tracked by Git
 
 Old v1/v3/stage-1 materials, thesis drafts, scripts, runtime configs and evidence
 notes were archived under:
@@ -93,13 +93,14 @@ Quality and non-target labels:
 Do not delete or move:
 
 - `C:\Sewer-ML\sewerml_train_images\`
-- `YOLOv11/datasets/sewerml_annotations/SewerML_Train.csv`
+- local SewerML source annotation CSVs under `YOLOv11/datasets/sewerml_annotations/`
 - YOLO source code under `YOLOv11/`
 - pretrained base weights in the repository root
 
 The repository `data/` folder currently contains the local final sampled dataset
-and is ignored by Git. Do not stage or upload large image datasets into the
-repository history.
+and is ignored by Git except for reproducibility manifests under
+`data/final_sewerml_dataset/manifests/`. Do not stage or upload large image
+datasets or raw source annotation tables into the repository history.
 
 SewerML is multi-label. New manifests should preserve all original label columns
 and may add a `primary_class` only for export/folder layout convenience.

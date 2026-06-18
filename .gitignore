@@ -58,7 +58,6 @@ YOLOv11/datasets/*
 !YOLOv11/datasets/.gitkeep
 !YOLOv11/datasets/sewerml_annotations/
 YOLOv11/datasets/sewerml_annotations/*
-!YOLOv11/datasets/sewerml_annotations/*.csv
 YOLOv11/weights/*
 !YOLOv11/weights/.gitkeep
 YOLOv11/runs/*
