@@ -13,7 +13,7 @@ import subprocess
 from pathlib import Path
 
 
-DEFAULT_TRAIN_PYTHON = Path(r"C:\Users\ASUS\Desktop\ssh\AI\projects\YOLO-CV\.venv\Scripts\python.exe")
+DEFAULT_TRAIN_PYTHON = Path(r"C:\Users\ASUS\Desktop\ssh\AI\venvs\yolo-cv\Scripts\python.exe")
 DEFAULT_BOOTSTRAP_SOURCE_ROOT = Path(r"C:\Users\ASUS\Desktop\ssh\AI\projects\YOLO-CV")
 DEFAULT_OOF_ROOT = Path("artifacts") / "stage1_oof_folds_10fold_20260617"
 DEFAULT_WORK_ROOT = Path("data") / "stage1_oof_workdir"

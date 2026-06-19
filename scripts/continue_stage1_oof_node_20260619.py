@@ -2,7 +2,8 @@
 """Continue the interrupted Stage-1 OOF jobs on the Windows training nodes.
 
 This script is intentionally node-specific. It knows the emergency recovery
-state from 2026-06-19 and runs the remaining safe sequence with save_period=-1.
+state from 2026-06-19 and runs the remaining sequence after validating that
+training inputs are on C and run outputs resolve to a non-C disk.
 Run it from the repository root on node 13 or node 18.
 """
 
@@ -10,6 +11,7 @@ from __future__ import annotations
 
 import argparse
 import csv
+import os
 import subprocess
 import sys
 from dataclasses import dataclass
@@ -17,9 +19,11 @@ from pathlib import Path
 
 
 TARGET_EPOCHS = 200
-DEFAULT_TRAIN_PYTHON = Path(r"C:\Users\ASUS\Desktop\ssh\AI\projects\YOLO-CV\.venv\Scripts\python.exe")
+DEFAULT_SAVE_PERIOD = 1
+DEFAULT_TRAIN_PYTHON = Path(r"C:\Users\ASUS\Desktop\ssh\AI\venvs\yolo-cv\Scripts\python.exe")
 DEFAULT_DATASET_ROOT = Path(r"C:\Users\ASUS\Desktop\ssh\AI\datasets\final_sewerml_dataset")
 DEFAULT_RUNS_ROOT = Path("YOLOv11") / "runs" / "stage1_oof_10fold"
+DEFAULT_YOLO_ROOT = Path("YOLOv11")
 
 
 @dataclass(frozen=True)
@@ -37,14 +41,14 @@ NODE_PLANS = {
         interrupted_fold=5,
         interrupted_run="full_yolo11l_cls_20260618-075627",
         remaining_folds=(6, 7),
-        work_root=Path("data") / "stage1_oof_workdir",
+        work_root=Path(r"C:\Users\ASUS\Desktop\ssh\AI\workdirs\stage1_oof_workdir"),
     ),
     "18": NodePlan(
         node="18",
         interrupted_fold=1,
         interrupted_run="full_yolo11l_cls_20260618-082829",
         remaining_folds=(2, 3),
-        work_root=Path("data") / "stage1_oof_workdir_cdrive",
+        work_root=Path(r"C:\Users\ASUS\Desktop\ssh\AI\workdirs\stage1_oof_workdir_cdrive"),
     ),
 }
 
@@ -55,6 +59,26 @@ def repo_root() -> Path:
 
 def resolve_path(path: Path, root: Path) -> Path:
     return path if path.is_absolute() else root / path
+
+
+def real_path(path: Path) -> Path:
+    return Path(os.path.realpath(path))
+
+
+def drive_upper(path: Path) -> str:
+    return real_path(path).drive.upper()
+
+
+def require_drive(path: Path, drive: str, description: str) -> None:
+    actual = drive_upper(path)
+    if actual != drive.upper():
+        raise RuntimeError(f"{description} must resolve to {drive.upper()}, got {actual}: {path} -> {real_path(path)}")
+
+
+def require_not_drive(path: Path, drive: str, description: str) -> None:
+    actual = drive_upper(path)
+    if actual == drive.upper():
+        raise RuntimeError(f"{description} must not resolve to {drive.upper()}: {path} -> {real_path(path)}")
 
 
 def result_epoch(run_dir: Path) -> int | None:
@@ -116,6 +140,74 @@ def print_fold_status(runs_root: Path, folds: tuple[int, ...]) -> None:
             )
 
 
+def validate_storage_layout(*, dataset_root: Path, work_root: Path, runs_root: Path) -> None:
+    if not dataset_root.exists():
+        raise FileNotFoundError(f"Missing dataset root: {dataset_root}")
+    if not runs_root.exists():
+        raise FileNotFoundError(f"Missing runs root: {runs_root}")
+    work_root.mkdir(parents=True, exist_ok=True)
+
+    require_drive(dataset_root, "C:", "dataset_root")
+    require_drive(work_root, "C:", "work_root")
+    require_not_drive(runs_root, "C:", "runs_root")
+
+
+def prepare_fold_workdir(
+    *,
+    root: Path,
+    fold: int,
+    dataset_root: Path,
+    work_root: Path,
+    runs_root: Path,
+    yolo_root: Path,
+    save_period: int,
+    device: str,
+    workers: int,
+) -> None:
+    dataset_dir = work_root / f"fold_{fold:02d}" / "full"
+    if dataset_dir.exists():
+        print(f"fold_{fold:02d} workdir already exists: {dataset_dir}", flush=True)
+        return
+
+    sys.path.insert(0, str(root))
+    from scripts.train_stage1_cls_sweep import Paths, TrainConfig, prepare_cls_dataset  # noqa: PLC0415
+
+    manifest_dir = (
+        root
+        / "artifacts"
+        / "stage1_oof_folds_10fold_20260617"
+        / "folds"
+        / f"fold_{fold:02d}"
+        / "manifests"
+    )
+    paths = Paths(
+        repo_root=root,
+        yolo_root=yolo_root,
+        dataset_root=dataset_root,
+        manifest_dir=manifest_dir,
+        work_root=work_root / f"fold_{fold:02d}",
+        runs_root=runs_root / f"fold_{fold:02d}",
+    )
+    cfg = TrainConfig(
+        mode="full",
+        models=("l",),
+        seed=20260606,
+        epochs=TARGET_EPOCHS,
+        imgsz=224,
+        batch=128,
+        workers=workers,
+        save_period=save_period,
+        device=device,
+        rebuild_data=True,
+        train_per_class=None,
+        val_per_class=None,
+        dry_run=True,
+        exist_ok=False,
+    )
+    print(f"preparing fold_{fold:02d} workdir on C: {dataset_dir}", flush=True)
+    prepare_cls_dataset(paths, cfg)
+
+
 def detect_node(root: Path) -> str:
     runs_root = root / DEFAULT_RUNS_ROOT
     has_18_work = (root / "data" / "stage1_oof_workdir_cdrive").exists()
@@ -150,6 +242,7 @@ def resume_interrupted_fold(
     runs_root: Path,
     device: str,
     workers: int,
+    save_period: int,
     print_only: bool,
 ) -> None:
     fold = plan.interrupted_fold
@@ -160,6 +253,9 @@ def resume_interrupted_fold(
     checkpoint = fold_dir(runs_root, fold) / plan.interrupted_run / "weights" / "last.pt"
     if not checkpoint.exists():
         raise FileNotFoundError(f"Missing resume checkpoint: {checkpoint}")
+    resume_data = resolve_path(plan.work_root, root) / f"fold_{fold:02d}" / "full"
+    if not resume_data.exists() and not print_only:
+        raise FileNotFoundError(f"Missing prepared resume data: {resume_data}")
 
     code = (
         "from pathlib import Path\n"
@@ -169,8 +265,10 @@ def resume_interrupted_fold(
         "sys.path.insert(0, str(repo / 'YOLOv11'))\n"
         "from ultralytics import YOLO\n"
         f"checkpoint = Path(r'{checkpoint}')\n"
+        f"data = Path(r'{resume_data}')\n"
         "print(f'resuming from {checkpoint}', flush=True)\n"
-        f"YOLO(str(checkpoint)).train(resume=True, save_period=-1, device={device!r}, workers={workers})\n"
+        "print(f'resume data={data}', flush=True)\n"
+        f"YOLO(str(checkpoint)).train(resume=True, data=str(data), save_period={save_period}, device={device!r}, workers={workers})\n"
     )
     command = [str(train_python), "-c", code]
     if print_only:
@@ -190,6 +288,7 @@ def run_remaining_folds(
     runs_root: Path,
     device: str,
     workers: int,
+    save_period: int,
     print_only: bool,
 ) -> None:
     pending = tuple(fold for fold in plan.remaining_folds if not fold_complete(runs_root, fold))
@@ -207,7 +306,7 @@ def run_remaining_folds(
         "--work-root",
         str(resolve_path(plan.work_root, root)),
         "--save-period",
-        "-1",
+        str(save_period),
         "--device",
         device,
         "--workers",
@@ -225,8 +324,10 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--train-python", type=Path, default=DEFAULT_TRAIN_PYTHON)
     parser.add_argument("--dataset-root", type=Path, default=DEFAULT_DATASET_ROOT)
     parser.add_argument("--runs-root", type=Path, default=DEFAULT_RUNS_ROOT)
+    parser.add_argument("--yolo-root", type=Path, default=DEFAULT_YOLO_ROOT)
     parser.add_argument("--device", default="0")
     parser.add_argument("--workers", type=int, default=4)
+    parser.add_argument("--save-period", type=int, default=DEFAULT_SAVE_PERIOD)
     parser.add_argument("--print-only", action="store_true")
     return parser.parse_args()
 
@@ -240,18 +341,37 @@ def main() -> int:
     wrapper_python = Path(sys.executable)
     dataset_root = resolve_path(args.dataset_root, root)
     runs_root = resolve_path(args.runs_root, root)
+    yolo_root = resolve_path(args.yolo_root, root)
+    work_root = resolve_path(plan.work_root, root)
 
     print(f"repo_root={root}", flush=True)
     print(f"detected_node={node}", flush=True)
     print(f"dataset_root={dataset_root}", flush=True)
-    print(f"work_root={resolve_path(plan.work_root, root)}", flush=True)
+    print(f"dataset_root_real={real_path(dataset_root)}", flush=True)
+    print(f"work_root={work_root}", flush=True)
+    print(f"work_root_real={real_path(work_root)}", flush=True)
     print(f"runs_root={runs_root}", flush=True)
+    print(f"runs_root_real={real_path(runs_root)}", flush=True)
+    print(f"save_period={args.save_period}", flush=True)
     print_fold_status(runs_root, (plan.interrupted_fold, *plan.remaining_folds))
 
     if not train_python.exists():
         raise FileNotFoundError(f"Missing training Python: {train_python}")
-    if not dataset_root.exists():
-        raise FileNotFoundError(f"Missing dataset root: {dataset_root}")
+    validate_storage_layout(dataset_root=dataset_root, work_root=work_root, runs_root=runs_root)
+    if args.print_only:
+        print(f"would prepare fold_{plan.interrupted_fold:02d} workdir before resume", flush=True)
+    else:
+        prepare_fold_workdir(
+            root=root,
+            fold=plan.interrupted_fold,
+            dataset_root=dataset_root,
+            work_root=work_root,
+            runs_root=runs_root,
+            yolo_root=yolo_root,
+            save_period=args.save_period,
+            device=args.device,
+            workers=args.workers,
+        )
 
     resume_interrupted_fold(
         root=root,
@@ -260,6 +380,7 @@ def main() -> int:
         runs_root=runs_root,
         device=args.device,
         workers=args.workers,
+        save_period=args.save_period,
         print_only=args.print_only,
     )
     run_remaining_folds(
@@ -270,6 +391,7 @@ def main() -> int:
         runs_root=runs_root,
         device=args.device,
         workers=args.workers,
+        save_period=args.save_period,
         print_only=args.print_only,
     )
     print("done", flush=True)
