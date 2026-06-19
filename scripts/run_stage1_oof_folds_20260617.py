@@ -176,7 +176,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--imgsz", type=int, default=224)
     parser.add_argument("--batch", type=int, default=128)
     parser.add_argument("--workers", type=int, default=4)
-    parser.add_argument("--save-period", type=int, default=1)
+    parser.add_argument("--save-period", type=int, default=-1)
     parser.add_argument("--device", default="0")
     parser.add_argument("--train-per-class", type=int, default=None)
     parser.add_argument("--val-per-class", type=int, default=None)

@@ -1068,7 +1068,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--save-period",
         type=int,
-        default=int(os.environ.get("STAGE1_SAVE_PERIOD", 1)),
+        default=int(os.environ.get("STAGE1_SAVE_PERIOD", -1)),
         help="Save checkpoint every N epochs. Use -1 to keep only best.pt and last.pt.",
     )
     parser.add_argument("--device", default=os.environ.get("STAGE1_DEVICE", "0"))
