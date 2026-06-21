@@ -1,12 +1,19 @@
-﻿# Stage 1 classification sweep artifacts - 2026-06-16
+# Stage 1 Classification Sweep Artifacts - 2026-06-16
 
-Collected from LAN training nodes after the full YOLO11 classification sweep completed.
+Status: `SUPPORTING_TRAIN_RUNS`
+
+Use this directory as training-run evidence for the current baseline models.
+Do not cite it as the formal model comparison or final evaluation result. For
+current baseline metrics, use `artifacts/stage1_cls_eval_1to5_20260617/`.
+
+Collected from LAN training nodes after the full YOLO11 classification sweep
+completed.
 
 Policy:
 
-- Checkpoint weights are intentionally excluded: no `*.pt` files are stored here.
-- Large `train_log.txt` files are compressed as `train_log.txt.zip` to keep the repository small.
-- Raw run folders are grouped by node IP under `node-192.168.100.xx/`.
+- checkpoint weights are intentionally excluded: no `*.pt` files are stored here
+- large `train_log.txt` files are compressed as `train_log.txt.zip`
+- raw run folders are grouped by node IP under `node-192.168.100.xx/`
 
 Included runs:
 
@@ -20,8 +27,8 @@ Included runs:
 
 Index files:
 
-- `metrics_summary.csv`: one row per full model run.
-- `file_manifest.csv`: committed non-weight artifacts and file sizes.
+- `metrics_summary.csv`: one row per full model run
+- `file_manifest.csv`: committed non-weight artifacts and file sizes
 
 Source nodes:
 

@@ -1,5 +1,16 @@
 # YOLO-CV
 
+Start here for scope control:
+
+- `CURRENT_RESEARCH.md` is the current source-of-truth map.
+- `artifacts/README.md` explains which artifact folders are current results,
+  supporting run evidence, or pending OOF prediction outputs.
+- `docs/README.md` lists the current documentation entrypoints.
+
+When a number can refer to several datasets or experiments, name the scope first
+before using it.  Historical material under `_recycle_bin/` is audit-only unless
+explicitly requested.
+
 This workspace has been reset for the final dataset:
 
 - new active direction: one final dataset, not a v1/v2/v3/v4 sequence
