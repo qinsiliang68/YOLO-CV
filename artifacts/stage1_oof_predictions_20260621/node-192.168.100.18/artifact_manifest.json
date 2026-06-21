@@ -1,0 +1,55 @@
+{
+  "created_at": "2026-06-21T15:12:45",
+  "output_root": "D:\\ssh\\AI\\repos\\YOLO-CV\\artifacts\\stage1_oof_predictions_20260621\\node-192.168.100.18",
+  "artifact_count": 8,
+  "artifacts": [
+    {
+      "relative_path": "difficulty_summary.csv",
+      "size_bytes": "756",
+      "sha256": "f5339c9a7b85b97408b3c72c22697afe0bd519590705e70cdd2aa1a6f94cee97",
+      "modified_at_local": "2026-06-21T15:12:44"
+    },
+    {
+      "relative_path": "oof_predictions_merged.csv",
+      "size_bytes": "26253390",
+      "sha256": "5599cc1bc55e9d4a330958df9a30dbb183738e9d5a319c1e5b43cabe9582c85f",
+      "modified_at_local": "2026-06-21T15:12:44"
+    },
+    {
+      "relative_path": "predictions_fold_00.csv",
+      "size_bytes": "6574262",
+      "sha256": "f8fdebff714932ad3c0745d077850d32859868c693fd4ed1d8343446aabe254a",
+      "modified_at_local": "2026-06-21T15:09:34"
+    },
+    {
+      "relative_path": "predictions_fold_01.csv",
+      "size_bytes": "6555155",
+      "sha256": "f82baf7dccb7b6ebf9e5a04cb465ed5d9f01e3187d33b9613e2296fcd3a5e878",
+      "modified_at_local": "2026-06-21T15:10:38"
+    },
+    {
+      "relative_path": "predictions_fold_02.csv",
+      "size_bytes": "6572677",
+      "sha256": "e711b43b1d4f90183354087ffcd10863b219514b8d0a9985752c4f70208bafaa",
+      "modified_at_local": "2026-06-21T15:11:41"
+    },
+    {
+      "relative_path": "predictions_fold_03.csv",
+      "size_bytes": "6552907",
+      "sha256": "febde62e7e884122016f97f47948e142ff60b3c60c8d867d6bd65871faa3337d",
+      "modified_at_local": "2026-06-21T15:12:44"
+    },
+    {
+      "relative_path": "run_config.json",
+      "size_bytes": "2768",
+      "sha256": "5b59962017022d7183895c56f7eec287e5b06b4f38d47e534ad226f388b14488",
+      "modified_at_local": "2026-06-21T15:07:50"
+    },
+    {
+      "relative_path": "wrong_confidence_hist.png",
+      "size_bytes": "104728",
+      "sha256": "f301a6f1b90d2ce127ff41fd6314984342a316307038b58df4ea5d1777f04d8c",
+      "modified_at_local": "2026-06-21T15:12:45"
+    }
+  ]
+}
