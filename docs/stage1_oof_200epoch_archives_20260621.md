@@ -1,23 +1,28 @@
-# Stage-1 OOF 200-Epoch Run Archives, Folds 00-07
+# Stage-1 OOF 200-Epoch Run Archives, Folds 1-8
 
 Created: 2026-06-21
 
-This note records the completed Stage-1 OOF 200-epoch runs for code folds
-`fold_00` through `fold_07`, the archive packages created from those runs, and
-the training/recovery scripts that were actually present on the nodes.
+This note records the completed Stage-1 OOF 200-epoch runs for folds 1 through
+8, the archive packages created from those runs, and the training/recovery
+scripts that were actually present on the nodes.
 
-Human fold mapping:
+The public archive labels use human fold numbers starting at 1. Paths under
+`runs`, `checkpoint_archive`, and `artifacts/stage1_oof_folds_10fold_20260617`
+still show the original training directory names because those are the exact
+on-disk paths used by the training scripts.
 
-| Human fold | Code fold | Node |
-| --- | --- | --- |
-| 1 | `fold_00` | `192.168.100.18` |
-| 2 | `fold_01` | `192.168.100.18` |
-| 3 | `fold_02` | `192.168.100.18` |
-| 4 | `fold_03` | `192.168.100.18` |
-| 5 | `fold_04` | `192.168.100.13` |
-| 6 | `fold_05` | `192.168.100.13` |
-| 7 | `fold_06` | `192.168.100.13` |
-| 8 | `fold_07` | `192.168.100.13` |
+Fold ownership:
+
+| Fold | Node |
+| ---: | --- |
+| 1 | `192.168.100.18` |
+| 2 | `192.168.100.18` |
+| 3 | `192.168.100.18` |
+| 4 | `192.168.100.18` |
+| 5 | `192.168.100.13` |
+| 6 | `192.168.100.13` |
+| 7 | `192.168.100.13` |
+| 8 | `192.168.100.13` |
 
 All eight checked runs have `results.csv` with 200 rows, `last_epoch=200`,
 `weights/best.pt`, and `weights/last.pt`. No matching training process was
@@ -48,28 +53,28 @@ the normal Windows bsdtar behavior when archiving absolute paths.
 
 ## Run And Archive Table
 
-| Code fold | Node | Run path | Run epoch ckpts | External epoch ckpts | Archive size GB | SHA256 |
+| Fold | Node | Run path | Run epoch ckpts | External epoch ckpts | Archive size GB | SHA256 |
 | --- | --- | --- | ---: | ---: | ---: | --- |
-| `fold_00` | `192.168.100.18` | `D:\ssh\AI\runs\YOLOv11\stage1_oof_10fold\fold_00\full_yolo11l_cls_20260617-214804` | 0 | 200 | 14.581 | `ACE3458A5352218EC8A0185D11383DC5EEAB32569E3D31AC7368E175EA4A61FB` |
-| `fold_01` | `192.168.100.18` | `D:\ssh\AI\runs\YOLOv11\stage1_oof_10fold\fold_01\full_yolo11l_cls_20260618-082829` | 22 | 178 | 14.507 | `A19B6B1B62029DFF1B034617E8F8B1A6361987DD78A961CD71FAC10242AFFE7C` |
-| `fold_02` | `192.168.100.18` | `D:\ssh\AI\runs\YOLOv11\stage1_oof_10fold\fold_02\full_yolo11l_cls_20260619-221302` | 200 | 0 | 14.581 | `EB050F2EC0489B07D8FA133BA4052E406849FAE786B3392B8BC98D0B182841DD` |
-| `fold_03` | `192.168.100.18` | `D:\ssh\AI\runs\YOLOv11\stage1_oof_10fold\fold_03\full_yolo11l_cls_20260620-085259` | 200 | 0 | 14.581 | `758230726F487A629E84388F41FFE5FA3F3221D4F90D0EBE57966A99EEA77D3B` |
-| `fold_04` | `192.168.100.13` | `F:\ssh\AI\runs\YOLOv11\stage1_oof_10fold\fold_04\full_yolo11l_cls_20260617-205648` | 0 | 200 | 14.581 | `CD2DE32055D229E8845274A487010E457DB7E76EE979D2DC81EFF663A8A45B9F` |
-| `fold_05` | `192.168.100.13` | `F:\ssh\AI\runs\YOLOv11\stage1_oof_10fold\fold_05\full_yolo11l_cls_20260618-075627` | 10 | 190 | 14.560 | `63122FE6BC608A00B481FB493CFFDD9959C3D43AAD20C3814FA3C9552E41BC8A` |
-| `fold_06` | `192.168.100.13` | `F:\ssh\AI\runs\YOLOv11\stage1_oof_10fold\fold_06\full_yolo11l_cls_20260619-213452` | 200 | 0 | 14.581 | `4CF7E2DA8A191B6554A42F01131C7010AE6DE0987E7D23B2347031E7CE707683` |
-| `fold_07` | `192.168.100.13` | `F:\ssh\AI\runs\YOLOv11\stage1_oof_10fold\fold_07\full_yolo11l_cls_20260620-084047` | 200 | 0 | 14.581 | `EC66BC6278735C4CBC418B6B68A1E5F7C0964C42A4D3FF5E64907695EE344BD5` |
+| 1 | `192.168.100.18` | `D:\ssh\AI\runs\YOLOv11\stage1_oof_10fold\fold_00\full_yolo11l_cls_20260617-214804` | 0 | 200 | 14.581 | `ACE3458A5352218EC8A0185D11383DC5EEAB32569E3D31AC7368E175EA4A61FB` |
+| 2 | `192.168.100.18` | `D:\ssh\AI\runs\YOLOv11\stage1_oof_10fold\fold_01\full_yolo11l_cls_20260618-082829` | 22 | 178 | 14.507 | `A19B6B1B62029DFF1B034617E8F8B1A6361987DD78A961CD71FAC10242AFFE7C` |
+| 3 | `192.168.100.18` | `D:\ssh\AI\runs\YOLOv11\stage1_oof_10fold\fold_02\full_yolo11l_cls_20260619-221302` | 200 | 0 | 14.581 | `EB050F2EC0489B07D8FA133BA4052E406849FAE786B3392B8BC98D0B182841DD` |
+| 4 | `192.168.100.18` | `D:\ssh\AI\runs\YOLOv11\stage1_oof_10fold\fold_03\full_yolo11l_cls_20260620-085259` | 200 | 0 | 14.581 | `758230726F487A629E84388F41FFE5FA3F3221D4F90D0EBE57966A99EEA77D3B` |
+| 5 | `192.168.100.13` | `F:\ssh\AI\runs\YOLOv11\stage1_oof_10fold\fold_04\full_yolo11l_cls_20260617-205648` | 0 | 200 | 14.581 | `CD2DE32055D229E8845274A487010E457DB7E76EE979D2DC81EFF663A8A45B9F` |
+| 6 | `192.168.100.13` | `F:\ssh\AI\runs\YOLOv11\stage1_oof_10fold\fold_05\full_yolo11l_cls_20260618-075627` | 10 | 190 | 14.560 | `63122FE6BC608A00B481FB493CFFDD9959C3D43AAD20C3814FA3C9552E41BC8A` |
+| 7 | `192.168.100.13` | `F:\ssh\AI\runs\YOLOv11\stage1_oof_10fold\fold_06\full_yolo11l_cls_20260619-213452` | 200 | 0 | 14.581 | `4CF7E2DA8A191B6554A42F01131C7010AE6DE0987E7D23B2347031E7CE707683` |
+| 8 | `192.168.100.13` | `F:\ssh\AI\runs\YOLOv11\stage1_oof_10fold\fold_07\full_yolo11l_cls_20260620-084047` | 200 | 0 | 14.581 | `EC66BC6278735C4CBC418B6B68A1E5F7C0964C42A4D3FF5E64907695EE344BD5` |
 
 Archive filenames:
 
 ```text
-D:\ssh\AI\run_archives\stage1_oof_10fold_200epoch\stage1_oof_200epoch_192.168.100.18_fold_00_full_yolo11l_cls_20260617-214804.tar
-D:\ssh\AI\run_archives\stage1_oof_10fold_200epoch\stage1_oof_200epoch_192.168.100.18_fold_01_full_yolo11l_cls_20260618-082829.tar
-D:\ssh\AI\run_archives\stage1_oof_10fold_200epoch\stage1_oof_200epoch_192.168.100.18_fold_02_full_yolo11l_cls_20260619-221302.tar
-D:\ssh\AI\run_archives\stage1_oof_10fold_200epoch\stage1_oof_200epoch_192.168.100.18_fold_03_full_yolo11l_cls_20260620-085259.tar
-F:\ssh\AI\run_archives\stage1_oof_10fold_200epoch\stage1_oof_200epoch_192.168.100.13_fold_04_full_yolo11l_cls_20260617-205648.tar
-F:\ssh\AI\run_archives\stage1_oof_10fold_200epoch\stage1_oof_200epoch_192.168.100.13_fold_05_full_yolo11l_cls_20260618-075627.tar
-F:\ssh\AI\run_archives\stage1_oof_10fold_200epoch\stage1_oof_200epoch_192.168.100.13_fold_06_full_yolo11l_cls_20260619-213452.tar
-F:\ssh\AI\run_archives\stage1_oof_10fold_200epoch\stage1_oof_200epoch_192.168.100.13_fold_07_full_yolo11l_cls_20260620-084047.tar
+D:\ssh\AI\run_archives\stage1_oof_10fold_200epoch\stage1_oof_200epoch_192.168.100.18_fold_1_full_yolo11l_cls_20260617-214804.tar
+D:\ssh\AI\run_archives\stage1_oof_10fold_200epoch\stage1_oof_200epoch_192.168.100.18_fold_2_full_yolo11l_cls_20260618-082829.tar
+D:\ssh\AI\run_archives\stage1_oof_10fold_200epoch\stage1_oof_200epoch_192.168.100.18_fold_3_full_yolo11l_cls_20260619-221302.tar
+D:\ssh\AI\run_archives\stage1_oof_10fold_200epoch\stage1_oof_200epoch_192.168.100.18_fold_4_full_yolo11l_cls_20260620-085259.tar
+F:\ssh\AI\run_archives\stage1_oof_10fold_200epoch\stage1_oof_200epoch_192.168.100.13_fold_5_full_yolo11l_cls_20260617-205648.tar
+F:\ssh\AI\run_archives\stage1_oof_10fold_200epoch\stage1_oof_200epoch_192.168.100.13_fold_6_full_yolo11l_cls_20260618-075627.tar
+F:\ssh\AI\run_archives\stage1_oof_10fold_200epoch\stage1_oof_200epoch_192.168.100.13_fold_7_full_yolo11l_cls_20260619-213452.tar
+F:\ssh\AI\run_archives\stage1_oof_10fold_200epoch\stage1_oof_200epoch_192.168.100.13_fold_8_full_yolo11l_cls_20260620-084047.tar
 ```
 
 Each `.tar` has a sibling `.sha256` file in the same archive directory.

@@ -1,19 +1,19 @@
-﻿node=192.168.100.18
-fold=fold_01
-run=D:\ssh\AI\runs\YOLOv11\stage1_oof_10fold\fold_01\full_yolo11l_cls_20260618-082829
-run_size_gb=1.654
-run_file_count=45
-run_epoch_pt_count=22
-external_checkpoint_dir=D:\ssh\AI\checkpoint_archive\stage1_oof_10fold\fold_01\full_yolo11l_cls_20260618-082829
-external_epoch_pt_count=178
+﻿node=192.168.100.13
+fold=5
+run=F:\ssh\AI\runs\YOLOv11\stage1_oof_10fold\fold_04\full_yolo11l_cls_20260617-205648
+run_size_gb=0.071
+run_file_count=23
+run_epoch_pt_count=0
+external_checkpoint_dir=F:\ssh\AI\checkpoint_archive\stage1_oof_10fold\fold_04\full_yolo11l_cls_20260617-205648
+external_epoch_pt_count=200
 results_rows=200
 last_epoch=200
 best_pt_exists=True
 last_pt_exists=True
 git_branch=push-info-sampling-lite
 git_commit=97c5746
-archive_path=D:\ssh\AI\run_archives\stage1_oof_10fold_200epoch\stage1_oof_200epoch_192.168.100.18_fold_01_full_yolo11l_cls_20260618-082829.tar
-created_at=2026-06-21 11:51:57
+archive_path=F:\ssh\AI\run_archives\stage1_oof_10fold_200epoch\stage1_oof_200epoch_192.168.100.13_fold_5_full_yolo11l_cls_20260617-205648.tar
+created_at=2026-06-21 11:48:14
 git_status= D data/final_sewerml_dataset/manifests/dataset_integrity_check.csv
 git_status= D data/final_sewerml_dataset/manifests/normal_test_dataset_summary.csv
 git_status= D data/final_sewerml_dataset/manifests/normal_test_label_summary.csv
@@ -65,9 +65,9 @@ code_sha256=38C79FBDEFF5A51ABA9A64A8500514002EA54BE43315138980BC6EFF6AD3E9F8 pat
 code_sha256=76E852E304E0E430637E99D6CD20DB80D9D2D110CD572168297CFCAD0A36169A path=C:\Users\ASUS\Desktop\ssh\AI\repos\YOLO-CV\docs\stage1_oof_10fold.md
 code_sha256=4209C08E36D5F096C0B42890E65B4CED881D6F5BC6D263EAA1603B8DE06B8BFC path=C:\Users\ASUS\Desktop\ssh\AI\repos\YOLO-CV\tests\test_build_stage1_oof_folds.py
 code_sha256=822B00E1ED37D51E8D2E3AAD77E3869F1AB3C23CFACE7CAECD3AD4184B53809B path=C:\Users\ASUS\Desktop\ssh\AI\repos\YOLO-CV\tests\test_train_stage1_manifest_dir.py
-source=D:\ssh\AI\runs\YOLOv11\stage1_oof_10fold\fold_01\full_yolo11l_cls_20260618-082829
-source=D:\ssh\AI\checkpoint_archive\stage1_oof_10fold\fold_01\full_yolo11l_cls_20260618-082829
-source=C:\Users\ASUS\Desktop\ssh\AI\repos\YOLO-CV\artifacts\stage1_oof_folds_10fold_20260617\folds\fold_01
+source=F:\ssh\AI\runs\YOLOv11\stage1_oof_10fold\fold_04\full_yolo11l_cls_20260617-205648
+source=F:\ssh\AI\checkpoint_archive\stage1_oof_10fold\fold_04\full_yolo11l_cls_20260617-205648
+source=C:\Users\ASUS\Desktop\ssh\AI\repos\YOLO-CV\artifacts\stage1_oof_folds_10fold_20260617\folds\fold_04
 source=C:\Users\ASUS\Desktop\ssh\AI\repos\YOLO-CV\artifacts\stage1_oof_folds_10fold_20260617\fold_summary.csv
 source=C:\Users\ASUS\Desktop\ssh\AI\repos\YOLO-CV\artifacts\stage1_oof_folds_10fold_20260617\fold_jobs.csv
 source=C:\Users\ASUS\Desktop\ssh\AI\repos\YOLO-CV\artifacts\stage1_oof_folds_10fold_20260617\group_summary.csv
