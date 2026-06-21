@@ -125,11 +125,21 @@ Relevant code hashes observed on both nodes and locally:
 
 The next technical step is to run OOF prediction aggregation: load each fold's
 best checkpoint, predict the held-out manifests, merge the held-out prediction
-tables, and score difficult samples. This can be run before all 10 folds finish;
-for the currently completed folds 1-8, run:
+tables, and score difficult samples. This can be run before all 10 folds finish.
+
+Because the current folds are split across two nodes, run the exporter on each
+node against the local run root it can see.
+
+On `192.168.100.18` for folds 1-4:
 
 ```powershell
-uv run python scripts\predict_stage1_oof_folds_20260621.py --folds 1-8 --fold-base 1 --dataset-root data\final_sewerml_dataset --oof-root artifacts\stage1_oof_folds_10fold_20260617 --runs-root YOLOv11\runs\stage1_oof_10fold --output-root artifacts\stage1_oof_predictions_20260621 --device 0 --batch 64 --exist-ok
+uv run python scripts\predict_stage1_oof_folds_20260621.py --folds 1-4 --fold-base 1 --dataset-root data\final_sewerml_dataset --oof-root artifacts\stage1_oof_folds_10fold_20260617 --runs-root D:\ssh\AI\runs\YOLOv11\stage1_oof_10fold --output-root artifacts\stage1_oof_predictions_20260621\node-192.168.100.18 --device 0 --batch 64 --exist-ok
+```
+
+On `192.168.100.13` for folds 5-8:
+
+```powershell
+uv run python scripts\predict_stage1_oof_folds_20260621.py --folds 5-8 --fold-base 1 --dataset-root data\final_sewerml_dataset --oof-root artifacts\stage1_oof_folds_10fold_20260617 --runs-root F:\ssh\AI\runs\YOLOv11\stage1_oof_10fold --output-root artifacts\stage1_oof_predictions_20260621\node-192.168.100.13 --device 0 --batch 64 --exist-ok
 ```
 
 When folds 9-10 finish, either run only the new folds with `--folds 9-10
