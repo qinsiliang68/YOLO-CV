@@ -1,0 +1,46 @@
+﻿node=192.168.100.15
+fold=fold_09
+run=D:\ssh\AI\runs\YOLOv11\stage1_oof_10fold\fold_09\full_yolo11l_cls_20260621-045150
+run_size_gb=14.481
+run_file_count=223
+run_epoch_pt_count=200
+external_checkpoint_dir=D:\ssh\AI\checkpoint_archive\stage1_oof_10fold\fold_09\full_yolo11l_cls_20260621-045150
+external_epoch_pt_count=0
+results_rows=200
+last_epoch=200
+best_pt_exists=True
+last_pt_exists=True
+git_branch=
+git_commit=
+archive_path=D:\ssh\AI\run_archives\stage1_oof_10fold_200epoch\stage1_oof_200epoch_192.168.100.15_fold_09_full_yolo11l_cls_20260621-045150.tar
+created_at=2026-06-21 17:07:55
+git_status=git_status_unavailable=无法将“git”项识别为 cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径，请确保路径正确，然后再试一次。
+code_sha256=89A2C5F209C5980E612AB7F46543462BCB694EF30586295C9362373AE4ACD0A5 path=D:\ssh\AI\repos\YOLO-CV\scripts\build_stage1_oof_folds.py
+code_sha256=9DAD28D74F3C7DDACD01E46094732DC0687E35271B8C751B2AC4F16CF827ABFD path=D:\ssh\AI\repos\YOLO-CV\scripts\run_stage1_oof_folds_20260617.py
+code_sha256=9F686753F57C6A71AD1E3EF3299FB8FDF9A2576E6D8076A4752582304B9EC28A path=D:\ssh\AI\repos\YOLO-CV\scripts\continue_stage1_oof_node_20260619.py
+code_sha256=83FE5E15DAF98CD1CB3564DFFFCEE930077EC706C95CD369B7CCEE295A9E2846 path=D:\ssh\AI\repos\YOLO-CV\scripts\train_stage1_cls_sweep.py
+code_sha256=9EDFAE0BECFDAC909F46CCE776973A0BCD83DCB1D7A4DA9C46D67BD1927EBB8E path=D:\ssh\AI\repos\YOLO-CV\scripts\repair_stage1_oof_node_layout_20260619.ps1
+code_sha256=6F96FDD01D085E57E4998D120A06DCF826F43697CC926C468773F42BAA830C7A path=D:\ssh\AI\repos\YOLO-CV\scripts\relocate_stage1_code_env_20260619.ps1
+code_sha256=EAD0AAF0A3BBAB1AEF8BAA2F59E1122FBABC2CE3DAE9F6BA232D8A35E8CDFEB7 path=D:\ssh\AI\repos\YOLO-CV\scripts\inspect_stage1_oof_node_layout_20260619.ps1
+code_sha256=38C79FBDEFF5A51ABA9A64A8500514002EA54BE43315138980BC6EFF6AD3E9F8 path=D:\ssh\AI\repos\YOLO-CV\scripts\validate_stage1_oof_continue_20260619.ps1
+code_sha256=76E852E304E0E430637E99D6CD20DB80D9D2D110CD572168297CFCAD0A36169A path=D:\ssh\AI\repos\YOLO-CV\docs\stage1_oof_10fold.md
+code_sha256=4209C08E36D5F096C0B42890E65B4CED881D6F5BC6D263EAA1603B8DE06B8BFC path=D:\ssh\AI\repos\YOLO-CV\tests\test_build_stage1_oof_folds.py
+code_sha256=822B00E1ED37D51E8D2E3AAD77E3869F1AB3C23CFACE7CAECD3AD4184B53809B path=D:\ssh\AI\repos\YOLO-CV\tests\test_train_stage1_manifest_dir.py
+source=D:\ssh\AI\runs\YOLOv11\stage1_oof_10fold\fold_09\full_yolo11l_cls_20260621-045150
+source=D:\ssh\AI\repos\YOLO-CV\artifacts\stage1_oof_folds_10fold_20260617\folds\fold_09
+source=D:\ssh\AI\repos\YOLO-CV\artifacts\stage1_oof_folds_10fold_20260617\fold_summary.csv
+source=D:\ssh\AI\repos\YOLO-CV\artifacts\stage1_oof_folds_10fold_20260617\fold_jobs.csv
+source=D:\ssh\AI\repos\YOLO-CV\artifacts\stage1_oof_folds_10fold_20260617\group_summary.csv
+source=D:\ssh\AI\repos\YOLO-CV\artifacts\stage1_oof_folds_10fold_20260617\metadata.json
+source=D:\ssh\AI\repos\YOLO-CV\artifacts\stage1_oof_folds_10fold_20260617\train_oof_assignments.csv
+source=D:\ssh\AI\repos\YOLO-CV\scripts\build_stage1_oof_folds.py
+source=D:\ssh\AI\repos\YOLO-CV\scripts\run_stage1_oof_folds_20260617.py
+source=D:\ssh\AI\repos\YOLO-CV\scripts\continue_stage1_oof_node_20260619.py
+source=D:\ssh\AI\repos\YOLO-CV\scripts\train_stage1_cls_sweep.py
+source=D:\ssh\AI\repos\YOLO-CV\scripts\repair_stage1_oof_node_layout_20260619.ps1
+source=D:\ssh\AI\repos\YOLO-CV\scripts\relocate_stage1_code_env_20260619.ps1
+source=D:\ssh\AI\repos\YOLO-CV\scripts\inspect_stage1_oof_node_layout_20260619.ps1
+source=D:\ssh\AI\repos\YOLO-CV\scripts\validate_stage1_oof_continue_20260619.ps1
+source=D:\ssh\AI\repos\YOLO-CV\docs\stage1_oof_10fold.md
+source=D:\ssh\AI\repos\YOLO-CV\tests\test_build_stage1_oof_folds.py
+source=D:\ssh\AI\repos\YOLO-CV\tests\test_train_stage1_manifest_dir.py

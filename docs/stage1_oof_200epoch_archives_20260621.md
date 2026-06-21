@@ -1,9 +1,9 @@
-# Stage-1 OOF 200-Epoch Run Archives, Folds 1-8
+# Stage-1 OOF 200-Epoch Run Archives, Folds 1-10
 
 Created: 2026-06-21
 
 This note records the completed Stage-1 OOF 200-epoch runs for folds 1 through
-8, the archive packages created from those runs, and the training/recovery
+10, the archive packages created from those runs, and the training/recovery
 scripts that were actually present on the nodes.
 
 The public archive labels use human fold numbers starting at 1. Paths under
@@ -23,10 +23,12 @@ Fold ownership:
 | 6 | `192.168.100.13` |
 | 7 | `192.168.100.13` |
 | 8 | `192.168.100.13` |
+| 9 | `192.168.100.15` |
+| 10 | `192.168.100.15` |
 
-All eight checked runs have `results.csv` with 200 rows, `last_epoch=200`,
+All ten checked runs have `results.csv` with 200 rows, `last_epoch=200`,
 `weights/best.pt`, and `weights/last.pt`. No matching training process was
-running on either node at the time of inspection.
+running on the inspected nodes at the time of archival.
 
 ## Archive Policy
 
@@ -36,6 +38,7 @@ Archives were written only to non-C disks:
 | --- | --- | --- |
 | `192.168.100.18` | `D:\ssh\AI\run_archives\stage1_oof_10fold_200epoch` | `D: 542.96 GB`, `C: 8.95 GB` |
 | `192.168.100.13` | `F:\ssh\AI\run_archives\stage1_oof_10fold_200epoch` | `F: 117.51 GB`, `C: 41.93 GB` |
+| `192.168.100.15` | `D:\ssh\AI\run_archives\stage1_oof_10fold_200epoch` | `D: 699.03 GB`, `C: 59.07 GB` |
 
 The archives are uncompressed `.tar` files for speed. Each archive includes:
 
@@ -63,6 +66,8 @@ the normal Windows bsdtar behavior when archiving absolute paths.
 | 6 | `192.168.100.13` | `F:\ssh\AI\runs\YOLOv11\stage1_oof_10fold\fold_05\full_yolo11l_cls_20260618-075627` | 10 | 190 | 14.560 | `63122FE6BC608A00B481FB493CFFDD9959C3D43AAD20C3814FA3C9552E41BC8A` |
 | 7 | `192.168.100.13` | `F:\ssh\AI\runs\YOLOv11\stage1_oof_10fold\fold_06\full_yolo11l_cls_20260619-213452` | 200 | 0 | 14.581 | `4CF7E2DA8A191B6554A42F01131C7010AE6DE0987E7D23B2347031E7CE707683` |
 | 8 | `192.168.100.13` | `F:\ssh\AI\runs\YOLOv11\stage1_oof_10fold\fold_07\full_yolo11l_cls_20260620-084047` | 200 | 0 | 14.581 | `EC66BC6278735C4CBC418B6B68A1E5F7C0964C42A4D3FF5E64907695EE344BD5` |
+| 9 | `192.168.100.15` | `D:\ssh\AI\runs\YOLOv11\stage1_oof_10fold\fold_08\full_yolo11l_cls_20260620-170541` | 200 | 0 | 14.581 | `E22872F91A99BA569772A8971CE57C8BF1D409840EFA59D292F6C41C9B16C06B` |
+| 10 | `192.168.100.15` | `D:\ssh\AI\runs\YOLOv11\stage1_oof_10fold\fold_09\full_yolo11l_cls_20260621-045150` | 200 | 0 | 14.582 | `47FE304261B49120F5071EA2D43B431C9511E79403475B2529299FAAE69179CC` |
 
 Archive filenames:
 
@@ -75,6 +80,8 @@ F:\ssh\AI\run_archives\stage1_oof_10fold_200epoch\stage1_oof_200epoch_192.168.10
 F:\ssh\AI\run_archives\stage1_oof_10fold_200epoch\stage1_oof_200epoch_192.168.100.13_fold_6_full_yolo11l_cls_20260618-075627.tar
 F:\ssh\AI\run_archives\stage1_oof_10fold_200epoch\stage1_oof_200epoch_192.168.100.13_fold_7_full_yolo11l_cls_20260619-213452.tar
 F:\ssh\AI\run_archives\stage1_oof_10fold_200epoch\stage1_oof_200epoch_192.168.100.13_fold_8_full_yolo11l_cls_20260620-084047.tar
+D:\ssh\AI\run_archives\stage1_oof_10fold_200epoch\stage1_oof_200epoch_192.168.100.15_fold_08_full_yolo11l_cls_20260620-170541.tar
+D:\ssh\AI\run_archives\stage1_oof_10fold_200epoch\stage1_oof_200epoch_192.168.100.15_fold_09_full_yolo11l_cls_20260621-045150.tar
 ```
 
 Each `.tar` has a sibling `.sha256` file in the same archive directory.
@@ -121,37 +128,23 @@ Relevant code hashes observed on both nodes and locally:
 | `scripts/validate_stage1_oof_continue_20260619.ps1` | `38C79FBDEFF5A51ABA9A64A8500514002EA54BE43315138980BC6EFF6AD3E9F8` |
 | `scripts/archive_stage1_oof_runs_20260621.ps1` | `192647268C0C501EB6268424B70CC1141E9E27EDBB6A43A49623B8B8FB1D23C7` |
 
-## Follow-Up
+## OOF Prediction Outputs
 
-The next technical step is to run OOF prediction aggregation: load each fold's
-best checkpoint, predict the held-out manifests, merge the held-out prediction
-tables, and score difficult samples. This can be run before all 10 folds finish.
+OOF prediction aggregation has been run for folds 1-10. The committed outputs
+are under:
 
-Because the current folds are split across two nodes, run the exporter on each
-node against the local run root it can see.
-
-On `192.168.100.18` for folds 1-4:
-
-```powershell
-uv run python scripts\predict_stage1_oof_folds_20260621.py --folds 1-4 --fold-base 1 --dataset-root data\final_sewerml_dataset --oof-root artifacts\stage1_oof_folds_10fold_20260617 --runs-root D:\ssh\AI\runs\YOLOv11\stage1_oof_10fold --output-root artifacts\stage1_oof_predictions_20260621\node-192.168.100.18 --device 0 --batch 64 --exist-ok
+```text
+artifacts/stage1_oof_predictions_20260621/
 ```
 
-On `192.168.100.13` for folds 5-8:
-
-```powershell
-uv run python scripts\predict_stage1_oof_folds_20260621.py --folds 5-8 --fold-base 1 --dataset-root data\final_sewerml_dataset --oof-root artifacts\stage1_oof_folds_10fold_20260617 --runs-root F:\ssh\AI\runs\YOLOv11\stage1_oof_10fold --output-root artifacts\stage1_oof_predictions_20260621\node-192.168.100.13 --device 0 --batch 64 --exist-ok
-```
-
-When folds 9-10 finish, either run only the new folds with `--folds 9-10
---fold-base 1` and a separate output directory, or rerun folds 1-10 into one
-merged output directory. The important outputs are:
+The important outputs are:
 
 | File | Purpose |
 | --- | --- |
 | `predictions_fold_XX.csv` | Per-image OOF predictions for one held-out fold. |
-| `oof_predictions_merged.csv` | Merged per-image OOF predictions across selected folds. |
-| `difficulty_summary.csv` | Counts by difficulty bucket and fold. |
-| `wrong_confidence_hist.png` | Histogram where `0.4-0.6` is the decision-boundary band and `>=0.9` is confidently wrong. |
+| `oof_predictions_merged_10fold.csv` | Merged per-image OOF predictions across all 120,000 training images. |
+| `difficulty_summary_10fold.csv` | Counts by difficulty bucket and fold. |
+| `wrong_confidence_hist_10fold.png` | Histogram where `0.4-0.6` is the decision-boundary band and `>=0.9` is confidently wrong. |
 
 The difficulty coordinate is computed from raw class probabilities, not
 deployment-adjusted operational probabilities:
@@ -164,5 +157,5 @@ true_confidence_raw =
 wrong_confidence_raw = 1 - true_confidence_raw
 ```
 
-`192.168.100.18` has very low C free space after archival (`8.95 GB`). This
+`192.168.100.18` had very low C free space after archival (`8.95 GB`). This
 document only records the state; no cleanup was performed during archival.
