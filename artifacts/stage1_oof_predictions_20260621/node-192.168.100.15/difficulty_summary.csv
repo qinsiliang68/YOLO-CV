@@ -1,0 +1,11 @@
+﻿human_fold,difficulty_bucket_raw,count,defect,normal
+9,confidently_wrong,527,242,285
+9,wrong_not_confident,231,104,127
+9,decision_boundary,120,56,64
+9,correct_not_confident,314,138,176
+9,confidently_correct,10809,5467,5342
+10,confidently_wrong,476,240,236
+10,wrong_not_confident,330,181,149
+10,decision_boundary,183,79,104
+10,correct_not_confident,598,278,320
+10,confidently_correct,10442,5255,5187

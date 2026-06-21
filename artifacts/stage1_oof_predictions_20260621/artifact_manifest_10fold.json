@@ -1,0 +1,290 @@
+{
+  "created_at": "2026-06-21T16:53:52",
+  "output_root": "C:\\Users\\lee\\Desktop\\ssh\\repos\\YOLO-CV\\artifacts\\stage1_oof_predictions_20260621",
+  "folds_human": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10
+  ],
+  "total_rows": 120000,
+  "artifact_count": 45,
+  "artifacts": [
+    {
+      "relative_path": "README.md",
+      "size_bytes": "2333",
+      "sha256": "66DA1112F8CB0B454AF16497EF0FB59BFFA6914F99285E2C3FD296223A9966CB",
+      "modified_at_local": "2026-06-21T16:53:35"
+    },
+    {
+      "relative_path": "difficulty_summary_10fold.csv",
+      "size_bytes": "1808",
+      "sha256": "C9173BEAF820159D1194CC0E2E1E09FC7E663280F1CE47A01C987A456DBF9C91",
+      "modified_at_local": "2026-06-21T16:52:58"
+    },
+    {
+      "relative_path": "difficulty_summary_8fold.csv",
+      "size_bytes": "1452",
+      "sha256": "0EC4AA3345009121D44E276CDC5000E56F13569FC1C3A84A81996C4038746764",
+      "modified_at_local": "2026-06-21T15:17:12"
+    },
+    {
+      "relative_path": "node-192.168.100.13/artifact_manifest.csv",
+      "size_bytes": "987",
+      "sha256": "94FADF5939D86DD0AAA424AC15820C7518CCEF6CAD51256FBA1B865FDAEA3AA3",
+      "modified_at_local": "2026-06-21T15:14:19"
+    },
+    {
+      "relative_path": "node-192.168.100.13/artifact_manifest.json",
+      "size_bytes": "2059",
+      "sha256": "8024A7FE25A4AC8D0DFC36F84B97C9C20D7B1A6E9F4AE381E3594502B8D0FF7E",
+      "modified_at_local": "2026-06-21T15:14:19"
+    },
+    {
+      "relative_path": "node-192.168.100.13/difficulty_summary.csv",
+      "size_bytes": "756",
+      "sha256": "D55A316D611032F6F1C9D607A83D128C6D848AAD196B3A976759C79986D0245A",
+      "modified_at_local": "2026-06-21T15:14:20"
+    },
+    {
+      "relative_path": "node-192.168.100.13/oof_predictions_merged.csv",
+      "size_bytes": "26150403",
+      "sha256": "15A3FA2AF501C59853871F84BCEDAFDD1F069E120B00CFFB87756778248EAEE3",
+      "modified_at_local": "2026-06-21T15:14:20"
+    },
+    {
+      "relative_path": "node-192.168.100.13/predictions_fold_04.csv",
+      "size_bytes": "6546353",
+      "sha256": "AC7A53F0903327DBBAD412B1C9DE88B6C1BE7AFFE54E16EB220100EAAC9A34F2",
+      "modified_at_local": "2026-06-21T15:14:20"
+    },
+    {
+      "relative_path": "node-192.168.100.13/predictions_fold_05.csv",
+      "size_bytes": "6532730",
+      "sha256": "E243AC3AEF73C89AFE98945914AF1B0A16D18CEF61A237E3204F60199DB5540F",
+      "modified_at_local": "2026-06-21T15:14:20"
+    },
+    {
+      "relative_path": "node-192.168.100.13/predictions_fold_06.csv",
+      "size_bytes": "6550102",
+      "sha256": "3FA6ECB350E1B43EC8E1FD69CBDBB3E9E77CCDD2132CFBA2FB8D5CD79CCE0BFF",
+      "modified_at_local": "2026-06-21T15:14:21"
+    },
+    {
+      "relative_path": "node-192.168.100.13/predictions_fold_07.csv",
+      "size_bytes": "6522829",
+      "sha256": "5B63C7BF4F2FDF4351AAAA50ACA587D5F473FD1740D69722F1ABD15F7343B58A",
+      "modified_at_local": "2026-06-21T15:14:21"
+    },
+    {
+      "relative_path": "node-192.168.100.13/run_config.json",
+      "size_bytes": "2768",
+      "sha256": "BB370979EA8D3FC49B9C4947BD41F3B9EDD07F978B6D68C57FA80692E42333B4",
+      "modified_at_local": "2026-06-21T15:14:21"
+    },
+    {
+      "relative_path": "node-192.168.100.13/wrong_confidence_hist.png",
+      "size_bytes": "101371",
+      "sha256": "51AA69DC19209397F7254092E42A31B44C8512D5748E0BD116C312C932C831B7",
+      "modified_at_local": "2026-06-21T15:14:21"
+    },
+    {
+      "relative_path": "node-192.168.100.15/artifact_manifest.csv",
+      "size_bytes": "751",
+      "sha256": "2E6D2FAC35F9821BBE25AE06368DF253A823DC4B3DB9318466A1B2BBF88D18B2",
+      "modified_at_local": "2026-06-21T16:50:42"
+    },
+    {
+      "relative_path": "node-192.168.100.15/artifact_manifest.json",
+      "size_bytes": "1593",
+      "sha256": "55C57BC07A80A36D58CC86CCE69CDFDE914EBEBE453591B7CCCAE02FEBB8EA2C",
+      "modified_at_local": "2026-06-21T16:50:44"
+    },
+    {
+      "relative_path": "node-192.168.100.15/difficulty_summary.csv",
+      "size_bytes": "413",
+      "sha256": "AF5420EBB90976E4AA428DB4E39C2EEB5F765AB79F17CFD50214737F62654C9E",
+      "modified_at_local": "2026-06-21T16:50:46"
+    },
+    {
+      "relative_path": "node-192.168.100.15/oof_predictions_merged.csv",
+      "size_bytes": "13128928",
+      "sha256": "C7DDF3A0FB5F785F18C0700530C798DA5AA5EA42AA8102779BC3C2DF78EE048F",
+      "modified_at_local": "2026-06-21T16:51:45"
+    },
+    {
+      "relative_path": "node-192.168.100.15/predictions_fold_08.csv",
+      "size_bytes": "6552565",
+      "sha256": "2F1E0A03B2C025CF926A751C31378F7F7E077C81736632E56FF4F83991735CE7",
+      "modified_at_local": "2026-06-21T16:51:49"
+    },
+    {
+      "relative_path": "node-192.168.100.15/predictions_fold_09.csv",
+      "size_bytes": "6576900",
+      "sha256": "4F59D46F1E221FFCE1211C9A29E4C555432E993FED46A44B045A65B09EC018DB",
+      "modified_at_local": "2026-06-21T16:51:51"
+    },
+    {
+      "relative_path": "node-192.168.100.15/run_config.json",
+      "size_bytes": "1712",
+      "sha256": "BE9E713C0D31A74C736EC8A8FB5D78E4FBA6CAA004CB9F38D3466A042B7E2C73",
+      "modified_at_local": "2026-06-21T16:51:51"
+    },
+    {
+      "relative_path": "node-192.168.100.15/wrong_confidence_hist.png",
+      "size_bytes": "101620",
+      "sha256": "E6B765B4D25452B4A826E45A9C9314D2DC6F5C406F9D4842C8EB8E39B5BCD5B5",
+      "modified_at_local": "2026-06-21T16:51:51"
+    },
+    {
+      "relative_path": "node-192.168.100.18/artifact_manifest.csv",
+      "size_bytes": "987",
+      "sha256": "EA550D6F10FCDCD0270A0D501B40D386772B0A375193F4305A457C41B4D3A1FB",
+      "modified_at_local": "2026-06-21T15:14:18"
+    },
+    {
+      "relative_path": "node-192.168.100.18/artifact_manifest.json",
+      "size_bytes": "2059",
+      "sha256": "B6B511B991730C0125CCBBD3E9EB365F8ADDD21F502CEB969500FF984420061D",
+      "modified_at_local": "2026-06-21T15:14:18"
+    },
+    {
+      "relative_path": "node-192.168.100.18/difficulty_summary.csv",
+      "size_bytes": "756",
+      "sha256": "F5339C9A7B85B97408B3C72C22697AFE0BD519590705E70CDD2AA1A6F94CEE97",
+      "modified_at_local": "2026-06-21T15:14:18"
+    },
+    {
+      "relative_path": "node-192.168.100.18/oof_predictions_merged.csv",
+      "size_bytes": "26253390",
+      "sha256": "5599CC1BC55E9D4A330958DF9A30DBB183738E9D5A319C1E5B43CABE9582C85F",
+      "modified_at_local": "2026-06-21T15:14:18"
+    },
+    {
+      "relative_path": "node-192.168.100.18/predictions_fold_00.csv",
+      "size_bytes": "6574262",
+      "sha256": "F8FDEBFF714932AD3C0745D077850D32859868C693FD4ED1D8343446AABE254A",
+      "modified_at_local": "2026-06-21T15:14:19"
+    },
+    {
+      "relative_path": "node-192.168.100.18/predictions_fold_01.csv",
+      "size_bytes": "6555155",
+      "sha256": "F82BAF7DCCB7B6EBF9E5A04CB465ED5D9F01E3187D33B9613E2296FCD3A5E878",
+      "modified_at_local": "2026-06-21T15:14:19"
+    },
+    {
+      "relative_path": "node-192.168.100.18/predictions_fold_02.csv",
+      "size_bytes": "6572677",
+      "sha256": "E711B43B1D4F90183354087FFCD10863B219514B8D0A9985752C4F70208BAFAA",
+      "modified_at_local": "2026-06-21T15:14:19"
+    },
+    {
+      "relative_path": "node-192.168.100.18/predictions_fold_03.csv",
+      "size_bytes": "6552907",
+      "sha256": "FEBDE62E7E884122016F97F47948E142FF60B3C60C8D867D6BD65871FAA3337D",
+      "modified_at_local": "2026-06-21T15:14:19"
+    },
+    {
+      "relative_path": "node-192.168.100.18/run_config.json",
+      "size_bytes": "2768",
+      "sha256": "5B59962017022D7183895C56F7EEC287E5B06B4F38D47E534AD226F388B14488",
+      "modified_at_local": "2026-06-21T15:14:19"
+    },
+    {
+      "relative_path": "node-192.168.100.18/wrong_confidence_hist.png",
+      "size_bytes": "104728",
+      "sha256": "F301A6F1B90D2CE127FF41FD6314984342A316307038B58DF4EA5D1777F04D8C",
+      "modified_at_local": "2026-06-21T15:14:19"
+    },
+    {
+      "relative_path": "oof_predictions_merged_10fold.csv",
+      "size_bytes": "65531647",
+      "sha256": "E68146F7F2E8C776020FF1A858C23010EDEE5965098F2008DA1CA92D325D847C",
+      "modified_at_local": "2026-06-21T16:52:58"
+    },
+    {
+      "relative_path": "oof_predictions_merged_8fold.csv",
+      "size_bytes": "52403256",
+      "sha256": "128739105919F590531046E1266658D6A63B9354E37DF5F15714645CA65B9B57",
+      "modified_at_local": "2026-06-21T15:17:12"
+    },
+    {
+      "relative_path": "predictions_fold_01.csv",
+      "size_bytes": "6574262",
+      "sha256": "F8FDEBFF714932AD3C0745D077850D32859868C693FD4ED1D8343446AABE254A",
+      "modified_at_local": "2026-06-21T15:14:19"
+    },
+    {
+      "relative_path": "predictions_fold_02.csv",
+      "size_bytes": "6555155",
+      "sha256": "F82BAF7DCCB7B6EBF9E5A04CB465ED5D9F01E3187D33B9613E2296FCD3A5E878",
+      "modified_at_local": "2026-06-21T15:14:19"
+    },
+    {
+      "relative_path": "predictions_fold_03.csv",
+      "size_bytes": "6572677",
+      "sha256": "E711B43B1D4F90183354087FFCD10863B219514B8D0A9985752C4F70208BAFAA",
+      "modified_at_local": "2026-06-21T15:14:19"
+    },
+    {
+      "relative_path": "predictions_fold_04.csv",
+      "size_bytes": "6552907",
+      "sha256": "FEBDE62E7E884122016F97F47948E142FF60B3C60C8D867D6BD65871FAA3337D",
+      "modified_at_local": "2026-06-21T15:14:19"
+    },
+    {
+      "relative_path": "predictions_fold_05.csv",
+      "size_bytes": "6546353",
+      "sha256": "AC7A53F0903327DBBAD412B1C9DE88B6C1BE7AFFE54E16EB220100EAAC9A34F2",
+      "modified_at_local": "2026-06-21T15:14:20"
+    },
+    {
+      "relative_path": "predictions_fold_06.csv",
+      "size_bytes": "6532730",
+      "sha256": "E243AC3AEF73C89AFE98945914AF1B0A16D18CEF61A237E3204F60199DB5540F",
+      "modified_at_local": "2026-06-21T15:14:20"
+    },
+    {
+      "relative_path": "predictions_fold_07.csv",
+      "size_bytes": "6550102",
+      "sha256": "3FA6ECB350E1B43EC8E1FD69CBDBB3E9E77CCDD2132CFBA2FB8D5CD79CCE0BFF",
+      "modified_at_local": "2026-06-21T15:14:21"
+    },
+    {
+      "relative_path": "predictions_fold_08.csv",
+      "size_bytes": "6522829",
+      "sha256": "5B63C7BF4F2FDF4351AAAA50ACA587D5F473FD1740D69722F1ABD15F7343B58A",
+      "modified_at_local": "2026-06-21T15:14:21"
+    },
+    {
+      "relative_path": "predictions_fold_09.csv",
+      "size_bytes": "6552565",
+      "sha256": "2F1E0A03B2C025CF926A751C31378F7F7E077C81736632E56FF4F83991735CE7",
+      "modified_at_local": "2026-06-21T16:51:49"
+    },
+    {
+      "relative_path": "predictions_fold_10.csv",
+      "size_bytes": "6576900",
+      "sha256": "4F59D46F1E221FFCE1211C9A29E4C555432E993FED46A44B045A65B09EC018DB",
+      "modified_at_local": "2026-06-21T16:51:51"
+    },
+    {
+      "relative_path": "wrong_confidence_hist_10fold.png",
+      "size_bytes": "88551",
+      "sha256": "CBF300EBA26F057DEA5CF7E430122C572AEFAB033010A61F827193715C39B502",
+      "modified_at_local": "2026-06-21T16:52:59"
+    },
+    {
+      "relative_path": "wrong_confidence_hist_8fold.png",
+      "size_bytes": "94312",
+      "sha256": "01CD4E7A775AED69317C55A7C21D72FAF0A1C44C7E0582E20D0C4AF32641BC6E",
+      "modified_at_local": "2026-06-21T15:17:13"
+    }
+  ]
+}

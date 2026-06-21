@@ -1,0 +1,43 @@
+{
+  "created_at": "2026-06-21T16:50:08",
+  "output_root": "D:\\ssh\\AI\\repos\\YOLO-CV\\artifacts\\stage1_oof_predictions_20260621\\node-192.168.100.15",
+  "artifact_count": 6,
+  "artifacts": [
+    {
+      "relative_path": "difficulty_summary.csv",
+      "size_bytes": "413",
+      "sha256": "af5420ebb90976e4aa428db4e39c2eeb5f765ab79f17cfd50214737f62654c9e",
+      "modified_at_local": "2026-06-21T16:50:08"
+    },
+    {
+      "relative_path": "oof_predictions_merged.csv",
+      "size_bytes": "13128928",
+      "sha256": "c7ddf3a0fb5f785f18c0700530c798da5aa5ea42aa8102779bc3c2df78ee048f",
+      "modified_at_local": "2026-06-21T16:50:08"
+    },
+    {
+      "relative_path": "predictions_fold_08.csv",
+      "size_bytes": "6552565",
+      "sha256": "2f1e0a03b2c025cf926a751c31378f7f7e077c81736632e56ff4f83991735ce7",
+      "modified_at_local": "2026-06-21T16:49:05"
+    },
+    {
+      "relative_path": "predictions_fold_09.csv",
+      "size_bytes": "6576900",
+      "sha256": "4f59d46f1e221ffce1211c9a29e4c555432e993fed46a44b045a65b09ec018db",
+      "modified_at_local": "2026-06-21T16:50:08"
+    },
+    {
+      "relative_path": "run_config.json",
+      "size_bytes": "1712",
+      "sha256": "be9e713c0d31a74c736ec8a8fb5d78e4fba6caa004cb9f38d3466a042b7e2c73",
+      "modified_at_local": "2026-06-21T16:47:32"
+    },
+    {
+      "relative_path": "wrong_confidence_hist.png",
+      "size_bytes": "101620",
+      "sha256": "e6b765b4d25452b4a826e45a9c9314d2dc6f5c406f9d4842c8eb8e39b5bcd5b5",
+      "modified_at_local": "2026-06-21T16:50:08"
+    }
+  ]
+}
