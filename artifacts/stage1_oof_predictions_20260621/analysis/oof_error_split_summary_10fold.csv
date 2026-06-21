@@ -1,0 +1,3 @@
+﻿error_type,count,class_total,rate,confident_error_ge_0_9,near_boundary_0_5_0_6
+false_negative_defect_as_normal,3641,60000,0.0606833333,2220,274
+false_positive_normal_as_defect,4300,60000,0.0716666667,2637,324
