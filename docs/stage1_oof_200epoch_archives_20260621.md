@@ -74,6 +74,26 @@ F:\ssh\AI\run_archives\stage1_oof_10fold_200epoch\stage1_oof_200epoch_192.168.10
 
 Each `.tar` has a sibling `.sha256` file in the same archive directory.
 
+## Committed Small Materials
+
+The large `.tar` files are not committed. The lightweight index files copied
+from the archive step are committed under:
+
+```text
+artifacts/stage1_oof_200epoch_archives_20260621/
+```
+
+Key committed CSV files:
+
+| File | Purpose |
+| --- | --- |
+| `stage1_oof_200epoch_archive_index_20260621.csv` | One row per completed fold archive, including archive path, size, SHA256, run path, epoch counts, and `best.pt` / `last.pt` checks. |
+| `stage1_oof_200epoch_archive_sha256_20260621.csv` | SHA256 index copied from the sibling `.sha256` files. |
+| `stage1_oof_200epoch_archive_sources_20260621.csv` | Expanded per-archive source list showing every run, checkpoint archive, manifest folder, metadata file, and code file included in each tar. |
+
+Raw per-node summary CSVs, per-archive manifest TXT files, and raw `.sha256`
+files are also committed in subdirectories under the same artifact folder.
+
 ## Node Code Audit
 
 Both training nodes reported their local repo as branch

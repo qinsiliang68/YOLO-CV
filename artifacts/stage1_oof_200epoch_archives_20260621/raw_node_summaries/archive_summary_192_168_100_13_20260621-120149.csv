@@ -1,0 +1,2 @@
+﻿node,fold,archive_path,archive_size_gb,sha256,run_path,run_size_gb,run_file_count,run_epoch_pt_count,external_epoch_pt_count,results_rows,last_epoch,best_pt,last_pt,created_at
+192.168.100.13,fold_07,F:\ssh\AI\run_archives\stage1_oof_10fold_200epoch\stage1_oof_200epoch_192.168.100.13_fold_07_full_yolo11l_cls_20260620-084047.tar,14.581,EC66BC6278735C4CBC418B6B68A1E5F7C0964C42A4D3FF5E64907695EE344BD5,F:\ssh\AI\runs\YOLOv11\stage1_oof_10fold\fold_07\full_yolo11l_cls_20260620-084047,14.481,223,200,0,200,200,True,True,2026-06-21 12:06:36
