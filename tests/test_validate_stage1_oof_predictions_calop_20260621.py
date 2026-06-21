@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from scripts.validate_stage1_oof_predictions_calop_20260621 import validate_rows
+from scripts.validate_stage1_oof_predictions_calop_20260621 import parse_expected_folds, validate_rows
 
 
 VALID_COLUMNS = [
@@ -109,3 +109,33 @@ def test_validate_rows_checks_operational_prediction_consistency() -> None:
 
     assert any("y_pred_operational mismatch" in error for error in errors)
     assert any("operational_correct mismatch" in error for error in errors)
+
+
+def test_validate_rows_rejects_missing_expected_fold() -> None:
+    row = {
+        "human_fold": "9",
+        "y_true": "1",
+        "p_defect_cal": "0.8000000000",
+        "p_defect_operational": "0.7000000000",
+        "true_confidence_cal": "0.8000000000",
+        "wrong_confidence_cal": "0.2000000000",
+        "difficulty_bucket_cal": "correct_not_confident",
+        "true_confidence_operational": "0.7000000000",
+        "wrong_confidence_operational": "0.3000000000",
+        "difficulty_bucket_operational": "correct_not_confident",
+        "operational_threshold": "0.6000000000",
+        "y_pred_operational": "1",
+        "operational_correct": "1",
+    }
+
+    errors = validate_rows(VALID_COLUMNS, [row], expected_human_folds={"9", "10"})
+
+    assert any("Expected human folds" in error for error in errors)
+
+
+def test_parse_expected_folds_accepts_human_ranges() -> None:
+    assert parse_expected_folds("9-10", base=1) == {"9", "10"}
+
+
+def test_parse_expected_folds_accepts_zero_based_ranges() -> None:
+    assert parse_expected_folds("8-9", base=0) == {"9", "10"}

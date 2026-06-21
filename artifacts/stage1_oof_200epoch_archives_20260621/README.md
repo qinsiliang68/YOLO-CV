@@ -15,7 +15,7 @@ On `192.168.100.18` for folds 1-4:
 ```powershell
 uv run python scripts\predict_stage1_oof_folds_20260621.py --folds 1-4 --fold-base 1 --dataset-root data\final_sewerml_dataset --oof-root artifacts\stage1_oof_folds_10fold_20260617 --runs-root D:\ssh\AI\runs\YOLOv11\stage1_oof_10fold --output-root artifacts\stage1_oof_predictions_calop_20260621\node-192.168.100.18 --device 0 --batch 64 --exist-ok
 
-uv run python scripts\validate_stage1_oof_predictions_calop_20260621.py --prediction-root artifacts\stage1_oof_predictions_calop_20260621\node-192.168.100.18
+uv run python scripts\validate_stage1_oof_predictions_calop_20260621.py --prediction-root artifacts\stage1_oof_predictions_calop_20260621\node-192.168.100.18 --expected-folds 1-4 --fold-base 1
 ```
 
 On `192.168.100.13` for folds 5-8:
@@ -23,7 +23,7 @@ On `192.168.100.13` for folds 5-8:
 ```powershell
 uv run python scripts\predict_stage1_oof_folds_20260621.py --folds 5-8 --fold-base 1 --dataset-root data\final_sewerml_dataset --oof-root artifacts\stage1_oof_folds_10fold_20260617 --runs-root F:\ssh\AI\runs\YOLOv11\stage1_oof_10fold --output-root artifacts\stage1_oof_predictions_calop_20260621\node-192.168.100.13 --device 0 --batch 64 --exist-ok
 
-uv run python scripts\validate_stage1_oof_predictions_calop_20260621.py --prediction-root artifacts\stage1_oof_predictions_calop_20260621\node-192.168.100.13
+uv run python scripts\validate_stage1_oof_predictions_calop_20260621.py --prediction-root artifacts\stage1_oof_predictions_calop_20260621\node-192.168.100.13 --expected-folds 5-8 --fold-base 1
 ```
 
 On `192.168.100.15` for folds 9-10:
@@ -31,7 +31,7 @@ On `192.168.100.15` for folds 9-10:
 ```powershell
 uv run python scripts\predict_stage1_oof_folds_20260621.py --folds 9-10 --fold-base 1 --dataset-root data\final_sewerml_dataset --oof-root artifacts\stage1_oof_folds_10fold_20260617 --runs-root D:\ssh\AI\runs\YOLOv11\stage1_oof_10fold --output-root artifacts\stage1_oof_predictions_calop_20260621\node-192.168.100.15 --device 0 --batch 64 --exist-ok
 
-uv run python scripts\validate_stage1_oof_predictions_calop_20260621.py --prediction-root artifacts\stage1_oof_predictions_calop_20260621\node-192.168.100.15
+uv run python scripts\validate_stage1_oof_predictions_calop_20260621.py --prediction-root artifacts\stage1_oof_predictions_calop_20260621\node-192.168.100.15 --expected-folds 9-10 --fold-base 1
 ```
 
 Important files:

@@ -12,6 +12,7 @@ from scripts.predict_stage1_oof_folds_20260621 import (  # noqa: E402
     FoldJob,
     add_difficulty_columns,
     difficulty_bucket,
+    metric_columns_for_rows,
     parse_fold_spec,
 )
 
@@ -76,3 +77,43 @@ def test_add_difficulty_columns_rejects_missing_cal_op_scores(tmp_path: Path) ->
         assert "cal/op" in str(exc)
     else:
         raise AssertionError("missing cal/op scores should fail")
+
+
+def test_metric_columns_for_rows_preserves_metrics_for_split_keys() -> None:
+    rows = [
+        {
+            "split": "fold_00_oof_holdout",
+            "score_column": "p_defect_operational",
+            "threshold": "0.6000000000",
+            "deployment_defect_prevalence": "0.100000",
+            "n": "2",
+            "positive_n": "1",
+            "negative_n": "1",
+            "tp": "1",
+            "fp": "0",
+            "tn": "1",
+            "fn": "0",
+            "recall": "1.0000000000",
+            "specificity": "1.0000000000",
+            "precision": "1.0000000000",
+            "accuracy": "1.0000000000",
+            "f1": "1.0000000000",
+            "fpr": "0.0000000000",
+            "predicted_positive_rate": "0.5000000000",
+            "weighted_precision": "1.0000000000",
+            "weighted_accuracy": "1.0000000000",
+            "weighted_f1": "1.0000000000",
+            "weighted_pass_through_rate": "0.1000000000",
+        }
+    ]
+
+    columns = metric_columns_for_rows(rows)
+
+    assert "n" in columns
+    assert "positive_n" in columns
+    assert "negative_n" in columns
+    assert "predicted_positive_rate" in columns
+    assert "weighted_precision" in columns
+    assert "weighted_pass_through_rate" in columns
+    assert "pass_through_rate" not in columns
+    assert "review_rate" not in columns

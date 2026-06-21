@@ -147,7 +147,7 @@ artifacts/stage1_oof_predictions_calop_20260621/
 Each node output must pass:
 
 ```powershell
-uv run python scripts\validate_stage1_oof_predictions_calop_20260621.py --prediction-root artifacts\stage1_oof_predictions_calop_20260621\node-<ip>
+uv run python scripts\validate_stage1_oof_predictions_calop_20260621.py --prediction-root artifacts\stage1_oof_predictions_calop_20260621\node-<ip> --expected-folds <range> --fold-base 1
 ```
 
 The important cal/op outputs are:

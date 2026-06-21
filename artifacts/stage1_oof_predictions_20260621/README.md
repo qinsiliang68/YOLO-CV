@@ -12,7 +12,7 @@ Regenerate with:
 ```powershell
 uv run python scripts\predict_stage1_oof_folds_20260621.py --folds <range> --fold-base 1 --dataset-root data\final_sewerml_dataset --oof-root artifacts\stage1_oof_folds_10fold_20260617 --runs-root <runs-root> --output-root artifacts\stage1_oof_predictions_calop_20260621\node-<ip> --device 0 --batch 64 --exist-ok
 
-uv run python scripts\validate_stage1_oof_predictions_calop_20260621.py --prediction-root artifacts\stage1_oof_predictions_calop_20260621\node-<ip>
+uv run python scripts\validate_stage1_oof_predictions_calop_20260621.py --prediction-root artifacts\stage1_oof_predictions_calop_20260621\node-<ip> --expected-folds <range> --fold-base 1
 ```
 
 Created: 2026-06-21

@@ -57,7 +57,7 @@ DEFAULT_DATASET_ROOT = Path("data") / "final_sewerml_dataset"
 DEFAULT_OOF_ROOT = Path("artifacts") / "stage1_oof_folds_10fold_20260617"
 DEFAULT_RUNS_ROOT = Path("YOLOv11") / "runs" / "stage1_oof_10fold"
 DEFAULT_YOLO_ROOT = Path("YOLOv11")
-DEFAULT_OUTPUT_ROOT = Path("artifacts") / "stage1_oof_predictions_calop_20260621"
+DEFAULT_OUTPUT_ROOT = Path("artifacts") / "stage1_oof_predictions_calop_20260621" / "local_run"
 
 DIFFICULTY_COLUMNS = (
     "oof_fold",
@@ -324,6 +324,12 @@ def write_artifact_manifest_for_output(output_root: Path) -> None:
     )
 
 
+def metric_columns_for_rows(rows: list[dict[str, str]]) -> tuple[str, ...]:
+    if not rows:
+        return ()
+    return tuple(rows[0].keys())
+
+
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--folds", required=True, help="Fold list/range, e.g. 0-7 with --fold-base 0 or 1-8 with --fold-base 1.")
@@ -516,28 +522,7 @@ def main() -> int:
     write_csv(
         output_root / "metrics_oof_holdout_operational.csv",
         metrics_rows,
-        (
-            "split",
-            "score_column",
-            "threshold",
-            "deployment_defect_prevalence",
-            "tp",
-            "fp",
-            "tn",
-            "fn",
-            "recall",
-            "specificity",
-            "precision",
-            "fpr",
-            "fnr",
-            "accuracy",
-            "f1",
-            "pass_through_rate",
-            "review_rate",
-            "weighted_accuracy",
-            "weighted_f1",
-            "weighted_pass_through_rate",
-        ),
+        metric_columns_for_rows(metrics_rows),
     )
     if not args.no_plot:
         write_histogram(all_rows, output_root / "wrong_confidence_operational_hist.png", source="operational")

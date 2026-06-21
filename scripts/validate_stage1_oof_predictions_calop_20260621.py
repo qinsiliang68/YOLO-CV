@@ -74,7 +74,44 @@ def close_enough(left: float, right: float, *, tolerance: float = 5e-7) -> bool:
     return abs(left - right) <= tolerance
 
 
-def validate_rows(fieldnames: Iterable[str], rows: list[dict[str, str]]) -> list[str]:
+def parse_expected_folds(value: str, *, base: int) -> set[str]:
+    if base not in (0, 1):
+        raise ValueError("--fold-base must be 0 or 1")
+    expected: set[str] = set()
+    for part in value.split(","):
+        part = part.strip()
+        if not part:
+            continue
+        if "-" in part:
+            start_text, end_text = part.split("-", 1)
+            start = int(start_text)
+            end = int(end_text)
+            if end < start:
+                raise ValueError(f"Invalid fold range: {part}")
+            raw_folds = range(start, end + 1)
+        else:
+            raw_folds = (int(part),)
+
+        for raw_fold in raw_folds:
+            zero_based = raw_fold - base
+            if zero_based < 0 or zero_based > 9:
+                raise ValueError(f"Fold out of range after base conversion: raw={raw_fold}, fold={zero_based}")
+            expected.add(str(zero_based + 1))
+    if not expected:
+        raise ValueError("--expected-folds was provided but no folds were parsed")
+    return expected
+
+
+def sorted_fold_text(folds: set[str]) -> str:
+    return ",".join(sorted(folds, key=lambda item: int(item)))
+
+
+def validate_rows(
+    fieldnames: Iterable[str],
+    rows: list[dict[str, str]],
+    *,
+    expected_human_folds: set[str] | None = None,
+) -> list[str]:
     columns = set(fieldnames)
     errors: list[str] = []
 
@@ -89,6 +126,19 @@ def validate_rows(fieldnames: Iterable[str], rows: list[dict[str, str]]) -> list
     if not rows:
         errors.append("Prediction table has zero rows.")
         return errors
+
+    if expected_human_folds is not None:
+        actual_folds = {row.get("human_fold", "") for row in rows}
+        actual_folds.discard("")
+        if actual_folds != expected_human_folds:
+            missing_folds = expected_human_folds - actual_folds
+            extra_folds = actual_folds - expected_human_folds
+            errors.append(
+                "Expected human folds "
+                f"{sorted_fold_text(expected_human_folds)} but found {sorted_fold_text(actual_folds)}; "
+                f"missing={sorted_fold_text(missing_folds) or '<none>'}; "
+                f"extra={sorted_fold_text(extra_folds) or '<none>'}"
+            )
 
     max_row_errors = 30
     suppressed = 0
@@ -168,9 +218,9 @@ def read_prediction_csv(path: Path) -> tuple[list[str], list[dict[str, str]]]:
         return list(reader.fieldnames or []), list(reader)
 
 
-def validate_prediction_file(path: Path) -> list[str]:
+def validate_prediction_file(path: Path, *, expected_human_folds: set[str] | None = None) -> list[str]:
     fieldnames, rows = read_prediction_csv(path)
-    return validate_rows(fieldnames, rows)
+    return validate_rows(fieldnames, rows, expected_human_folds=expected_human_folds)
 
 
 def resolve_prediction_csv(prediction_root: Path, merged_csv: Path | None) -> Path:
@@ -190,13 +240,16 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--prediction-root", type=Path, default=DEFAULT_PREDICTION_ROOT)
     parser.add_argument("--merged-csv", type=Path, default=None)
+    parser.add_argument("--expected-folds", default=None, help="Expected fold list/range, e.g. 9-10 with --fold-base 1.")
+    parser.add_argument("--fold-base", type=int, choices=(0, 1), default=1, help="Interpret --expected-folds as human one-based or zero-based.")
     return parser.parse_args()
 
 
 def main() -> int:
     args = parse_args()
     csv_path = resolve_prediction_csv(args.prediction_root, args.merged_csv)
-    errors = validate_prediction_file(csv_path)
+    expected_human_folds = parse_expected_folds(args.expected_folds, base=args.fold_base) if args.expected_folds else None
+    errors = validate_prediction_file(csv_path, expected_human_folds=expected_human_folds)
     if errors:
         print(f"INVALID: {csv_path}", file=sys.stderr)
         for error in errors:
