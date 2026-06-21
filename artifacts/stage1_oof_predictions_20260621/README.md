@@ -1,5 +1,20 @@
 # Stage-1 OOF Predictions, Folds 1-10
 
+Status: `INVALID_RAW_ONLY`
+
+This artifact set is kept only as an audit record. Do not use it for sample
+value, confidence, difficulty, threshold, or paper-facing conclusions. It was
+generated before the cal/op requirement was enforced: `p_defect_cal` and
+`p_defect_operational` are empty, and the difficulty columns are raw-only.
+
+Regenerate with:
+
+```powershell
+uv run python scripts\predict_stage1_oof_folds_20260621.py --folds <range> --fold-base 1 --dataset-root data\final_sewerml_dataset --oof-root artifacts\stage1_oof_folds_10fold_20260617 --runs-root <runs-root> --output-root artifacts\stage1_oof_predictions_calop_20260621\node-<ip> --device 0 --batch 64 --exist-ok
+
+uv run python scripts\validate_stage1_oof_predictions_calop_20260621.py --prediction-root artifacts\stage1_oof_predictions_calop_20260621\node-<ip>
+```
+
 Created: 2026-06-21
 
 This archive contains per-image out-of-fold predictions for the completed

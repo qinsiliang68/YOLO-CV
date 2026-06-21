@@ -1,15 +1,19 @@
 # -*- coding: utf-8 -*-
-"""Predict Stage-1 OOF holdouts and write sample-difficulty tables.
+"""Predict Stage-1 OOF holdouts and write calibrated sample-value tables.
 
 Training a fold only creates ``best.pt`` and training curves.  This script is
 the missing post-training step: for each completed fold, load that fold's
-``best.pt``, predict only its held-out manifests, and write per-image raw
-probabilities plus the user-facing difficulty coordinate:
+``best.pt``, calibrate its probabilities on the global ``val_cal`` split,
+select an operational threshold on the global ``val_op`` split, then predict
+the fold's held-out training manifests.
 
-``wrong_confidence_raw = 1 - confidence assigned to the true label``
+Any column named ``confidence`` is calibrated/operational only.  Raw model
+probabilities remain in ``p_defect_raw`` and ``p_normal_raw`` as audit inputs,
+but raw confidence/difficulty columns are deliberately not emitted.
 
-The raw probability is used because the 0.4-0.6 decision-boundary view only
-makes sense before calibration or deployment-prior adjustment.
+The primary sample-value coordinate is:
+
+``wrong_confidence_operational = 1 - calibrated/deployment-adjusted confidence assigned to the true label``
 """
 
 from __future__ import annotations
@@ -32,12 +36,18 @@ from scripts.evaluate_stage1_cls_gate import (  # noqa: E402
     EvalConfig,
     PREDICTION_COLUMNS,
     Paths,
+    SPLIT_MANIFESTS,
+    apply_calibration,
     collect_artifact_rows,
     ensure_yolo_import,
     file_sha256,
+    fit_calibrator,
+    load_split_records,
     manifest_row_to_record,
+    metrics_for_split,
     predict_records,
     read_manifest,
+    select_threshold_for_recall,
     write_csv,
     write_json,
 )
@@ -47,16 +57,22 @@ DEFAULT_DATASET_ROOT = Path("data") / "final_sewerml_dataset"
 DEFAULT_OOF_ROOT = Path("artifacts") / "stage1_oof_folds_10fold_20260617"
 DEFAULT_RUNS_ROOT = Path("YOLOv11") / "runs" / "stage1_oof_10fold"
 DEFAULT_YOLO_ROOT = Path("YOLOv11")
-DEFAULT_OUTPUT_ROOT = Path("artifacts") / "stage1_oof_predictions_20260621"
+DEFAULT_OUTPUT_ROOT = Path("artifacts") / "stage1_oof_predictions_calop_20260621"
 
 DIFFICULTY_COLUMNS = (
     "oof_fold",
     "human_fold",
     "fold_run_dir",
     "weights",
-    "true_confidence_raw",
-    "wrong_confidence_raw",
-    "difficulty_bucket_raw",
+    "operational_threshold",
+    "y_pred_operational",
+    "operational_correct",
+    "true_confidence_cal",
+    "wrong_confidence_cal",
+    "difficulty_bucket_cal",
+    "true_confidence_operational",
+    "wrong_confidence_operational",
+    "difficulty_bucket_operational",
 )
 
 OOF_PREDICTION_COLUMNS = (*DIFFICULTY_COLUMNS, *PREDICTION_COLUMNS)
@@ -146,6 +162,14 @@ def load_fold_holdout_records(job: FoldJob, dataset_root: Path) -> list[dict[str
     return records
 
 
+def validate_global_calibration_manifests(paths: Paths) -> None:
+    for split in ("val_cal", "val_op"):
+        for filename in SPLIT_MANIFESTS[split]:
+            path = paths.manifest_dir / filename
+            if not path.exists():
+                raise FileNotFoundError(f"Missing required global {split} manifest for cal/op OOF export: {path}")
+
+
 def difficulty_bucket(wrong_confidence: float) -> str:
     if wrong_confidence >= 0.9:
         return "confidently_wrong"
@@ -158,14 +182,31 @@ def difficulty_bucket(wrong_confidence: float) -> str:
     return "confidently_correct"
 
 
-def add_difficulty_columns(rows: list[dict[str, str]], job: FoldJob) -> list[dict[str, str]]:
+def probability(value: str, *, column: str) -> float:
+    if value == "":
+        raise ValueError(f"missing required cal/op score column: {column}")
+    parsed = float(value)
+    if not 0.0 <= parsed <= 1.0:
+        raise ValueError(f"probability out of range in {column}: {value}")
+    return parsed
+
+
+def true_label_confidence(row: dict[str, str], *, score_column: str) -> float:
+    y_true = int(row["y_true"])
+    p_defect = probability(row.get(score_column, ""), column=score_column)
+    return p_defect if y_true == 1 else 1.0 - p_defect
+
+
+def add_difficulty_columns(rows: list[dict[str, str]], job: FoldJob, *, operational_threshold: float) -> list[dict[str, str]]:
     enriched_rows: list[dict[str, str]] = []
     for row in rows:
         y_true = int(row["y_true"])
-        p_defect = float(row["p_defect_raw"])
-        p_normal = float(row["p_normal_raw"])
-        true_confidence = p_defect if y_true == 1 else p_normal
-        wrong_confidence = 1.0 - true_confidence
+        true_confidence_cal = true_label_confidence(row, score_column="p_defect_cal")
+        wrong_confidence_cal = 1.0 - true_confidence_cal
+        p_defect_operational = probability(row.get("p_defect_operational", ""), column="p_defect_operational")
+        true_confidence_operational = p_defect_operational if y_true == 1 else 1.0 - p_defect_operational
+        wrong_confidence_operational = 1.0 - true_confidence_operational
+        y_pred_operational = 1 if p_defect_operational >= operational_threshold else 0
         enriched = dict(row)
         enriched.update(
             {
@@ -173,19 +214,26 @@ def add_difficulty_columns(rows: list[dict[str, str]], job: FoldJob) -> list[dic
                 "human_fold": str(job.fold + 1),
                 "fold_run_dir": str(job.run_dir),
                 "weights": str(job.weights),
-                "true_confidence_raw": f"{true_confidence:.10f}",
-                "wrong_confidence_raw": f"{wrong_confidence:.10f}",
-                "difficulty_bucket_raw": difficulty_bucket(wrong_confidence),
+                "operational_threshold": f"{operational_threshold:.10f}",
+                "y_pred_operational": str(y_pred_operational),
+                "operational_correct": str(int(y_pred_operational == y_true)),
+                "true_confidence_cal": f"{true_confidence_cal:.10f}",
+                "wrong_confidence_cal": f"{wrong_confidence_cal:.10f}",
+                "difficulty_bucket_cal": difficulty_bucket(wrong_confidence_cal),
+                "true_confidence_operational": f"{true_confidence_operational:.10f}",
+                "wrong_confidence_operational": f"{wrong_confidence_operational:.10f}",
+                "difficulty_bucket_operational": difficulty_bucket(wrong_confidence_operational),
             }
         )
         enriched_rows.append(enriched)
     return enriched_rows
 
 
-def summarize_difficulty(rows: list[dict[str, str]]) -> list[dict[str, str]]:
+def summarize_difficulty(rows: list[dict[str, str]], *, source: str) -> list[dict[str, str]]:
+    bucket_column = f"difficulty_bucket_{source}"
     summary: dict[tuple[str, str], dict[str, int]] = {}
     for row in rows:
-        key = (row["human_fold"], row["difficulty_bucket_raw"])
+        key = (row["human_fold"], row[bucket_column])
         item = summary.setdefault(key, {"count": 0, "defect": 0, "normal": 0})
         item["count"] += 1
         if row["y_true"] == "1":
@@ -205,7 +253,8 @@ def summarize_difficulty(rows: list[dict[str, str]]) -> list[dict[str, str]]:
         output.append(
             {
                 "human_fold": human_fold,
-                "difficulty_bucket_raw": bucket,
+                "difficulty_source": source,
+                "difficulty_bucket": bucket,
                 "count": str(counts["count"]),
                 "defect": str(counts["defect"]),
                 "normal": str(counts["normal"]),
@@ -214,21 +263,22 @@ def summarize_difficulty(rows: list[dict[str, str]]) -> list[dict[str, str]]:
     return output
 
 
-def write_histogram(rows: list[dict[str, str]], output_path: Path) -> None:
+def write_histogram(rows: list[dict[str, str]], output_path: Path, *, source: str) -> None:
     import matplotlib
 
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
     import numpy as np
 
-    values = [float(row["wrong_confidence_raw"]) for row in rows]
+    value_column = f"wrong_confidence_{source}"
+    values = [float(row[value_column]) for row in rows]
     fig, ax = plt.subplots(figsize=(12, 6.8), dpi=180)
     ax.hist(values, bins=np.linspace(0, 1, 51), color="#5975a4", alpha=0.82, edgecolor="white", linewidth=0.7)
-    ax.axvspan(0.4, 0.6, color="#f2c14e", alpha=0.28, label="decision boundary 0.4-0.6")
-    ax.axvspan(0.9, 1.0, color="#d1495b", alpha=0.18, label="confidently wrong >=0.9")
+    ax.axvspan(0.4, 0.6, color="#f2c14e", alpha=0.28, label=f"{source} decision boundary 0.4-0.6")
+    ax.axvspan(0.9, 1.0, color="#d1495b", alpha=0.18, label=f"{source} confidently wrong >=0.9")
     ax.axvline(0.5, color="#333333", linestyle="--", linewidth=1.1)
-    ax.set_title("Stage-1 OOF Sample Difficulty Distribution", fontsize=14, pad=14)
-    ax.set_xlabel("wrong_confidence_raw = 1 - raw confidence assigned to the true label")
+    ax.set_title(f"Stage-1 OOF Sample Difficulty Distribution ({source})", fontsize=14, pad=14)
+    ax.set_xlabel(f"{value_column} = 1 - {source} confidence assigned to the true label")
     ax.set_ylabel("image count")
     ax.set_xlim(0, 1)
     ax.grid(axis="y", alpha=0.22)
@@ -286,6 +336,10 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--imgsz", type=int, default=224)
     parser.add_argument("--batch", type=int, default=64)
     parser.add_argument("--device", default="0")
+    parser.add_argument("--target-recall", type=float, default=0.995)
+    parser.add_argument("--deployment-defect-prevalence", type=float, default=0.10)
+    parser.add_argument("--calibration-limit-per-class", type=int, default=None)
+    parser.add_argument("--write-calibration-predictions", action="store_true")
     parser.add_argument("--dry-run", action="store_true", help="Validate paths and write run_config.json, but do not predict.")
     parser.add_argument("--exist-ok", action="store_true")
     parser.add_argument("--no-plot", action="store_true")
@@ -301,12 +355,20 @@ def main() -> int:
     runs_root = resolve_path(args.runs_root, root).resolve()
     yolo_root = resolve_path(args.yolo_root, root).resolve()
     output_root = resolve_path(args.output_root, root).resolve()
+    paths = Paths(
+        repo_root=root,
+        yolo_root=yolo_root,
+        dataset_root=dataset_root,
+        manifest_dir=dataset_root / "manifests",
+        output_root=output_root,
+    )
 
     if output_root.exists() and any(output_root.iterdir()) and not args.exist_ok:
         raise FileExistsError(f"Output root already exists and is not empty: {output_root}. Use --exist-ok to append/rewrite.")
     output_root.mkdir(parents=True, exist_ok=True)
 
     jobs = build_fold_jobs(folds=folds, oof_root=oof_root, runs_root=runs_root)
+    validate_global_calibration_manifests(paths)
     run_config = {
         "created_at": datetime.now().isoformat(timespec="seconds"),
         "repo_root": str(root),
@@ -320,6 +382,18 @@ def main() -> int:
         "imgsz": args.imgsz,
         "batch": args.batch,
         "device": args.device,
+        "target_recall": args.target_recall,
+        "deployment_defect_prevalence": args.deployment_defect_prevalence,
+        "calibration_limit_per_class": args.calibration_limit_per_class,
+        "write_calibration_predictions": args.write_calibration_predictions,
+        "calibration_split": "val_cal",
+        "threshold_selection_split": "val_op",
+        "sample_value_split": "fold val_model/holdout",
+        "score_column_for_threshold": "p_defect_operational",
+        "difficulty_columns": {
+            "cal": "wrong_confidence_cal",
+            "operational": "wrong_confidence_operational",
+        },
         "dry_run": args.dry_run,
         "jobs": [
             {
@@ -346,42 +420,132 @@ def main() -> int:
 
     YOLO = ensure_yolo_import(yolo_root)
     all_rows: list[dict[str, str]] = []
+    metrics_rows: list[dict[str, str]] = []
     started = time.time()
 
     for job in jobs:
-        records = load_fold_holdout_records(job, dataset_root)
         cfg = EvalConfig(
             weights=job.weights,
             run_name=f"oof_fold_{job.fold:02d}",
-            splits=("oof_holdout",),
+            splits=("val_cal", "val_op", "oof_holdout"),
             seed=20260606,
             imgsz=args.imgsz,
             batch=args.batch,
             device=args.device,
-            limit_per_class=None,
-            target_recall=0.995,
-            deployment_defect_prevalence=0.10,
+            limit_per_class=args.calibration_limit_per_class,
+            target_recall=args.target_recall,
+            deployment_defect_prevalence=args.deployment_defect_prevalence,
             dry_run=False,
             exist_ok=True,
         )
-        print(f"predict fold_{job.fold:02d} human_fold={job.fold + 1} images={len(records)}")
         model = YOLO(str(job.weights))
-        fold_rows = add_difficulty_columns(predict_records(model, records, cfg), job)
+
+        val_cal_records = load_split_records(paths, "val_cal", cfg)
+        print(f"predict fold_{job.fold:02d} human_fold={job.fold + 1} val_cal_images={len(val_cal_records)}")
+        val_cal_predictions = predict_records(model, val_cal_records, cfg)
+        calibrator = fit_calibrator(val_cal_predictions)
+        adjusted_calibrator = apply_calibration(val_cal_predictions, calibrator, cfg.deployment_defect_prevalence)
+
+        val_op_records = load_split_records(paths, "val_op", cfg)
+        print(f"predict fold_{job.fold:02d} human_fold={job.fold + 1} val_op_images={len(val_op_records)}")
+        val_op_predictions = predict_records(model, val_op_records, cfg)
+        apply_calibration(val_op_predictions, calibrator, cfg.deployment_defect_prevalence)
+        threshold, val_op_metrics = select_threshold_for_recall(
+            val_op_predictions,
+            "p_defect_operational",
+            cfg.target_recall,
+        )
+
+        records = load_fold_holdout_records(job, dataset_root)
+        print(f"predict fold_{job.fold:02d} human_fold={job.fold + 1} oof_holdout_images={len(records)}")
+        holdout_predictions = predict_records(model, records, cfg)
+        apply_calibration(holdout_predictions, calibrator, cfg.deployment_defect_prevalence)
+        fold_rows = add_difficulty_columns(holdout_predictions, job, operational_threshold=threshold)
+
+        if args.write_calibration_predictions:
+            write_csv(output_root / f"predictions_fold_{job.fold:02d}_val_cal.csv", val_cal_predictions, PREDICTION_COLUMNS)
+            write_csv(output_root / f"predictions_fold_{job.fold:02d}_val_op.csv", val_op_predictions, PREDICTION_COLUMNS)
+
+        write_json(
+            output_root / f"calibration_fold_{job.fold:02d}.json",
+            {
+                "fold": job.fold,
+                "human_fold": job.fold + 1,
+                "fit_split": "val_cal",
+                "coef": adjusted_calibrator.coef,
+                "intercept": adjusted_calibrator.intercept,
+                "source_prevalence": adjusted_calibrator.source_prevalence,
+                "deployment_prevalence": adjusted_calibrator.deployment_prevalence,
+            },
+        )
+        write_json(
+            output_root / f"threshold_fold_{job.fold:02d}.json",
+            {
+                "fold": job.fold,
+                "human_fold": job.fold + 1,
+                "selection_split": "val_op",
+                "score_column": "p_defect_operational",
+                "target_recall": cfg.target_recall,
+                "selected_threshold": threshold,
+                "val_op_metrics": val_op_metrics,
+            },
+        )
+        metrics_rows.append(
+            metrics_for_split(
+                f"fold_{job.fold:02d}_oof_holdout",
+                fold_rows,
+                "p_defect_operational",
+                threshold,
+                cfg.deployment_defect_prevalence,
+            )
+        )
         write_csv(output_root / f"predictions_fold_{job.fold:02d}.csv", fold_rows, OOF_PREDICTION_COLUMNS)
         all_rows.extend(fold_rows)
 
     write_csv(output_root / "oof_predictions_merged.csv", all_rows, OOF_PREDICTION_COLUMNS)
     write_csv(
-        output_root / "difficulty_summary.csv",
-        summarize_difficulty(all_rows),
-        ("human_fold", "difficulty_bucket_raw", "count", "defect", "normal"),
+        output_root / "difficulty_summary_operational.csv",
+        summarize_difficulty(all_rows, source="operational"),
+        ("human_fold", "difficulty_source", "difficulty_bucket", "count", "defect", "normal"),
+    )
+    write_csv(
+        output_root / "difficulty_summary_cal.csv",
+        summarize_difficulty(all_rows, source="cal"),
+        ("human_fold", "difficulty_source", "difficulty_bucket", "count", "defect", "normal"),
+    )
+    write_csv(
+        output_root / "metrics_oof_holdout_operational.csv",
+        metrics_rows,
+        (
+            "split",
+            "score_column",
+            "threshold",
+            "deployment_defect_prevalence",
+            "tp",
+            "fp",
+            "tn",
+            "fn",
+            "recall",
+            "specificity",
+            "precision",
+            "fpr",
+            "fnr",
+            "accuracy",
+            "f1",
+            "pass_through_rate",
+            "review_rate",
+            "weighted_accuracy",
+            "weighted_f1",
+            "weighted_pass_through_rate",
+        ),
     )
     if not args.no_plot:
-        write_histogram(all_rows, output_root / "wrong_confidence_hist.png")
+        write_histogram(all_rows, output_root / "wrong_confidence_operational_hist.png", source="operational")
+        write_histogram(all_rows, output_root / "wrong_confidence_cal_hist.png", source="cal")
 
     write_artifact_manifest_for_output(output_root)
     print(f"merged_predictions={output_root / 'oof_predictions_merged.csv'}")
-    print(f"difficulty_summary={output_root / 'difficulty_summary.csv'}")
+    print(f"difficulty_summary_operational={output_root / 'difficulty_summary_operational.csv'}")
     print(f"duration_sec={time.time() - started:.2f}")
     return 0
 

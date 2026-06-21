@@ -130,31 +130,45 @@ Relevant code hashes observed on both nodes and locally:
 
 ## OOF Prediction Outputs
 
-OOF prediction aggregation has been run for folds 1-10. The committed outputs
-are under:
+The first OOF prediction aggregation for folds 1-10 was raw-only and is now
+invalid for confidence, difficulty, or sample-value conclusions. It is retained
+only as an audit record:
 
 ```text
 artifacts/stage1_oof_predictions_20260621/
 ```
 
-The important outputs are:
+Regenerate OOF prediction outputs with cal/op enabled:
+
+```text
+artifacts/stage1_oof_predictions_calop_20260621/
+```
+
+Each node output must pass:
+
+```powershell
+uv run python scripts\validate_stage1_oof_predictions_calop_20260621.py --prediction-root artifacts\stage1_oof_predictions_calop_20260621\node-<ip>
+```
+
+The important cal/op outputs are:
 
 | File | Purpose |
 | --- | --- |
-| `predictions_fold_XX.csv` | Per-image OOF predictions for one held-out fold. |
-| `oof_predictions_merged_10fold.csv` | Merged per-image OOF predictions across all 120,000 training images. |
-| `difficulty_summary_10fold.csv` | Counts by difficulty bucket and fold. |
-| `wrong_confidence_hist_10fold.png` | Histogram where `0.4-0.6` is the decision-boundary band and `>=0.9` is confidently wrong. |
+| `predictions_fold_XX.csv` | Per-image OOF predictions for one held-out fold, with `p_defect_cal`, `p_defect_operational`, and operational difficulty columns. |
+| `calibration_fold_XX.json` | Platt calibration fitted on global `val_cal` for that fold model. |
+| `threshold_fold_XX.json` | Operational threshold selected on global `val_op` for that fold model. |
+| `oof_predictions_merged.csv` | Node-level merged per-image OOF predictions. |
+| `difficulty_summary_operational.csv` | Counts by operational difficulty bucket and fold. |
+| `wrong_confidence_operational_hist.png` | Histogram using calibrated/deployment-adjusted operational confidence. |
 
-The difficulty coordinate is computed from raw class probabilities, not
-deployment-adjusted operational probabilities:
+The sample-value coordinate must be computed from cal/op probabilities:
 
 ```text
-true_confidence_raw =
-  p_defect_raw if y_true=1
-  p_normal_raw if y_true=0
+true_confidence_operational =
+  p_defect_operational if y_true=1
+  1 - p_defect_operational if y_true=0
 
-wrong_confidence_raw = 1 - true_confidence_raw
+wrong_confidence_operational = 1 - true_confidence_operational
 ```
 
 `192.168.100.18` had very low C free space after archival (`8.95 GB`). This

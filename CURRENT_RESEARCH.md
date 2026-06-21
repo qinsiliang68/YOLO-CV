@@ -43,7 +43,8 @@ Size references from the local workspace:
 | `artifacts/stage1_cls_eval_1to5_20260617/` | CURRENT_BASELINE | Formal 1:5 Stage-1 gate baseline. Use for current model comparison and paper-facing baseline numbers. |
 | `artifacts/stage1_cls_sweep_20260616/` | SUPPORTING_TRAIN_RUNS | Training-run evidence for baseline models. Do not treat this as the formal result table. |
 | `artifacts/stage1_oof_200epoch_archives_20260621/` | CURRENT_OOF_ARCHIVE_INDEX | Completed OOF training archive indexes for folds 1-8. This proves folds trained; it is not the per-image difficulty table. |
-| `artifacts/stage1_oof_predictions_20260621/` | CURRENT_OOF_PREDICTIONS | Expected output folder for OOF held-out prediction CSVs and difficulty histograms after running `scripts/predict_stage1_oof_folds_20260621.py`. |
+| `artifacts/stage1_oof_predictions_calop_20260621/` | CURRENT_OOF_PREDICTIONS_TARGET | Expected output folder for regenerated OOF held-out prediction CSVs after cal/op scoring with `scripts/predict_stage1_oof_folds_20260621.py`. |
+| `artifacts/stage1_oof_predictions_20260621/` | INVALID_RAW_ONLY | Raw-only OOF prediction artifact. Do not use for sample value, confidence, difficulty, threshold, or paper-facing conclusions. |
 
 ## Current Documentation
 
@@ -58,7 +59,8 @@ Size references from the local workspace:
 | --- | --- | --- |
 | `scripts/build_stage1_oof_folds.py` | CURRENT_OOF_SPLIT_BUILDER | Builds group-disjoint OOF fold manifests. |
 | `scripts/run_stage1_oof_folds_20260617.py` | CURRENT_OOF_TRAIN_WRAPPER | Runs OOF fold training jobs. |
-| `scripts/predict_stage1_oof_folds_20260621.py` | CURRENT_OOF_PREDICT_EXPORTER | Predicts each fold's held-out images and writes raw difficulty coordinates. |
+| `scripts/predict_stage1_oof_folds_20260621.py` | CURRENT_OOF_PREDICT_EXPORTER | Predicts each fold's held-out images after fitting cal on `val_cal` and selecting op threshold on `val_op`; writes cal/op difficulty coordinates. |
+| `scripts/validate_stage1_oof_predictions_calop_20260621.py` | CURRENT_OOF_PREDICT_VALIDATOR | Fails raw-only or incomplete OOF prediction outputs before they are pushed or cited. |
 | `scripts/evaluate_stage1_cls_gate.py` | CURRENT_BASELINE_EVALUATOR | Formal 1:5 baseline evaluator for val_cal, val_op, and test. |
 
 ## Historical Or Non-Current Materials

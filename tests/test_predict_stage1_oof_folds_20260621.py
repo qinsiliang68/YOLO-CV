@@ -32,7 +32,7 @@ def test_difficulty_bucket_boundaries() -> None:
     assert difficulty_bucket(0.05) == "confidently_correct"
 
 
-def test_add_difficulty_columns_uses_raw_true_label_confidence(tmp_path: Path) -> None:
+def test_add_difficulty_columns_uses_cal_and_operational_confidence(tmp_path: Path) -> None:
     job = FoldJob(
         fold=3,
         manifest_dir=tmp_path / "manifests",
@@ -40,15 +40,39 @@ def test_add_difficulty_columns_uses_raw_true_label_confidence(tmp_path: Path) -
         run_dir=tmp_path / "run",
     )
     rows = [
-        {"y_true": "1", "p_defect_raw": "0.9200000000", "p_normal_raw": "0.0800000000"},
-        {"y_true": "0", "p_defect_raw": "0.9700000000", "p_normal_raw": "0.0300000000"},
+        {"y_true": "1", "p_defect_cal": "0.8000000000", "p_defect_operational": "0.7000000000"},
+        {"y_true": "0", "p_defect_cal": "0.3000000000", "p_defect_operational": "0.9700000000"},
     ]
 
-    enriched = add_difficulty_columns(rows, job)
+    enriched = add_difficulty_columns(rows, job, operational_threshold=0.6000000000)
 
-    assert enriched[0]["wrong_confidence_raw"] == "0.0800000000"
-    assert enriched[0]["difficulty_bucket_raw"] == "confidently_correct"
-    assert enriched[1]["wrong_confidence_raw"] == "0.9700000000"
-    assert enriched[1]["difficulty_bucket_raw"] == "confidently_wrong"
+    assert enriched[0]["wrong_confidence_cal"] == "0.2000000000"
+    assert enriched[0]["difficulty_bucket_cal"] == "correct_not_confident"
+    assert enriched[0]["wrong_confidence_operational"] == "0.3000000000"
+    assert enriched[0]["difficulty_bucket_operational"] == "correct_not_confident"
+    assert enriched[0]["y_pred_operational"] == "1"
+    assert enriched[0]["operational_correct"] == "1"
+    assert enriched[1]["wrong_confidence_cal"] == "0.3000000000"
+    assert enriched[1]["wrong_confidence_operational"] == "0.9700000000"
+    assert enriched[1]["difficulty_bucket_operational"] == "confidently_wrong"
+    assert enriched[1]["y_pred_operational"] == "1"
+    assert enriched[1]["operational_correct"] == "0"
+    assert "wrong_confidence_raw" not in enriched[0]
     assert enriched[1]["oof_fold"] == "03"
     assert enriched[1]["human_fold"] == "4"
+
+
+def test_add_difficulty_columns_rejects_missing_cal_op_scores(tmp_path: Path) -> None:
+    job = FoldJob(
+        fold=0,
+        manifest_dir=tmp_path / "manifests",
+        weights=tmp_path / "best.pt",
+        run_dir=tmp_path / "run",
+    )
+
+    try:
+        add_difficulty_columns([{"y_true": "1", "p_defect_cal": "", "p_defect_operational": ""}], job, operational_threshold=0.5)
+    except ValueError as exc:
+        assert "cal/op" in str(exc)
+    else:
+        raise AssertionError("missing cal/op scores should fail")
