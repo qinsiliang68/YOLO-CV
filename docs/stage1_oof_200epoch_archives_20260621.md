@@ -123,9 +123,36 @@ Relevant code hashes observed on both nodes and locally:
 
 ## Follow-Up
 
-The next technical step after all 10 folds finish is to run OOF prediction
-aggregation: load each fold's best checkpoint, predict the held-out manifests,
-merge the 10 held-out prediction tables, and score difficult samples.
+The next technical step is to run OOF prediction aggregation: load each fold's
+best checkpoint, predict the held-out manifests, merge the held-out prediction
+tables, and score difficult samples. This can be run before all 10 folds finish;
+for the currently completed folds 1-8, run:
+
+```powershell
+uv run python scripts\predict_stage1_oof_folds_20260621.py --folds 1-8 --fold-base 1 --dataset-root data\final_sewerml_dataset --oof-root artifacts\stage1_oof_folds_10fold_20260617 --runs-root YOLOv11\runs\stage1_oof_10fold --output-root artifacts\stage1_oof_predictions_20260621 --device 0 --batch 64 --exist-ok
+```
+
+When folds 9-10 finish, either run only the new folds with `--folds 9-10
+--fold-base 1` and a separate output directory, or rerun folds 1-10 into one
+merged output directory. The important outputs are:
+
+| File | Purpose |
+| --- | --- |
+| `predictions_fold_XX.csv` | Per-image OOF predictions for one held-out fold. |
+| `oof_predictions_merged.csv` | Merged per-image OOF predictions across selected folds. |
+| `difficulty_summary.csv` | Counts by difficulty bucket and fold. |
+| `wrong_confidence_hist.png` | Histogram where `0.4-0.6` is the decision-boundary band and `>=0.9` is confidently wrong. |
+
+The difficulty coordinate is computed from raw class probabilities, not
+deployment-adjusted operational probabilities:
+
+```text
+true_confidence_raw =
+  p_defect_raw if y_true=1
+  p_normal_raw if y_true=0
+
+wrong_confidence_raw = 1 - true_confidence_raw
+```
 
 `192.168.100.18` has very low C free space after archival (`8.95 GB`). This
 document only records the state; no cleanup was performed during archival.
