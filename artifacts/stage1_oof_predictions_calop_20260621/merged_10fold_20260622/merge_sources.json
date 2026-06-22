@@ -1,0 +1,14 @@
+﻿{
+    "created_at_local":  "2026-06-22T13:21:22",
+    "source_outputs":  [
+                           {
+                               "folds":  "1-8",
+                               "path":  "C:\\Users\\lee\\Desktop\\ssh\\repos\\YOLO-CV\\artifacts\\stage1_oof_predictions_calop_20260621\\node-192.168.100.18_folds-01-08_imported13_batch16_schtask"
+                           },
+                           {
+                               "folds":  "9-10",
+                               "path":  "C:\\Users\\lee\\Desktop\\ssh\\repos\\YOLO-CV\\artifacts\\stage1_oof_predictions_calop_20260621\\node-192.168.100.18_folds-09-10_restored15_batch16_schtask"
+                           }
+                       ],
+    "notes":  "Merged locally from validated node output directories; repository code was not modified."
+}

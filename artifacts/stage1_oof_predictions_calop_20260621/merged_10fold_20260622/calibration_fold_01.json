@@ -1,0 +1,9 @@
+{
+  "fold": 1,
+  "human_fold": 2,
+  "fit_split": "val_cal",
+  "coef": 0.3894422457774411,
+  "intercept": -1.7199881528716985,
+  "source_prevalence": 0.16666666666666666,
+  "deployment_prevalence": 0.1
+}

@@ -1,0 +1,111 @@
+{
+  "created_at": "2026-06-21T20:10:52",
+  "repo_root": "D:\\ssh\\AI\\repos\\YOLO-CV",
+  "dataset_root": "C:\\Users\\ASUS\\Desktop\\ssh\\AI\\datasets\\final_sewerml_dataset",
+  "oof_root": "D:\\ssh\\AI\\repos\\YOLO-CV\\artifacts\\stage1_oof_folds_10fold_20260617",
+  "runs_root": "D:\\ssh\\AI\\runs\\YOLOv11\\stage1_oof_10fold",
+  "yolo_root": "D:\\ssh\\AI\\repos\\YOLO-CV\\YOLOv11",
+  "output_root": "D:\\ssh\\AI\\repos\\YOLO-CV\\artifacts\\stage1_oof_predictions_calop_20260621\\node-192.168.100.18_folds-01-08_imported13_batch16_schtask",
+  "folds_zero_based": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "folds_human": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8
+  ],
+  "imgsz": 224,
+  "batch": 16,
+  "device": "0",
+  "target_recall": 0.995,
+  "deployment_defect_prevalence": 0.1,
+  "calibration_limit_per_class": null,
+  "write_calibration_predictions": false,
+  "calibration_split": "val_cal",
+  "threshold_selection_split": "val_op",
+  "sample_value_split": "fold val_model/holdout",
+  "score_column_for_threshold": "p_defect_operational",
+  "difficulty_columns": {
+    "cal": "wrong_confidence_cal",
+    "operational": "wrong_confidence_operational"
+  },
+  "dry_run": false,
+  "jobs": [
+    {
+      "fold": 0,
+      "human_fold": 1,
+      "manifest_dir": "D:\\ssh\\AI\\repos\\YOLO-CV\\artifacts\\stage1_oof_folds_10fold_20260617\\folds\\fold_00\\manifests",
+      "run_dir": "D:\\ssh\\AI\\runs\\YOLOv11\\stage1_oof_10fold\\fold_00\\full_yolo11l_cls_20260617-214804",
+      "weights": "D:\\ssh\\AI\\runs\\YOLOv11\\stage1_oof_10fold\\fold_00\\full_yolo11l_cls_20260617-214804\\weights\\best.pt",
+      "weights_sha256": "4d749f9a534d6fb47d8118a2a8541ae03049200d71f141051ae1a390ebbf2936"
+    },
+    {
+      "fold": 1,
+      "human_fold": 2,
+      "manifest_dir": "D:\\ssh\\AI\\repos\\YOLO-CV\\artifacts\\stage1_oof_folds_10fold_20260617\\folds\\fold_01\\manifests",
+      "run_dir": "D:\\ssh\\AI\\runs\\YOLOv11\\stage1_oof_10fold\\fold_01\\full_yolo11l_cls_20260618-082829",
+      "weights": "D:\\ssh\\AI\\runs\\YOLOv11\\stage1_oof_10fold\\fold_01\\full_yolo11l_cls_20260618-082829\\weights\\best.pt",
+      "weights_sha256": "56e3f5c070ef514a9e19b296dfdd39e461c328fb46da06fea44b5b269c9d1f82"
+    },
+    {
+      "fold": 2,
+      "human_fold": 3,
+      "manifest_dir": "D:\\ssh\\AI\\repos\\YOLO-CV\\artifacts\\stage1_oof_folds_10fold_20260617\\folds\\fold_02\\manifests",
+      "run_dir": "D:\\ssh\\AI\\runs\\YOLOv11\\stage1_oof_10fold\\fold_02\\full_yolo11l_cls_20260619-221302",
+      "weights": "D:\\ssh\\AI\\runs\\YOLOv11\\stage1_oof_10fold\\fold_02\\full_yolo11l_cls_20260619-221302\\weights\\best.pt",
+      "weights_sha256": "6bd2f8b7e96a44c3e191a3e42e2f1d782b286a5dbcf5d0c84b4a0370b697d914"
+    },
+    {
+      "fold": 3,
+      "human_fold": 4,
+      "manifest_dir": "D:\\ssh\\AI\\repos\\YOLO-CV\\artifacts\\stage1_oof_folds_10fold_20260617\\folds\\fold_03\\manifests",
+      "run_dir": "D:\\ssh\\AI\\runs\\YOLOv11\\stage1_oof_10fold\\fold_03\\full_yolo11l_cls_20260620-085259",
+      "weights": "D:\\ssh\\AI\\runs\\YOLOv11\\stage1_oof_10fold\\fold_03\\full_yolo11l_cls_20260620-085259\\weights\\best.pt",
+      "weights_sha256": "efd13c89bfd7b5f412aa0fe50877442b4bb46b5621032c4da265b1243534db7b"
+    },
+    {
+      "fold": 4,
+      "human_fold": 5,
+      "manifest_dir": "D:\\ssh\\AI\\repos\\YOLO-CV\\artifacts\\stage1_oof_folds_10fold_20260617\\folds\\fold_04\\manifests",
+      "run_dir": "D:\\ssh\\AI\\runs\\YOLOv11\\stage1_oof_10fold\\fold_04\\imported_from_192.168.100.13_full_yolo11l_cls_20260617-205648",
+      "weights": "D:\\ssh\\AI\\runs\\YOLOv11\\stage1_oof_10fold\\fold_04\\imported_from_192.168.100.13_full_yolo11l_cls_20260617-205648\\weights\\best.pt",
+      "weights_sha256": "cc898104987b3cc526791bfaf4033387325b2371d7c56d397b380fe0b583d882"
+    },
+    {
+      "fold": 5,
+      "human_fold": 6,
+      "manifest_dir": "D:\\ssh\\AI\\repos\\YOLO-CV\\artifacts\\stage1_oof_folds_10fold_20260617\\folds\\fold_05\\manifests",
+      "run_dir": "D:\\ssh\\AI\\runs\\YOLOv11\\stage1_oof_10fold\\fold_05\\imported_from_192.168.100.13_full_yolo11l_cls_20260618-075627",
+      "weights": "D:\\ssh\\AI\\runs\\YOLOv11\\stage1_oof_10fold\\fold_05\\imported_from_192.168.100.13_full_yolo11l_cls_20260618-075627\\weights\\best.pt",
+      "weights_sha256": "7da76e70197cb24b1810e2a7f80f6afb405644d5ffc85935869273c305fa502e"
+    },
+    {
+      "fold": 6,
+      "human_fold": 7,
+      "manifest_dir": "D:\\ssh\\AI\\repos\\YOLO-CV\\artifacts\\stage1_oof_folds_10fold_20260617\\folds\\fold_06\\manifests",
+      "run_dir": "D:\\ssh\\AI\\runs\\YOLOv11\\stage1_oof_10fold\\fold_06\\imported_from_192.168.100.13_full_yolo11l_cls_20260619-213452",
+      "weights": "D:\\ssh\\AI\\runs\\YOLOv11\\stage1_oof_10fold\\fold_06\\imported_from_192.168.100.13_full_yolo11l_cls_20260619-213452\\weights\\best.pt",
+      "weights_sha256": "72653dde8e9f3f9a400806f3f2cb9bc9c90dda4305ddbf4132ad331d406ee1d4"
+    },
+    {
+      "fold": 7,
+      "human_fold": 8,
+      "manifest_dir": "D:\\ssh\\AI\\repos\\YOLO-CV\\artifacts\\stage1_oof_folds_10fold_20260617\\folds\\fold_07\\manifests",
+      "run_dir": "D:\\ssh\\AI\\runs\\YOLOv11\\stage1_oof_10fold\\fold_07\\imported_from_192.168.100.13_full_yolo11l_cls_20260620-084047",
+      "weights": "D:\\ssh\\AI\\runs\\YOLOv11\\stage1_oof_10fold\\fold_07\\imported_from_192.168.100.13_full_yolo11l_cls_20260620-084047\\weights\\best.pt",
+      "weights_sha256": "88bd4ece4376ea34cecb4de945601dd0adac424a0b5aaaae0fb960290a536b5c"
+    }
+  ]
+}
