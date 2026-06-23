@@ -5,6 +5,8 @@ $Script = Join-Path $Repo "scripts\ops\node24_phase1_formal_node1_20260623.ps1"
 $PhaseRoot = "D:\ssh\AI\artifacts\stage1_phase1_hn_rn_20260623"
 $Stdout = Join-Path $PhaseRoot "node24_formal_node1_stdout.log"
 $Stderr = Join-Path $PhaseRoot "node24_formal_node1_stderr.log"
+$CombinedLog = Join-Path $PhaseRoot "node24_formal_node1_task.log"
+$TaskName = "YOLO_CV_node24_phase1_formal_node1_20260623"
 
 if (-not (Test-Path -LiteralPath $Script)) {
     throw "Missing formal script: $Script"
@@ -24,17 +26,20 @@ if ($existing.Count -gt 0) {
     throw "Existing formal/training process found: $desc"
 }
 
+Unregister-ScheduledTask -TaskName $TaskName -Confirm:$false -ErrorAction SilentlyContinue | Out-Null
+Remove-Item -LiteralPath $Stdout, $Stderr, $CombinedLog -ErrorAction SilentlyContinue
+
 $PowerShellExe = Join-Path $env:SystemRoot "System32\WindowsPowerShell\v1.0\powershell.exe"
-$ArgumentText = '-NoProfile -ExecutionPolicy Bypass -File "{0}"' -f $Script
-Write-Output "launch_args=$ArgumentText"
+$ArgumentText = '-NoProfile -ExecutionPolicy Bypass -Command "& ''{0}'' *> ''{1}''"' -f $Script, $CombinedLog
+$Action = New-ScheduledTaskAction -Execute $PowerShellExe -Argument $ArgumentText -WorkingDirectory $Repo
+$Trigger = New-ScheduledTaskTrigger -Once -At (Get-Date).AddMinutes(1)
 
-$proc = Start-Process `
-    -WindowStyle Hidden `
-    -FilePath $PowerShellExe `
-    -ArgumentList $ArgumentText `
-    -WorkingDirectory $Repo `
-    -RedirectStandardOutput $Stdout `
-    -RedirectStandardError $Stderr `
-    -PassThru
+Register-ScheduledTask `
+    -TaskName $TaskName `
+    -Action $Action `
+    -Trigger $Trigger `
+    -Description "YOLO-CV node24 phase1 HN/RN formal node-index 1" | Out-Null
 
-Write-Output "LAUNCHED_NODE24_FORMAL_NODE1 pid=$($proc.Id) stdout=$Stdout stderr=$Stderr"
+Start-ScheduledTask -TaskName $TaskName
+
+Write-Output "SCHEDULED_NODE24_FORMAL_NODE1 task=$TaskName log=$CombinedLog args=$ArgumentText"

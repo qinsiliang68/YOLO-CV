@@ -3,10 +3,26 @@ $ErrorActionPreference = "Continue"
 $PhaseRoot = "D:\ssh\AI\artifacts\stage1_phase1_hn_rn_20260623"
 $RunsRoot = "D:\ssh\AI\runs\stage1_phase1_hn_rn_20260623"
 $EvalRoot = "D:\ssh\AI\artifacts\stage1_phase1_hn_rn_20260623\eval"
+$TaskName = "YOLO_CV_node24_phase1_formal_node1_20260623"
+$CombinedLog = Join-Path $PhaseRoot "node24_formal_node1_task.log"
 
 Write-Output "time=$(Get-Date -Format s)"
 Write-Output "gpu=$((& nvidia-smi --query-gpu=index,name,utilization.gpu,memory.used,memory.total,temperature.gpu --format=csv,noheader,nounits 2>$null) -join ';')"
 Write-Output "compute_procs=$((& nvidia-smi --query-compute-apps=pid,process_name,used_memory --format=csv,noheader,nounits 2>$null) -join ';')"
+if (Get-ScheduledTask -TaskName $TaskName -ErrorAction SilentlyContinue) {
+    $task = Get-ScheduledTask -TaskName $TaskName
+    $taskInfo = Get-ScheduledTaskInfo -TaskName $TaskName
+    Write-Output "task_state=$($task.State)"
+    Write-Output "task_last_result=$($taskInfo.LastTaskResult)"
+    Write-Output "task_last_run=$($taskInfo.LastRunTime)"
+}
+else {
+    Write-Output "task_state=missing"
+}
+Write-Output "combined_log_exists=$(Test-Path -LiteralPath $CombinedLog)"
+if (Test-Path -LiteralPath $CombinedLog) {
+    Write-Output "combined_log_tail=$((Get-Content -LiteralPath $CombinedLog -Tail 12) -join ' | ')"
+}
 
 $procs = @(
     Get-CimInstance Win32_Process |
