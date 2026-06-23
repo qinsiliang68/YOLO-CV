@@ -27,7 +27,7 @@ if (Test-Path -LiteralPath $CombinedLog) {
 $procs = @(
     Get-CimInstance Win32_Process |
         Where-Object {
-            $_.CommandLine -match "run_stage1_phase1_hn_rn_pipeline_20260623|train_stage1_cls_sweep|evaluate_stage1_cls_gate" -and
+            $_.CommandLine -match "validate_stage1_phase1_hn_rn_manifests_20260623|run_stage1_phase1_hn_rn_pipeline_20260623|train_stage1_cls_sweep|evaluate_stage1_cls_gate" -and
             $_.CommandLine -notmatch "check_node24_formal_status"
         }
 )
@@ -51,7 +51,8 @@ foreach ($runId in @("HN-01", "RN-01", "HN-02", "RN-02")) {
         Write-Output "  log_tail=$((Get-Content -LiteralPath $log -Tail 8) -join ' | ')"
     }
     if (Test-Path -LiteralPath $runRoot) {
-        Get-ChildItem -LiteralPath $runRoot -Recurse -File -Include best.pt,last.pt -ErrorAction SilentlyContinue |
+        Get-ChildItem -LiteralPath $runRoot -Recurse -File -ErrorAction SilentlyContinue |
+            Where-Object { $_.Name -in @("best.pt", "last.pt") } |
             ForEach-Object { Write-Output "  weight=$($_.FullName)" }
     }
     if (Test-Path -LiteralPath $evalRoot) {

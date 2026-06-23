@@ -32,7 +32,7 @@ Remove-Item -LiteralPath $Stdout, $Stderr, $CombinedLog -ErrorAction SilentlyCon
 $PowerShellExe = Join-Path $env:SystemRoot "System32\WindowsPowerShell\v1.0\powershell.exe"
 $ArgumentText = '-NoProfile -ExecutionPolicy Bypass -Command "& ''{0}'' *> ''{1}''"' -f $Script, $CombinedLog
 $Action = New-ScheduledTaskAction -Execute $PowerShellExe -Argument $ArgumentText -WorkingDirectory $Repo
-$Trigger = New-ScheduledTaskTrigger -Once -At (Get-Date).AddMinutes(1)
+$Trigger = New-ScheduledTaskTrigger -Once -At (Get-Date).AddYears(1)
 
 Register-ScheduledTask `
     -TaskName $TaskName `
