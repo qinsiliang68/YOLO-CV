@@ -28,6 +28,76 @@ SOURCE_HASH_FILES = (
     "normal_val_model_manifest.csv",
     "oof_predictions_merged.csv",
 )
+RUN_MATRIX_REQUIRED_FIELDS = (
+    "run_id",
+    "replay_mode",
+    "group",
+    "q_percent",
+    "normal_slots",
+    "defect_slots",
+    "selected_unique",
+    "replay_duplicate_slots",
+    "displaced_unique",
+    "kept_unselected",
+    "final_normal_rows",
+    "final_defect_rows",
+    "selected_actual_oof_fp",
+)
+BASE_IMAGE_FIELDS = ("Filename", "canonical_image_relpath", "source_image_path")
+NORMAL_REPLAY_FIELDS = (
+    "replay_run_id",
+    "replay_mode",
+    "replay_group",
+    "replay_q_percent",
+    "replay_slot_type",
+    "replay_slot_index",
+    "replay_source_filename",
+    "replay_source_canonical_image_relpath",
+    "replay_selected",
+    "replay_displaced",
+    "oof_human_fold",
+    "oof_fold",
+    "oof_p_defect_operational",
+    "oof_operational_threshold",
+    "oof_y_pred_operational",
+    "oof_operational_correct",
+)
+SELECTION_FIELDS = (
+    "run_id",
+    "replay_mode",
+    "group",
+    "q_percent",
+    "role",
+    "slot_count",
+    "source_filename",
+    "source_canonical_image_relpath",
+    "human_fold",
+    "oof_fold",
+    "p_defect_operational",
+    "operational_threshold",
+    "y_pred_operational",
+    "operational_correct",
+)
+SUMMARY_REQUIRED_FIELDS = (
+    "run_id",
+    "replay_mode",
+    "group",
+    "q_percent",
+    "budget_mode",
+    "selection_policy",
+    "seed",
+    "dataset_root",
+    "oof_predictions",
+    "manifest_dir",
+    "defect_slots",
+    "val_defect_slots",
+    "val_normal_slots",
+    "source_files",
+    "source_hashes",
+    "generated_files",
+    "generated_hashes",
+)
+INVALID_FILENAME_CHARS = set('<>:"|?*')
 
 REQUIRED_MANIFESTS = (
     "train_manifest.csv",
@@ -105,6 +175,114 @@ def expected_selected(normal_slots: int, q_percent: int) -> int:
     return numerator // 100
 
 
+def is_finite_float(value: str) -> bool:
+    try:
+        parsed = float(value)
+    except (TypeError, ValueError):
+        return False
+    return parsed == parsed and parsed not in (float("inf"), float("-inf"))
+
+
+def is_safe_leaf_filename(value: str) -> bool:
+    if not value:
+        return False
+    if "/" in value or "\\" in value:
+        return False
+    if any(char in INVALID_FILENAME_CHARS or ord(char) < 32 for char in value):
+        return False
+    return Path(value).name == value
+
+
+def count_empty(rows: list[dict[str, str]], field: str) -> int:
+    return sum(1 for item in rows if item.get(field, "") == "")
+
+
+def add_required_field_errors(errors: list[str], prefix: str, rows: list[dict[str, str]], fields: tuple[str, ...]) -> None:
+    for field in fields:
+        missing = count_empty(rows, field)
+        if missing:
+            errors.append(f"{prefix}_empty_{field}:{missing}")
+
+
+def count_bad_numeric(rows: list[dict[str, str]], field: str) -> int:
+    return sum(1 for item in rows if not is_finite_float(item.get(field, "")))
+
+
+def count_bad_binary(rows: list[dict[str, str]], field: str) -> int:
+    return sum(1 for item in rows if item.get(field, "") not in {"0", "1"})
+
+
+def count_bad_positive_int(rows: list[dict[str, str]], field: str) -> int:
+    bad = 0
+    for item in rows:
+        try:
+            if int(item.get(field, "")) <= 0:
+                bad += 1
+        except ValueError:
+            bad += 1
+    return bad
+
+
+def add_value_integrity_errors(
+    errors: list[str],
+    row: dict[str, str],
+    normal_rows: list[dict[str, str]],
+    train_rows: list[dict[str, str]],
+    val_defect_rows: list[dict[str, str]],
+    val_normal_rows: list[dict[str, str]],
+    selection_rows: list[dict[str, str]],
+    selection_summary: dict,
+) -> None:
+    for field in RUN_MATRIX_REQUIRED_FIELDS:
+        if row.get(field, "") == "":
+            errors.append(f"run_matrix_empty_{field}")
+    for field in ("q_percent", "normal_slots", "defect_slots", "selected_unique", "final_normal_rows", "final_defect_rows"):
+        try:
+            if int(row.get(field, "")) < 0:
+                errors.append(f"run_matrix_negative_{field}")
+        except ValueError:
+            errors.append(f"run_matrix_bad_int_{field}")
+
+    for prefix, rows in (
+        ("normal", normal_rows),
+        ("defect", train_rows),
+        ("val_defect", val_defect_rows),
+        ("val_normal", val_normal_rows),
+    ):
+        add_required_field_errors(errors, prefix, rows, BASE_IMAGE_FIELDS)
+        unsafe = sum(1 for item in rows if not is_safe_leaf_filename(item.get("Filename", "")))
+        if unsafe:
+            errors.append(f"{prefix}_unsafe_filename:{unsafe}")
+
+    add_required_field_errors(errors, "normal", normal_rows, NORMAL_REPLAY_FIELDS)
+    for field in ("oof_p_defect_operational", "oof_operational_threshold"):
+        bad = count_bad_numeric(normal_rows, field)
+        if bad:
+            errors.append(f"normal_bad_numeric_{field}:{bad}")
+    for field in ("oof_y_pred_operational", "oof_operational_correct", "replay_selected", "replay_displaced"):
+        bad = count_bad_binary(normal_rows, field)
+        if bad:
+            errors.append(f"normal_bad_binary_{field}:{bad}")
+    bad_slot = count_bad_positive_int(normal_rows, "replay_slot_index")
+    if bad_slot:
+        errors.append(f"normal_bad_replay_slot_index:{bad_slot}")
+
+    add_required_field_errors(errors, "selection", selection_rows, SELECTION_FIELDS)
+    for field in ("p_defect_operational", "operational_threshold"):
+        bad = count_bad_numeric(selection_rows, field)
+        if bad:
+            errors.append(f"selection_bad_numeric_{field}:{bad}")
+    for field in ("y_pred_operational", "operational_correct"):
+        bad = count_bad_binary(selection_rows, field)
+        if bad:
+            errors.append(f"selection_bad_binary_{field}:{bad}")
+
+    for field in SUMMARY_REQUIRED_FIELDS:
+        value = selection_summary.get(field)
+        if value in ("", None, {}, []):
+            errors.append(f"summary_empty_{field}")
+
+
 def validate_one_run(
     row: dict[str, str],
     phase_root: Path,
@@ -134,6 +312,16 @@ def validate_one_run(
     selection_summary = load_json(manifest_dir / "selection_summary.json")
     expected_generated_hashes = selection_summary.get("generated_hashes", {})
     expected_source_hashes = selection_summary.get("source_hashes", {})
+    add_value_integrity_errors(
+        errors,
+        row,
+        normal_rows,
+        train_rows,
+        val_defect_rows,
+        val_normal_rows,
+        selection_rows,
+        selection_summary,
+    )
 
     selected_expected = 0 if group == "BL" else expected_selected(normal_slots, q_percent)
     expected_normal_rows = normal_slots + selected_expected if replay_mode == "append" else normal_slots
