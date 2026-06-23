@@ -71,7 +71,7 @@ Assert-Path $Dataset "dataset"
 Assert-Path $Oof "oof predictions"
 Assert-Path (Join-Path $Repo "yolo11l-cls.pt") "yolo11l weight"
 Assert-RealCPath $Dataset "dataset"
-New-Item -ItemType Directory -Force -Path (Split-Path $WorkRoot -Parent), $RunsRoot, $EvalRoot, $PhaseRoot | Out-Null
+New-Item -ItemType Directory -Force -Path (Split-Path $WorkRoot -Parent), $RunsRoot, (Split-Path $PhaseRoot -Parent) | Out-Null
 Assert-RealCPath (Split-Path $WorkRoot -Parent) "work root parent"
 Assert-NonCPathText $PhaseRoot "phase root"
 Assert-NonCPathText $RunsRoot "runs root"
