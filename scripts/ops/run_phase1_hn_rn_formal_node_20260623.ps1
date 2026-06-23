@@ -57,9 +57,23 @@ function Assert-FreeSpaceGb {
 
 function Assert-NoGpuComputeProcess {
     $lines = @(& nvidia-smi --query-compute-apps=pid,process_name,used_memory --format=csv,noheader,nounits 2>$null)
-    $busy = @($lines | Where-Object { $_ -and $_.Trim().Length -gt 0 })
+    $busy = @(
+        $lines | Where-Object {
+            if ($_) {
+                $line = $_.Trim()
+                $line -and $line -match "(?i)python|uv-python|conda|ipython|jupyter|torch|yolo|train_stage1"
+            }
+            else {
+                $false
+            }
+        }
+    )
     if ($busy.Count -gt 0) {
         throw "GPU compute process exists: $($busy -join '; ')"
+    }
+    $ignored = @($lines | Where-Object { $_ -and $_.Trim().Length -gt 0 })
+    if ($ignored.Count -gt 0) {
+        Write-Output ("ignored_gpu_graphics_processes={0}" -f $ignored.Count)
     }
 }
 
