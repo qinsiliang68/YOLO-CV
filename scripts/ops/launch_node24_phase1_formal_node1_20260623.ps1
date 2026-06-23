@@ -24,10 +24,15 @@ if ($existing.Count -gt 0) {
     throw "Existing formal/training process found: $desc"
 }
 
+$PowerShellExe = Join-Path $env:SystemRoot "System32\WindowsPowerShell\v1.0\powershell.exe"
+$ArgumentText = '-NoProfile -ExecutionPolicy Bypass -File "{0}"' -f $Script
+Write-Output "launch_args=$ArgumentText"
+
 $proc = Start-Process `
     -WindowStyle Hidden `
-    -FilePath "powershell" `
-    -ArgumentList @("-NoProfile", "-ExecutionPolicy", "Bypass", "-File", $Script) `
+    -FilePath $PowerShellExe `
+    -ArgumentList $ArgumentText `
+    -WorkingDirectory $Repo `
     -RedirectStandardOutput $Stdout `
     -RedirectStandardError $Stderr `
     -PassThru
