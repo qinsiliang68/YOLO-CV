@@ -1,6 +1,8 @@
 param(
     [Parameter(Mandatory = $true)][int]$NodeIndex,
-    [string]$NodeLabel = $env:COMPUTERNAME
+    [string]$NodeLabel = $env:COMPUTERNAME,
+    [double]$MinCFreeGb = 40,
+    [double]$MinDFreeGb = 80
 )
 
 $ErrorActionPreference = "Stop"
@@ -33,7 +35,7 @@ Unregister-ScheduledTask -TaskName $TaskName -Confirm:$false -ErrorAction Silent
 Remove-Item -LiteralPath $CombinedLog -ErrorAction SilentlyContinue
 
 $PowerShellExe = Join-Path $env:SystemRoot "System32\WindowsPowerShell\v1.0\powershell.exe"
-$ArgumentText = '-NoProfile -ExecutionPolicy Bypass -Command "& ''{0}'' -NodeIndex {1} -NodeLabel ''{2}'' *> ''{3}''"' -f $Script, $NodeIndex, $NodeLabel, $CombinedLog
+$ArgumentText = '-NoProfile -ExecutionPolicy Bypass -Command "& ''{0}'' -NodeIndex {1} -NodeLabel ''{2}'' -MinCFreeGb {3} -MinDFreeGb {4} *> ''{5}''"' -f $Script, $NodeIndex, $NodeLabel, $MinCFreeGb, $MinDFreeGb, $CombinedLog
 $Action = New-ScheduledTaskAction -Execute $PowerShellExe -Argument $ArgumentText -WorkingDirectory $Repo
 $Trigger = New-ScheduledTaskTrigger -Once -At (Get-Date).AddYears(1)
 
@@ -45,4 +47,4 @@ Register-ScheduledTask `
 
 Start-ScheduledTask -TaskName $TaskName
 
-Write-Output "SCHEDULED_FORMAL_NODE task=$TaskName node_label=$NodeLabel node_index=$NodeIndex log=$CombinedLog"
+Write-Output "SCHEDULED_FORMAL_NODE task=$TaskName node_label=$NodeLabel node_index=$NodeIndex min_c_free_gb=$MinCFreeGb min_d_free_gb=$MinDFreeGb log=$CombinedLog"

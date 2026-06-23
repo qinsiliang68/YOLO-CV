@@ -1,6 +1,8 @@
 param(
     [Parameter(Mandatory = $true)][int]$NodeIndex,
-    [string]$NodeLabel = $env:COMPUTERNAME
+    [string]$NodeLabel = $env:COMPUTERNAME,
+    [double]$MinCFreeGb = 40,
+    [double]$MinDFreeGb = 80
 )
 
 $ErrorActionPreference = "Stop"
@@ -76,8 +78,8 @@ Assert-RealCPath (Split-Path $WorkRoot -Parent) "work root parent"
 Assert-NonCPathText $PhaseRoot "phase root"
 Assert-NonCPathText $RunsRoot "runs root"
 Assert-NonCPathText $EvalRoot "eval root"
-Assert-FreeSpaceGb C 40
-Assert-FreeSpaceGb D 80
+Assert-FreeSpaceGb C $MinCFreeGb
+Assert-FreeSpaceGb D $MinDFreeGb
 Assert-NoGpuComputeProcess
 
 Push-Location $Repo
