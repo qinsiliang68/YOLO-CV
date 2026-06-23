@@ -1,8 +1,10 @@
-$ErrorActionPreference = "Stop"
+param(
+    [string]$TarPath = "C:\Users\ASUS\Desktop\ssh\AI\tmp\yolo_cv_phase1_min.tar",
+    [string]$Target = "C:\Users\ASUS\Desktop\ssh\AI\repos\YOLO-CV",
+    [Parameter(Mandatory = $true)][string]$Commit
+)
 
-$TarPath = "C:\Users\ASUS\Desktop\ssh\AI\tmp\yolo_cv_phase1_min_08cc6bb.tar"
-$Target = "C:\Users\ASUS\Desktop\ssh\AI\repos\YOLO-CV"
-$Commit = "08cc6bb"
+$ErrorActionPreference = "Stop"
 
 if (-not (Test-Path -LiteralPath $TarPath)) {
     throw "Missing tar package: $TarPath"
@@ -22,6 +24,11 @@ $required = @(
     "scripts\validate_stage1_phase1_hn_rn_manifests_20260623.py",
     "scripts\train_stage1_cls_sweep.py",
     "scripts\evaluate_stage1_cls_gate.py",
+    "scripts\verify_stage1_phase1_hn_rn_outputs_20260623.py",
+    "scripts\ops\run_phase1_hn_rn_formal_node_20260623.ps1",
+    "scripts\ops\launch_phase1_hn_rn_formal_node_20260623.ps1",
+    "scripts\ops\check_phase1_hn_rn_formal_status_20260623.ps1",
+    "scripts\ops\smoke_phase1_hn_rn_node_20260623.ps1",
     "YOLOv11\ultralytics\__init__.py",
     "artifacts\stage1_oof_predictions_calop_20260621\merged_10fold_20260622\oof_predictions_merged.csv"
 )
