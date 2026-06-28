@@ -81,3 +81,12 @@ research/results/stage1_formal/gate_capacity/stage1_gate_top1_per_epoch.csv
 research/results/stage1_formal/gate_capacity/stage1_gate_top1_summary.csv
 research/results/stage1_formal/gate_goldilocks_campaign/_runtime_logs/
 research/results/stage1_formal/gate_goldilocks_campaign/machineA_*.log
+
+# Stage-1 Phase-1 HN/RN 40-run full materials and weights archive (local only)
+artifacts/stage1_phase1_hn_rn_40runs_20260628/
+STAGE1_PHASE1_HN_RN_40RUNS_*_20260628.tar
+
+# Stage-1 Phase-1 HN band replay materials and weights (local only)
+artifacts/stage1_phase1_hn_band_20260628/
+artifacts/stage1_phase1_hn_band_20260628_local_smoke*/
+STAGE1_PHASE1_HN_BAND_*_20260628.tar
