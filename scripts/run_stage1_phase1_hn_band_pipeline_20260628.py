@@ -4,6 +4,8 @@
 Each run-id is a logical entry point:
     HN1-01 ... HN1-20  one-percent bands
     HN2-01 ... HN2-10  two-percent bands
+    RN1A-01 ... RN1C-20  three same-size one-percent random controls
+    RN2A-01 ... RN2C-10  three same-size two-percent random controls
 
 The launcher always runs the calibrated evaluator after training. The final
 evidence is metrics/predictions CSV from scripts/evaluate_stage1_cls_gate.py,
@@ -39,160 +41,40 @@ FORMAL_EVAL_SPLITS = ("val_cal", "val_op", "test")
 REQUIRED_PREDICTION_COLUMNS = ("p_defect_cal", "p_defect_operational")
 
 
-def HN1_01() -> list[str]:
-    return ["HN1-01"]
+HN_RUN_IDS = [
+    *(f"HN1-{index:02d}" for index in range(1, 21)),
+    *(f"HN2-{index:02d}" for index in range(1, 11)),
+]
+RN_RUN_IDS = [
+    *(f"RN1{replicate}-{index:02d}" for replicate in "ABC" for index in range(1, 21)),
+    *(f"RN2{replicate}-{index:02d}" for replicate in "ABC" for index in range(1, 11)),
+]
+ALL_RUN_IDS = [*HN_RUN_IDS, *RN_RUN_IDS]
 
 
-def HN1_02() -> list[str]:
-    return ["HN1-02"]
+def paired_control_ids(hn_run_id: str) -> list[str]:
+    family, index = hn_run_id.split("-", 1)
+    if family == "HN1":
+        return [f"RN1{replicate}-{index}" for replicate in "ABC"]
+    if family == "HN2":
+        return [f"RN2{replicate}-{index}" for replicate in "ABC"]
+    raise ValueError(f"Unexpected HN run id: {hn_run_id}")
 
 
-def HN1_03() -> list[str]:
-    return ["HN1-03"]
+def make_entrypoint(run_id: str):
+    def entrypoint() -> list[str]:
+        return [run_id]
+
+    entrypoint.__name__ = run_id.replace("-", "_")
+    return entrypoint
 
 
-def HN1_04() -> list[str]:
-    return ["HN1-04"]
+for _run_id in ALL_RUN_IDS:
+    globals()[_run_id.replace("-", "_")] = make_entrypoint(_run_id)
 
+BAND_ENTRYPOINTS = {run_id.replace("-", "_"): globals()[run_id.replace("-", "_")] for run_id in ALL_RUN_IDS}
 
-def HN1_05() -> list[str]:
-    return ["HN1-05"]
-
-
-def HN1_06() -> list[str]:
-    return ["HN1-06"]
-
-
-def HN1_07() -> list[str]:
-    return ["HN1-07"]
-
-
-def HN1_08() -> list[str]:
-    return ["HN1-08"]
-
-
-def HN1_09() -> list[str]:
-    return ["HN1-09"]
-
-
-def HN1_10() -> list[str]:
-    return ["HN1-10"]
-
-
-def HN1_11() -> list[str]:
-    return ["HN1-11"]
-
-
-def HN1_12() -> list[str]:
-    return ["HN1-12"]
-
-
-def HN1_13() -> list[str]:
-    return ["HN1-13"]
-
-
-def HN1_14() -> list[str]:
-    return ["HN1-14"]
-
-
-def HN1_15() -> list[str]:
-    return ["HN1-15"]
-
-
-def HN1_16() -> list[str]:
-    return ["HN1-16"]
-
-
-def HN1_17() -> list[str]:
-    return ["HN1-17"]
-
-
-def HN1_18() -> list[str]:
-    return ["HN1-18"]
-
-
-def HN1_19() -> list[str]:
-    return ["HN1-19"]
-
-
-def HN1_20() -> list[str]:
-    return ["HN1-20"]
-
-
-def HN2_01() -> list[str]:
-    return ["HN2-01"]
-
-
-def HN2_02() -> list[str]:
-    return ["HN2-02"]
-
-
-def HN2_03() -> list[str]:
-    return ["HN2-03"]
-
-
-def HN2_04() -> list[str]:
-    return ["HN2-04"]
-
-
-def HN2_05() -> list[str]:
-    return ["HN2-05"]
-
-
-def HN2_06() -> list[str]:
-    return ["HN2-06"]
-
-
-def HN2_07() -> list[str]:
-    return ["HN2-07"]
-
-
-def HN2_08() -> list[str]:
-    return ["HN2-08"]
-
-
-def HN2_09() -> list[str]:
-    return ["HN2-09"]
-
-
-def HN2_10() -> list[str]:
-    return ["HN2-10"]
-
-
-BAND_ENTRYPOINTS = {
-    "HN1_01": HN1_01,
-    "HN1_02": HN1_02,
-    "HN1_03": HN1_03,
-    "HN1_04": HN1_04,
-    "HN1_05": HN1_05,
-    "HN1_06": HN1_06,
-    "HN1_07": HN1_07,
-    "HN1_08": HN1_08,
-    "HN1_09": HN1_09,
-    "HN1_10": HN1_10,
-    "HN1_11": HN1_11,
-    "HN1_12": HN1_12,
-    "HN1_13": HN1_13,
-    "HN1_14": HN1_14,
-    "HN1_15": HN1_15,
-    "HN1_16": HN1_16,
-    "HN1_17": HN1_17,
-    "HN1_18": HN1_18,
-    "HN1_19": HN1_19,
-    "HN1_20": HN1_20,
-    "HN2_01": HN2_01,
-    "HN2_02": HN2_02,
-    "HN2_03": HN2_03,
-    "HN2_04": HN2_04,
-    "HN2_05": HN2_05,
-    "HN2_06": HN2_06,
-    "HN2_07": HN2_07,
-    "HN2_08": HN2_08,
-    "HN2_09": HN2_09,
-    "HN2_10": HN2_10,
-}
-
-NODE_PLAN: dict[int, list[str]] = {
+_HN_NODE_GROUPS = {
     1: ["HN1-01", "HN1-02", "HN1-03"],
     2: ["HN1-04", "HN1-05", "HN1-06"],
     3: ["HN1-07", "HN1-08", "HN1-09"],
@@ -203,6 +85,10 @@ NODE_PLAN: dict[int, list[str]] = {
     8: ["HN2-02", "HN2-03", "HN2-04"],
     9: ["HN2-05", "HN2-06", "HN2-07"],
     10: ["HN2-08", "HN2-09", "HN2-10"],
+}
+NODE_PLAN: dict[int, list[str]] = {
+    node_index: [run_id for hn_id in hn_ids for run_id in [hn_id, *paired_control_ids(hn_id)]]
+    for node_index, hn_ids in _HN_NODE_GROUPS.items()
 }
 
 REPRO_RUN_COLUMNS = (
@@ -228,11 +114,14 @@ REPRO_RUN_COLUMNS = (
     "replay_mode",
     "group",
     "q_percent",
+    "paired_hn_run_id",
+    "control_replicate",
     "band_start_percent",
     "band_end_percent",
     "band_width_percent",
     "band_rank_start",
     "band_rank_end_exclusive",
+    "selection_seed",
     "normal_slots",
     "defect_slots",
     "selected_unique",
@@ -377,7 +266,7 @@ def resolve_run_ids(args: argparse.Namespace) -> list[str]:
             raise ValueError(f"--node-index must be 1..10, got {args.node_index}")
         run_ids.extend(NODE_PLAN[args.node_index])
     if not run_ids:
-        raise ValueError("Pass --run-id HN1-01, --entry HN1_01, or --node-index 1")
+        raise ValueError("Pass --run-id HN1-01, --entry HN1_01/RN1A_01, or --node-index 1")
     return list(dict.fromkeys(run_ids))
 
 
@@ -419,11 +308,14 @@ def run_expectation(row: dict[str, str]) -> dict[str, str]:
         "replay_mode",
         "group",
         "q_percent",
+        "paired_hn_run_id",
+        "control_replicate",
         "band_start_percent",
         "band_end_percent",
         "band_width_percent",
         "band_rank_start",
         "band_rank_end_exclusive",
+        "selection_seed",
         "normal_slots",
         "defect_slots",
         "selected_unique",
@@ -479,11 +371,14 @@ def build_run_repro_row(
         "replay_mode": expectation.get("replay_mode", ""),
         "group": expectation.get("group", ""),
         "q_percent": expectation.get("q_percent", ""),
+        "paired_hn_run_id": expectation.get("paired_hn_run_id", ""),
+        "control_replicate": expectation.get("control_replicate", ""),
         "band_start_percent": expectation.get("band_start_percent", ""),
         "band_end_percent": expectation.get("band_end_percent", ""),
         "band_width_percent": expectation.get("band_width_percent", ""),
         "band_rank_start": expectation.get("band_rank_start", ""),
         "band_rank_end_exclusive": expectation.get("band_rank_end_exclusive", ""),
+        "selection_seed": expectation.get("selection_seed", ""),
         "normal_slots": expectation.get("normal_slots", ""),
         "defect_slots": expectation.get("defect_slots", ""),
         "selected_unique": expectation.get("selected_unique", ""),
@@ -827,7 +722,7 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Run phase-1 HN band training and calibrated evaluation.")
     parser.add_argument("--run-id", action="append", help="Run id such as HN1-01. Can be comma-separated or repeated.")
     parser.add_argument("--entry", action="append", help="Entry function such as HN1_01. Can be comma-separated.")
-    parser.add_argument("--node-index", type=int, help="Run the 3-run assignment for node 1..10.")
+    parser.add_argument("--node-index", type=int, help="Run the 12-run HN/control assignment for node 1..10.")
     parser.add_argument("--phase-root", default=None)
     parser.add_argument("--dataset-root", default=None)
     parser.add_argument("--oof-predictions", default=None)

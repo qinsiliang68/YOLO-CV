@@ -58,6 +58,9 @@ RUN_MATRIX_REQUIRED_FIELDS = (
     "band_width_percent",
     "band_rank_start",
     "band_rank_end_exclusive",
+    "paired_hn_run_id",
+    "control_replicate",
+    "selection_seed",
     "selection_policy",
 )
 NORMAL_REPLAY_FIELDS = (
@@ -88,6 +91,10 @@ SELECTION_REQUIRED_FIELDS = tuple(
             "band_width_percent",
             "band_rank_start",
             "band_rank_end_exclusive",
+            "paired_hn_run_id",
+            "control_replicate",
+            "selection_seed",
+            "selection_policy",
         ]
     )
 )
@@ -115,6 +122,9 @@ SUMMARY_REQUIRED_FIELDS = (
     "band_width_percent",
     "band_rank_start",
     "band_rank_end_exclusive",
+    "paired_hn_run_id",
+    "control_replicate",
+    "selection_seed",
 )
 BASE_IMAGE_FIELDS = ("Filename", "canonical_image_relpath", "source_image_path")
 INVALID_FILENAME_CHARS = set('<>:"|?*')
@@ -265,9 +275,15 @@ def add_value_integrity_errors(
         "band_width_percent",
         "band_rank_start",
         "band_rank_end_exclusive",
+        "paired_hn_run_id",
+        "control_replicate",
+        "selection_seed",
     ):
         try:
-            if int(row.get(field, "")) < 0:
+            if field in {"paired_hn_run_id", "control_replicate", "selection_seed"}:
+                if row.get(field, "") == "":
+                    errors.append(f"run_matrix_empty_{field}")
+            elif int(row.get(field, "")) < 0:
                 errors.append(f"run_matrix_negative_{field}")
         except ValueError:
             errors.append(f"run_matrix_bad_int_{field}")
@@ -383,7 +399,7 @@ def validate_one_run(
             ),
             None,
         )
-        errors.append(f"selected_band_slice_mismatch:first_index={mismatch}")
+        errors.append(f"selected_repro_mismatch:first_index={mismatch}")
 
     checks = {
         "normal_rows": len(normal_rows),
@@ -485,6 +501,9 @@ def validate_one_run(
         "band_start_percent": row["band_start_percent"],
         "band_end_percent": row["band_end_percent"],
         "band_width_percent": row["band_width_percent"],
+        "paired_hn_run_id": row.get("paired_hn_run_id", ""),
+        "control_replicate": row.get("control_replicate", ""),
+        "selection_seed": row.get("selection_seed", ""),
         "replay_mode": replay_mode,
         "manifest_dir": str(manifest_dir),
         "expected_normal_rows": str(expected_normal_rows),
@@ -498,6 +517,20 @@ def validate_one_run(
     out.update({key: str(value) for key, value in checks.items()})
     out.update(work_counts)
     return out
+
+
+def expected_selected_keys_for_row(
+    row: dict[str, str],
+    normal_rows: list[dict[str, str]],
+    sorted_hn_rows: list[dict[str, str]],
+) -> list[str]:
+    rank_start = int(row["band_rank_start"])
+    rank_end = int(row["band_rank_end_exclusive"])
+    selected_total = expected_selected(row)
+    if row.get("control_replicate") in {"", "HN"} and row.get("group", "").startswith("HN"):
+        return [base.canonical_key(item) for item in sorted_hn_rows[rank_start:rank_end]]
+    selected_rows = base.sample_rows(normal_rows, selected_total, row["selection_seed"])
+    return [base.canonical_key(item) for item in selected_rows]
 
 
 def add_cross_run_errors(rows: list[dict[str, str]], selected_sets: dict[str, set[str]]) -> list[str]:
@@ -519,6 +552,25 @@ def add_cross_run_errors(rows: list[dict[str, str]], selected_sets: dict[str, se
             expected = selected_sets[hn1_a] | selected_sets[hn1_b]
             if selected_sets[hn2_id] != expected:
                 errors.append(f"hn2_pair_union_mismatch:{hn2_id}!={hn1_a}+{hn1_b}")
+    rows_by_id = {row["run_id"]: row for row in rows}
+    for row in rows:
+        run_id = row["run_id"]
+        paired = row.get("paired_hn_run_id", "")
+        replicate = row.get("control_replicate", "")
+        if not paired or replicate in {"", "HN"} or paired not in rows_by_id:
+            continue
+        hn_row = rows_by_id[paired]
+        for field in (
+            "q_percent",
+            "band_start_percent",
+            "band_end_percent",
+            "band_width_percent",
+            "expected_selected",
+            "expected_normal_rows",
+        ):
+            if row.get(field, "") != hn_row.get(field, ""):
+                errors.append(f"paired_control_scale_mismatch:{run_id}:{paired}:{field}")
+                break
     return errors
 
 
@@ -565,9 +617,7 @@ def main() -> int:
     selected_sets: dict[str, set[str]] = {}
     summary_rows = []
     for row in selected_rows:
-        rank_start = int(row["band_rank_start"])
-        rank_end = int(row["band_rank_end_exclusive"])
-        expected_keys = [base.canonical_key(item) for item in sorted_hn_rows[rank_start:rank_end]]
+        expected_keys = expected_selected_keys_for_row(row, normal_rows, sorted_hn_rows)
         summary_rows.append(
             validate_one_run(
                 row,

@@ -42,8 +42,31 @@ def selected_set(phase_root: Path, run_id: str) -> set[str]:
     }
 
 
+def hn_run_ids() -> list[str]:
+    return [
+        *(f"HN1-{index:02d}" for index in range(1, 21)),
+        *(f"HN2-{index:02d}" for index in range(1, 11)),
+    ]
+
+
+def rn_run_ids() -> list[str]:
+    return [
+        *(f"RN1{replicate}-{index:02d}" for replicate in "ABC" for index in range(1, 21)),
+        *(f"RN2{replicate}-{index:02d}" for replicate in "ABC" for index in range(1, 11)),
+    ]
+
+
+def paired_control_ids(hn_run_id: str) -> list[str]:
+    family, index = hn_run_id.split("-", 1)
+    if family == "HN1":
+        return [f"RN1{replicate}-{index}" for replicate in "ABC"]
+    if family == "HN2":
+        return [f"RN2{replicate}-{index}" for replicate in "ABC"]
+    raise ValueError(hn_run_id)
+
+
 @pytest.mark.skipif(not DATASET_ROOT.exists() or not OOF_PATH.exists(), reason="local dataset/OOF artifacts missing")
-def test_hn_band_builder_creates_non_cumulative_30_run_manifest(tmp_path: Path) -> None:
+def test_hn_band_builder_creates_non_cumulative_120_run_manifest_with_3_random_controls(tmp_path: Path) -> None:
     output_root = tmp_path / "hn_band_smoke"
     args = argparse.Namespace(
         dataset_root=str(DATASET_ROOT),
@@ -62,12 +85,11 @@ def test_hn_band_builder_creates_non_cumulative_30_run_manifest(tmp_path: Path) 
 
     run_matrix = read_csv(output_root / "run_matrix.csv")
     repro_expected = read_csv(output_root / "repro_manifest_expected.csv")
-    assert [row["run_id"] for row in run_matrix] == [
-        *(f"HN1-{index:02d}" for index in range(1, 21)),
-        *(f"HN2-{index:02d}" for index in range(1, 11)),
-    ]
-    assert len(run_matrix) == 30
-    assert len(repro_expected) == 30
+    selected_index = read_csv(output_root / "selected_samples_index.csv")
+    assert [row["run_id"] for row in run_matrix] == [*hn_run_ids(), *rn_run_ids()]
+    assert len(run_matrix) == 120
+    assert len(repro_expected) == 120
+    assert len(selected_index) == 160
     assert repro_expected[0]["run_id"] == "HN1-01"
     assert repro_expected[0]["fixed_model"] == "yolo11l-cls"
     assert repro_expected[0]["selected_queue_filter"] == "selection_manifest.csv where role=selected"
@@ -86,6 +108,11 @@ def test_hn_band_builder_creates_non_cumulative_30_run_manifest(tmp_path: Path) 
         assert row["selected_unique"] == "1"
         assert row["replay_duplicate_slots"] == "1"
         assert row["final_normal_rows"] == "101"
+        assert row["paired_hn_run_id"] == row["run_id"]
+        assert row["control_replicate"] == "HN"
+        assert row["selection_policy"] == (
+            f"global_oof_p_defect_operational_normal_band_{index - 1:02d}_{index:02d}_percent"
+        )
 
     for index in range(1, 11):
         row = matrix_by_id[f"HN2-{index:02d}"]
@@ -95,6 +122,8 @@ def test_hn_band_builder_creates_non_cumulative_30_run_manifest(tmp_path: Path) 
         assert row["selected_unique"] == "2"
         assert row["replay_duplicate_slots"] == "2"
         assert row["final_normal_rows"] == "102"
+        assert row["paired_hn_run_id"] == row["run_id"]
+        assert row["control_replicate"] == "HN"
 
     hn1_sets = [selected_set(output_root, f"HN1-{index:02d}") for index in range(1, 21)]
     assert sum(len(item) for item in hn1_sets) == len(set().union(*hn1_sets)) == 20
@@ -103,6 +132,35 @@ def test_hn_band_builder_creates_non_cumulative_30_run_manifest(tmp_path: Path) 
             output_root, f"HN1-{2 * index:02d}"
         )
         assert selected_set(output_root, f"HN2-{index:02d}") == expected
+
+    for hn_run_id in hn_run_ids():
+        hn_row = matrix_by_id[hn_run_id]
+        hn_selected = selected_set(output_root, hn_run_id)
+        for replicate, rn_run_id in zip("ABC", paired_control_ids(hn_run_id)):
+            rn_row = matrix_by_id[rn_run_id]
+            rn_selected = selected_set(output_root, rn_run_id)
+            assert rn_row["paired_hn_run_id"] == hn_run_id
+            assert rn_row["control_replicate"] == replicate
+            assert rn_row["normal_slots"] == hn_row["normal_slots"]
+            assert rn_row["selected_unique"] == hn_row["selected_unique"]
+            assert rn_row["replay_duplicate_slots"] == hn_row["replay_duplicate_slots"]
+            assert rn_row["final_normal_rows"] == hn_row["final_normal_rows"]
+            assert rn_row["band_start_percent"] == hn_row["band_start_percent"]
+            assert rn_row["band_end_percent"] == hn_row["band_end_percent"]
+            assert rn_row["band_width_percent"] == hn_row["band_width_percent"]
+            assert rn_row["selection_policy"] == (
+                f"global_random_normal_seeded_control_{replicate}_same_size_as_{hn_run_id}"
+            )
+            assert rn_row["selection_seed"] == f"{builder.SEED}:{rn_run_id}:selected:global_random_control"
+            assert len(rn_selected) == len(hn_selected)
+
+    selected_by_run = {}
+    for row in selected_index:
+        selected_by_run.setdefault(row["run_id"], set()).add(row["source_canonical_image_relpath"].replace("\\", "/"))
+        assert row["paired_hn_run_id"]
+        assert row["selection_seed"]
+    for run_id in [*hn_run_ids(), *rn_run_ids()]:
+        assert selected_by_run[run_id] == selected_set(output_root, run_id)
 
     result = subprocess.run(
         [
@@ -124,20 +182,23 @@ def test_hn_band_builder_creates_non_cumulative_30_run_manifest(tmp_path: Path) 
     assert result.returncode == 0, result.stdout + result.stderr
 
 
-def test_hn_band_pipeline_exposes_30_entries_and_10_node_groups() -> None:
-    assert len(pipeline.BAND_ENTRYPOINTS) == 30
+def test_hn_band_pipeline_exposes_120_entries_and_10_node_groups() -> None:
+    assert len(pipeline.BAND_ENTRYPOINTS) == 120
 
     entry_runs = [run_id for func in pipeline.BAND_ENTRYPOINTS.values() for run_id in func()]
-    assert entry_runs == [
-        *(f"HN1-{index:02d}" for index in range(1, 21)),
-        *(f"HN2-{index:02d}" for index in range(1, 11)),
-    ]
+    assert entry_runs == [*hn_run_ids(), *rn_run_ids()]
+    for run_id in rn_run_ids():
+        assert run_id.replace("-", "_") in pipeline.BAND_ENTRYPOINTS
 
     node_runs = [run_id for run_ids in pipeline.NODE_PLAN.values() for run_id in run_ids]
     assert len(pipeline.NODE_PLAN) == 10
-    assert len(node_runs) == 30
-    assert len(set(node_runs)) == 30
-    assert node_runs == entry_runs
+    assert len(node_runs) == 120
+    assert len(set(node_runs)) == 120
+    for run_ids in pipeline.NODE_PLAN.values():
+        assert len(run_ids) == 12
+        for offset in range(0, len(run_ids), 4):
+            hn_run_id = run_ids[offset]
+            assert run_ids[offset + 1 : offset + 4] == paired_control_ids(hn_run_id)
 
 
 def test_hn_band_pipeline_refuses_to_reuse_run_outputs_without_exist_ok(tmp_path: Path) -> None:
@@ -313,11 +374,14 @@ def test_hn_band_pipeline_writes_per_run_repro_manifest(tmp_path: Path) -> None:
         "replay_mode": "append",
         "group": "HN1",
         "q_percent": "1",
+        "paired_hn_run_id": "HN1-01",
+        "control_replicate": "HN",
         "band_start_percent": "0",
         "band_end_percent": "1",
         "band_width_percent": "1",
         "band_rank_start": "0",
         "band_rank_end_exclusive": "600",
+        "selection_seed": "20260606:HN1-01:oof_rank_band:0:1",
         "normal_slots": "60000",
         "defect_slots": "60000",
         "selected_unique": "600",
