@@ -65,6 +65,23 @@ def paired_control_ids(hn_run_id: str) -> list[str]:
     raise ValueError(hn_run_id)
 
 
+def pipeline_paths(root: Path) -> dict[str, Path]:
+    return {
+        "phase_root": root,
+        "summary_root": root / "pipeline_summaries",
+        "log_root": root / "pipeline_logs",
+        "work_root": root / "workdirs",
+        "runs_root": root / "runs",
+        "eval_root": root / "eval",
+        "repro_root": root / "repro_runs",
+    }
+
+
+def write_text(path: Path, text: str = "partial") -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(text, encoding="utf-8")
+
+
 @pytest.mark.skipif(not DATASET_ROOT.exists() or not OOF_PATH.exists(), reason="local dataset/OOF artifacts missing")
 def test_hn_band_builder_creates_non_cumulative_120_run_manifest_with_3_random_controls(tmp_path: Path) -> None:
     output_root = tmp_path / "hn_band_smoke"
@@ -201,21 +218,64 @@ def test_hn_band_pipeline_exposes_120_entries_and_10_node_groups() -> None:
             assert run_ids[offset + 1 : offset + 4] == paired_control_ids(hn_run_id)
 
 
+def test_hn_band_builder_force_refuses_phase_root_with_training_outputs(tmp_path: Path) -> None:
+    phase_root = tmp_path / "phase"
+    (phase_root / "manifests" / "HN1-01").mkdir(parents=True)
+
+    builder.assert_output_root_safe(phase_root, force=True)
+
+    (phase_root / "runs" / "HN1-01").mkdir(parents=True)
+    with pytest.raises(FileExistsError, match="training/evaluation outputs"):
+        builder.assert_output_root_safe(phase_root, force=True)
+
+
 def test_hn_band_pipeline_refuses_to_reuse_run_outputs_without_exist_ok(tmp_path: Path) -> None:
     run_id = "HN1-01"
-    paths = {
-        "summary_root": tmp_path / "pipeline_summaries",
-        "work_root": tmp_path / "workdirs",
-        "runs_root": tmp_path / "runs",
-        "eval_root": tmp_path / "eval",
+    cases = {
+        "summary": lambda paths: write_text(paths["summary_root"] / f"{run_id}.json", "{}"),
+        "work_root": lambda paths: (paths["work_root"] / run_id).mkdir(parents=True),
+        "train_run_root": lambda paths: (paths["runs_root"] / run_id).mkdir(parents=True),
+        "eval_run_root": lambda paths: (paths["eval_root"] / run_id).mkdir(parents=True),
+        "pipeline_log": lambda paths: write_text(paths["log_root"] / f"{run_id}.log"),
+        "preflight_validation_csv": lambda paths: (
+            write_text(paths["phase_root"] / "validation" / "preflight" / f"{run_id}.csv")
+        ),
+        "post_train_validation_json": lambda paths: (
+            write_text(paths["phase_root"] / "validation" / "post_train" / f"{run_id}.json", "{}")
+        ),
+        "repro_run_csv": lambda paths: write_text(paths["repro_root"] / f"{run_id}.csv"),
     }
-    (paths["summary_root"]).mkdir(parents=True)
-    (paths["summary_root"] / f"{run_id}.json").write_text("{}", encoding="utf-8")
+    for case_name, create_path in cases.items():
+        paths = pipeline_paths(tmp_path / case_name)
+        for path in paths.values():
+            path.mkdir(parents=True, exist_ok=True)
+        create_path(paths)
+        with pytest.raises(FileExistsError, match=case_name):
+            pipeline.assert_run_outputs_safe(run_id, SimpleNamespace(exist_ok=False, resume_eval=False), paths)
 
-    with pytest.raises(FileExistsError):
-        pipeline.assert_run_outputs_safe(run_id, SimpleNamespace(exist_ok=False), paths)
+    with pytest.raises(ValueError, match="--exist-ok is disabled"):
+        pipeline.assert_run_outputs_safe(run_id, SimpleNamespace(exist_ok=True, resume_eval=False), pipeline_paths(tmp_path))
 
-    pipeline.assert_run_outputs_safe(run_id, SimpleNamespace(exist_ok=True), paths)
+
+def test_hn_band_pipeline_resume_eval_uses_new_outputs_and_existing_best_weight(tmp_path: Path) -> None:
+    run_id = "HN1-01"
+    paths = pipeline_paths(tmp_path)
+    (paths["work_root"] / run_id / "full").mkdir(parents=True)
+    weight_dir = paths["runs_root"] / run_id / "full_yolo11l_cls_20260628-000000" / "weights"
+    weight_dir.mkdir(parents=True)
+    (weight_dir / "best.pt").write_text("best", encoding="utf-8")
+    (paths["summary_root"] / f"{run_id}.json").parent.mkdir(parents=True)
+    (paths["summary_root"] / f"{run_id}.json").write_text("failed eval summary", encoding="utf-8")
+    (paths["eval_root"] / run_id / f"eval_{run_id}_best").mkdir(parents=True)
+    output_key = f"{run_id}_resume_eval_20260628-000001-pid1"
+    eval_run_name = f"eval_{run_id}_best_resume_20260628-000001-pid1"
+    args = SimpleNamespace(exist_ok=False, resume_eval=True, weights=None, model="l")
+
+    pipeline.assert_run_outputs_safe(run_id, args, paths, output_key=output_key, eval_run_name=eval_run_name)
+
+    (paths["eval_root"] / run_id / eval_run_name).mkdir(parents=True)
+    with pytest.raises(FileExistsError, match="eval_run_dir"):
+        pipeline.assert_run_outputs_safe(run_id, args, paths, output_key=output_key, eval_run_name=eval_run_name)
 
 
 def test_hn_band_pipeline_rejects_cpu_training_by_default(tmp_path: Path) -> None:

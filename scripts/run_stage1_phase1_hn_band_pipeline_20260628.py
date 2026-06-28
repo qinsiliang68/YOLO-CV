@@ -284,20 +284,85 @@ def write_csv_rows(path: Path, rows: list[dict[str, object]], fieldnames: tuple[
             writer.writerow({key: "" if row.get(key) is None else row.get(key) for key in fieldnames})
 
 
-def assert_run_outputs_safe(run_id: str, args: argparse.Namespace, paths: dict[str, Path]) -> None:
-    if args.exist_ok:
-        return
+def output_key_for_run(run_id: str, args: argparse.Namespace, attempt_id: str) -> str:
+    if getattr(args, "resume_eval", False):
+        return f"{run_id}_resume_eval_{attempt_id}"
+    return run_id
+
+
+def eval_run_name_for_run(run_id: str, args: argparse.Namespace, attempt_id: str) -> str:
+    if getattr(args, "resume_eval", False):
+        return f"eval_{run_id}_best_resume_{attempt_id}"
+    return f"eval_{run_id}_best"
+
+
+def run_trace_paths(
+    run_id: str,
+    paths: dict[str, Path],
+    output_key: str,
+    eval_run_name: str,
+    *,
+    resume_eval: bool,
+) -> dict[str, Path]:
+    eval_path = paths["eval_root"] / run_id / eval_run_name if resume_eval else paths["eval_root"] / run_id
     protected = {
-        "summary": paths["summary_root"] / f"{run_id}.json",
-        "work_root": paths["work_root"] / run_id,
-        "train_run_root": paths["runs_root"] / run_id,
-        "eval_run_root": paths["eval_root"] / run_id,
+        "summary": paths["summary_root"] / f"{output_key}.json",
+        "pipeline_log": paths["log_root"] / f"{output_key}.log",
+        "preflight_validation_csv": paths["phase_root"] / "validation" / "preflight" / f"{output_key}.csv",
+        "preflight_validation_json": paths["phase_root"] / "validation" / "preflight" / f"{output_key}.json",
+        "post_train_validation_csv": paths["phase_root"] / "validation" / "post_train" / f"{output_key}.csv",
+        "post_train_validation_json": paths["phase_root"] / "validation" / "post_train" / f"{output_key}.json",
+        "repro_run_csv": paths["repro_root"] / f"{output_key}.csv",
+        "repro_run_json": paths["repro_root"] / f"{output_key}.json",
+        "eval_run_dir": eval_path,
     }
+    if not resume_eval:
+        protected.update(
+            {
+                "work_root": paths["work_root"] / run_id,
+                "train_run_root": paths["runs_root"] / run_id,
+            }
+        )
+    return protected
+
+
+def assert_run_outputs_safe(
+    run_id: str,
+    args: argparse.Namespace,
+    paths: dict[str, Path],
+    output_key: str | None = None,
+    eval_run_name: str | None = None,
+) -> None:
+    if args.exist_ok:
+        raise ValueError(
+            "--exist-ok is disabled for the HN band formal pipeline. "
+            "Delete the run-specific outputs for a clean rerun, or use --resume-eval for evaluation-only recovery."
+        )
+    resume_eval = getattr(args, "resume_eval", False)
+    output_key = output_key or run_id
+    eval_run_name = eval_run_name or f"eval_{run_id}_best"
+    if resume_eval:
+        required = {
+            "work_root": paths["work_root"] / run_id,
+            "train_run_root": paths["runs_root"] / run_id,
+        }
+        missing = {name: str(path) for name, path in required.items() if not path.exists()}
+        if missing:
+            raise FileNotFoundError(f"Cannot resume eval for {run_id}; missing training outputs: {missing}")
+        if not getattr(args, "weights", None):
+            newest_best_weight(paths["runs_root"] / run_id, args.model)
+    protected = run_trace_paths(
+        run_id,
+        paths,
+        output_key,
+        eval_run_name,
+        resume_eval=resume_eval,
+    )
     existing = {name: str(path) for name, path in protected.items() if path.exists()}
     if existing:
         raise FileExistsError(
             f"Refusing to reuse existing outputs for {run_id}. "
-            "Use a new --phase-root for a clean run, or pass --exist-ok for an intentional resume/rerun. "
+            "Use a new --phase-root, delete the run-specific outputs, or use --resume-eval for a new eval attempt. "
             f"Existing paths: {existing}"
         )
 
@@ -340,9 +405,13 @@ def build_run_repro_row(
     manifest_dir: Path,
     expectation: dict[str, str],
 ) -> dict[str, object]:
-    repro_csv = paths["repro_root"] / f"{run_id}.csv"
-    repro_json = paths["repro_root"] / f"{run_id}.json"
-    eval_run_dir = paths["eval_root"] / run_id / f"eval_{run_id}_best"
+    output_key = payload.get("output_key") or run_id
+    repro_csv = paths["repro_root"] / f"{output_key}.csv"
+    repro_json = paths["repro_root"] / f"{output_key}.json"
+    if payload.get("eval_run_dir"):
+        eval_run_dir = Path(payload["eval_run_dir"])
+    else:
+        eval_run_dir = paths["eval_root"] / run_id / f"eval_{run_id}_best"
     train_run_root = paths["runs_root"] / run_id
     best_pt = Path(payload["best_weight"]) if payload.get("best_weight") else None
     last_pt = best_pt.parent / "last.pt" if best_pt else None
@@ -423,7 +492,7 @@ def build_run_repro_row(
         "prediction_rows_val_op": prediction_rows.get("val_op", ""),
         "prediction_rows_test": prediction_rows.get("test", ""),
         "pipeline_log": payload.get("log_path", ""),
-        "pipeline_summary_json": str(paths["summary_root"] / f"{run_id}.json"),
+        "pipeline_summary_json": str(paths["summary_root"] / f"{output_key}.json"),
         "repro_run_csv": str(repro_csv),
         "repro_run_json": str(repro_json),
         "started_at": payload.get("started_at", ""),
@@ -440,8 +509,9 @@ def write_run_repro_manifest(
     expectation: dict[str, str],
 ) -> dict[str, object]:
     row = build_run_repro_row(run_id, payload, paths, manifest_dir, expectation)
-    write_csv_rows(paths["repro_root"] / f"{run_id}.csv", [row], REPRO_RUN_COLUMNS)
-    write_json(paths["repro_root"] / f"{run_id}.json", row)
+    output_key = payload.get("output_key") or run_id
+    write_csv_rows(paths["repro_root"] / f"{output_key}.csv", [row], REPRO_RUN_COLUMNS)
+    write_json(paths["repro_root"] / f"{output_key}.json", row)
     return row
 
 
@@ -452,10 +522,12 @@ def run_validator(
     paths: dict[str, Path],
     log_path: Path,
     skip_workdir: bool,
+    output_key: str | None = None,
 ) -> tuple[int, Path, Path]:
     output_dir = paths["phase_root"] / "validation" / stage
-    output_csv = output_dir / f"{run_id}.csv"
-    output_json = output_dir / f"{run_id}.json"
+    output_name = output_key or run_id
+    output_csv = output_dir / f"{output_name}.csv"
+    output_json = output_dir / f"{output_name}.json"
     cmd = [
         sys.executable,
         str(paths["repo_root"] / "scripts" / "validate_stage1_phase1_hn_band_manifests_20260628.py"),
@@ -545,13 +617,17 @@ def run_one(run_id: str, args: argparse.Namespace, paths: dict[str, Path], run_m
     manifest_dir = paths["manifest_root"] / run_id
     if not manifest_dir.exists():
         raise FileNotFoundError(f"Missing manifest dir for {run_id}: {manifest_dir}")
-    assert_run_outputs_safe(run_id, args, paths)
+    attempt_id = datetime.now().strftime("%Y%m%d-%H%M%S") + f"-pid{os.getpid()}"
+    output_key = output_key_for_run(run_id, args, attempt_id)
+    eval_run_name = eval_run_name_for_run(run_id, args, attempt_id)
+    assert_run_outputs_safe(run_id, args, paths, output_key=output_key, eval_run_name=eval_run_name)
 
     work_root = paths["work_root"] / run_id
     train_run_root = paths["runs_root"] / run_id
     eval_root = paths["eval_root"] / run_id
-    summary_path = paths["summary_root"] / f"{run_id}.json"
-    log_path = paths["log_root"] / f"{run_id}.log"
+    eval_run_dir = eval_root / eval_run_name
+    summary_path = paths["summary_root"] / f"{output_key}.json"
+    log_path = paths["log_root"] / f"{output_key}.log"
 
     started = time.time()
     status = "ok"
@@ -571,7 +647,7 @@ def run_one(run_id: str, args: argparse.Namespace, paths: dict[str, Path], run_m
     try:
         print(f"run_expectation={json.dumps(expectation, ensure_ascii=False)}")
         preflight_exit, preflight_csv_path, preflight_json_path = run_validator(
-            run_id, "preflight", args, paths, log_path, skip_workdir=True
+            run_id, "preflight", args, paths, log_path, skip_workdir=True, output_key=output_key
         )
         preflight_csv = str(preflight_csv_path)
         preflight_json = str(preflight_json_path)
@@ -611,14 +687,12 @@ def run_one(run_id: str, args: argparse.Namespace, paths: dict[str, Path], run_m
                 "--yolo-root",
                 str(paths["yolo_root"]),
             ]
-            if args.exist_ok:
-                train_cmd.append("--exist-ok")
             train_exit = run_command(train_cmd, paths["repo_root"], log_path)
             if train_exit != 0:
                 raise RuntimeError(f"Training failed for {run_id}, exit={train_exit}")
 
         post_train_validation_exit, post_csv_path, post_json_path = run_validator(
-            run_id, "post_train", args, paths, log_path, skip_workdir=False
+            run_id, "post_train", args, paths, log_path, skip_workdir=False, output_key=output_key
         )
         post_train_validation_csv = str(post_csv_path)
         post_train_validation_json = str(post_json_path)
@@ -640,7 +714,7 @@ def run_one(run_id: str, args: argparse.Namespace, paths: dict[str, Path], run_m
                 "--weights",
                 str(best_weight_path),
                 "--run-name",
-                f"eval_{run_id}_best",
+                eval_run_name,
                 "--splits",
                 args.eval_splits,
                 "--seed",
@@ -662,12 +736,10 @@ def run_one(run_id: str, args: argparse.Namespace, paths: dict[str, Path], run_m
             ]
             if args.eval_limit_per_class is not None:
                 eval_cmd.extend(["--limit-per-class", str(args.eval_limit_per_class)])
-            if args.exist_ok:
-                eval_cmd.append("--exist-ok")
             eval_exit = run_command(eval_cmd, paths["repo_root"], log_path)
             if eval_exit != 0:
                 raise RuntimeError(f"Evaluation failed for {run_id}, exit={eval_exit}")
-            eval_verification = verify_eval_outputs(eval_root / f"eval_{run_id}_best", args.eval_splits)
+            eval_verification = verify_eval_outputs(eval_run_dir, args.eval_splits)
     except Exception as exc:
         status = "failed"
         error = repr(exc)
@@ -675,6 +747,9 @@ def run_one(run_id: str, args: argparse.Namespace, paths: dict[str, Path], run_m
     finally:
         payload = {
             "run_id": run_id,
+            "output_key": output_key,
+            "attempt_id": attempt_id,
+            "resume_eval": bool(args.resume_eval),
             "status": status,
             "error": error,
             "started_at": datetime.fromtimestamp(started).isoformat(timespec="seconds"),
@@ -684,6 +759,8 @@ def run_one(run_id: str, args: argparse.Namespace, paths: dict[str, Path], run_m
             "work_root": str(work_root),
             "train_run_root": str(train_run_root),
             "eval_root": str(eval_root),
+            "eval_run_name": eval_run_name,
+            "eval_run_dir": str(eval_run_dir),
             "best_weight": best_weight,
             "train_exit": train_exit,
             "eval_exit": eval_exit,
@@ -748,6 +825,11 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--skip-train", action="store_true")
     parser.add_argument("--skip-eval", action="store_true", help="Disabled for formal phase-1 runs; kept only to fail loudly.")
     parser.add_argument(
+        "--resume-eval",
+        action="store_true",
+        help="Recover a failed evaluation by reusing existing training outputs and writing a new eval attempt.",
+    )
+    parser.add_argument(
         "--allow-cpu-train",
         action="store_true",
         help="Allow --train-device cpu for manual debugging. Formal runs should use a CUDA device.",
@@ -757,7 +839,7 @@ def parse_args() -> argparse.Namespace:
         action="store_true",
         help="Compatibility flag only. The archived training script is not modified, so this is not forwarded.",
     )
-    parser.add_argument("--exist-ok", action="store_true")
+    parser.add_argument("--exist-ok", action="store_true", help="Disabled for this formal pipeline; kept to fail loudly.")
     return parser.parse_args()
 
 
@@ -782,6 +864,13 @@ def main() -> int:
     run_matrix = read_run_matrix(phase_root / "run_matrix.csv")
     summaries = []
     run_ids = resolve_run_ids(args)
+    if args.exist_ok:
+        raise ValueError(
+            "--exist-ok is disabled for this formal pipeline. "
+            "Delete run-specific outputs before a clean rerun, or use --resume-eval after a failed evaluation."
+        )
+    if args.resume_eval:
+        args.skip_train = True
     if args.model != FORMAL_MODEL:
         raise ValueError(f"Phase-1 HN band experiments are locked to yolo11{FORMAL_MODEL}.")
     if tuple(part.strip() for part in args.eval_splits.split(",") if part.strip()) != FORMAL_EVAL_SPLITS:

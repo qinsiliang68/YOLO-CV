@@ -447,17 +447,35 @@ def build_normal_manifest_for_band(
 
 
 def assert_output_root_safe(output_root: Path, force: bool) -> None:
-    if force or not output_root.exists():
+    if not output_root.exists():
         return
-    protected = (
-        "manifests",
+    run_output_roots = (
         "runs",
         "eval",
         "workdirs",
         "pipeline_summaries",
         "pipeline_logs",
         "validation",
+        "repro_runs",
+        "repro_batches",
+        "last_pipeline_batch.json",
+    )
+    existing_run_outputs = [
+        str(output_root / name) for name in run_output_roots if (output_root / name).exists()
+    ]
+    if existing_run_outputs:
+        raise FileExistsError(
+            "Refusing to rebuild manifests in a phase root with training/evaluation outputs. "
+            "Use a new --output-root, or archive/delete the entire old phase root after audit. "
+            f"Existing paths: {existing_run_outputs[:6]}"
+        )
+    if force:
+        return
+    protected = (
+        "manifests",
         "run_matrix.csv",
+        "selected_samples_index.csv",
+        "repro_manifest_expected.csv",
         "build_summary.json",
     )
     existing = [str(output_root / name) for name in protected if (output_root / name).exists()]
