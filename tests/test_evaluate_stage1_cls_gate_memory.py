@@ -12,6 +12,10 @@ if str(REPO_ROOT) not in sys.path:
 from scripts import evaluate_stage1_cls_gate as eval_gate  # noqa: E402
 
 
+class DummyModel:
+    pass
+
+
 def raw_row(split: str, y_true: int, p_defect: float, filename: str) -> dict[str, str]:
     y_pred = 1 if p_defect >= 0.5 else 0
     return {
@@ -64,3 +68,43 @@ def test_write_calibrated_outputs_reads_raw_prediction_files(tmp_path: Path) -> 
     assert (tmp_path / "metrics_at_selected_threshold.csv").exists()
     assert (tmp_path / "calibration.json").exists()
     assert (tmp_path / "threshold.json").exists()
+
+
+def test_predict_raw_directory_is_removed_after_success(tmp_path: Path, monkeypatch) -> None:
+    run_dir = tmp_path / "run"
+    cfg = SimpleNamespace(splits=("val_cal", "val_op", "test"))
+    monkeypatch.setattr(eval_gate, "load_split_records", lambda paths, split, cfg: [{"split": split}])
+    monkeypatch.setattr(eval_gate, "predict_records", lambda model, records, cfg: [raw_row("val_cal", 1, 0.90, "x.png")])
+    monkeypatch.setattr(
+        eval_gate,
+        "write_calibrated_outputs_from_raw_predictions",
+        lambda run_dir, raw_paths, cfg: {"threshold": 0.5},
+    )
+
+    result = eval_gate.predict_and_calibrate_from_persistent_raw(run_dir, DummyModel(), object(), cfg)
+
+    assert result["threshold"] == 0.5
+    assert not list(run_dir.glob("raw_predictions_*"))
+
+
+def test_predict_raw_directory_is_kept_after_calibration_failure(tmp_path: Path, monkeypatch) -> None:
+    run_dir = tmp_path / "run"
+    cfg = SimpleNamespace(splits=("val_cal", "val_op", "test"))
+    monkeypatch.setattr(eval_gate, "load_split_records", lambda paths, split, cfg: [{"split": split}])
+    monkeypatch.setattr(eval_gate, "predict_records", lambda model, records, cfg: [raw_row("val_cal", 1, 0.90, "x.png")])
+
+    def fail_calibration(run_dir, raw_paths, cfg):
+        raise RuntimeError("calibration failed")
+
+    monkeypatch.setattr(eval_gate, "write_calibrated_outputs_from_raw_predictions", fail_calibration)
+
+    try:
+        eval_gate.predict_and_calibrate_from_persistent_raw(run_dir, DummyModel(), object(), cfg)
+    except RuntimeError as exc:
+        assert "calibration failed" in str(exc)
+    else:
+        raise AssertionError("expected calibration failure")
+
+    raw_dirs = list(run_dir.glob("raw_predictions_*"))
+    assert len(raw_dirs) == 1
+    assert list(raw_dirs[0].glob("predictions_*_raw.csv"))

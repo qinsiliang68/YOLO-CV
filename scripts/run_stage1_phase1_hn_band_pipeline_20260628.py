@@ -196,6 +196,8 @@ class ProcessTreeGuard:
         self._kernel32 = None
         self._job_handle = None
         self._assigned = False
+        self.enabled = False
+        self.reason = "non_windows_process_only"
         if sys.platform != "win32":
             return
         try:
@@ -206,13 +208,24 @@ class ProcessTreeGuard:
                 return
             process_handle = ctypes.c_void_p(int(proc._handle))  # type: ignore[attr-defined]
             if not self._kernel32.AssignProcessToJobObject(self._job_handle, process_handle):
+                last_error = ctypes.get_last_error()
                 self.close(None)
                 self._job_handle = None
+                self.reason = f"assign_failed:last_error={last_error}"
                 return
             self._assigned = True
-        except Exception:
+            self.enabled = True
+            self.reason = "windows_job_object"
+        except Exception as exc:
+            if self._job_handle and self._kernel32:
+                try:
+                    self._kernel32.CloseHandle(self._job_handle)
+                except Exception:
+                    pass
             self._job_handle = None
             self._assigned = False
+            self.enabled = False
+            self.reason = f"init_exception:{exc!r}"
 
     def _configure_winapi(self) -> None:
         self._kernel32.CreateJobObjectW.argtypes = (ctypes.c_void_p, ctypes.c_wchar_p)
@@ -267,6 +280,7 @@ class ProcessTreeGuard:
         job_object_limit_kill_on_job_close = 0x00002000
         handle = self._kernel32.CreateJobObjectW(None, None)
         if not handle:
+            self.reason = f"create_job_failed:last_error={ctypes.get_last_error()}"
             return None
         info = JobObjectExtendedLimitInformation()
         info.BasicLimitInformation.LimitFlags = job_object_limit_kill_on_job_close
@@ -277,7 +291,9 @@ class ProcessTreeGuard:
             ctypes.sizeof(info),
         )
         if not ok:
+            last_error = ctypes.get_last_error()
             self._kernel32.CloseHandle(handle)
+            self.reason = f"set_job_limit_failed:last_error={last_error}"
             return None
         return handle
 
@@ -340,6 +356,9 @@ def run_command(args: list[str], cwd: Path, log_path: Path) -> int:
             errors="replace",
         )
         guard = create_process_tree_guard(proc)
+        guard_state = "enabled" if getattr(guard, "enabled", False) else "disabled"
+        guard_reason = getattr(guard, "reason", "unknown")
+        _log_process_guard(log, f"process_tree_guard={guard_state} reason={guard_reason}")
         terminated = False
         try:
             assert proc.stdout is not None

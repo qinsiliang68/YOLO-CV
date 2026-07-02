@@ -31,8 +31,8 @@ import json
 import math
 import os
 import random
+import shutil
 import sys
-import tempfile
 import time
 from dataclasses import dataclass
 from datetime import datetime
@@ -611,6 +611,59 @@ def write_calibrated_outputs_from_raw_predictions(
     }
 
 
+def create_raw_prediction_dir(run_dir: Path) -> Path:
+    for _ in range(100):
+        raw_dir = run_dir / f"raw_predictions_{datetime.now().strftime('%Y%m%d_%H%M%S_%f')}"
+        try:
+            raw_dir.mkdir(parents=True, exist_ok=False)
+            return raw_dir
+        except FileExistsError:
+            continue
+    raise RuntimeError(f"Unable to create unique raw prediction directory under {run_dir}")
+
+
+def predict_and_calibrate_from_persistent_raw(
+    run_dir: Path,
+    model,
+    paths: Paths,
+    cfg: EvalConfig,
+    on_split_records_loaded=None,
+) -> dict[str, object]:
+    raw_dir = create_raw_prediction_dir(run_dir)
+    raw_prediction_paths: dict[str, Path] = {}
+    model_ref = model
+    del model
+    success = False
+    try:
+        for split in cfg.splits:
+            records = load_split_records(paths, split, cfg)
+            if on_split_records_loaded is not None:
+                on_split_records_loaded(split, len(records))
+            print(f"predict split={split} images={len(records)}")
+            predictions = predict_records(model_ref, records, cfg)
+            raw_path = raw_dir / f"predictions_{split}_raw.csv"
+            write_csv(raw_path, predictions, PREDICTION_COLUMNS)
+            raw_prediction_paths[split] = raw_path
+            del records
+            del predictions
+            gc.collect()
+
+        model_ref = None
+        release_torch_memory()
+
+        calibrated_outputs = write_calibrated_outputs_from_raw_predictions(run_dir, raw_prediction_paths, cfg)
+        success = True
+        return calibrated_outputs
+    except Exception:
+        print(f"raw_predictions_retained={raw_dir}")
+        raise
+    finally:
+        model_ref = None
+        release_torch_memory()
+        if success:
+            shutil.rmtree(raw_dir, ignore_errors=True)
+
+
 def collect_artifact_rows(run_dir: Path) -> list[dict[str, str]]:
     rows: list[dict[str, str]] = []
     ignored = {ARTIFACT_MANIFEST_CSV_FILENAME, ARTIFACT_MANIFEST_JSON_FILENAME}
@@ -800,29 +853,19 @@ def main() -> int:
         return 0
 
     YOLO = ensure_yolo_import(paths.yolo_root)
-    model = YOLO(str(cfg.weights))
 
-    with tempfile.TemporaryDirectory(prefix="raw_predictions_", dir=str(run_dir)) as raw_dir_name:
-        raw_dir = Path(raw_dir_name)
-        raw_prediction_paths: dict[str, Path] = {}
-        for split in cfg.splits:
-            records = load_split_records(paths, split, cfg)
-            counts_by_split[split] = len(records)
-            run_config["split_counts"] = counts_by_split
-            write_json(run_dir / "run_config.json", run_config)
-            print(f"predict split={split} images={len(records)}")
-            predictions = predict_records(model, records, cfg)
-            raw_path = raw_dir / f"predictions_{split}_raw.csv"
-            write_csv(raw_path, predictions, PREDICTION_COLUMNS)
-            raw_prediction_paths[split] = raw_path
-            del records
-            del predictions
-            gc.collect()
+    def update_split_count(split: str, count: int) -> None:
+        counts_by_split[split] = count
+        run_config["split_counts"] = counts_by_split
+        write_json(run_dir / "run_config.json", run_config)
 
-        del model
-        release_torch_memory()
-
-        calibrated_outputs = write_calibrated_outputs_from_raw_predictions(run_dir, raw_prediction_paths, cfg)
+    calibrated_outputs = predict_and_calibrate_from_persistent_raw(
+        run_dir,
+        YOLO(str(cfg.weights)),
+        paths,
+        cfg,
+        on_split_records_loaded=update_split_count,
+    )
 
     write_readme(run_dir, cfg, paths, float(calibrated_outputs["threshold"]))
     artifact_manifest_csv, artifact_manifest_json = write_artifact_manifest(run_dir)

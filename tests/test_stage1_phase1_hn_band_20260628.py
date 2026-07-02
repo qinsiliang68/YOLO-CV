@@ -232,6 +232,8 @@ def test_hn_band_run_command_closes_process_tree_guard_after_normal_exit(tmp_pat
             self.returncode = 0
 
     class FakeGuard:
+        enabled = True
+        reason = "windows_job_object"
         closed = False
         terminated = False
 
@@ -251,6 +253,7 @@ def test_hn_band_run_command_closes_process_tree_guard_after_normal_exit(tmp_pat
     assert exit_code == 0
     assert fake_guard.closed
     assert not fake_guard.terminated
+    assert "process_tree_guard=enabled reason=windows_job_object" in (tmp_path / "cmd.log").read_text()
 
 
 def test_hn_band_run_command_terminates_process_tree_guard_on_interruption(tmp_path: Path, monkeypatch) -> None:
@@ -267,6 +270,8 @@ def test_hn_band_run_command_terminates_process_tree_guard_on_interruption(tmp_p
             self.returncode = 0
 
     class FakeGuard:
+        enabled = False
+        reason = "assign_failed:last_error=5"
         closed = False
         terminated = False
 
@@ -286,6 +291,33 @@ def test_hn_band_run_command_terminates_process_tree_guard_on_interruption(tmp_p
 
     assert fake_guard.terminated
     assert not fake_guard.closed
+    log_text = (tmp_path / "cmd.log").read_text()
+    assert "process_tree_guard=disabled reason=assign_failed:last_error=5" in log_text
+
+
+def test_process_tree_guard_closes_job_handle_when_init_raises(monkeypatch) -> None:
+    closed_handles = []
+
+    class FakeKernel32:
+        def CloseHandle(self, handle):
+            closed_handles.append(handle)
+            return 1
+
+    class FakeProc:
+        @property
+        def _handle(self):
+            raise RuntimeError("process handle unavailable")
+
+    monkeypatch.setattr(pipeline.sys, "platform", "win32")
+    monkeypatch.setattr(pipeline.ctypes, "WinDLL", lambda *args, **kwargs: FakeKernel32(), raising=False)
+    monkeypatch.setattr(pipeline.ProcessTreeGuard, "_configure_winapi", lambda self: None)
+    monkeypatch.setattr(pipeline.ProcessTreeGuard, "_create_kill_on_close_job", lambda self: 4242)
+
+    guard = pipeline.ProcessTreeGuard(FakeProc())
+
+    assert closed_handles == [4242]
+    assert not guard.enabled
+    assert guard.reason.startswith("init_exception:")
 
 
 def test_hn_band_builder_force_refuses_phase_root_with_training_outputs(tmp_path: Path) -> None:
