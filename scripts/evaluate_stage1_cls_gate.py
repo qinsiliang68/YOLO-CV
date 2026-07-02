@@ -25,6 +25,7 @@ from __future__ import annotations
 
 import argparse
 import csv
+import gc
 import hashlib
 import json
 import math
@@ -167,6 +168,13 @@ def file_sha256(path: Path) -> str:
 def read_manifest(path: Path) -> list[dict[str, str]]:
     if not path.exists():
         raise FileNotFoundError(f"Missing manifest: {path}")
+    with path.open("r", newline="", encoding="utf-8-sig") as f:
+        return list(csv.DictReader(f))
+
+
+def read_csv_rows(path: Path) -> list[dict[str, str]]:
+    if not path.exists():
+        raise FileNotFoundError(f"Missing CSV: {path}")
     with path.open("r", newline="", encoding="utf-8-sig") as f:
         return list(csv.DictReader(f))
 
@@ -386,20 +394,26 @@ def fit_calibrator(predictions: list[dict[str, str]]) -> Calibrator:
     )
 
 
-def apply_calibration(predictions: list[dict[str, str]], calibrator: Calibrator, deployment_prevalence: float) -> Calibrator:
+def adjusted_calibrator_for(calibrator: Calibrator, deployment_prevalence: float) -> Calibrator:
     if not 0.0 < deployment_prevalence < 1.0:
         raise ValueError("--deployment-defect-prevalence must be between 0 and 1.")
-    adjusted = Calibrator(
+    return Calibrator(
         coef=calibrator.coef,
         intercept=calibrator.intercept,
         source_prevalence=calibrator.source_prevalence,
         deployment_prevalence=deployment_prevalence,
     )
-    prior_shift = logit(deployment_prevalence) - logit(adjusted.source_prevalence)
+
+
+def apply_calibration(predictions: list[dict[str, str]], calibrator: Calibrator, deployment_prevalence: float) -> Calibrator:
+    if not 0.0 < deployment_prevalence < 1.0:
+        raise ValueError("--deployment-defect-prevalence must be between 0 and 1.")
+    adjusted = adjusted_calibrator_for(calibrator, deployment_prevalence)
+    prior_shift = logit(deployment_prevalence) - logit(calibrator.source_prevalence)
     for row in predictions:
         y_true = int(row["y_true"])
         raw_logit = logit(safe_float(row["p_defect_raw"]))
-        p_cal = clip_probability(sigmoid(adjusted.coef * raw_logit + adjusted.intercept))
+        p_cal = clip_probability(sigmoid(calibrator.coef * raw_logit + calibrator.intercept))
         p_operational = clip_probability(sigmoid(logit(p_cal) + prior_shift))
         row["p_defect_cal"] = f"{p_cal:.10f}"
         row["p_defect_operational"] = f"{p_operational:.10f}"
@@ -508,6 +522,93 @@ def write_json(path: Path, payload: dict) -> None:
     with path.open("w", encoding="utf-8") as f:
         json.dump(payload, f, ensure_ascii=False, indent=2)
         f.write("\n")
+
+
+def release_torch_memory() -> None:
+    gc.collect()
+    try:
+        import torch
+
+        if torch.cuda.is_available():
+            torch.cuda.empty_cache()
+    except Exception:
+        pass
+
+
+def write_calibrated_outputs_from_raw_predictions(
+    run_dir: Path,
+    raw_prediction_paths: dict[str, Path],
+    cfg: EvalConfig,
+) -> dict[str, object]:
+    missing_required = [split for split in ("val_cal", "val_op", "test") if split not in raw_prediction_paths]
+    if missing_required:
+        raise ValueError(f"Calibration/threshold/test require these missing splits: {missing_required}")
+
+    val_cal_predictions = read_csv_rows(raw_prediction_paths["val_cal"])
+    calibrator = fit_calibrator(val_cal_predictions)
+    del val_cal_predictions
+    gc.collect()
+
+    val_op_predictions = read_csv_rows(raw_prediction_paths["val_op"])
+    adjusted_calibrator = apply_calibration(
+        val_op_predictions,
+        calibrator,
+        cfg.deployment_defect_prevalence,
+    )
+    score_column = "p_defect_operational"
+    threshold, val_op_metrics = select_threshold_for_recall(
+        val_op_predictions,
+        score_column,
+        cfg.target_recall,
+    )
+    del val_op_predictions
+    gc.collect()
+
+    metrics_rows = []
+    for split in cfg.splits:
+        predictions = read_csv_rows(raw_prediction_paths[split])
+        adjusted_calibrator = apply_calibration(
+            predictions,
+            calibrator,
+            cfg.deployment_defect_prevalence,
+        )
+        write_csv(run_dir / f"predictions_{split}.csv", predictions, PREDICTION_COLUMNS)
+        metrics_rows.append(
+            metrics_for_split(split, predictions, score_column, threshold, cfg.deployment_defect_prevalence)
+        )
+        del predictions
+        gc.collect()
+
+    metric_columns = list(metrics_rows[0].keys()) if metrics_rows else []
+    write_csv(run_dir / "metrics_at_selected_threshold.csv", metrics_rows, metric_columns)
+
+    calibration_json = {
+        "method": "Platt scaling on logit(p_defect_raw)",
+        "fit_split": "val_cal",
+        "coef": adjusted_calibrator.coef,
+        "intercept": adjusted_calibrator.intercept,
+        "source_prevalence": adjusted_calibrator.source_prevalence,
+        "deployment_defect_prevalence": adjusted_calibrator.deployment_prevalence,
+        "prior_adjustment": logit(adjusted_calibrator.deployment_prevalence)
+        - logit(adjusted_calibrator.source_prevalence),
+    }
+    threshold_json = {
+        "selection_split": "val_op",
+        "score_column": score_column,
+        "target_recall": cfg.target_recall,
+        "selected_threshold": threshold,
+        "val_op_metrics": val_op_metrics,
+    }
+    write_json(run_dir / "calibration.json", calibration_json)
+    write_json(run_dir / "threshold.json", threshold_json)
+    return {
+        "adjusted_calibrator": adjusted_calibrator,
+        "threshold": threshold,
+        "val_op_metrics": val_op_metrics,
+        "metrics_rows": metrics_rows,
+        "calibration_json": calibration_json,
+        "threshold_json": threshold_json,
+    }
 
 
 def collect_artifact_rows(run_dir: Path) -> list[dict[str, str]]:
@@ -663,7 +764,7 @@ def main() -> int:
     print(f"weights={cfg.weights}")
     print(f"splits={','.join(cfg.splits)}")
 
-    records_by_split = {split: load_split_records(paths, split, cfg) for split in cfg.splits}
+    counts_by_split: dict[str, int] = {}
     run_config = {
         "created_at": datetime.now().isoformat(timespec="seconds"),
         "repo_root": str(paths.repo_root),
@@ -682,11 +783,18 @@ def main() -> int:
         "limit_per_class": cfg.limit_per_class,
         "target_recall": cfg.target_recall,
         "deployment_defect_prevalence": cfg.deployment_defect_prevalence,
-        "split_counts": {split: len(rows) for split, rows in records_by_split.items()},
+        "split_counts": counts_by_split,
     }
     write_json(run_dir / "run_config.json", run_config)
 
     if cfg.dry_run:
+        for split in cfg.splits:
+            records = load_split_records(paths, split, cfg)
+            counts_by_split[split] = len(records)
+            del records
+            gc.collect()
+        run_config["split_counts"] = counts_by_split
+        write_json(run_dir / "run_config.json", run_config)
         write_artifact_manifest(run_dir)
         print("dry_run=true; prediction skipped")
         return 0
@@ -694,63 +802,29 @@ def main() -> int:
     YOLO = ensure_yolo_import(paths.yolo_root)
     model = YOLO(str(cfg.weights))
 
-    predictions_by_split: dict[str, list[dict[str, str]]] = {}
-    for split, records in records_by_split.items():
-        print(f"predict split={split} images={len(records)}")
-        predictions_by_split[split] = predict_records(model, records, cfg)
+    with tempfile.TemporaryDirectory(prefix="raw_predictions_", dir=str(run_dir)) as raw_dir_name:
+        raw_dir = Path(raw_dir_name)
+        raw_prediction_paths: dict[str, Path] = {}
+        for split in cfg.splits:
+            records = load_split_records(paths, split, cfg)
+            counts_by_split[split] = len(records)
+            run_config["split_counts"] = counts_by_split
+            write_json(run_dir / "run_config.json", run_config)
+            print(f"predict split={split} images={len(records)}")
+            predictions = predict_records(model, records, cfg)
+            raw_path = raw_dir / f"predictions_{split}_raw.csv"
+            write_csv(raw_path, predictions, PREDICTION_COLUMNS)
+            raw_prediction_paths[split] = raw_path
+            del records
+            del predictions
+            gc.collect()
 
-    missing_required = [split for split in ("val_cal", "val_op", "test") if split not in predictions_by_split]
-    if missing_required:
-        raise ValueError(f"Calibration/threshold/test require these missing splits: {missing_required}")
+        del model
+        release_torch_memory()
 
-    calibrator = fit_calibrator(predictions_by_split["val_cal"])
-    adjusted_calibrator = apply_calibration(
-        [row for rows in predictions_by_split.values() for row in rows],
-        calibrator,
-        cfg.deployment_defect_prevalence,
-    )
+        calibrated_outputs = write_calibrated_outputs_from_raw_predictions(run_dir, raw_prediction_paths, cfg)
 
-    score_column = "p_defect_operational"
-    threshold, val_op_metrics = select_threshold_for_recall(
-        predictions_by_split["val_op"],
-        score_column,
-        cfg.target_recall,
-    )
-
-    for split, rows in predictions_by_split.items():
-        write_csv(run_dir / f"predictions_{split}.csv", rows, PREDICTION_COLUMNS)
-
-    metrics_rows = [
-        metrics_for_split(split, rows, score_column, threshold, cfg.deployment_defect_prevalence)
-        for split, rows in predictions_by_split.items()
-    ]
-    metric_columns = list(metrics_rows[0].keys()) if metrics_rows else []
-    write_csv(run_dir / "metrics_at_selected_threshold.csv", metrics_rows, metric_columns)
-
-    write_json(
-        run_dir / "calibration.json",
-        {
-            "method": "Platt scaling on logit(p_defect_raw)",
-            "fit_split": "val_cal",
-            "coef": adjusted_calibrator.coef,
-            "intercept": adjusted_calibrator.intercept,
-            "source_prevalence": adjusted_calibrator.source_prevalence,
-            "deployment_defect_prevalence": adjusted_calibrator.deployment_prevalence,
-            "prior_adjustment": logit(adjusted_calibrator.deployment_prevalence)
-            - logit(adjusted_calibrator.source_prevalence),
-        },
-    )
-    write_json(
-        run_dir / "threshold.json",
-        {
-            "selection_split": "val_op",
-            "score_column": score_column,
-            "target_recall": cfg.target_recall,
-            "selected_threshold": threshold,
-            "val_op_metrics": val_op_metrics,
-        },
-    )
-    write_readme(run_dir, cfg, paths, threshold)
+    write_readme(run_dir, cfg, paths, float(calibrated_outputs["threshold"]))
     artifact_manifest_csv, artifact_manifest_json = write_artifact_manifest(run_dir)
     print(f"artifact_manifest_csv={artifact_manifest_csv}")
     print(f"artifact_manifest_json={artifact_manifest_json}")

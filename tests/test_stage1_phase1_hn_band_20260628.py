@@ -218,6 +218,76 @@ def test_hn_band_pipeline_exposes_120_entries_and_10_node_groups() -> None:
             assert run_ids[offset + 1 : offset + 4] == paired_control_ids(hn_run_id)
 
 
+def test_hn_band_run_command_closes_process_tree_guard_after_normal_exit(tmp_path: Path, monkeypatch) -> None:
+    class FakeStdout:
+        def __iter__(self):
+            return iter(["ok\n"])
+
+    class FakeProc:
+        pid = 1234
+        returncode = None
+        stdout = FakeStdout()
+
+        def wait(self):
+            self.returncode = 0
+
+    class FakeGuard:
+        closed = False
+        terminated = False
+
+        def close(self, log):
+            self.closed = True
+
+        def terminate(self, log):
+            self.terminated = True
+
+    fake_proc = FakeProc()
+    fake_guard = FakeGuard()
+    monkeypatch.setattr(pipeline.subprocess, "Popen", lambda *args, **kwargs: fake_proc)
+    monkeypatch.setattr(pipeline, "create_process_tree_guard", lambda proc: fake_guard)
+
+    exit_code = pipeline.run_command(["fake"], tmp_path, tmp_path / "cmd.log")
+
+    assert exit_code == 0
+    assert fake_guard.closed
+    assert not fake_guard.terminated
+
+
+def test_hn_band_run_command_terminates_process_tree_guard_on_interruption(tmp_path: Path, monkeypatch) -> None:
+    class FakeStdout:
+        def __iter__(self):
+            raise KeyboardInterrupt
+
+    class FakeProc:
+        pid = 1234
+        returncode = None
+        stdout = FakeStdout()
+
+        def wait(self):
+            self.returncode = 0
+
+    class FakeGuard:
+        closed = False
+        terminated = False
+
+        def close(self, log):
+            self.closed = True
+
+        def terminate(self, log):
+            self.terminated = True
+
+    fake_proc = FakeProc()
+    fake_guard = FakeGuard()
+    monkeypatch.setattr(pipeline.subprocess, "Popen", lambda *args, **kwargs: fake_proc)
+    monkeypatch.setattr(pipeline, "create_process_tree_guard", lambda proc: fake_guard)
+
+    with pytest.raises(KeyboardInterrupt):
+        pipeline.run_command(["fake"], tmp_path, tmp_path / "cmd.log")
+
+    assert fake_guard.terminated
+    assert not fake_guard.closed
+
+
 def test_hn_band_builder_force_refuses_phase_root_with_training_outputs(tmp_path: Path) -> None:
     phase_root = tmp_path / "phase"
     (phase_root / "manifests" / "HN1-01").mkdir(parents=True)

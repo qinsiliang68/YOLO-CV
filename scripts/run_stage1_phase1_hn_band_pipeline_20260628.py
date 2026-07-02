@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import argparse
 import csv
+import ctypes
 import json
 import os
 import platform
@@ -179,6 +180,147 @@ def repo_root_from_script() -> Path:
     return Path(__file__).resolve().parents[1]
 
 
+def _log_process_guard(log, message: str) -> None:
+    try:
+        log.write(f"{message}\n")
+        log.flush()
+    except Exception:
+        pass
+
+
+class ProcessTreeGuard:
+    """Best-effort process-tree cleanup, with Windows Job Object support."""
+
+    def __init__(self, proc: subprocess.Popen):
+        self.proc = proc
+        self._kernel32 = None
+        self._job_handle = None
+        self._assigned = False
+        if sys.platform != "win32":
+            return
+        try:
+            self._kernel32 = ctypes.WinDLL("kernel32", use_last_error=True)
+            self._configure_winapi()
+            self._job_handle = self._create_kill_on_close_job()
+            if not self._job_handle:
+                return
+            process_handle = ctypes.c_void_p(int(proc._handle))  # type: ignore[attr-defined]
+            if not self._kernel32.AssignProcessToJobObject(self._job_handle, process_handle):
+                self.close(None)
+                self._job_handle = None
+                return
+            self._assigned = True
+        except Exception:
+            self._job_handle = None
+            self._assigned = False
+
+    def _configure_winapi(self) -> None:
+        self._kernel32.CreateJobObjectW.argtypes = (ctypes.c_void_p, ctypes.c_wchar_p)
+        self._kernel32.CreateJobObjectW.restype = ctypes.c_void_p
+        self._kernel32.SetInformationJobObject.argtypes = (
+            ctypes.c_void_p,
+            ctypes.c_int,
+            ctypes.c_void_p,
+            ctypes.c_uint32,
+        )
+        self._kernel32.SetInformationJobObject.restype = ctypes.c_int
+        self._kernel32.AssignProcessToJobObject.argtypes = (ctypes.c_void_p, ctypes.c_void_p)
+        self._kernel32.AssignProcessToJobObject.restype = ctypes.c_int
+        self._kernel32.CloseHandle.argtypes = (ctypes.c_void_p,)
+        self._kernel32.CloseHandle.restype = ctypes.c_int
+
+    def _create_kill_on_close_job(self):
+        class JobObjectBasicLimitInformation(ctypes.Structure):
+            _fields_ = [
+                ("PerProcessUserTimeLimit", ctypes.c_int64),
+                ("PerJobUserTimeLimit", ctypes.c_int64),
+                ("LimitFlags", ctypes.c_uint32),
+                ("MinimumWorkingSetSize", ctypes.c_size_t),
+                ("MaximumWorkingSetSize", ctypes.c_size_t),
+                ("ActiveProcessLimit", ctypes.c_uint32),
+                ("Affinity", ctypes.c_size_t),
+                ("PriorityClass", ctypes.c_uint32),
+                ("SchedulingClass", ctypes.c_uint32),
+            ]
+
+        class IoCounters(ctypes.Structure):
+            _fields_ = [
+                ("ReadOperationCount", ctypes.c_uint64),
+                ("WriteOperationCount", ctypes.c_uint64),
+                ("OtherOperationCount", ctypes.c_uint64),
+                ("ReadTransferCount", ctypes.c_uint64),
+                ("WriteTransferCount", ctypes.c_uint64),
+                ("OtherTransferCount", ctypes.c_uint64),
+            ]
+
+        class JobObjectExtendedLimitInformation(ctypes.Structure):
+            _fields_ = [
+                ("BasicLimitInformation", JobObjectBasicLimitInformation),
+                ("IoInfo", IoCounters),
+                ("ProcessMemoryLimit", ctypes.c_size_t),
+                ("JobMemoryLimit", ctypes.c_size_t),
+                ("PeakProcessMemoryUsed", ctypes.c_size_t),
+                ("PeakJobMemoryUsed", ctypes.c_size_t),
+            ]
+
+        job_object_extended_limit_information = 9
+        job_object_limit_kill_on_job_close = 0x00002000
+        handle = self._kernel32.CreateJobObjectW(None, None)
+        if not handle:
+            return None
+        info = JobObjectExtendedLimitInformation()
+        info.BasicLimitInformation.LimitFlags = job_object_limit_kill_on_job_close
+        ok = self._kernel32.SetInformationJobObject(
+            handle,
+            job_object_extended_limit_information,
+            ctypes.cast(ctypes.byref(info), ctypes.c_void_p),
+            ctypes.sizeof(info),
+        )
+        if not ok:
+            self._kernel32.CloseHandle(handle)
+            return None
+        return handle
+
+    def close(self, log) -> None:
+        if self._job_handle and self._kernel32:
+            self._kernel32.CloseHandle(self._job_handle)
+            self._job_handle = None
+            _log_process_guard(log, "=== closed process-tree job guard ===")
+
+    def terminate(self, log) -> None:
+        if self._job_handle:
+            self.close(log)
+            return
+        if sys.platform == "win32":
+            try:
+                result = subprocess.run(
+                    ["taskkill", "/PID", str(self.proc.pid), "/T", "/F"],
+                    text=True,
+                    capture_output=True,
+                    check=False,
+                )
+                _log_process_guard(log, f"=== taskkill /T /F pid={self.proc.pid} exit={result.returncode} ===")
+                if result.stdout:
+                    _log_process_guard(log, result.stdout.rstrip())
+                if result.stderr:
+                    _log_process_guard(log, result.stderr.rstrip())
+            except Exception as exc:
+                _log_process_guard(log, f"=== taskkill fallback failed pid={self.proc.pid}: {exc!r} ===")
+            return
+        try:
+            self.proc.terminate()
+            self.proc.wait(timeout=30)
+        except Exception:
+            try:
+                self.proc.kill()
+            except Exception as exc:
+                _log_process_guard(log, f"=== process kill fallback failed pid={self.proc.pid}: {exc!r} ===")
+
+
+def create_process_tree_guard(proc: subprocess.Popen) -> ProcessTreeGuard:
+    return ProcessTreeGuard(proc)
+
+
 def run_command(args: list[str], cwd: Path, log_path: Path) -> int:
     log_path.parent.mkdir(parents=True, exist_ok=True)
     started = datetime.now().isoformat(timespec="seconds")
@@ -186,6 +328,8 @@ def run_command(args: list[str], cwd: Path, log_path: Path) -> int:
         log.write(f"\n=== started {started} ===\n")
         log.write(" ".join(args) + "\n")
         log.flush()
+        proc = None
+        guard = None
         proc = subprocess.Popen(
             args,
             cwd=str(cwd),
@@ -195,19 +339,31 @@ def run_command(args: list[str], cwd: Path, log_path: Path) -> int:
             encoding="utf-8",
             errors="replace",
         )
-        assert proc.stdout is not None
-        for line in proc.stdout:
-            try:
-                print(line, end="")
-            except UnicodeEncodeError:
-                encoding = sys.stdout.encoding or "utf-8"
-                safe_line = line.encode(encoding, errors="replace").decode(encoding, errors="replace")
-                print(safe_line, end="")
-            log.write(line)
-        proc.wait()
-        ended = datetime.now().isoformat(timespec="seconds")
-        log.write(f"=== ended {ended} exit={proc.returncode} ===\n")
-        return int(proc.returncode)
+        guard = create_process_tree_guard(proc)
+        terminated = False
+        try:
+            assert proc.stdout is not None
+            for line in proc.stdout:
+                try:
+                    print(line, end="")
+                except UnicodeEncodeError:
+                    encoding = sys.stdout.encoding or "utf-8"
+                    safe_line = line.encode(encoding, errors="replace").decode(encoding, errors="replace")
+                    print(safe_line, end="")
+                log.write(line)
+            proc.wait()
+            ended = datetime.now().isoformat(timespec="seconds")
+            log.write(f"=== ended {ended} exit={proc.returncode} ===\n")
+            return int(proc.returncode)
+        except BaseException:
+            ended = datetime.now().isoformat(timespec="seconds")
+            log.write(f"=== interrupted {ended}; terminating process tree pid={proc.pid} ===\n")
+            terminated = True
+            guard.terminate(log)
+            raise
+        finally:
+            if guard is not None and not terminated:
+                guard.close(log)
 
 
 def read_run_matrix(path: Path) -> dict[str, dict[str, str]]:
