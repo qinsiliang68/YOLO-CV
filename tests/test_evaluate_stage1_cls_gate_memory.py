@@ -16,6 +16,10 @@ class DummyModel:
     pass
 
 
+def test_predict_records_has_tempfile_dependency_imported() -> None:
+    assert eval_gate.tempfile.NamedTemporaryFile
+
+
 def raw_row(split: str, y_true: int, p_defect: float, filename: str) -> dict[str, str]:
     y_pred = 1 if p_defect >= 0.5 else 0
     return {
