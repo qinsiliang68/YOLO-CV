@@ -1,0 +1,43 @@
+{
+  "experiment_id": "oof_dynamics_gap_value_20260708",
+  "created_at": "2026-07-08T13:50:59",
+  "stage_dirs": {
+    "00_registry": "00_registry",
+    "01_oof_dynamics": "01_oof_dynamics",
+    "02_sample_value_tables": "02_sample_value_tables",
+    "03_replay_manifests": "03_replay_manifests",
+    "04_training_runs": "04_training_runs",
+    "05_eval": "05_eval",
+    "06_reports": "06_reports"
+  },
+  "method_ids": [
+    "confidence_fp",
+    "boundary_fp",
+    "persistent_fp",
+    "grad_mag",
+    "grad_align",
+    "grad_mag_align",
+    "diverse_grad_align",
+    "gap_critical",
+    "grad_align_guard",
+    "gap_critical_guard"
+  ],
+  "method_build_status": {
+    "confidence_fp": "default_ready",
+    "boundary_fp": "default_ready",
+    "persistent_fp": "default_ready",
+    "grad_mag": "default_ready",
+    "grad_align": "default_ready",
+    "grad_mag_align": "default_ready",
+    "diverse_grad_align": "default_ready",
+    "gap_critical": "default_ready",
+    "grad_align_guard": "requires_defect_guard_budget",
+    "gap_critical_guard": "requires_defect_guard_budget"
+  },
+  "budgets": [
+    600,
+    3000,
+    6000
+  ],
+  "layout_rule": "family/experiments/experiment_id/stage/method/budget/run"
+}

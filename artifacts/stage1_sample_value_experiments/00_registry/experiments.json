@@ -1,0 +1,38 @@
+{
+  "created_at": "2026-07-08T13:50:58",
+  "family_root": "C:/GitHub/YOLO-CV/artifacts/stage1_sample_value_experiments",
+  "experiments": [
+    {
+      "experiment_id": "hn_rn_formal_manifest_review_20260623",
+      "experiment_group": "confidence_only_replay",
+      "status": "legacy_review",
+      "physical_root": "artifacts/stage1_phase1_hn_rn_20260623_formal_manifest_review",
+      "artifact_mode": "legacy_pointer",
+      "note": "Original HN/RN manifest review. Kept in place; registered for experiment lineage."
+    },
+    {
+      "experiment_id": "hn_rn_40runs_20260630",
+      "experiment_group": "confidence_only_replay",
+      "status": "legacy_result",
+      "physical_root": "artifacts/stage1_phase1_hn_rn_40runs_20260630_redownload",
+      "artifact_mode": "legacy_pointer",
+      "note": "Exploratory 40-run HN/RN result package. Kept in place; do not move."
+    },
+    {
+      "experiment_id": "hn_band_120runs_20260707",
+      "experiment_group": "confidence_band_replay",
+      "status": "legacy_result",
+      "physical_root": "artifacts/stage1_phase1_hn_band_20260628_120runs_20260707_review",
+      "artifact_mode": "legacy_pointer",
+      "note": "Exploratory 120-run HN band/RN review package. Kept in place; do not move."
+    },
+    {
+      "experiment_id": "oof_dynamics_gap_value_20260708",
+      "experiment_group": "oof_training_dynamics_sample_value",
+      "status": "active",
+      "physical_root": "artifacts/stage1_sample_value_experiments/experiments/oof_dynamics_gap_value_20260708",
+      "artifact_mode": "native_grouped_tree",
+      "note": "New grouped OOF dynamics and score-gap sample-value experiment."
+    }
+  ]
+}
