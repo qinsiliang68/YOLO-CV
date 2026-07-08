@@ -1,0 +1,28 @@
+{
+  "created_at_local": "2026-07-08T21:42:26",
+  "dataset_root": "C:\\Github\\YOLO-CV\\data\\final_sewerml_dataset",
+  "manifest_dir": "C:\\Github\\YOLO-CV\\data\\final_sewerml_dataset\\manifests",
+  "output_root": "C:\\Github\\YOLO-CV\\artifacts\\stage1_oof_folds_10fold_20260617",
+  "n_folds": 10,
+  "seed": 20260606,
+  "group_columns": [
+    "pipe_id",
+    "inspection_id",
+    "video_id",
+    "PipeId",
+    "InspectionId",
+    "VideoId",
+    "pipe",
+    "inspection",
+    "video"
+  ],
+  "filename_bucket_size": 1000,
+  "total_rows": 120000,
+  "positive_rows": 60000,
+  "negative_rows": 60000,
+  "group_count": 1156,
+  "group_sources": {
+    "numeric_filename_bucket": 1156
+  },
+  "note": "Explicit pipe/inspection/video columns are used when present. This dataset currently has no such fields in the train manifests, so numeric filename buckets are used as a conservative surrogate to keep nearby frames in the same OOF fold. Each fold trains on the other 9/10 rows and writes its own 1/10 holdout as both holdout_* and val_model_* manifests."
+}

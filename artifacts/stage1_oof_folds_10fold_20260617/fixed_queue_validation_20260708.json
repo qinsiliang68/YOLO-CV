@@ -1,0 +1,98 @@
+{
+  "status": "structure_ok",
+  "note": "Local repo contains manifest CSVs only; image file existence is intentionally validated on remote training nodes that hold the dataset images.",
+  "seed": 20260606,
+  "n_folds": 10,
+  "assignment_rows": 120000,
+  "unique_sample_ids": 120000,
+  "duplicate_sample_ids": 0,
+  "fold_counts": {
+    "00": {
+      "total": 12036,
+      "pos": 6020,
+      "neg": 6016
+    },
+    "01": {
+      "total": 12003,
+      "pos": 6012,
+      "neg": 5991
+    },
+    "02": {
+      "total": 12039,
+      "pos": 6039,
+      "neg": 6000
+    },
+    "03": {
+      "total": 12004,
+      "pos": 6007,
+      "neg": 5997
+    },
+    "04": {
+      "total": 11987,
+      "pos": 5987,
+      "neg": 6000
+    },
+    "05": {
+      "total": 11959,
+      "pos": 5976,
+      "neg": 5983
+    },
+    "06": {
+      "total": 11997,
+      "pos": 5994,
+      "neg": 6003
+    },
+    "07": {
+      "total": 11945,
+      "pos": 5925,
+      "neg": 6020
+    },
+    "08": {
+      "total": 12001,
+      "pos": 6007,
+      "neg": 5994
+    },
+    "09": {
+      "total": 12029,
+      "pos": 6033,
+      "neg": 5996
+    }
+  },
+  "fold_summary_rows": 10,
+  "fold_jobs_rows": 10,
+  "tracked_fixed_queue_file_count": 25,
+  "excluded_generated_files": [
+    "folds/fold_XX/manifests/train_manifest.csv",
+    "folds/fold_XX/manifests/normal_train_manifest.csv",
+    "folds/fold_XX/manifests/holdout_manifest.csv",
+    "folds/fold_XX/manifests/normal_holdout_manifest.csv"
+  ],
+  "errors": [],
+  "sha256": {
+    "artifacts/stage1_oof_folds_10fold_20260617/train_oof_assignments.csv": "ee82d19d8b8bc2875842b1df433cc1b6098d7f88a300b330ca5e45b3642ae0c6",
+    "artifacts/stage1_oof_folds_10fold_20260617/fold_summary.csv": "34dcda7f90cb5aad83fc131ea1176ed6a9882c89b80aac8d8904a474b1d71989",
+    "artifacts/stage1_oof_folds_10fold_20260617/fold_jobs.csv": "23ae5ef48e62991f3860e31bf42afcc9a836b8340e79c5308c361e0979b724cf",
+    "artifacts/stage1_oof_folds_10fold_20260617/metadata.json": "759b7d7e01506694fa508c6f2b040b510458e91056e9192a9f1d0f9101a6f97c",
+    "artifacts/stage1_oof_folds_10fold_20260617/group_summary.csv": "e087b48514085236b597a465ded5467ec6a15d1b6dfea60869af051c7cbb905f",
+    "artifacts/stage1_oof_folds_10fold_20260617/folds/fold_00/manifests/val_model_manifest.csv": "1dc078fdae8a390dafc50d77ed1c4de1af7a75939f51fc86a20b990e84746ce6",
+    "artifacts/stage1_oof_folds_10fold_20260617/folds/fold_00/manifests/normal_val_model_manifest.csv": "271ed364abc9d4b14ac973a38386eba1e8b7772bcbc7572ee01899bebd25a4c2",
+    "artifacts/stage1_oof_folds_10fold_20260617/folds/fold_01/manifests/val_model_manifest.csv": "9b4f662a68fca0488ef8db88b711fa63ed8642f07e492bb4cc4d533854650f78",
+    "artifacts/stage1_oof_folds_10fold_20260617/folds/fold_01/manifests/normal_val_model_manifest.csv": "9c846eb4fbee4f4aef98ecff6e12a17d52cf59bc3bd4265050bad0830ad7d76b",
+    "artifacts/stage1_oof_folds_10fold_20260617/folds/fold_02/manifests/val_model_manifest.csv": "772378db11ce9e5793552849247eadfa6e7da52db08a5704a63a8a80df2f1040",
+    "artifacts/stage1_oof_folds_10fold_20260617/folds/fold_02/manifests/normal_val_model_manifest.csv": "0ab4de82b84d25ea4a61f457aa4c403db70d6fc6007d72a6fdda5a2a9e07b45f",
+    "artifacts/stage1_oof_folds_10fold_20260617/folds/fold_03/manifests/val_model_manifest.csv": "90013bb5def7c78c194c3e8a01710b1f53676f5616fd40403b8159013ccf08ed",
+    "artifacts/stage1_oof_folds_10fold_20260617/folds/fold_03/manifests/normal_val_model_manifest.csv": "e13d0eecd80fb00a15f2421b8894ad7645027daecdc7e425ed2cdc54855e3468",
+    "artifacts/stage1_oof_folds_10fold_20260617/folds/fold_04/manifests/val_model_manifest.csv": "96f3b8101d94f7e113efe45d8dcc57c879f6b015cae4d8e2af093b694268ae9e",
+    "artifacts/stage1_oof_folds_10fold_20260617/folds/fold_04/manifests/normal_val_model_manifest.csv": "627b957caa2f0733105f8ba9d4d5deb1ef8bd09b24bd833d3d8c426a17e41282",
+    "artifacts/stage1_oof_folds_10fold_20260617/folds/fold_05/manifests/val_model_manifest.csv": "0574a5949d63e1da67228ac1e8d1d0629ed9aa4bba3dbbb0cce3f924733f8a50",
+    "artifacts/stage1_oof_folds_10fold_20260617/folds/fold_05/manifests/normal_val_model_manifest.csv": "d13609a6d91d9dff88f067e609c580066cc75cad094a118b987aa0dac7295828",
+    "artifacts/stage1_oof_folds_10fold_20260617/folds/fold_06/manifests/val_model_manifest.csv": "66202c59d6dfbca25530783d2acc86c1f678526b7567bae6cf84a312c81fa7ed",
+    "artifacts/stage1_oof_folds_10fold_20260617/folds/fold_06/manifests/normal_val_model_manifest.csv": "014c0abb2e858c48ced92dc34d7829166eefb50abcfedcbdb31cfa97dd52130d",
+    "artifacts/stage1_oof_folds_10fold_20260617/folds/fold_07/manifests/val_model_manifest.csv": "df2c472aed71630a75ac50e645fe709338502a38d765f7ecfa633d6b0d9dcb26",
+    "artifacts/stage1_oof_folds_10fold_20260617/folds/fold_07/manifests/normal_val_model_manifest.csv": "3ca567636ea4bd1c5b854644e4730ef2cd867045e7aa61814bab5006050b296e",
+    "artifacts/stage1_oof_folds_10fold_20260617/folds/fold_08/manifests/val_model_manifest.csv": "654df2ee187357cf521cc48687c8aa9ce7618da22eca4dc2b85cdb6912d78cb3",
+    "artifacts/stage1_oof_folds_10fold_20260617/folds/fold_08/manifests/normal_val_model_manifest.csv": "937f271a885f6349609410c56af9343a628759f085001fe79b754c43293b47f7",
+    "artifacts/stage1_oof_folds_10fold_20260617/folds/fold_09/manifests/val_model_manifest.csv": "534ec17b8b4f406b166071668c4d53ab686c47e25f47cb932524965c6a5ce4b7",
+    "artifacts/stage1_oof_folds_10fold_20260617/folds/fold_09/manifests/normal_val_model_manifest.csv": "1c4440a615adc266186889254054d56a747ce56c3d6ad3bb89abfe975a2157f1"
+  }
+}
