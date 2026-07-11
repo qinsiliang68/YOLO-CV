@@ -1,4 +1,5 @@
 from pathlib import Path
+import json
 import shutil
 import pandas as pd
 import pytest
@@ -35,11 +36,22 @@ def test_one_run_end_to_end_dry(tmp_path):
     mp=tmp_path/'machine.yaml'; mp.write_text(yaml.safe_dump(machine),encoding='utf-8')
     result=run_all('RUN_001',mp)
     assert result.attempt_dir.exists()
-    assert (result.attempt_dir/'08_status/VALIDATED').exists()
+    assert (result.attempt_dir/'08_status/DRY_RUN_VALIDATED').exists()
+    assert json.loads((result.attempt_dir/'08_status/status.json').read_text())['state'] == 'DRY_RUN_VALIDATED'
     assert (result.attempt_dir/'05_metrics/operational_metrics.json').exists()
+    repeated = run_all('RUN_001', mp)
+    assert repeated.attempt_dir == result.attempt_dir
+    assert len(list((tmp_path/'outputs/runs/RUN_001').glob('attempt_*'))) == 1
+    replacement = run_all('RUN_001', mp, allow_new_attempt_after_validated=True)
+    assert replacement.attempt_dir != result.attempt_dir
+    states = sorted(
+        json.loads((path/'08_status/status.json').read_text())['state']
+        for path in (tmp_path/'outputs/runs/RUN_001').glob('attempt_*') if path.is_dir()
+    )
+    assert states == ['DRY_RUN_VALIDATED', 'SUPERSEDED']
+    assert run_all('RUN_001', mp).attempt_dir == replacement.attempt_dir
 
     with pytest.raises(FileNotFoundError):
         prepare_run('RUN_002', mp)
     failed_attempts = list((tmp_path/'outputs/runs/RUN_002').glob('attempt_*.inprogress'))
-    assert len(failed_attempts) == 1
-    assert (failed_attempts[0]/'08_status/FAILED_INPUT').exists()
+    assert failed_attempts == []
