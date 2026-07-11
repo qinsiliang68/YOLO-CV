@@ -1,0 +1,83 @@
+runtime_contract_id: stage1_gapvalue240_runtime_v1_2
+runtime_contract_version: 1.2.0
+runtime_contract_sha256: 4042AE1BFDFD6D30E5DE9D294FEFAB07B52C541DAED5C2629BF6843FD3E6C434
+release:
+  git_tag: stage1-gapvalue240-runtime-v1.2.0
+  require_tag_at_head: true
+science_contract:
+  path: configs/stage1_gapvalue240/EXPERIMENT_CONTRACT.yaml
+  file_sha256: 33E152B7D2F643CF9F8855459CDC1718C70AA67A0ADBB024E2E87A47B9055382
+  semantic_sha256: B5BF55446E0B6E4BE0911295C8E666879C6031D0F7BD6B48E6791C74A0CBC4E9
+queue:
+  artifact_root: artifacts/stage1_sample_value_experiments/contracts/gapvalue240_v1_1
+  frozen_matrix:
+    path: artifacts/stage1_sample_value_experiments/contracts/gapvalue240_v1_1/generated/frozen_experiment_matrix.csv
+    sha256: F72E4509F8AB0E5AE017A36C39DD6656CAC820D5616D0EC8AE8F1BE374CF8783
+    rows: 240
+  selection_index:
+    path: artifacts/stage1_sample_value_experiments/contracts/gapvalue240_v1_1/generated/selection_index.csv
+    sha256: C58C2BED62FF49859F05C852D53BE2B6935EF438B23FB29E59AC9B8CB64C58F8
+    rows: 240
+  selection_count: 240
+checkpoint:
+  site_binding:
+    path: artifacts/stage1_sample_value_experiments/contracts/gapvalue240_v1_1/generated/site_asset_binding.json
+    sha256: 11D34AC444824497929C7F22706EB3C8BFA8A7101395811683F7D4C0289AD61E
+  filename: yolo11l-cls.pt
+  sha256: 6B56513A5D8BDAE6B8F0A36DACAF01B26D5A522BA1B34197C3BAC9FA6463366C
+machine_assets:
+  identity_column: canonical_image_relpath
+  split_column: split
+  label_column: Defect
+  required_columns:
+  - canonical_image_relpath
+  - split
+  - Defect
+  - Filename
+  expected_total_rows: 384000
+  manifest_roles:
+    train_defect:
+      machine_config_key: train_manifest
+      expected_rows: 60000
+      expected_split: train
+      expected_label: 1
+    train_normal:
+      machine_config_key: normal_train_manifest
+      expected_rows: 60000
+      expected_split: normal_train
+      expected_label: 0
+    val_model_defect:
+      machine_config_key: val_model_defect_manifest
+      expected_rows: 12000
+      expected_split: val_model
+      expected_label: 1
+    val_model_normal:
+      machine_config_key: val_model_normal_manifest
+      expected_rows: 12000
+      expected_split: normal_val_model
+      expected_label: 0
+    val_cal_defect:
+      machine_config_key: val_cal_defect_manifest
+      expected_rows: 20000
+      expected_split: val_cal
+      expected_label: 1
+    val_cal_normal:
+      machine_config_key: val_cal_normal_manifest
+      expected_rows: 100000
+      expected_split: normal_val_cal
+      expected_label: 0
+    val_op_defect:
+      machine_config_key: val_op_defect_manifest
+      expected_rows: 20000
+      expected_split: val_op
+      expected_label: 1
+    val_op_normal:
+      machine_config_key: val_op_normal_manifest
+      expected_rows: 100000
+      expected_split: normal_val_op
+      expected_label: 0
+execution_identity:
+  formal_status: VALIDATED
+  dry_run_status: DRY_RUN_VALIDATED
+  aggregatable_statuses:
+  - VALIDATED

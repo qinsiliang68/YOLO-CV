@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Stage1 GapValue machine asset report",
+  "type": "object",
+  "required": [
+    "report_version", "status", "issues", "runtime_contract_id", "runtime_contract_sha256",
+    "machine_id", "dataset_root", "manifests", "total_manifest_rows", "global_unique_id_count",
+    "images", "checkpoint_sha256", "snapshot_id"
+  ],
+  "properties": {
+    "report_version": {"const": "1.0.0"},
+    "status": {"enum": ["PASS", "FAIL"]},
+    "issues": {"type": "array", "items": {"type": "string"}},
+    "runtime_contract_id": {"type": "string"},
+    "runtime_contract_sha256": {"type": "string", "pattern": "^[A-F0-9]{64}$"},
+    "machine_id": {"type": "string"},
+    "dataset_root": {"type": "string"},
+    "manifests": {"type": "object", "minProperties": 8, "maxProperties": 8},
+    "total_manifest_rows": {"type": "integer", "minimum": 0},
+    "global_unique_id_count": {"type": "integer", "minimum": 0},
+    "images": {
+      "type": "object",
+      "required": ["verification_mode", "expected_count", "checked_count", "missing_count", "asset_digest_sha256", "content_hashes_computed"],
+      "properties": {
+        "verification_mode": {"enum": ["none", "existence", "sha256"]},
+        "expected_count": {"type": "integer", "minimum": 0},
+        "checked_count": {"type": "integer", "minimum": 0},
+        "missing_count": {"type": "integer", "minimum": 0},
+        "asset_digest_sha256": {"type": ["string", "null"]},
+        "content_hashes_computed": {"type": "boolean"}
+      }
+    },
+    "checkpoint_sha256": {"type": ["string", "null"]},
+    "snapshot_id": {"type": "string", "pattern": "^[A-F0-9]{64}$"}
+  }
+}

@@ -1,0 +1,103 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Stage1 GapValue runtime contract v1.2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "runtime_contract_id", "runtime_contract_version", "runtime_contract_sha256",
+    "release", "science_contract", "queue", "checkpoint", "machine_assets", "execution_identity"
+  ],
+  "properties": {
+    "runtime_contract_id": {"type": "string", "minLength": 1},
+    "runtime_contract_version": {"const": "1.2.0"},
+    "runtime_contract_sha256": {"type": "string", "pattern": "^[A-F0-9]{64}$"},
+    "release": {
+      "type": "object", "additionalProperties": false,
+      "required": ["git_tag", "require_tag_at_head"],
+      "properties": {
+        "git_tag": {"type": "string", "minLength": 1},
+        "require_tag_at_head": {"const": true}
+      }
+    },
+    "science_contract": {"$ref": "#/$defs/hashedFileWithSemantic"},
+    "queue": {
+      "type": "object", "additionalProperties": false,
+      "required": ["artifact_root", "frozen_matrix", "selection_index", "selection_count"],
+      "properties": {
+        "artifact_root": {"type": "string", "minLength": 1},
+        "frozen_matrix": {"$ref": "#/$defs/hashedCsv"},
+        "selection_index": {"$ref": "#/$defs/hashedCsv"},
+        "selection_count": {"const": 240}
+      }
+    },
+    "checkpoint": {
+      "type": "object", "additionalProperties": false,
+      "required": ["site_binding", "filename", "sha256"],
+      "properties": {
+        "site_binding": {"$ref": "#/$defs/hashedFile"},
+        "filename": {"type": "string", "minLength": 1},
+        "sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "machine_assets": {
+      "type": "object", "additionalProperties": false,
+      "required": ["identity_column", "split_column", "label_column", "required_columns", "expected_total_rows", "manifest_roles"],
+      "properties": {
+        "identity_column": {"type": "string"},
+        "split_column": {"type": "string"},
+        "label_column": {"type": "string"},
+        "required_columns": {"type": "array", "minItems": 1, "items": {"type": "string"}, "uniqueItems": true},
+        "expected_total_rows": {"type": "integer", "minimum": 1},
+        "manifest_roles": {
+          "type": "object", "minProperties": 8, "maxProperties": 8,
+          "additionalProperties": {"$ref": "#/$defs/manifestRole"}
+        }
+      }
+    },
+    "execution_identity": {
+      "type": "object", "additionalProperties": false,
+      "required": ["formal_status", "dry_run_status", "aggregatable_statuses"],
+      "properties": {
+        "formal_status": {"const": "VALIDATED"},
+        "dry_run_status": {"const": "DRY_RUN_VALIDATED"},
+        "aggregatable_statuses": {"const": ["VALIDATED"]}
+      }
+    }
+  },
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[A-F0-9]{64}$"},
+    "hashedFile": {
+      "type": "object", "additionalProperties": false,
+      "required": ["path", "sha256"],
+      "properties": {"path": {"type": "string", "minLength": 1}, "sha256": {"$ref": "#/$defs/sha256"}}
+    },
+    "hashedFileWithSemantic": {
+      "type": "object", "additionalProperties": false,
+      "required": ["path", "file_sha256", "semantic_sha256"],
+      "properties": {
+        "path": {"type": "string", "minLength": 1},
+        "file_sha256": {"$ref": "#/$defs/sha256"},
+        "semantic_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "hashedCsv": {
+      "type": "object", "additionalProperties": false,
+      "required": ["path", "sha256", "rows"],
+      "properties": {
+        "path": {"type": "string", "minLength": 1},
+        "sha256": {"$ref": "#/$defs/sha256"},
+        "rows": {"type": "integer", "minimum": 1}
+      }
+    },
+    "manifestRole": {
+      "type": "object", "additionalProperties": false,
+      "required": ["machine_config_key", "expected_rows", "expected_split", "expected_label"],
+      "properties": {
+        "machine_config_key": {"type": "string"},
+        "expected_rows": {"type": "integer", "minimum": 1},
+        "expected_split": {"type": "string"},
+        "expected_label": {"type": "integer", "enum": [0, 1]}
+      }
+    }
+  }
+}
