@@ -1,0 +1,12 @@
+{
+  "issues": [],
+  "machine_shard_count": 12,
+  "matrix_rows": 240,
+  "matrix_sha256": "F72E4509F8AB0E5AE017A36C39DD6656CAC820D5616D0EC8AE8F1BE374CF8783",
+  "selection_index_sha256": "C58C2BED62FF49859F05C852D53BE2B6935EF438B23FB29E59AC9B8CB64C58F8",
+  "selection_manifest_count": 240,
+  "selection_total_rows": 666000,
+  "shard_run_count": 240,
+  "status": "PASS",
+  "triad_count": 80
+}

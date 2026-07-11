@@ -1,0 +1,30 @@
+[
+  {
+    "candidate": "TailGap-Strict",
+    "compared_against": "GapCritical-Strict",
+    "max_overlap": 0.9636666666666667,
+    "replaced": true,
+    "retained_as": "GapResidual-Strict"
+  },
+  {
+    "candidate": "WindowEarlyLate40",
+    "compared_against": "GapCritical-Strict",
+    "max_overlap": 0.8113333333333334,
+    "replaced": false,
+    "retained_as": "WindowEarlyLate40"
+  },
+  {
+    "candidate": "LOFO-GapStrict",
+    "compared_against": "GapCritical-Strict",
+    "max_overlap": 0.9963333333333333,
+    "replaced": true,
+    "retained_as": "GapCritical-Global-B6000"
+  },
+  {
+    "candidate": "Exclude178-GapStrict",
+    "compared_against": "GapCritical-Strict",
+    "max_overlap": 1.0,
+    "replaced": true,
+    "retained_as": "GapCritical-Strict-TimeMatched"
+  }
+]

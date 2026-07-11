@@ -1,0 +1,33 @@
+{
+  "matrix_rows": 240,
+  "matrix_sha256": "F72E4509F8AB0E5AE017A36C39DD6656CAC820D5616D0EC8AE8F1BE374CF8783",
+  "phase_a_c_r1_max_treatment_overlap": 0,
+  "phase_a_c_r2_overlap_max": 5578,
+  "phase_a_c_r2_overlap_min": 0,
+  "phase_b_normal_mismatch_count": 0,
+  "r2_audit_count": 80,
+  "r2_overlap_rate_max": 0.969,
+  "r2_overlap_rate_min": 0.0,
+  "selection_files": 240,
+  "selection_index_sha256": "C58C2BED62FF49859F05C852D53BE2B6935EF438B23FB29E59AC9B8CB64C58F8",
+  "selection_total_rows": 666000,
+  "shard_counts": {
+    "machine_01_jobs.csv": 24,
+    "machine_02_jobs.csv": 24,
+    "machine_03_jobs.csv": 24,
+    "machine_04_jobs.csv": 24,
+    "machine_05_jobs.csv": 24,
+    "machine_06_jobs.csv": 24,
+    "machine_07_jobs.csv": 24,
+    "machine_08_jobs.csv": 24,
+    "machine_09_jobs.csv": 24,
+    "machine_10_jobs.csv": 24,
+    "machine_11_jobs.csv": 0,
+    "machine_12_jobs.csv": 0
+  },
+  "status": "PASS",
+  "strict_schema_issue_count": 0,
+  "strict_schema_issue_examples": [],
+  "treatment_id_constancy_failures": [],
+  "triads": 80
+}

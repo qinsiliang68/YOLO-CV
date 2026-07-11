@@ -1,0 +1,9 @@
+{
+  "arm": "T",
+  "budget": 600,
+  "method": "EndpointTrend",
+  "rows": 600,
+  "selection_sha256": "9A3EABA50FD7E5280A554D054571B735ABF0F3A3AB2CD4F5271A992F8155D0AF",
+  "treatment_sha": null,
+  "unique_samples": 600
+}

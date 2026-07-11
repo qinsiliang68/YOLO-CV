@@ -1,0 +1,9 @@
+{
+  "arm": "T",
+  "budget": 3000,
+  "method": "BottomGap-3000-stress-control",
+  "rows": 3000,
+  "selection_sha256": "B0A861A64582095851CA177F14A166A4D33EC8E000E73B79A5F6D685A93B9C03",
+  "treatment_sha": null,
+  "unique_samples": 3000
+}

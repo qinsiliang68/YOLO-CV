@@ -1,0 +1,9 @@
+{
+  "arm": "T",
+  "budget": 3000,
+  "method": "GroupDiverse-Gap",
+  "rows": 3000,
+  "selection_sha256": "363A6F4958DFF9C19FDD28AF6DA4D78796A49EE19CE0A739B696E5C599A7DEAA",
+  "treatment_sha": null,
+  "unique_samples": 3000
+}

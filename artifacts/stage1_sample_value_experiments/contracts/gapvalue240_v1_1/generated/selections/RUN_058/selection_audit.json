@@ -1,0 +1,9 @@
+{
+  "arm": "T",
+  "budget": 600,
+  "method": "Boundary-0.5-Clean",
+  "rows": 600,
+  "selection_sha256": "0E814064E6E05A2A9CF3DC0129DAB127357776217991176BDDA9E60EE48B4400",
+  "treatment_sha": null,
+  "unique_samples": 600
+}

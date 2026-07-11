@@ -1,0 +1,40 @@
+{
+  "contract_sha256": "B5BF55446E0B6E4BE0911295C8E666879C6031D0F7BD6B48E6791C74A0CBC4E9",
+  "matrix_sha256": "F72E4509F8AB0E5AE017A36C39DD6656CAC820D5616D0EC8AE8F1BE374CF8783",
+  "overlap_decisions": [
+    {
+      "candidate": "TailGap-Strict",
+      "compared_against": "GapCritical-Strict",
+      "max_overlap": 0.9636666666666667,
+      "replaced": true,
+      "retained_as": "GapResidual-Strict"
+    },
+    {
+      "candidate": "WindowEarlyLate40",
+      "compared_against": "GapCritical-Strict",
+      "max_overlap": 0.8113333333333334,
+      "replaced": false,
+      "retained_as": "WindowEarlyLate40"
+    },
+    {
+      "candidate": "LOFO-GapStrict",
+      "compared_against": "GapCritical-Strict",
+      "max_overlap": 0.9963333333333333,
+      "replaced": true,
+      "retained_as": "GapCritical-Global-B6000"
+    },
+    {
+      "candidate": "Exclude178-GapStrict",
+      "compared_against": "GapCritical-Strict",
+      "max_overlap": 1.0,
+      "replaced": true,
+      "retained_as": "GapCritical-Strict-TimeMatched"
+    }
+  ],
+  "queue_validation_status": "PASS",
+  "run_count": 240,
+  "selection_count": 240,
+  "selection_index_sha256": "C58C2BED62FF49859F05C852D53BE2B6935EF438B23FB29E59AC9B8CB64C58F8",
+  "status": "READY",
+  "triad_count": 80
+}

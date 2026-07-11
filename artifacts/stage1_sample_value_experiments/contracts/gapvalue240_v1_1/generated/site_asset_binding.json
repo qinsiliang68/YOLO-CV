@@ -1,0 +1,6 @@
+{
+  "checkpoint_filename": "yolo11l-cls.pt",
+  "contract_id": "stage1_gapvalue_240run_contract_v1_1",
+  "created_by": "machine_01",
+  "full_sha256": "6B56513A5D8BDAE6B8F0A36DACAF01B26D5A522BA1B34197C3BAC9FA6463366C"
+}

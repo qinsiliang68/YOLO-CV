@@ -1,0 +1,154 @@
+[
+  {
+    "machine_id": "machine_01",
+    "runs": 24,
+    "triads": [
+      "TRIAD_001",
+      "TRIAD_011",
+      "TRIAD_021",
+      "TRIAD_031",
+      "TRIAD_041",
+      "TRIAD_051",
+      "TRIAD_061",
+      "TRIAD_071"
+    ]
+  },
+  {
+    "machine_id": "machine_02",
+    "runs": 24,
+    "triads": [
+      "TRIAD_002",
+      "TRIAD_012",
+      "TRIAD_022",
+      "TRIAD_032",
+      "TRIAD_042",
+      "TRIAD_052",
+      "TRIAD_062",
+      "TRIAD_072"
+    ]
+  },
+  {
+    "machine_id": "machine_03",
+    "runs": 24,
+    "triads": [
+      "TRIAD_003",
+      "TRIAD_013",
+      "TRIAD_023",
+      "TRIAD_033",
+      "TRIAD_043",
+      "TRIAD_053",
+      "TRIAD_063",
+      "TRIAD_073"
+    ]
+  },
+  {
+    "machine_id": "machine_04",
+    "runs": 24,
+    "triads": [
+      "TRIAD_004",
+      "TRIAD_014",
+      "TRIAD_024",
+      "TRIAD_034",
+      "TRIAD_044",
+      "TRIAD_054",
+      "TRIAD_064",
+      "TRIAD_074"
+    ]
+  },
+  {
+    "machine_id": "machine_05",
+    "runs": 24,
+    "triads": [
+      "TRIAD_005",
+      "TRIAD_015",
+      "TRIAD_025",
+      "TRIAD_035",
+      "TRIAD_045",
+      "TRIAD_055",
+      "TRIAD_065",
+      "TRIAD_075"
+    ]
+  },
+  {
+    "machine_id": "machine_06",
+    "runs": 24,
+    "triads": [
+      "TRIAD_006",
+      "TRIAD_016",
+      "TRIAD_026",
+      "TRIAD_036",
+      "TRIAD_046",
+      "TRIAD_056",
+      "TRIAD_066",
+      "TRIAD_076"
+    ]
+  },
+  {
+    "machine_id": "machine_07",
+    "runs": 24,
+    "triads": [
+      "TRIAD_007",
+      "TRIAD_017",
+      "TRIAD_027",
+      "TRIAD_037",
+      "TRIAD_047",
+      "TRIAD_057",
+      "TRIAD_067",
+      "TRIAD_077"
+    ]
+  },
+  {
+    "machine_id": "machine_08",
+    "runs": 24,
+    "triads": [
+      "TRIAD_008",
+      "TRIAD_018",
+      "TRIAD_028",
+      "TRIAD_038",
+      "TRIAD_048",
+      "TRIAD_058",
+      "TRIAD_068",
+      "TRIAD_078"
+    ]
+  },
+  {
+    "machine_id": "machine_09",
+    "runs": 24,
+    "triads": [
+      "TRIAD_009",
+      "TRIAD_019",
+      "TRIAD_029",
+      "TRIAD_039",
+      "TRIAD_049",
+      "TRIAD_059",
+      "TRIAD_069",
+      "TRIAD_079"
+    ]
+  },
+  {
+    "machine_id": "machine_10",
+    "runs": 24,
+    "triads": [
+      "TRIAD_010",
+      "TRIAD_020",
+      "TRIAD_030",
+      "TRIAD_040",
+      "TRIAD_050",
+      "TRIAD_060",
+      "TRIAD_070",
+      "TRIAD_080"
+    ]
+  },
+  {
+    "machine_id": "machine_11",
+    "role": "reserve",
+    "runs": 0,
+    "triads": []
+  },
+  {
+    "machine_id": "machine_12",
+    "role": "reserve",
+    "runs": 0,
+    "triads": []
+  }
+]

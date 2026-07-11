@@ -1,0 +1,9 @@
+{
+  "arm": "T",
+  "budget": 3000,
+  "method": "Persistent-0.5-Clean",
+  "rows": 3000,
+  "selection_sha256": "E8CD80BF87850D6454A3052EF70AADFE8E05A0EB651E8E2F1FC543669A28FFA1",
+  "treatment_sha": null,
+  "unique_samples": 3000
+}

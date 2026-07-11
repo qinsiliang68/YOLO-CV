@@ -1,0 +1,9 @@
+{
+  "arm": "T",
+  "budget": 6000,
+  "method": "GapCritical-Strict",
+  "rows": 6000,
+  "selection_sha256": "46FA679F169FA03A568E13CB93E4C0EE6FAC9BEF39F05C677914D960BC7A579A",
+  "treatment_sha": null,
+  "unique_samples": 6000
+}

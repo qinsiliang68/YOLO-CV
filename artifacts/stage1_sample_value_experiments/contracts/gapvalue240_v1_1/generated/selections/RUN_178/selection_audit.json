@@ -1,0 +1,12 @@
+{
+  "defect_audit": {
+    "arm": "T",
+    "method": "LowConfidence-Defect"
+  },
+  "defect_count": 300,
+  "normal_count": 2700,
+  "normal_ids_sha256": "DD6C833CF8531D6BF7712557B8F188A35DBACCC52FE32CCA4EE749FC9F8B27EE",
+  "rows": 3000,
+  "selection_sha256": "13387AFD61DFBBBC83EE4ABEB1C488BF04A847911EF00472C1BE66F7F1AE4CFE",
+  "unique_samples": 3000
+}

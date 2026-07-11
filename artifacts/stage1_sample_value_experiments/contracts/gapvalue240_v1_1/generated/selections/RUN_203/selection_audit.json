@@ -1,0 +1,15 @@
+{
+  "defect_audit": {
+    "budget": 300,
+    "candidate_count": 57581,
+    "method": "Global-Random",
+    "overlap_count": 0,
+    "seed": 983341386
+  },
+  "defect_count": 300,
+  "normal_count": 2700,
+  "normal_ids_sha256": "DD6C833CF8531D6BF7712557B8F188A35DBACCC52FE32CCA4EE749FC9F8B27EE",
+  "rows": 3000,
+  "selection_sha256": "804FE36FBF13CFF9C663348A706F60F1EEF199505BBBAD5B92E89A7B06489B30",
+  "unique_samples": 3000
+}

@@ -1,0 +1,12 @@
+{
+  "defect_audit": {
+    "arm": "T",
+    "method": "Persistent-FN"
+  },
+  "defect_count": 300,
+  "normal_count": 2700,
+  "normal_ids_sha256": "DD6C833CF8531D6BF7712557B8F188A35DBACCC52FE32CCA4EE749FC9F8B27EE",
+  "rows": 3000,
+  "selection_sha256": "7BFD98C5AE57BB61066C8EE6E7FBED4DB543F73DF1BD1A8D6A5A90BA35C6B4A8",
+  "unique_samples": 3000
+}

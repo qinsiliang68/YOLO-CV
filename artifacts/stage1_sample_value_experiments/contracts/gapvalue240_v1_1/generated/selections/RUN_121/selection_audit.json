@@ -1,0 +1,9 @@
+{
+  "arm": "T",
+  "budget": 3000,
+  "method": "FoldBalanced-Gap",
+  "rows": 3000,
+  "selection_sha256": "E3BB4F2D616E5C5D3DE6FE39E14901D3E36753573001FCF26C3401202A42D36E",
+  "treatment_sha": null,
+  "unique_samples": 3000
+}

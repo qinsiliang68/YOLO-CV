@@ -1,0 +1,10 @@
+{
+  "budget": 3000,
+  "candidate_count": 54541,
+  "method": "Global-Random",
+  "overlap_count": 0,
+  "rows": 3000,
+  "seed": 311180952,
+  "selection_sha256": "055F0AAEF6D33A734DF8B6ADE5A03D6CC7A663FE99AE39693CC9AF3EF8A62DF8",
+  "unique_samples": 3000
+}

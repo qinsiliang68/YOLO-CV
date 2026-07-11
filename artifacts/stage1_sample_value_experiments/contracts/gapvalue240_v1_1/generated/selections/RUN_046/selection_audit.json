@@ -1,0 +1,9 @@
+{
+  "arm": "T",
+  "budget": 3000,
+  "method": "Confidence-Clean",
+  "rows": 3000,
+  "selection_sha256": "32765995D735930B81C4D0933ED4415378AE2FD8766FCB612B5AA17AFEF59791",
+  "treatment_sha": null,
+  "unique_samples": 3000
+}

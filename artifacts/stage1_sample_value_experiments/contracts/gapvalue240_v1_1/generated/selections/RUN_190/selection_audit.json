@@ -1,0 +1,12 @@
+{
+  "defect_audit": {
+    "arm": "T",
+    "method": "GapGuard-Raw"
+  },
+  "defect_count": 150,
+  "normal_count": 2850,
+  "normal_ids_sha256": "F70DAAB0EAED41A0CA525F0130B58CF2EC91D4CAF760D5F62D1B0F73C1518F0C",
+  "rows": 3000,
+  "selection_sha256": "3E2AFD1B4284531CFEF9B7B1F6BA04C324C5D54857DC6A6F041AA527D5915D51",
+  "unique_samples": 3000
+}

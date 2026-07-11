@@ -1,0 +1,9 @@
+{
+  "arm": "T",
+  "budget": 3000,
+  "method": "WindowEarlyLate40",
+  "rows": 3000,
+  "selection_sha256": "ABCF456CBA4D215EE84DD656361D0B1DD5F897BAA9DC940E9464BD1A9E2BCE0E",
+  "treatment_sha": null,
+  "unique_samples": 3000
+}
