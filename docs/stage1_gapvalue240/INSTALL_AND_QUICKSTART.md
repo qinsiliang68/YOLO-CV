@@ -77,6 +77,14 @@ python scripts/stage1_gapvalue240/runs/run_001.py `
 
 The same file exposes `prepare()`, `train()`, `evaluate()`, `validate()`, and `run()` for Python use.
 
+### Formal trainer worker and staging contract
+
+Formal GPU execution uses `scripts/stage1_gapvalue240/formal_train_worker.py` as an isolated child process. Its CLI accepts only frozen run inputs, paths, device, and worker count; `epochs`, `batch`, `imgsz`, `patience`, determinism, and cache behavior come from the verified experiment contract and cannot be overridden on the command line.
+
+`staging_root` must be on the same filesystem volume as `dataset_root`. The first worker invocation creates one reusable hardlink-only base cache containing the 120,000 training and 24,000 `val_model` images. A run holds an exclusive staging lock, adds only its `replay__*` hardlinks, trains, and removes replay links plus Ultralytics `train.cache`/`val.cache` files in `finally`. A hardlink or volume check failure stops the worker; image-copy fallback is forbidden.
+
+The worker keeps YOLO-native `results.csv` and `args.yaml` under `<output-dir>/trainer/`, maintains the crash-resume checkpoint at `<output-dir>/training_state/last.pt`, and writes `<output-dir>/training_execution_audit.json`. Resume is explicitly recorded as `native_approximate` with segment and checkpoint provenance.
+
 ## 7. Execute a full triad or machine shard
 
 ```powershell
