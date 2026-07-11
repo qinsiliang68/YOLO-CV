@@ -18,3 +18,6 @@ class ArtifactExistsError(GapValueError):
 
 class ExternalCommandError(GapValueError):
     pass
+
+class LockHeldError(ValidationError):
+    """A live local/remote owner currently holds a retryable execution lock."""

@@ -5,7 +5,7 @@
   "required": [
     "report_version", "status", "issues", "runtime_contract_id", "runtime_contract_sha256",
     "machine_id", "dataset_root", "manifests", "total_manifest_rows", "global_unique_id_count",
-    "images", "checkpoint_sha256", "snapshot_id"
+    "images", "checkpoint_sha256", "content_snapshot_id", "snapshot_id"
   ],
   "properties": {
     "report_version": {"const": "1.0.0"},
@@ -31,6 +31,7 @@
       }
     },
     "checkpoint_sha256": {"type": ["string", "null"]},
+    "content_snapshot_id": {"type": "string", "pattern": "^[A-F0-9]{64}$"},
     "snapshot_id": {"type": "string", "pattern": "^[A-F0-9]{64}$"}
   }
 }

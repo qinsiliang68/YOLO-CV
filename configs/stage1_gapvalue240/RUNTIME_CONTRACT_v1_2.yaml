@@ -1,9 +1,16 @@
 runtime_contract_id: stage1_gapvalue240_runtime_v1_2
 runtime_contract_version: 1.2.0
-runtime_contract_sha256: 4042AE1BFDFD6D30E5DE9D294FEFAB07B52C541DAED5C2629BF6843FD3E6C434
+runtime_contract_sha256: 6C9C6283493C58466FA7DFC17E326F531AD8A913BAEDDC97D27995B21FBE1A8C
 release:
   git_tag: stage1-gapvalue240-runtime-v1.2.0
   require_tag_at_head: true
+  integrity_paths:
+  - stage1_gapvalue240
+  - scripts/stage1_gapvalue240
+  - configs/stage1_gapvalue240/EXPERIMENT_CONTRACT.yaml
+  - configs/stage1_gapvalue240/RUNTIME_CONTRACT_v1_2.yaml
+  - schemas/stage1_gapvalue240
+  - YOLOv11
 science_contract:
   path: configs/stage1_gapvalue240/EXPERIMENT_CONTRACT.yaml
   file_sha256: 33E152B7D2F643CF9F8855459CDC1718C70AA67A0ADBB024E2E87A47B9055382
@@ -19,6 +26,55 @@ queue:
     sha256: C58C2BED62FF49859F05C852D53BE2B6935EF438B23FB29E59AC9B8CB64C58F8
     rows: 240
   selection_count: 240
+  machine_shards:
+    machine_01:
+      path: artifacts/stage1_sample_value_experiments/contracts/gapvalue240_v1_1/generated/machine_shards/machine_01_jobs.csv
+      sha256: FFDB5F080AAC5C37193A73A30473570C6A5E6072486039CA76760BCCAA51718D
+      rows: 24
+    machine_02:
+      path: artifacts/stage1_sample_value_experiments/contracts/gapvalue240_v1_1/generated/machine_shards/machine_02_jobs.csv
+      sha256: 5F291FF73D7B7108CF6AE632E39F15B5B027E114BAD859FCB8D030B7B459CDD4
+      rows: 24
+    machine_03:
+      path: artifacts/stage1_sample_value_experiments/contracts/gapvalue240_v1_1/generated/machine_shards/machine_03_jobs.csv
+      sha256: 13097BC6485F033B7D3B40DED677E1892AFD72387FEC071CF8D103E8A10A46B2
+      rows: 24
+    machine_04:
+      path: artifacts/stage1_sample_value_experiments/contracts/gapvalue240_v1_1/generated/machine_shards/machine_04_jobs.csv
+      sha256: 63291EBCFA07CA2EDD0020AEFD62ABA936CFE90933E28782BA76497ADC6D7355
+      rows: 24
+    machine_05:
+      path: artifacts/stage1_sample_value_experiments/contracts/gapvalue240_v1_1/generated/machine_shards/machine_05_jobs.csv
+      sha256: 6D4E3C0ED8A9C41FCCD059913E05BA031D93663FD17FFA61E4F462ED8561BA04
+      rows: 24
+    machine_06:
+      path: artifacts/stage1_sample_value_experiments/contracts/gapvalue240_v1_1/generated/machine_shards/machine_06_jobs.csv
+      sha256: DE1B0D6E54F35A45D720FCDCF9F36EB2098ABD914A7E03D2D3631847BEA0C52E
+      rows: 24
+    machine_07:
+      path: artifacts/stage1_sample_value_experiments/contracts/gapvalue240_v1_1/generated/machine_shards/machine_07_jobs.csv
+      sha256: 697EE1B6AEB05E0CEE7047A88CD9CB5AB28E358DC67F4BDB06A847244F9C6E31
+      rows: 24
+    machine_08:
+      path: artifacts/stage1_sample_value_experiments/contracts/gapvalue240_v1_1/generated/machine_shards/machine_08_jobs.csv
+      sha256: EBAA99D2CDD89BF1B4F2934111EF244E4B512C7775E4D00412303B42B8D66278
+      rows: 24
+    machine_09:
+      path: artifacts/stage1_sample_value_experiments/contracts/gapvalue240_v1_1/generated/machine_shards/machine_09_jobs.csv
+      sha256: 7DB22B130189C8FEA3CF9A7269849D36132EEC6CA371742AF2431DDE49ED5E3C
+      rows: 24
+    machine_10:
+      path: artifacts/stage1_sample_value_experiments/contracts/gapvalue240_v1_1/generated/machine_shards/machine_10_jobs.csv
+      sha256: 99968893C617A5121480FBEB2E42567E39980C27E01307D44A98A5B6B84EC873
+      rows: 24
+    machine_11:
+      path: artifacts/stage1_sample_value_experiments/contracts/gapvalue240_v1_1/generated/machine_shards/machine_11_jobs.csv
+      sha256: 14B0C651D2FEA15BC693285392C7E8490E95617173A3972EDBDE0468EE6A7267
+      rows: 0
+    machine_12:
+      path: artifacts/stage1_sample_value_experiments/contracts/gapvalue240_v1_1/generated/machine_shards/machine_12_jobs.csv
+      sha256: 14B0C651D2FEA15BC693285392C7E8490E95617173A3972EDBDE0468EE6A7267
+      rows: 0
 checkpoint:
   site_binding:
     path: artifacts/stage1_sample_value_experiments/contracts/gapvalue240_v1_1/generated/site_asset_binding.json

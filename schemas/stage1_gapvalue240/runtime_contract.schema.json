@@ -16,18 +16,26 @@
       "required": ["git_tag", "require_tag_at_head"],
       "properties": {
         "git_tag": {"type": "string", "minLength": 1},
-        "require_tag_at_head": {"const": true}
+        "require_tag_at_head": {"const": true},
+        "integrity_paths": {
+          "type": "array", "minItems": 1, "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}
+        }
       }
     },
     "science_contract": {"$ref": "#/$defs/hashedFileWithSemantic"},
     "queue": {
       "type": "object", "additionalProperties": false,
-      "required": ["artifact_root", "frozen_matrix", "selection_index", "selection_count"],
+      "required": ["artifact_root", "frozen_matrix", "selection_index", "selection_count", "machine_shards"],
       "properties": {
         "artifact_root": {"type": "string", "minLength": 1},
         "frozen_matrix": {"$ref": "#/$defs/hashedCsv"},
         "selection_index": {"$ref": "#/$defs/hashedCsv"},
-        "selection_count": {"const": 240}
+        "selection_count": {"const": 240},
+        "machine_shards": {
+          "type": "object", "minProperties": 12, "maxProperties": 12,
+          "additionalProperties": {"$ref": "#/$defs/hashedCsvAllowEmpty"}
+        }
       }
     },
     "checkpoint": {
@@ -87,6 +95,15 @@
         "path": {"type": "string", "minLength": 1},
         "sha256": {"$ref": "#/$defs/sha256"},
         "rows": {"type": "integer", "minimum": 1}
+      }
+    },
+    "hashedCsvAllowEmpty": {
+      "type": "object", "additionalProperties": false,
+      "required": ["path", "sha256", "rows"],
+      "properties": {
+        "path": {"type": "string", "minLength": 1},
+        "sha256": {"$ref": "#/$defs/sha256"},
+        "rows": {"type": "integer", "minimum": 0}
       }
     },
     "manifestRole": {

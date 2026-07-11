@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import importlib
+import platform
 import json
 import os
 import shutil
@@ -22,6 +23,62 @@ from .util import atomic_write_json, sha256_file
 
 AUDIT_SCHEMA = "stage1_gapvalue240.training_execution_audit.v1"
 RESUME_MODE = "native_approximate"
+
+
+def _major_minor(value: str) -> tuple[int, int]:
+    parts: list[int] = []
+    for token in str(value).split("."):
+        digits = "".join(character for character in token if character.isdigit())
+        if digits:
+            parts.append(int(digits))
+        if len(parts) == 2:
+            break
+    return tuple(parts[:2]) if len(parts) == 2 else (-1, -1)
+
+
+def validate_formal_environment(contract: Contract, yolo_root: str | Path) -> dict[str, Any]:
+    """Validate runtime versions inside the disposable training process."""
+
+    root = Path(yolo_root).resolve()
+    if not root.is_dir():
+        raise FileNotFoundError(root)
+    sys.path.insert(0, str(root))
+    modules = {
+        "numpy": importlib.import_module("numpy"),
+        "pandas": importlib.import_module("pandas"),
+        "sklearn": importlib.import_module("sklearn"),
+        "torch": importlib.import_module("torch"),
+        "ultralytics": importlib.import_module("ultralytics"),
+        "polars": importlib.import_module("polars"),
+    }
+    ultralytics_path = Path(modules["ultralytics"].__file__).resolve()
+    try:
+        ultralytics_path.relative_to(root)
+    except ValueError as exc:
+        raise ValidationError(f"Ultralytics resolved outside frozen YOLO root: {ultralytics_path}") from exc
+    expected = contract.data["environment"]
+    actual = {
+        "python": platform.python_version(),
+        "numpy": str(modules["numpy"].__version__),
+        "pandas": str(modules["pandas"].__version__),
+        "scikit_learn": str(modules["sklearn"].__version__),
+        "pytorch": str(modules["torch"].__version__),
+        "ultralytics": str(modules["ultralytics"].__version__),
+        "polars": str(modules["polars"].__version__),
+        "cuda_build": str(modules["torch"].version.cuda),
+        "ultralytics_module": str(ultralytics_path),
+    }
+    checks = {}
+    for key in ("python", "numpy", "pandas", "scikit_learn", "pytorch", "ultralytics", "polars", "cuda_build"):
+        checks[key] = {
+            "expected": str(expected[key]),
+            "actual": actual[key],
+            "ok": _major_minor(actual[key]) == _major_minor(str(expected[key])),
+        }
+    issues = [key for key, check in checks.items() if not check["ok"]]
+    if issues:
+        raise ValidationError(f"Formal environment major/minor mismatch: {issues}: {checks}")
+    return {"status": "PASS", "actual": actual, "checks": checks}
 
 
 @dataclass(frozen=True)

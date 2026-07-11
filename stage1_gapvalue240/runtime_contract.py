@@ -132,6 +132,32 @@ def validate_runtime_links(contract: RuntimeContract, repo_root: str | Path) -> 
             f"selection_index count mismatch: expected={selection_count}, actual={len(index_frame)}"
         )
 
+    shard_results: dict[str, Any] = {}
+    assigned_slots: list[str] = []
+    matrix_frame = pd.read_csv(matrix["path"], dtype={"run_slot": "string", "triad_id": "string", "arm": "string"})
+    for machine_id, shard_spec in queue.get("machine_shards", {}).items():
+        shard = _verify_link(repo, f"machine_shard[{machine_id}]", shard_spec)
+        shard_frame = pd.read_csv(
+            shard["path"], dtype={"run_slot": "string", "triad_id": "string", "arm": "string"}
+        )
+        required_shard = {"run_slot", "triad_id", "arm"}
+        if required_shard - set(shard_frame):
+            raise ValidationError(f"Machine shard {machine_id} is missing required columns")
+        if shard_frame.run_slot.duplicated().any():
+            raise ValidationError(f"Machine shard {machine_id} has duplicate run slots")
+        for triad, group in shard_frame.groupby("triad_id"):
+            if len(group) != 3 or set(group.arm.astype(str)) != {"T", "R1", "R2"}:
+                raise ValidationError(f"Machine shard {machine_id} contains incomplete triad {triad}")
+        unknown = set(shard_frame.run_slot.astype(str)) - set(matrix_frame.run_slot.astype(str))
+        if unknown:
+            raise ValidationError(f"Machine shard {machine_id} contains unknown runs: {sorted(unknown)}")
+        assigned_slots.extend(shard_frame.run_slot.astype(str).tolist())
+        shard_results[str(machine_id)] = {**shard, "triads": int(shard_frame.triad_id.nunique())}
+    if shard_results:
+        duplicates = pd.Series(assigned_slots, dtype="string").duplicated().any()
+        if duplicates or set(assigned_slots) != set(matrix_frame.run_slot.astype(str)):
+            raise ValidationError("Frozen machine shards do not form a unique complete 240-run assignment")
+
     checkpoint_spec = contract.data["checkpoint"]
     binding_spec = checkpoint_spec["site_binding"]
     binding_path = _safe_repo_path(
@@ -166,7 +192,7 @@ def validate_runtime_links(contract: RuntimeContract, repo_root: str | Path) -> 
             "file_sha256": science_file_sha,
             "semantic_sha256": science.sha256,
         },
-        "queue": {"frozen_matrix": matrix, "selection_index": index},
+        "queue": {"frozen_matrix": matrix, "selection_index": index, "machine_shards": shard_results},
         "checkpoint": {
             "site_binding_path": str(binding_path),
             "site_binding_sha256": binding_file_sha,
@@ -271,6 +297,12 @@ def verify_release_identity(
         raise ValidationError(
             f"Release ref {expected_ref} does not point to HEAD: expected={expected_commit}, HEAD={head}"
         )
+    integrity_paths = [str(value) for value in contract.data["release"].get("integrity_paths", [])]
+    dirty = ""
+    if integrity_paths:
+        dirty = _git_output(repo, "status", "--porcelain", "--", *integrity_paths)
+        if dirty:
+            raise ValidationError(f"Release working tree is dirty in runtime integrity paths: {dirty}")
     return {
         "status": "PASS",
         "git_tag": configured_tag,
@@ -278,6 +310,8 @@ def verify_release_identity(
         "expected_commit": expected_commit,
         "head": head,
         "override_used": test_release_ref_override is not None,
+        "integrity_paths": integrity_paths,
+        "integrity_paths_clean": not bool(dirty),
     }
 
 

@@ -16,7 +16,9 @@ ALLOWED_KEYS = {
     "blind_holdout_normal_manifest", "external_test_defect_manifest", "external_test_normal_manifest",
     "prediction_batch_size", "prediction_workers", "nvidia_smi_path", "base_checkpoint",
     "train_manifest", "normal_train_manifest", "trainer_output_root", "evaluator_output_root",
-    "dry_run", "command_timeout_seconds"
+    "dry_run", "command_timeout_seconds", "staging_root", "machine_asset_report",
+    "minimum_staging_free_gib", "minimum_output_free_gib", "maximum_staging_files",
+    "gpu_memory_release_threshold_mib"
 }
 FORBIDDEN_SCIENCE_KEYS = {
     "method", "budget", "epochs", "training_seed", "selection_seed", "guard_ratio", "batch_size",
@@ -45,6 +47,9 @@ def load_machine_config(path: str | Path) -> MachineConfig:
         raise ConfigurationError(f"Machine config contains scientific keys: {sorted(forbidden)}")
     if unknown:
         raise ConfigurationError(f"Unknown machine config keys: {sorted(unknown)}")
-    for key in ["machine_id", "repo_root", "dataset_root", "artifact_root", "output_root", "cache_root", "gpu_id", "num_workers"]:
+    required = ["machine_id", "repo_root", "dataset_root", "artifact_root", "output_root", "cache_root", "gpu_id", "num_workers"]
+    if not bool(data.get("dry_run", False)):
+        required += ["staging_root", "machine_asset_report"]
+    for key in required:
         if key not in data: raise ConfigurationError(f"Missing machine config key: {key}")
     return MachineConfig(path=path, data=data)

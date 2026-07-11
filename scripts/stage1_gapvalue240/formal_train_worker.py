@@ -10,7 +10,8 @@ import json
 from pathlib import Path
 
 from stage1_gapvalue240.contract import load_contract
-from stage1_gapvalue240.formal_trainer import FormalTrainingSpec, run_formal_training
+from stage1_gapvalue240.checkpoint_probe import inspect_checkpoint
+from stage1_gapvalue240.formal_trainer import FormalTrainingSpec, run_formal_training, validate_formal_environment
 from stage1_gapvalue240.hardlink_staging import prepare_base_cache, staged_replay_session, storage_preflight
 from stage1_gapvalue240.util import atomic_write_json
 
@@ -47,6 +48,16 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
 def main(argv: list[str] | None = None) -> int:
     args = parse_args(argv)
     contract = load_contract(args.contract)
+    output_dir = Path(args.output_dir).resolve()
+    output_dir.mkdir(parents=True, exist_ok=True)
+    environment_report = validate_formal_environment(contract, args.yolo_root)
+    atomic_write_json(output_dir / "formal_environment.json", environment_report, overwrite=True)
+    checkpoint_report = inspect_checkpoint(
+        args.resume_checkpoint or args.checkpoint,
+        require_resume_state=bool(args.resume_checkpoint),
+        yolo_root=args.yolo_root,
+    )
+    atomic_write_json(output_dir / "checkpoint_preflight.json", checkpoint_report, overwrite=True)
     manifests = {
         "train_defect": Path(args.base_train_defect_manifest),
         "train_normal": Path(args.base_train_normal_manifest),
@@ -64,7 +75,7 @@ def main(argv: list[str] | None = None) -> int:
         minimum_staging_free_bytes=int(float(args.minimum_staging_free_gib) * gib),
         minimum_output_free_bytes=int(float(args.minimum_output_free_gib) * gib),
     )
-    atomic_write_json(Path(args.output_dir) / "storage_preflight.json", storage_report, overwrite=True)
+    atomic_write_json(output_dir / "storage_preflight.json", storage_report, overwrite=True)
     cache = prepare_base_cache(args.dataset_root, args.staging_root, manifests)
     with staged_replay_session(
         cache,

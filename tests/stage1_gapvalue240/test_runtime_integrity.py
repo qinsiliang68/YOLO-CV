@@ -73,7 +73,11 @@ def _write_runtime_contract(
         "runtime_contract_id": "runtime-test",
         "runtime_contract_version": "1.2.0",
         "runtime_contract_sha256": "",
-        "release": {"git_tag": tag, "require_tag_at_head": True},
+        "release": {
+            "git_tag": tag,
+            "require_tag_at_head": True,
+            "integrity_paths": ["stage1_gapvalue240"],
+        },
         "science_contract": {
             "path": "configs/stage1_gapvalue240/EXPERIMENT_CONTRACT.yaml",
             "file_sha256": sha256_file(science),
@@ -197,6 +201,23 @@ def test_release_tag_must_resolve_to_head_and_override_is_explicit(tmp_path):
     )["override_used"] is True
 
 
+def test_release_identity_rejects_dirty_runtime_code_even_at_tagged_head(tmp_path):
+    repo, _, _, _, path = _make_linked_repo(tmp_path)
+    code = repo / "stage1_gapvalue240/runtime.py"
+    code.parent.mkdir(parents=True)
+    code.write_text("VERSION = 1\n", encoding="utf-8")
+    subprocess.run(["git", "init"], cwd=repo, check=True, capture_output=True)
+    subprocess.run(["git", "config", "user.email", "test@example.com"], cwd=repo, check=True)
+    subprocess.run(["git", "config", "user.name", "Test"], cwd=repo, check=True)
+    subprocess.run(["git", "add", "."], cwd=repo, check=True)
+    subprocess.run(["git", "commit", "-m", "release"], cwd=repo, check=True, capture_output=True)
+    subprocess.run(["git", "tag", "stage1-gapvalue240-runtime-v1.2.0"], cwd=repo, check=True)
+    code.write_text("VERSION = 2\n", encoding="utf-8")
+
+    with pytest.raises(ValidationError, match="working tree is dirty"):
+        verify_release_identity(load_runtime_contract(path), repo)
+
+
 def _write_manifest(path: Path, sample_id: str, split: str, label: int, image: Path) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     image.parent.mkdir(parents=True, exist_ok=True)
@@ -244,11 +265,13 @@ def test_machine_asset_report_covers_eight_manifests_and_is_reusable_without_res
     assert len(report["manifests"]) == 8
     assert all(row["columns"] for row in report["manifests"].values())
     assert all(len(row["id_digest_sha256"]) == 64 for row in report["manifests"].values())
+    assert len(report["content_snapshot_id"]) == 64
 
     # Cached validation only verifies the immutable report identity and does not touch images.
     next(iter(dataset.rglob("*.jpg"))).unlink()
     cached = validate_machine_asset_report(contract, output, expected_machine_id="machine_test")
     assert cached["status"] == "PASS"
+    assert cached["content_snapshot_id"] == report["content_snapshot_id"]
 
     tampered = json.loads(output.read_text(encoding="utf-8"))
     tampered["manifests"]["train_defect"]["rows"] = 99

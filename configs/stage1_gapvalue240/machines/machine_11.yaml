@@ -6,6 +6,12 @@ artifact_root: C:/GitHub/YOLO-CV/artifacts/stage1_sample_value_experiments/contr
 output_root: D:/gapvalue240_outputs/machine_11
 cache_root: D:/gapvalue240_cache/machine_11
 local_scratch_root: D:/gapvalue240_scratch/machine_11
+staging_root: C:/gapvalue240_staging/machine_11
+machine_asset_report: D:/gapvalue240_outputs/machine_11/machine_asset_report.json
+minimum_staging_free_gib: 2
+minimum_output_free_gib: 20
+maximum_staging_files: 151000
+gpu_memory_release_threshold_mib: 256
 gpu_id: 0
 num_workers: 8
 python_executable: python

@@ -58,6 +58,42 @@ def _snapshot_payload(report: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+def _content_snapshot_payload(report: dict[str, Any]) -> dict[str, Any]:
+    manifests = {
+        role: {
+            key: record[key]
+            for key in (
+                "sha256", "rows", "expected_rows", "columns", "column_count",
+                "id_digest_sha256", "split_values", "expected_split", "expected_label",
+                "duplicate_id_count", "invalid_label_count",
+            )
+        }
+        for role, record in report["manifests"].items()
+    }
+    images = report["images"]
+    return {
+        "runtime_contract_sha256": report["runtime_contract_sha256"],
+        "science_contract_file_sha256": report["science_contract_file_sha256"],
+        "science_contract_semantic_sha256": report["science_contract_semantic_sha256"],
+        "frozen_matrix_sha256": report["frozen_matrix_sha256"],
+        "selection_index_sha256": report["selection_index_sha256"],
+        "checkpoint_sha256": report["checkpoint_sha256"],
+        "manifests": manifests,
+        "total_manifest_rows": report["total_manifest_rows"],
+        "global_unique_id_count": report["global_unique_id_count"],
+        "images": {
+            "verification_mode": images["verification_mode"],
+            "expected_count": images["expected_count"],
+            "checked_count": images["checked_count"],
+            "missing_count": images["missing_count"],
+            "non_file_count": images["non_file_count"],
+            "total_size_bytes": images["total_size_bytes"],
+            "asset_digest_sha256": images["asset_digest_sha256"],
+            "content_hashes_computed": images["content_hashes_computed"],
+        },
+    }
+
+
 def _image_audit(
     dataset_root: Path,
     identities: list[str],
@@ -265,6 +301,7 @@ def build_machine_asset_report(
         "cross_manifest_overlap_examples": overlap_examples,
         "images": image_report,
     }
+    report["content_snapshot_id"] = stable_hash(_content_snapshot_payload(report))
     report["snapshot_id"] = stable_hash(_snapshot_payload(report))
     atomic_write_json(output, report, overwrite=overwrite)
     if issues:
@@ -350,10 +387,17 @@ def validate_machine_asset_report(
         raise ValidationError(
             f"Machine asset report snapshot ID mismatch: expected={expected_snapshot}, actual={report.get('snapshot_id')}"
         )
+    expected_content_snapshot = stable_hash(_content_snapshot_payload(report))
+    if str(report.get("content_snapshot_id", "")).upper() != expected_content_snapshot:
+        raise ValidationError(
+            "Machine asset report content snapshot ID mismatch: "
+            f"expected={expected_content_snapshot}, actual={report.get('content_snapshot_id')}"
+        )
     return {
         "status": "PASS",
         "machine_id": report["machine_id"],
         "snapshot_id": expected_snapshot,
+        "content_snapshot_id": expected_content_snapshot,
         "runtime_contract_sha256": contract.sha256,
         "image_verification": report["images"]["verification_mode"],
         "image_count": report["images"]["checked_count"],
