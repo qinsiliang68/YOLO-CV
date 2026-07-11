@@ -131,4 +131,3 @@ AIOps 负责发现卡死、告警、按退出码重启、控制最大重试次�
 - 不把 dry-run、resource smoke、单个最好 seed 或旧 120-run 当科学结论。
 - 不在没有新版本合同和新 release 的情况下移动正式 tag。
 - 不因磁盘或机器故障偷偷更换 seed、budget、arm 或 replay exposure。
-
