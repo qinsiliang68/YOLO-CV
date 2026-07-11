@@ -1,0 +1,8 @@
+{
+  "pool_id": "strict_normal",
+  "candidate_count": 9574,
+  "score_column": "gap_critical_score",
+  "ascending": false,
+  "sha256": "B796CCA2CF485D8023580B9D4D69D233E34AEF670ACC6433B7C75DAA4C6B01E1",
+  "rows": 9574
+}

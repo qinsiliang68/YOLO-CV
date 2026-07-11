@@ -1,0 +1,5749 @@
+{
+  "audits": [
+    {
+      "allow_treatment_overlap": false,
+      "budget": 600,
+      "condition_slot": "A01",
+      "features": {
+        "correct_rate": {
+          "feasible_unique_quota": true,
+          "maximum_achievable_control_mean": 0.995,
+          "minimum_achievable_control_mean": 0.17586666666666667,
+          "target_mean_inside_achievable_interval": true,
+          "treatment_mean": 0.4479333333333333,
+          "unavoidable_absolute_mean_difference": 0.0
+        },
+        "mean_p_defect": {
+          "feasible_unique_quota": true,
+          "maximum_achievable_control_mean": 0.6844699293788332,
+          "minimum_achievable_control_mean": 0.015883506758666666,
+          "target_mean_inside_achievable_interval": true,
+          "treatment_mean": 0.4852863568923334,
+          "unavoidable_absolute_mean_difference": 0.0
+        },
+        "std_p_defect": {
+          "feasible_unique_quota": true,
+          "maximum_achievable_control_mean": 0.24623283988783332,
+          "minimum_achievable_control_mean": 0.04795229855016667,
+          "target_mean_inside_achievable_interval": false,
+          "treatment_mean": 0.29461463486583334,
+          "unavoidable_absolute_mean_difference": 0.04838179497800002
+        }
+      },
+      "method": "GapCritical-Strict",
+      "pool_id": "strict_normal",
+      "status": "PROVEN_BLOCKER",
+      "violating_features": {
+        "std_p_defect": {
+          "feasible_unique_quota": true,
+          "maximum_achievable_control_mean": 0.24623283988783332,
+          "minimum_achievable_control_mean": 0.04795229855016667,
+          "target_mean_inside_achievable_interval": false,
+          "treatment_mean": 0.29461463486583334,
+          "unavoidable_absolute_mean_difference": 0.04838179497800002
+        }
+      }
+    },
+    {
+      "allow_treatment_overlap": false,
+      "budget": 3000,
+      "condition_slot": "A02",
+      "features": {
+        "correct_rate": {
+          "feasible_unique_quota": true,
+          "maximum_achievable_control_mean": 0.9942833333333333,
+          "minimum_achievable_control_mean": 0.8776333333333334,
+          "target_mean_inside_achievable_interval": false,
+          "treatment_mean": 0.6822016666666667,
+          "unavoidable_absolute_mean_difference": 0.19543166666666667
+        },
+        "mean_p_defect": {
+          "feasible_unique_quota": true,
+          "maximum_achievable_control_mean": 0.23835500831636666,
+          "minimum_achievable_control_mean": 0.04906183178946666,
+          "target_mean_inside_achievable_interval": false,
+          "treatment_mean": 0.3568561374608333,
+          "unavoidable_absolute_mean_difference": 0.11850112914446662
+        },
+        "std_p_defect": {
+          "feasible_unique_quota": true,
+          "maximum_achievable_control_mean": 0.1286331804621,
+          "minimum_achievable_control_mean": 0.06869777531646667,
+          "target_mean_inside_achievable_interval": false,
+          "treatment_mean": 0.2170236403578,
+          "unavoidable_absolute_mean_difference": 0.08839045989569999
+        }
+      },
+      "method": "GapCritical-Strict",
+      "pool_id": "strict_normal",
+      "status": "PROVEN_BLOCKER",
+      "violating_features": {
+        "correct_rate": {
+          "feasible_unique_quota": true,
+          "maximum_achievable_control_mean": 0.9942833333333333,
+          "minimum_achievable_control_mean": 0.8776333333333334,
+          "target_mean_inside_achievable_interval": false,
+          "treatment_mean": 0.6822016666666667,
+          "unavoidable_absolute_mean_difference": 0.19543166666666667
+        },
+        "mean_p_defect": {
+          "feasible_unique_quota": true,
+          "maximum_achievable_control_mean": 0.23835500831636666,
+          "minimum_achievable_control_mean": 0.04906183178946666,
+          "target_mean_inside_achievable_interval": false,
+          "treatment_mean": 0.3568561374608333,
+          "unavoidable_absolute_mean_difference": 0.11850112914446662
+        },
+        "std_p_defect": {
+          "feasible_unique_quota": true,
+          "maximum_achievable_control_mean": 0.1286331804621,
+          "minimum_achievable_control_mean": 0.06869777531646667,
+          "target_mean_inside_achievable_interval": false,
+          "treatment_mean": 0.2170236403578,
+          "unavoidable_absolute_mean_difference": 0.08839045989569999
+        }
+      }
+    },
+    {
+      "allow_treatment_overlap": true,
+      "budget": 6000,
+      "condition_slot": "A03",
+      "features": {
+        "correct_rate": {
+          "feasible_unique_quota": true,
+          "maximum_achievable_control_mean": 0.9850958333333332,
+          "minimum_achievable_control_mean": 0.7797266666666668,
+          "target_mean_inside_achievable_interval": true,
+          "treatment_mean": 0.8025225,
+          "unavoidable_absolute_mean_difference": 0.0
+        },
+        "mean_p_defect": {
+          "feasible_unique_quota": true,
+          "maximum_achievable_control_mean": 0.29828157121501664,
+          "minimum_achievable_control_mean": 0.09623887672283334,
+          "target_mean_inside_achievable_interval": true,
+          "treatment_mean": 0.2706871829228833,
+          "unavoidable_absolute_mean_difference": 0.0
+        },
+        "std_p_defect": {
+          "feasible_unique_quota": true,
+          "maximum_achievable_control_mean": 0.17323909891161668,
+          "minimum_achievable_control_mean": 0.09223262618248333,
+          "target_mean_inside_achievable_interval": true,
+          "treatment_mean": 0.16926673507346668,
+          "unavoidable_absolute_mean_difference": 0.0
+        }
+      },
+      "method": "GapCritical-Strict",
+      "pool_id": "strict_normal",
+      "status": "NECESSARY_CONDITION_NOT_BLOCKED",
+      "violating_features": {}
+    },
+    {
+      "allow_treatment_overlap": false,
+      "budget": 3000,
+      "condition_slot": "A04",
+      "features": {
+        "correct_rate": {
+          "feasible_unique_quota": true,
+          "maximum_achievable_control_mean": 0.9861999999999996,
+          "minimum_achievable_control_mean": 0.844735,
+          "target_mean_inside_achievable_interval": false,
+          "treatment_mean": 0.669945,
+          "unavoidable_absolute_mean_difference": 0.17479
+        },
+        "mean_p_defect": {
+          "feasible_unique_quota": true,
+          "maximum_achievable_control_mean": 0.2650827280446333,
+          "minimum_achievable_control_mean": 0.06003537996223335,
+          "target_mean_inside_achievable_interval": false,
+          "treatment_mean": 0.3636403891221333,
+          "unavoidable_absolute_mean_difference": 0.09855766107750003
+        },
+        "std_p_defect": {
+          "feasible_unique_quota": true,
+          "maximum_achievable_control_mean": 0.13490523497016668,
+          "minimum_achievable_control_mean": 0.06798514255303333,
+          "target_mean_inside_achievable_interval": false,
+          "treatment_mean": 0.21794313370716667,
+          "unavoidable_absolute_mean_difference": 0.08303789873699999
+        }
+      },
+      "method": "GapCritical-Global",
+      "pool_id": "global_clean_normal_positive_gap",
+      "status": "PROVEN_BLOCKER",
+      "violating_features": {
+        "correct_rate": {
+          "feasible_unique_quota": true,
+          "maximum_achievable_control_mean": 0.9861999999999996,
+          "minimum_achievable_control_mean": 0.844735,
+          "target_mean_inside_achievable_interval": false,
+          "treatment_mean": 0.669945,
+          "unavoidable_absolute_mean_difference": 0.17479
+        },
+        "mean_p_defect": {
+          "feasible_unique_quota": true,
+          "maximum_achievable_control_mean": 0.2650827280446333,
+          "minimum_achievable_control_mean": 0.06003537996223335,
+          "target_mean_inside_achievable_interval": false,
+          "treatment_mean": 0.3636403891221333,
+          "unavoidable_absolute_mean_difference": 0.09855766107750003
+        },
+        "std_p_defect": {
+          "feasible_unique_quota": true,
+          "maximum_achievable_control_mean": 0.13490523497016668,
+          "minimum_achievable_control_mean": 0.06798514255303333,
+          "target_mean_inside_achievable_interval": false,
+          "treatment_mean": 0.21794313370716667,
+          "unavoidable_absolute_mean_difference": 0.08303789873699999
+        }
+      }
+    },
+    {
+      "allow_treatment_overlap": false,
+      "budget": 600,
+      "condition_slot": "A05",
+      "features": {
+        "correct_rate": {
+          "feasible_unique_quota": true,
+          "maximum_achievable_control_mean": 0.7134583333333332,
+          "minimum_achievable_control_mean": 0.18935,
+          "target_mean_inside_achievable_interval": false,
+          "treatment_mean": 0.10635833333333333,
+          "unavoidable_absolute_mean_difference": 0.08299166666666666
+        },
+        "mean_p_defect": {
+          "feasible_unique_quota": true,
+          "maximum_achievable_control_mean": 0.6517454836636667,
+          "minimum_achievable_control_mean": 0.2703493679035,
+          "target_mean_inside_achievable_interval": false,
+          "treatment_mean": 0.7586327223643333,
+          "unavoidable_absolute_mean_difference": 0.10688723870066663
+        },
+        "std_p_defect": {
+          "feasible_unique_quota": true,
+          "maximum_achievable_control_mean": 0.27619853739816663,
+          "minimum_achievable_control_mean": 0.0935675446795,
+          "target_mean_inside_achievable_interval": true,
+          "treatment_mean": 0.17290840790966666,
+          "unavoidable_absolute_mean_difference": 0.0
+        }
+      },
+      "method": "Confidence-Clean",
+      "pool_id": "clean_normal",
+      "status": "PROVEN_BLOCKER",
+      "violating_features": {
+        "correct_rate": {
+          "feasible_unique_quota": true,
+          "maximum_achievable_control_mean": 0.7134583333333332,
+          "minimum_achievable_control_mean": 0.18935,
+          "target_mean_inside_achievable_interval": false,
+          "treatment_mean": 0.10635833333333333,
+          "unavoidable_absolute_mean_difference": 0.08299166666666666
+        },
+        "mean_p_defect": {
+          "feasible_unique_quota": true,
+          "maximum_achievable_control_mean": 0.6517454836636667,
+          "minimum_achievable_control_mean": 0.2703493679035,
+          "target_mean_inside_achievable_interval": false,
+          "treatment_mean": 0.7586327223643333,
+          "unavoidable_absolute_mean_difference": 0.10688723870066663
+        }
+      }
+    },
+    {
+      "allow_treatment_overlap": false,
+      "budget": 3000,
+      "condition_slot": "A06",
+      "features": {
+        "correct_rate": {
+          "feasible_unique_quota": false,
+          "shortages": [
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 70,
+              "oof_fold": "00"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 7,
+              "need": 60,
+              "oof_fold": "00"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 67,
+              "oof_fold": "01"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 16,
+              "need": 86,
+              "oof_fold": "01"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 92,
+              "oof_fold": "02"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 19,
+              "need": 80,
+              "oof_fold": "02"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 60,
+              "oof_fold": "03"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 10,
+              "need": 67,
+              "oof_fold": "03"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 88,
+              "oof_fold": "04"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 5,
+              "need": 70,
+              "oof_fold": "04"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 70,
+              "oof_fold": "05"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 11,
+              "need": 66,
+              "oof_fold": "05"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 67,
+              "oof_fold": "06"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 14,
+              "need": 66,
+              "oof_fold": "06"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 59,
+              "oof_fold": "07"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 9,
+              "need": 75,
+              "oof_fold": "07"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 62,
+              "oof_fold": "08"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 15,
+              "need": 57,
+              "oof_fold": "08"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 67,
+              "oof_fold": "09"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 12,
+              "need": 62,
+              "oof_fold": "09"
+            }
+          ]
+        },
+        "mean_p_defect": {
+          "feasible_unique_quota": false,
+          "shortages": [
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 70,
+              "oof_fold": "00"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 7,
+              "need": 60,
+              "oof_fold": "00"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 67,
+              "oof_fold": "01"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 16,
+              "need": 86,
+              "oof_fold": "01"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 92,
+              "oof_fold": "02"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 19,
+              "need": 80,
+              "oof_fold": "02"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 60,
+              "oof_fold": "03"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 10,
+              "need": 67,
+              "oof_fold": "03"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 88,
+              "oof_fold": "04"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 5,
+              "need": 70,
+              "oof_fold": "04"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 70,
+              "oof_fold": "05"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 11,
+              "need": 66,
+              "oof_fold": "05"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 67,
+              "oof_fold": "06"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 14,
+              "need": 66,
+              "oof_fold": "06"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 59,
+              "oof_fold": "07"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 9,
+              "need": 75,
+              "oof_fold": "07"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 62,
+              "oof_fold": "08"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 15,
+              "need": 57,
+              "oof_fold": "08"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 67,
+              "oof_fold": "09"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 12,
+              "need": 62,
+              "oof_fold": "09"
+            }
+          ]
+        },
+        "std_p_defect": {
+          "feasible_unique_quota": false,
+          "shortages": [
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 70,
+              "oof_fold": "00"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 7,
+              "need": 60,
+              "oof_fold": "00"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 67,
+              "oof_fold": "01"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 16,
+              "need": 86,
+              "oof_fold": "01"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 92,
+              "oof_fold": "02"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 19,
+              "need": 80,
+              "oof_fold": "02"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 60,
+              "oof_fold": "03"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 10,
+              "need": 67,
+              "oof_fold": "03"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 88,
+              "oof_fold": "04"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 5,
+              "need": 70,
+              "oof_fold": "04"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 70,
+              "oof_fold": "05"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 11,
+              "need": 66,
+              "oof_fold": "05"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 67,
+              "oof_fold": "06"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 14,
+              "need": 66,
+              "oof_fold": "06"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 59,
+              "oof_fold": "07"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 9,
+              "need": 75,
+              "oof_fold": "07"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 62,
+              "oof_fold": "08"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 15,
+              "need": 57,
+              "oof_fold": "08"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 67,
+              "oof_fold": "09"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 12,
+              "need": 62,
+              "oof_fold": "09"
+            }
+          ]
+        }
+      },
+      "method": "Confidence-Clean",
+      "pool_id": "clean_normal",
+      "status": "PROVEN_BLOCKER",
+      "violating_features": {
+        "correct_rate": {
+          "feasible_unique_quota": false,
+          "shortages": [
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 70,
+              "oof_fold": "00"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 7,
+              "need": 60,
+              "oof_fold": "00"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 67,
+              "oof_fold": "01"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 16,
+              "need": 86,
+              "oof_fold": "01"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 92,
+              "oof_fold": "02"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 19,
+              "need": 80,
+              "oof_fold": "02"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 60,
+              "oof_fold": "03"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 10,
+              "need": 67,
+              "oof_fold": "03"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 88,
+              "oof_fold": "04"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 5,
+              "need": 70,
+              "oof_fold": "04"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 70,
+              "oof_fold": "05"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 11,
+              "need": 66,
+              "oof_fold": "05"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 67,
+              "oof_fold": "06"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 14,
+              "need": 66,
+              "oof_fold": "06"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 59,
+              "oof_fold": "07"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 9,
+              "need": 75,
+              "oof_fold": "07"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 62,
+              "oof_fold": "08"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 15,
+              "need": 57,
+              "oof_fold": "08"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 67,
+              "oof_fold": "09"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 12,
+              "need": 62,
+              "oof_fold": "09"
+            }
+          ]
+        },
+        "mean_p_defect": {
+          "feasible_unique_quota": false,
+          "shortages": [
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 70,
+              "oof_fold": "00"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 7,
+              "need": 60,
+              "oof_fold": "00"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 67,
+              "oof_fold": "01"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 16,
+              "need": 86,
+              "oof_fold": "01"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 92,
+              "oof_fold": "02"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 19,
+              "need": 80,
+              "oof_fold": "02"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 60,
+              "oof_fold": "03"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 10,
+              "need": 67,
+              "oof_fold": "03"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 88,
+              "oof_fold": "04"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 5,
+              "need": 70,
+              "oof_fold": "04"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 70,
+              "oof_fold": "05"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 11,
+              "need": 66,
+              "oof_fold": "05"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 67,
+              "oof_fold": "06"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 14,
+              "need": 66,
+              "oof_fold": "06"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 59,
+              "oof_fold": "07"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 9,
+              "need": 75,
+              "oof_fold": "07"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 62,
+              "oof_fold": "08"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 15,
+              "need": 57,
+              "oof_fold": "08"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 67,
+              "oof_fold": "09"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 12,
+              "need": 62,
+              "oof_fold": "09"
+            }
+          ]
+        },
+        "std_p_defect": {
+          "feasible_unique_quota": false,
+          "shortages": [
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 70,
+              "oof_fold": "00"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 7,
+              "need": 60,
+              "oof_fold": "00"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 67,
+              "oof_fold": "01"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 16,
+              "need": 86,
+              "oof_fold": "01"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 92,
+              "oof_fold": "02"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 19,
+              "need": 80,
+              "oof_fold": "02"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 60,
+              "oof_fold": "03"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 10,
+              "need": 67,
+              "oof_fold": "03"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 88,
+              "oof_fold": "04"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 5,
+              "need": 70,
+              "oof_fold": "04"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 70,
+              "oof_fold": "05"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 11,
+              "need": 66,
+              "oof_fold": "05"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 67,
+              "oof_fold": "06"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 14,
+              "need": 66,
+              "oof_fold": "06"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 59,
+              "oof_fold": "07"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 9,
+              "need": 75,
+              "oof_fold": "07"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 62,
+              "oof_fold": "08"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 15,
+              "need": 57,
+              "oof_fold": "08"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 67,
+              "oof_fold": "09"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 12,
+              "need": 62,
+              "oof_fold": "09"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "allow_treatment_overlap": false,
+      "budget": 600,
+      "condition_slot": "A07",
+      "features": {
+        "correct_rate": {
+          "feasible_unique_quota": true,
+          "maximum_achievable_control_mean": 0.8832583333333333,
+          "minimum_achievable_control_mean": 0.22242499999999998,
+          "target_mean_inside_achievable_interval": true,
+          "treatment_mean": 0.467975,
+          "unavoidable_absolute_mean_difference": 0.0
+        },
+        "mean_p_defect": {
+          "feasible_unique_quota": true,
+          "maximum_achievable_control_mean": 0.6619789025466667,
+          "minimum_achievable_control_mean": 0.20234115830099997,
+          "target_mean_inside_achievable_interval": true,
+          "treatment_mean": 0.498909703859,
+          "unavoidable_absolute_mean_difference": 0.0
+        },
+        "std_p_defect": {
+          "feasible_unique_quota": true,
+          "maximum_achievable_control_mean": 0.25327737448499993,
+          "minimum_achievable_control_mean": 0.06848023466416668,
+          "target_mean_inside_achievable_interval": true,
+          "treatment_mean": 0.2135364791055,
+          "unavoidable_absolute_mean_difference": 0.0
+        }
+      },
+      "method": "Boundary-0.5-Clean",
+      "pool_id": "clean_normal",
+      "status": "NECESSARY_CONDITION_NOT_BLOCKED",
+      "violating_features": {}
+    },
+    {
+      "allow_treatment_overlap": false,
+      "budget": 3000,
+      "condition_slot": "A08",
+      "features": {
+        "correct_rate": {
+          "feasible_unique_quota": false,
+          "shortages": [
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 0,
+              "need": 67,
+              "oof_fold": "00"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 0,
+              "need": 102,
+              "oof_fold": "01"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 0,
+              "need": 99,
+              "oof_fold": "02"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 0,
+              "need": 77,
+              "oof_fold": "03"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 43,
+              "need": 45,
+              "oof_fold": "04"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 0,
+              "need": 75,
+              "oof_fold": "04"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 0,
+              "need": 77,
+              "oof_fold": "05"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 0,
+              "need": 80,
+              "oof_fold": "06"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 0,
+              "need": 84,
+              "oof_fold": "07"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 0,
+              "need": 72,
+              "oof_fold": "08"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 0,
+              "need": 74,
+              "oof_fold": "09"
+            }
+          ]
+        },
+        "mean_p_defect": {
+          "feasible_unique_quota": false,
+          "shortages": [
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 0,
+              "need": 67,
+              "oof_fold": "00"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 0,
+              "need": 102,
+              "oof_fold": "01"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 0,
+              "need": 99,
+              "oof_fold": "02"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 0,
+              "need": 77,
+              "oof_fold": "03"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 43,
+              "need": 45,
+              "oof_fold": "04"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 0,
+              "need": 75,
+              "oof_fold": "04"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 0,
+              "need": 77,
+              "oof_fold": "05"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 0,
+              "need": 80,
+              "oof_fold": "06"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 0,
+              "need": 84,
+              "oof_fold": "07"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 0,
+              "need": 72,
+              "oof_fold": "08"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 0,
+              "need": 74,
+              "oof_fold": "09"
+            }
+          ]
+        },
+        "std_p_defect": {
+          "feasible_unique_quota": false,
+          "shortages": [
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 0,
+              "need": 67,
+              "oof_fold": "00"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 0,
+              "need": 102,
+              "oof_fold": "01"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 0,
+              "need": 99,
+              "oof_fold": "02"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 0,
+              "need": 77,
+              "oof_fold": "03"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 43,
+              "need": 45,
+              "oof_fold": "04"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 0,
+              "need": 75,
+              "oof_fold": "04"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 0,
+              "need": 77,
+              "oof_fold": "05"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 0,
+              "need": 80,
+              "oof_fold": "06"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 0,
+              "need": 84,
+              "oof_fold": "07"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 0,
+              "need": 72,
+              "oof_fold": "08"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 0,
+              "need": 74,
+              "oof_fold": "09"
+            }
+          ]
+        }
+      },
+      "method": "Boundary-0.5-Clean",
+      "pool_id": "clean_normal",
+      "status": "PROVEN_BLOCKER",
+      "violating_features": {
+        "correct_rate": {
+          "feasible_unique_quota": false,
+          "shortages": [
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 0,
+              "need": 67,
+              "oof_fold": "00"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 0,
+              "need": 102,
+              "oof_fold": "01"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 0,
+              "need": 99,
+              "oof_fold": "02"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 0,
+              "need": 77,
+              "oof_fold": "03"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 43,
+              "need": 45,
+              "oof_fold": "04"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 0,
+              "need": 75,
+              "oof_fold": "04"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 0,
+              "need": 77,
+              "oof_fold": "05"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 0,
+              "need": 80,
+              "oof_fold": "06"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 0,
+              "need": 84,
+              "oof_fold": "07"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 0,
+              "need": 72,
+              "oof_fold": "08"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 0,
+              "need": 74,
+              "oof_fold": "09"
+            }
+          ]
+        },
+        "mean_p_defect": {
+          "feasible_unique_quota": false,
+          "shortages": [
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 0,
+              "need": 67,
+              "oof_fold": "00"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 0,
+              "need": 102,
+              "oof_fold": "01"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 0,
+              "need": 99,
+              "oof_fold": "02"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 0,
+              "need": 77,
+              "oof_fold": "03"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 43,
+              "need": 45,
+              "oof_fold": "04"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 0,
+              "need": 75,
+              "oof_fold": "04"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 0,
+              "need": 77,
+              "oof_fold": "05"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 0,
+              "need": 80,
+              "oof_fold": "06"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 0,
+              "need": 84,
+              "oof_fold": "07"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 0,
+              "need": 72,
+              "oof_fold": "08"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 0,
+              "need": 74,
+              "oof_fold": "09"
+            }
+          ]
+        },
+        "std_p_defect": {
+          "feasible_unique_quota": false,
+          "shortages": [
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 0,
+              "need": 67,
+              "oof_fold": "00"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 0,
+              "need": 102,
+              "oof_fold": "01"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 0,
+              "need": 99,
+              "oof_fold": "02"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 0,
+              "need": 77,
+              "oof_fold": "03"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 43,
+              "need": 45,
+              "oof_fold": "04"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 0,
+              "need": 75,
+              "oof_fold": "04"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 0,
+              "need": 77,
+              "oof_fold": "05"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 0,
+              "need": 80,
+              "oof_fold": "06"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 0,
+              "need": 84,
+              "oof_fold": "07"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 0,
+              "need": 72,
+              "oof_fold": "08"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 0,
+              "need": 74,
+              "oof_fold": "09"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "allow_treatment_overlap": false,
+      "budget": 600,
+      "condition_slot": "A09",
+      "features": {
+        "correct_rate": {
+          "feasible_unique_quota": true,
+          "maximum_achievable_control_mean": 0.7087083333333332,
+          "minimum_achievable_control_mean": 0.21543333333333337,
+          "target_mean_inside_achievable_interval": false,
+          "treatment_mean": 0.06849166666666666,
+          "unavoidable_absolute_mean_difference": 0.1469416666666667
+        },
+        "mean_p_defect": {
+          "feasible_unique_quota": true,
+          "maximum_achievable_control_mean": 0.6740807854671665,
+          "minimum_achievable_control_mean": 0.29386635520766663,
+          "target_mean_inside_achievable_interval": false,
+          "treatment_mean": 0.7336890498851667,
+          "unavoidable_absolute_mean_difference": 0.059608264418000156
+        },
+        "std_p_defect": {
+          "feasible_unique_quota": true,
+          "maximum_achievable_control_mean": 0.2766758830256666,
+          "minimum_achievable_control_mean": 0.10975764498866666,
+          "target_mean_inside_achievable_interval": true,
+          "treatment_mean": 0.13752420089016668,
+          "unavoidable_absolute_mean_difference": 0.0
+        }
+      },
+      "method": "Persistent-0.5-Clean",
+      "pool_id": "clean_normal",
+      "status": "PROVEN_BLOCKER",
+      "violating_features": {
+        "correct_rate": {
+          "feasible_unique_quota": true,
+          "maximum_achievable_control_mean": 0.7087083333333332,
+          "minimum_achievable_control_mean": 0.21543333333333337,
+          "target_mean_inside_achievable_interval": false,
+          "treatment_mean": 0.06849166666666666,
+          "unavoidable_absolute_mean_difference": 0.1469416666666667
+        },
+        "mean_p_defect": {
+          "feasible_unique_quota": true,
+          "maximum_achievable_control_mean": 0.6740807854671665,
+          "minimum_achievable_control_mean": 0.29386635520766663,
+          "target_mean_inside_achievable_interval": false,
+          "treatment_mean": 0.7336890498851667,
+          "unavoidable_absolute_mean_difference": 0.059608264418000156
+        }
+      }
+    },
+    {
+      "allow_treatment_overlap": false,
+      "budget": 3000,
+      "condition_slot": "A10",
+      "features": {
+        "correct_rate": {
+          "feasible_unique_quota": false,
+          "shortages": [
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 70,
+              "oof_fold": "00"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 19,
+              "need": 48,
+              "oof_fold": "00"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 67,
+              "oof_fold": "01"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 28,
+              "need": 74,
+              "oof_fold": "01"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 92,
+              "oof_fold": "02"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 37,
+              "need": 62,
+              "oof_fold": "02"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 60,
+              "oof_fold": "03"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 23,
+              "need": 54,
+              "oof_fold": "03"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 88,
+              "oof_fold": "04"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 24,
+              "need": 51,
+              "oof_fold": "04"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 70,
+              "oof_fold": "05"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 27,
+              "need": 50,
+              "oof_fold": "05"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 67,
+              "oof_fold": "06"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 24,
+              "need": 56,
+              "oof_fold": "06"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 59,
+              "oof_fold": "07"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 35,
+              "need": 49,
+              "oof_fold": "07"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 62,
+              "oof_fold": "08"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 30,
+              "need": 42,
+              "oof_fold": "08"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 67,
+              "oof_fold": "09"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 27,
+              "need": 47,
+              "oof_fold": "09"
+            }
+          ]
+        },
+        "mean_p_defect": {
+          "feasible_unique_quota": false,
+          "shortages": [
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 70,
+              "oof_fold": "00"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 19,
+              "need": 48,
+              "oof_fold": "00"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 67,
+              "oof_fold": "01"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 28,
+              "need": 74,
+              "oof_fold": "01"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 92,
+              "oof_fold": "02"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 37,
+              "need": 62,
+              "oof_fold": "02"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 60,
+              "oof_fold": "03"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 23,
+              "need": 54,
+              "oof_fold": "03"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 88,
+              "oof_fold": "04"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 24,
+              "need": 51,
+              "oof_fold": "04"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 70,
+              "oof_fold": "05"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 27,
+              "need": 50,
+              "oof_fold": "05"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 67,
+              "oof_fold": "06"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 24,
+              "need": 56,
+              "oof_fold": "06"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 59,
+              "oof_fold": "07"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 35,
+              "need": 49,
+              "oof_fold": "07"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 62,
+              "oof_fold": "08"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 30,
+              "need": 42,
+              "oof_fold": "08"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 67,
+              "oof_fold": "09"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 27,
+              "need": 47,
+              "oof_fold": "09"
+            }
+          ]
+        },
+        "std_p_defect": {
+          "feasible_unique_quota": false,
+          "shortages": [
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 70,
+              "oof_fold": "00"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 19,
+              "need": 48,
+              "oof_fold": "00"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 67,
+              "oof_fold": "01"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 28,
+              "need": 74,
+              "oof_fold": "01"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 92,
+              "oof_fold": "02"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 37,
+              "need": 62,
+              "oof_fold": "02"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 60,
+              "oof_fold": "03"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 23,
+              "need": 54,
+              "oof_fold": "03"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 88,
+              "oof_fold": "04"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 24,
+              "need": 51,
+              "oof_fold": "04"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 70,
+              "oof_fold": "05"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 27,
+              "need": 50,
+              "oof_fold": "05"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 67,
+              "oof_fold": "06"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 24,
+              "need": 56,
+              "oof_fold": "06"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 59,
+              "oof_fold": "07"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 35,
+              "need": 49,
+              "oof_fold": "07"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 62,
+              "oof_fold": "08"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 30,
+              "need": 42,
+              "oof_fold": "08"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 67,
+              "oof_fold": "09"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 27,
+              "need": 47,
+              "oof_fold": "09"
+            }
+          ]
+        }
+      },
+      "method": "Persistent-0.5-Clean",
+      "pool_id": "clean_normal",
+      "status": "PROVEN_BLOCKER",
+      "violating_features": {
+        "correct_rate": {
+          "feasible_unique_quota": false,
+          "shortages": [
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 70,
+              "oof_fold": "00"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 19,
+              "need": 48,
+              "oof_fold": "00"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 67,
+              "oof_fold": "01"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 28,
+              "need": 74,
+              "oof_fold": "01"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 92,
+              "oof_fold": "02"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 37,
+              "need": 62,
+              "oof_fold": "02"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 60,
+              "oof_fold": "03"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 23,
+              "need": 54,
+              "oof_fold": "03"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 88,
+              "oof_fold": "04"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 24,
+              "need": 51,
+              "oof_fold": "04"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 70,
+              "oof_fold": "05"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 27,
+              "need": 50,
+              "oof_fold": "05"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 67,
+              "oof_fold": "06"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 24,
+              "need": 56,
+              "oof_fold": "06"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 59,
+              "oof_fold": "07"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 35,
+              "need": 49,
+              "oof_fold": "07"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 62,
+              "oof_fold": "08"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 30,
+              "need": 42,
+              "oof_fold": "08"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 67,
+              "oof_fold": "09"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 27,
+              "need": 47,
+              "oof_fold": "09"
+            }
+          ]
+        },
+        "mean_p_defect": {
+          "feasible_unique_quota": false,
+          "shortages": [
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 70,
+              "oof_fold": "00"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 19,
+              "need": 48,
+              "oof_fold": "00"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 67,
+              "oof_fold": "01"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 28,
+              "need": 74,
+              "oof_fold": "01"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 92,
+              "oof_fold": "02"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 37,
+              "need": 62,
+              "oof_fold": "02"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 60,
+              "oof_fold": "03"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 23,
+              "need": 54,
+              "oof_fold": "03"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 88,
+              "oof_fold": "04"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 24,
+              "need": 51,
+              "oof_fold": "04"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 70,
+              "oof_fold": "05"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 27,
+              "need": 50,
+              "oof_fold": "05"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 67,
+              "oof_fold": "06"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 24,
+              "need": 56,
+              "oof_fold": "06"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 59,
+              "oof_fold": "07"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 35,
+              "need": 49,
+              "oof_fold": "07"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 62,
+              "oof_fold": "08"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 30,
+              "need": 42,
+              "oof_fold": "08"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 67,
+              "oof_fold": "09"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 27,
+              "need": 47,
+              "oof_fold": "09"
+            }
+          ]
+        },
+        "std_p_defect": {
+          "feasible_unique_quota": false,
+          "shortages": [
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 70,
+              "oof_fold": "00"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 19,
+              "need": 48,
+              "oof_fold": "00"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 67,
+              "oof_fold": "01"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 28,
+              "need": 74,
+              "oof_fold": "01"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 92,
+              "oof_fold": "02"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 37,
+              "need": 62,
+              "oof_fold": "02"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 60,
+              "oof_fold": "03"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 23,
+              "need": 54,
+              "oof_fold": "03"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 88,
+              "oof_fold": "04"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 24,
+              "need": 51,
+              "oof_fold": "04"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 70,
+              "oof_fold": "05"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 27,
+              "need": 50,
+              "oof_fold": "05"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 67,
+              "oof_fold": "06"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 24,
+              "need": 56,
+              "oof_fold": "06"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 59,
+              "oof_fold": "07"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 35,
+              "need": 49,
+              "oof_fold": "07"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 62,
+              "oof_fold": "08"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 30,
+              "need": 42,
+              "oof_fold": "08"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 67,
+              "oof_fold": "09"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 27,
+              "need": 47,
+              "oof_fold": "09"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "allow_treatment_overlap": false,
+      "budget": 600,
+      "condition_slot": "A11",
+      "features": {
+        "correct_rate": {
+          "feasible_unique_quota": true,
+          "maximum_achievable_control_mean": 0.995,
+          "minimum_achievable_control_mean": 0.15175833333333336,
+          "target_mean_inside_achievable_interval": true,
+          "treatment_mean": 0.673275,
+          "unavoidable_absolute_mean_difference": 0.0
+        },
+        "mean_p_defect": {
+          "feasible_unique_quota": true,
+          "maximum_achievable_control_mean": 0.7069856419468333,
+          "minimum_achievable_control_mean": 0.015364561920500001,
+          "target_mean_inside_achievable_interval": true,
+          "treatment_mean": 0.3526678958523334,
+          "unavoidable_absolute_mean_difference": 0.0
+        },
+        "std_p_defect": {
+          "feasible_unique_quota": true,
+          "maximum_achievable_control_mean": 0.28713235130816667,
+          "minimum_achievable_control_mean": 0.047582680962666664,
+          "target_mean_inside_achievable_interval": true,
+          "treatment_mean": 0.21486750195583332,
+          "unavoidable_absolute_mean_difference": 0.0
+        }
+      },
+      "method": "EndpointTrend",
+      "pool_id": "learnable_normal",
+      "status": "NECESSARY_CONDITION_NOT_BLOCKED",
+      "violating_features": {}
+    },
+    {
+      "allow_treatment_overlap": false,
+      "budget": 3000,
+      "condition_slot": "A12",
+      "features": {
+        "correct_rate": {
+          "feasible_unique_quota": true,
+          "maximum_achievable_control_mean": 0.9941533333333332,
+          "minimum_achievable_control_mean": 0.7700566666666665,
+          "target_mean_inside_achievable_interval": false,
+          "treatment_mean": 0.7523983333333333,
+          "unavoidable_absolute_mean_difference": 0.01765833333333322
+        },
+        "mean_p_defect": {
+          "feasible_unique_quota": true,
+          "maximum_achievable_control_mean": 0.3227338567603,
+          "minimum_achievable_control_mean": 0.056767454176633335,
+          "target_mean_inside_achievable_interval": true,
+          "treatment_mean": 0.2956043855955333,
+          "unavoidable_absolute_mean_difference": 0.0
+        },
+        "std_p_defect": {
+          "feasible_unique_quota": true,
+          "maximum_achievable_control_mean": 0.1748790757978,
+          "minimum_achievable_control_mean": 0.07005315662423334,
+          "target_mean_inside_achievable_interval": false,
+          "treatment_mean": 0.17529007062433333,
+          "unavoidable_absolute_mean_difference": 0.00041099482653333963
+        }
+      },
+      "method": "EndpointTrend",
+      "pool_id": "learnable_normal",
+      "status": "PROVEN_BLOCKER",
+      "violating_features": {
+        "correct_rate": {
+          "feasible_unique_quota": true,
+          "maximum_achievable_control_mean": 0.9941533333333332,
+          "minimum_achievable_control_mean": 0.7700566666666665,
+          "target_mean_inside_achievable_interval": false,
+          "treatment_mean": 0.7523983333333333,
+          "unavoidable_absolute_mean_difference": 0.01765833333333322
+        },
+        "std_p_defect": {
+          "feasible_unique_quota": true,
+          "maximum_achievable_control_mean": 0.1748790757978,
+          "minimum_achievable_control_mean": 0.07005315662423334,
+          "target_mean_inside_achievable_interval": false,
+          "treatment_mean": 0.17529007062433333,
+          "unavoidable_absolute_mean_difference": 0.00041099482653333963
+        }
+      }
+    },
+    {
+      "allow_treatment_overlap": false,
+      "budget": 3000,
+      "condition_slot": "A13",
+      "features": {
+        "correct_rate": {
+          "feasible_unique_quota": false,
+          "shortages": [
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 9,
+              "need": 61,
+              "oof_fold": "00"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 6,
+              "need": 61,
+              "oof_fold": "01"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 7,
+              "need": 85,
+              "oof_fold": "02"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 16,
+              "need": 44,
+              "oof_fold": "03"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 10,
+              "need": 78,
+              "oof_fold": "04"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 13,
+              "need": 57,
+              "oof_fold": "05"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 18,
+              "need": 49,
+              "oof_fold": "06"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 12,
+              "need": 47,
+              "oof_fold": "07"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 12,
+              "need": 50,
+              "oof_fold": "08"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 8,
+              "need": 59,
+              "oof_fold": "09"
+            }
+          ]
+        },
+        "mean_p_defect": {
+          "feasible_unique_quota": false,
+          "shortages": [
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 9,
+              "need": 61,
+              "oof_fold": "00"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 6,
+              "need": 61,
+              "oof_fold": "01"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 7,
+              "need": 85,
+              "oof_fold": "02"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 16,
+              "need": 44,
+              "oof_fold": "03"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 10,
+              "need": 78,
+              "oof_fold": "04"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 13,
+              "need": 57,
+              "oof_fold": "05"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 18,
+              "need": 49,
+              "oof_fold": "06"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 12,
+              "need": 47,
+              "oof_fold": "07"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 12,
+              "need": 50,
+              "oof_fold": "08"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 8,
+              "need": 59,
+              "oof_fold": "09"
+            }
+          ]
+        },
+        "std_p_defect": {
+          "feasible_unique_quota": false,
+          "shortages": [
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 9,
+              "need": 61,
+              "oof_fold": "00"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 6,
+              "need": 61,
+              "oof_fold": "01"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 7,
+              "need": 85,
+              "oof_fold": "02"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 16,
+              "need": 44,
+              "oof_fold": "03"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 10,
+              "need": 78,
+              "oof_fold": "04"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 13,
+              "need": 57,
+              "oof_fold": "05"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 18,
+              "need": 49,
+              "oof_fold": "06"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 12,
+              "need": 47,
+              "oof_fold": "07"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 12,
+              "need": 50,
+              "oof_fold": "08"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 8,
+              "need": 59,
+              "oof_fold": "09"
+            }
+          ]
+        }
+      },
+      "method": "BottomGap-3000-stress-control",
+      "pool_id": "clean_normal",
+      "status": "PROVEN_BLOCKER",
+      "violating_features": {
+        "correct_rate": {
+          "feasible_unique_quota": false,
+          "shortages": [
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 9,
+              "need": 61,
+              "oof_fold": "00"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 6,
+              "need": 61,
+              "oof_fold": "01"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 7,
+              "need": 85,
+              "oof_fold": "02"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 16,
+              "need": 44,
+              "oof_fold": "03"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 10,
+              "need": 78,
+              "oof_fold": "04"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 13,
+              "need": 57,
+              "oof_fold": "05"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 18,
+              "need": 49,
+              "oof_fold": "06"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 12,
+              "need": 47,
+              "oof_fold": "07"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 12,
+              "need": 50,
+              "oof_fold": "08"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 8,
+              "need": 59,
+              "oof_fold": "09"
+            }
+          ]
+        },
+        "mean_p_defect": {
+          "feasible_unique_quota": false,
+          "shortages": [
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 9,
+              "need": 61,
+              "oof_fold": "00"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 6,
+              "need": 61,
+              "oof_fold": "01"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 7,
+              "need": 85,
+              "oof_fold": "02"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 16,
+              "need": 44,
+              "oof_fold": "03"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 10,
+              "need": 78,
+              "oof_fold": "04"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 13,
+              "need": 57,
+              "oof_fold": "05"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 18,
+              "need": 49,
+              "oof_fold": "06"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 12,
+              "need": 47,
+              "oof_fold": "07"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 12,
+              "need": 50,
+              "oof_fold": "08"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 8,
+              "need": 59,
+              "oof_fold": "09"
+            }
+          ]
+        },
+        "std_p_defect": {
+          "feasible_unique_quota": false,
+          "shortages": [
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 9,
+              "need": 61,
+              "oof_fold": "00"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 6,
+              "need": 61,
+              "oof_fold": "01"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 7,
+              "need": 85,
+              "oof_fold": "02"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 16,
+              "need": 44,
+              "oof_fold": "03"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 10,
+              "need": 78,
+              "oof_fold": "04"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 13,
+              "need": 57,
+              "oof_fold": "05"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 18,
+              "need": 49,
+              "oof_fold": "06"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 12,
+              "need": 47,
+              "oof_fold": "07"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 12,
+              "need": 50,
+              "oof_fold": "08"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 8,
+              "need": 59,
+              "oof_fold": "09"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "allow_treatment_overlap": false,
+      "budget": 3000,
+      "condition_slot": "A14",
+      "features": {
+        "correct_rate": {
+          "feasible_unique_quota": true,
+          "maximum_achievable_control_mean": 0.9944466666666667,
+          "minimum_achievable_control_mean": 0.8772483333333333,
+          "target_mean_inside_achievable_interval": false,
+          "treatment_mean": 0.6824683333333333,
+          "unavoidable_absolute_mean_difference": 0.19477999999999995
+        },
+        "mean_p_defect": {
+          "feasible_unique_quota": true,
+          "maximum_achievable_control_mean": 0.239525899737,
+          "minimum_achievable_control_mean": 0.04892108133916666,
+          "target_mean_inside_achievable_interval": false,
+          "treatment_mean": 0.35612786255583334,
+          "unavoidable_absolute_mean_difference": 0.11660196281883334
+        },
+        "std_p_defect": {
+          "feasible_unique_quota": true,
+          "maximum_achievable_control_mean": 0.12905659953619997,
+          "minimum_achievable_control_mean": 0.06868955803643334,
+          "target_mean_inside_achievable_interval": false,
+          "treatment_mean": 0.21653591891686666,
+          "unavoidable_absolute_mean_difference": 0.08747931938066669
+        }
+      },
+      "method": "FoldBalanced-Gap",
+      "pool_id": "strict_normal",
+      "status": "PROVEN_BLOCKER",
+      "violating_features": {
+        "correct_rate": {
+          "feasible_unique_quota": true,
+          "maximum_achievable_control_mean": 0.9944466666666667,
+          "minimum_achievable_control_mean": 0.8772483333333333,
+          "target_mean_inside_achievable_interval": false,
+          "treatment_mean": 0.6824683333333333,
+          "unavoidable_absolute_mean_difference": 0.19477999999999995
+        },
+        "mean_p_defect": {
+          "feasible_unique_quota": true,
+          "maximum_achievable_control_mean": 0.239525899737,
+          "minimum_achievable_control_mean": 0.04892108133916666,
+          "target_mean_inside_achievable_interval": false,
+          "treatment_mean": 0.35612786255583334,
+          "unavoidable_absolute_mean_difference": 0.11660196281883334
+        },
+        "std_p_defect": {
+          "feasible_unique_quota": true,
+          "maximum_achievable_control_mean": 0.12905659953619997,
+          "minimum_achievable_control_mean": 0.06868955803643334,
+          "target_mean_inside_achievable_interval": false,
+          "treatment_mean": 0.21653591891686666,
+          "unavoidable_absolute_mean_difference": 0.08747931938066669
+        }
+      }
+    },
+    {
+      "allow_treatment_overlap": false,
+      "budget": 3000,
+      "condition_slot": "A15",
+      "features": {
+        "correct_rate": {
+          "feasible_unique_quota": true,
+          "maximum_achievable_control_mean": 0.9941416666666667,
+          "minimum_achievable_control_mean": 0.8493333333333334,
+          "target_mean_inside_achievable_interval": false,
+          "treatment_mean": 0.7106566666666666,
+          "unavoidable_absolute_mean_difference": 0.13867666666666678
+        },
+        "mean_p_defect": {
+          "feasible_unique_quota": true,
+          "maximum_achievable_control_mean": 0.26263500729850003,
+          "minimum_achievable_control_mean": 0.05106932205363334,
+          "target_mean_inside_achievable_interval": false,
+          "treatment_mean": 0.3313304470059334,
+          "unavoidable_absolute_mean_difference": 0.06869543970743336
+        },
+        "std_p_defect": {
+          "feasible_unique_quota": true,
+          "maximum_achievable_control_mean": 0.14497770622839998,
+          "minimum_achievable_control_mean": 0.06965750952643333,
+          "target_mean_inside_achievable_interval": false,
+          "treatment_mean": 0.19981440847063334,
+          "unavoidable_absolute_mean_difference": 0.05483670224223336
+        }
+      },
+      "method": "GroupDiverse-Gap",
+      "pool_id": "strict_normal",
+      "status": "PROVEN_BLOCKER",
+      "violating_features": {
+        "correct_rate": {
+          "feasible_unique_quota": true,
+          "maximum_achievable_control_mean": 0.9941416666666667,
+          "minimum_achievable_control_mean": 0.8493333333333334,
+          "target_mean_inside_achievable_interval": false,
+          "treatment_mean": 0.7106566666666666,
+          "unavoidable_absolute_mean_difference": 0.13867666666666678
+        },
+        "mean_p_defect": {
+          "feasible_unique_quota": true,
+          "maximum_achievable_control_mean": 0.26263500729850003,
+          "minimum_achievable_control_mean": 0.05106932205363334,
+          "target_mean_inside_achievable_interval": false,
+          "treatment_mean": 0.3313304470059334,
+          "unavoidable_absolute_mean_difference": 0.06869543970743336
+        },
+        "std_p_defect": {
+          "feasible_unique_quota": true,
+          "maximum_achievable_control_mean": 0.14497770622839998,
+          "minimum_achievable_control_mean": 0.06965750952643333,
+          "target_mean_inside_achievable_interval": false,
+          "treatment_mean": 0.19981440847063334,
+          "unavoidable_absolute_mean_difference": 0.05483670224223336
+        }
+      }
+    }
+  ],
+  "blockers": [
+    {
+      "allow_treatment_overlap": false,
+      "budget": 600,
+      "condition_slot": "A01",
+      "features": {
+        "correct_rate": {
+          "feasible_unique_quota": true,
+          "maximum_achievable_control_mean": 0.995,
+          "minimum_achievable_control_mean": 0.17586666666666667,
+          "target_mean_inside_achievable_interval": true,
+          "treatment_mean": 0.4479333333333333,
+          "unavoidable_absolute_mean_difference": 0.0
+        },
+        "mean_p_defect": {
+          "feasible_unique_quota": true,
+          "maximum_achievable_control_mean": 0.6844699293788332,
+          "minimum_achievable_control_mean": 0.015883506758666666,
+          "target_mean_inside_achievable_interval": true,
+          "treatment_mean": 0.4852863568923334,
+          "unavoidable_absolute_mean_difference": 0.0
+        },
+        "std_p_defect": {
+          "feasible_unique_quota": true,
+          "maximum_achievable_control_mean": 0.24623283988783332,
+          "minimum_achievable_control_mean": 0.04795229855016667,
+          "target_mean_inside_achievable_interval": false,
+          "treatment_mean": 0.29461463486583334,
+          "unavoidable_absolute_mean_difference": 0.04838179497800002
+        }
+      },
+      "method": "GapCritical-Strict",
+      "pool_id": "strict_normal",
+      "status": "PROVEN_BLOCKER",
+      "violating_features": {
+        "std_p_defect": {
+          "feasible_unique_quota": true,
+          "maximum_achievable_control_mean": 0.24623283988783332,
+          "minimum_achievable_control_mean": 0.04795229855016667,
+          "target_mean_inside_achievable_interval": false,
+          "treatment_mean": 0.29461463486583334,
+          "unavoidable_absolute_mean_difference": 0.04838179497800002
+        }
+      }
+    },
+    {
+      "allow_treatment_overlap": false,
+      "budget": 3000,
+      "condition_slot": "A02",
+      "features": {
+        "correct_rate": {
+          "feasible_unique_quota": true,
+          "maximum_achievable_control_mean": 0.9942833333333333,
+          "minimum_achievable_control_mean": 0.8776333333333334,
+          "target_mean_inside_achievable_interval": false,
+          "treatment_mean": 0.6822016666666667,
+          "unavoidable_absolute_mean_difference": 0.19543166666666667
+        },
+        "mean_p_defect": {
+          "feasible_unique_quota": true,
+          "maximum_achievable_control_mean": 0.23835500831636666,
+          "minimum_achievable_control_mean": 0.04906183178946666,
+          "target_mean_inside_achievable_interval": false,
+          "treatment_mean": 0.3568561374608333,
+          "unavoidable_absolute_mean_difference": 0.11850112914446662
+        },
+        "std_p_defect": {
+          "feasible_unique_quota": true,
+          "maximum_achievable_control_mean": 0.1286331804621,
+          "minimum_achievable_control_mean": 0.06869777531646667,
+          "target_mean_inside_achievable_interval": false,
+          "treatment_mean": 0.2170236403578,
+          "unavoidable_absolute_mean_difference": 0.08839045989569999
+        }
+      },
+      "method": "GapCritical-Strict",
+      "pool_id": "strict_normal",
+      "status": "PROVEN_BLOCKER",
+      "violating_features": {
+        "correct_rate": {
+          "feasible_unique_quota": true,
+          "maximum_achievable_control_mean": 0.9942833333333333,
+          "minimum_achievable_control_mean": 0.8776333333333334,
+          "target_mean_inside_achievable_interval": false,
+          "treatment_mean": 0.6822016666666667,
+          "unavoidable_absolute_mean_difference": 0.19543166666666667
+        },
+        "mean_p_defect": {
+          "feasible_unique_quota": true,
+          "maximum_achievable_control_mean": 0.23835500831636666,
+          "minimum_achievable_control_mean": 0.04906183178946666,
+          "target_mean_inside_achievable_interval": false,
+          "treatment_mean": 0.3568561374608333,
+          "unavoidable_absolute_mean_difference": 0.11850112914446662
+        },
+        "std_p_defect": {
+          "feasible_unique_quota": true,
+          "maximum_achievable_control_mean": 0.1286331804621,
+          "minimum_achievable_control_mean": 0.06869777531646667,
+          "target_mean_inside_achievable_interval": false,
+          "treatment_mean": 0.2170236403578,
+          "unavoidable_absolute_mean_difference": 0.08839045989569999
+        }
+      }
+    },
+    {
+      "allow_treatment_overlap": false,
+      "budget": 3000,
+      "condition_slot": "A04",
+      "features": {
+        "correct_rate": {
+          "feasible_unique_quota": true,
+          "maximum_achievable_control_mean": 0.9861999999999996,
+          "minimum_achievable_control_mean": 0.844735,
+          "target_mean_inside_achievable_interval": false,
+          "treatment_mean": 0.669945,
+          "unavoidable_absolute_mean_difference": 0.17479
+        },
+        "mean_p_defect": {
+          "feasible_unique_quota": true,
+          "maximum_achievable_control_mean": 0.2650827280446333,
+          "minimum_achievable_control_mean": 0.06003537996223335,
+          "target_mean_inside_achievable_interval": false,
+          "treatment_mean": 0.3636403891221333,
+          "unavoidable_absolute_mean_difference": 0.09855766107750003
+        },
+        "std_p_defect": {
+          "feasible_unique_quota": true,
+          "maximum_achievable_control_mean": 0.13490523497016668,
+          "minimum_achievable_control_mean": 0.06798514255303333,
+          "target_mean_inside_achievable_interval": false,
+          "treatment_mean": 0.21794313370716667,
+          "unavoidable_absolute_mean_difference": 0.08303789873699999
+        }
+      },
+      "method": "GapCritical-Global",
+      "pool_id": "global_clean_normal_positive_gap",
+      "status": "PROVEN_BLOCKER",
+      "violating_features": {
+        "correct_rate": {
+          "feasible_unique_quota": true,
+          "maximum_achievable_control_mean": 0.9861999999999996,
+          "minimum_achievable_control_mean": 0.844735,
+          "target_mean_inside_achievable_interval": false,
+          "treatment_mean": 0.669945,
+          "unavoidable_absolute_mean_difference": 0.17479
+        },
+        "mean_p_defect": {
+          "feasible_unique_quota": true,
+          "maximum_achievable_control_mean": 0.2650827280446333,
+          "minimum_achievable_control_mean": 0.06003537996223335,
+          "target_mean_inside_achievable_interval": false,
+          "treatment_mean": 0.3636403891221333,
+          "unavoidable_absolute_mean_difference": 0.09855766107750003
+        },
+        "std_p_defect": {
+          "feasible_unique_quota": true,
+          "maximum_achievable_control_mean": 0.13490523497016668,
+          "minimum_achievable_control_mean": 0.06798514255303333,
+          "target_mean_inside_achievable_interval": false,
+          "treatment_mean": 0.21794313370716667,
+          "unavoidable_absolute_mean_difference": 0.08303789873699999
+        }
+      }
+    },
+    {
+      "allow_treatment_overlap": false,
+      "budget": 600,
+      "condition_slot": "A05",
+      "features": {
+        "correct_rate": {
+          "feasible_unique_quota": true,
+          "maximum_achievable_control_mean": 0.7134583333333332,
+          "minimum_achievable_control_mean": 0.18935,
+          "target_mean_inside_achievable_interval": false,
+          "treatment_mean": 0.10635833333333333,
+          "unavoidable_absolute_mean_difference": 0.08299166666666666
+        },
+        "mean_p_defect": {
+          "feasible_unique_quota": true,
+          "maximum_achievable_control_mean": 0.6517454836636667,
+          "minimum_achievable_control_mean": 0.2703493679035,
+          "target_mean_inside_achievable_interval": false,
+          "treatment_mean": 0.7586327223643333,
+          "unavoidable_absolute_mean_difference": 0.10688723870066663
+        },
+        "std_p_defect": {
+          "feasible_unique_quota": true,
+          "maximum_achievable_control_mean": 0.27619853739816663,
+          "minimum_achievable_control_mean": 0.0935675446795,
+          "target_mean_inside_achievable_interval": true,
+          "treatment_mean": 0.17290840790966666,
+          "unavoidable_absolute_mean_difference": 0.0
+        }
+      },
+      "method": "Confidence-Clean",
+      "pool_id": "clean_normal",
+      "status": "PROVEN_BLOCKER",
+      "violating_features": {
+        "correct_rate": {
+          "feasible_unique_quota": true,
+          "maximum_achievable_control_mean": 0.7134583333333332,
+          "minimum_achievable_control_mean": 0.18935,
+          "target_mean_inside_achievable_interval": false,
+          "treatment_mean": 0.10635833333333333,
+          "unavoidable_absolute_mean_difference": 0.08299166666666666
+        },
+        "mean_p_defect": {
+          "feasible_unique_quota": true,
+          "maximum_achievable_control_mean": 0.6517454836636667,
+          "minimum_achievable_control_mean": 0.2703493679035,
+          "target_mean_inside_achievable_interval": false,
+          "treatment_mean": 0.7586327223643333,
+          "unavoidable_absolute_mean_difference": 0.10688723870066663
+        }
+      }
+    },
+    {
+      "allow_treatment_overlap": false,
+      "budget": 3000,
+      "condition_slot": "A06",
+      "features": {
+        "correct_rate": {
+          "feasible_unique_quota": false,
+          "shortages": [
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 70,
+              "oof_fold": "00"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 7,
+              "need": 60,
+              "oof_fold": "00"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 67,
+              "oof_fold": "01"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 16,
+              "need": 86,
+              "oof_fold": "01"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 92,
+              "oof_fold": "02"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 19,
+              "need": 80,
+              "oof_fold": "02"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 60,
+              "oof_fold": "03"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 10,
+              "need": 67,
+              "oof_fold": "03"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 88,
+              "oof_fold": "04"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 5,
+              "need": 70,
+              "oof_fold": "04"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 70,
+              "oof_fold": "05"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 11,
+              "need": 66,
+              "oof_fold": "05"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 67,
+              "oof_fold": "06"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 14,
+              "need": 66,
+              "oof_fold": "06"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 59,
+              "oof_fold": "07"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 9,
+              "need": 75,
+              "oof_fold": "07"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 62,
+              "oof_fold": "08"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 15,
+              "need": 57,
+              "oof_fold": "08"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 67,
+              "oof_fold": "09"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 12,
+              "need": 62,
+              "oof_fold": "09"
+            }
+          ]
+        },
+        "mean_p_defect": {
+          "feasible_unique_quota": false,
+          "shortages": [
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 70,
+              "oof_fold": "00"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 7,
+              "need": 60,
+              "oof_fold": "00"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 67,
+              "oof_fold": "01"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 16,
+              "need": 86,
+              "oof_fold": "01"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 92,
+              "oof_fold": "02"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 19,
+              "need": 80,
+              "oof_fold": "02"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 60,
+              "oof_fold": "03"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 10,
+              "need": 67,
+              "oof_fold": "03"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 88,
+              "oof_fold": "04"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 5,
+              "need": 70,
+              "oof_fold": "04"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 70,
+              "oof_fold": "05"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 11,
+              "need": 66,
+              "oof_fold": "05"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 67,
+              "oof_fold": "06"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 14,
+              "need": 66,
+              "oof_fold": "06"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 59,
+              "oof_fold": "07"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 9,
+              "need": 75,
+              "oof_fold": "07"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 62,
+              "oof_fold": "08"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 15,
+              "need": 57,
+              "oof_fold": "08"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 67,
+              "oof_fold": "09"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 12,
+              "need": 62,
+              "oof_fold": "09"
+            }
+          ]
+        },
+        "std_p_defect": {
+          "feasible_unique_quota": false,
+          "shortages": [
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 70,
+              "oof_fold": "00"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 7,
+              "need": 60,
+              "oof_fold": "00"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 67,
+              "oof_fold": "01"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 16,
+              "need": 86,
+              "oof_fold": "01"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 92,
+              "oof_fold": "02"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 19,
+              "need": 80,
+              "oof_fold": "02"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 60,
+              "oof_fold": "03"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 10,
+              "need": 67,
+              "oof_fold": "03"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 88,
+              "oof_fold": "04"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 5,
+              "need": 70,
+              "oof_fold": "04"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 70,
+              "oof_fold": "05"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 11,
+              "need": 66,
+              "oof_fold": "05"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 67,
+              "oof_fold": "06"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 14,
+              "need": 66,
+              "oof_fold": "06"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 59,
+              "oof_fold": "07"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 9,
+              "need": 75,
+              "oof_fold": "07"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 62,
+              "oof_fold": "08"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 15,
+              "need": 57,
+              "oof_fold": "08"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 67,
+              "oof_fold": "09"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 12,
+              "need": 62,
+              "oof_fold": "09"
+            }
+          ]
+        }
+      },
+      "method": "Confidence-Clean",
+      "pool_id": "clean_normal",
+      "status": "PROVEN_BLOCKER",
+      "violating_features": {
+        "correct_rate": {
+          "feasible_unique_quota": false,
+          "shortages": [
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 70,
+              "oof_fold": "00"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 7,
+              "need": 60,
+              "oof_fold": "00"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 67,
+              "oof_fold": "01"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 16,
+              "need": 86,
+              "oof_fold": "01"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 92,
+              "oof_fold": "02"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 19,
+              "need": 80,
+              "oof_fold": "02"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 60,
+              "oof_fold": "03"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 10,
+              "need": 67,
+              "oof_fold": "03"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 88,
+              "oof_fold": "04"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 5,
+              "need": 70,
+              "oof_fold": "04"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 70,
+              "oof_fold": "05"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 11,
+              "need": 66,
+              "oof_fold": "05"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 67,
+              "oof_fold": "06"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 14,
+              "need": 66,
+              "oof_fold": "06"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 59,
+              "oof_fold": "07"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 9,
+              "need": 75,
+              "oof_fold": "07"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 62,
+              "oof_fold": "08"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 15,
+              "need": 57,
+              "oof_fold": "08"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 67,
+              "oof_fold": "09"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 12,
+              "need": 62,
+              "oof_fold": "09"
+            }
+          ]
+        },
+        "mean_p_defect": {
+          "feasible_unique_quota": false,
+          "shortages": [
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 70,
+              "oof_fold": "00"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 7,
+              "need": 60,
+              "oof_fold": "00"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 67,
+              "oof_fold": "01"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 16,
+              "need": 86,
+              "oof_fold": "01"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 92,
+              "oof_fold": "02"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 19,
+              "need": 80,
+              "oof_fold": "02"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 60,
+              "oof_fold": "03"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 10,
+              "need": 67,
+              "oof_fold": "03"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 88,
+              "oof_fold": "04"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 5,
+              "need": 70,
+              "oof_fold": "04"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 70,
+              "oof_fold": "05"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 11,
+              "need": 66,
+              "oof_fold": "05"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 67,
+              "oof_fold": "06"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 14,
+              "need": 66,
+              "oof_fold": "06"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 59,
+              "oof_fold": "07"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 9,
+              "need": 75,
+              "oof_fold": "07"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 62,
+              "oof_fold": "08"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 15,
+              "need": 57,
+              "oof_fold": "08"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 67,
+              "oof_fold": "09"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 12,
+              "need": 62,
+              "oof_fold": "09"
+            }
+          ]
+        },
+        "std_p_defect": {
+          "feasible_unique_quota": false,
+          "shortages": [
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 70,
+              "oof_fold": "00"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 7,
+              "need": 60,
+              "oof_fold": "00"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 67,
+              "oof_fold": "01"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 16,
+              "need": 86,
+              "oof_fold": "01"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 92,
+              "oof_fold": "02"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 19,
+              "need": 80,
+              "oof_fold": "02"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 60,
+              "oof_fold": "03"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 10,
+              "need": 67,
+              "oof_fold": "03"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 88,
+              "oof_fold": "04"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 5,
+              "need": 70,
+              "oof_fold": "04"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 70,
+              "oof_fold": "05"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 11,
+              "need": 66,
+              "oof_fold": "05"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 67,
+              "oof_fold": "06"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 14,
+              "need": 66,
+              "oof_fold": "06"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 59,
+              "oof_fold": "07"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 9,
+              "need": 75,
+              "oof_fold": "07"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 62,
+              "oof_fold": "08"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 15,
+              "need": 57,
+              "oof_fold": "08"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 67,
+              "oof_fold": "09"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 12,
+              "need": 62,
+              "oof_fold": "09"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "allow_treatment_overlap": false,
+      "budget": 3000,
+      "condition_slot": "A08",
+      "features": {
+        "correct_rate": {
+          "feasible_unique_quota": false,
+          "shortages": [
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 0,
+              "need": 67,
+              "oof_fold": "00"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 0,
+              "need": 102,
+              "oof_fold": "01"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 0,
+              "need": 99,
+              "oof_fold": "02"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 0,
+              "need": 77,
+              "oof_fold": "03"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 43,
+              "need": 45,
+              "oof_fold": "04"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 0,
+              "need": 75,
+              "oof_fold": "04"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 0,
+              "need": 77,
+              "oof_fold": "05"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 0,
+              "need": 80,
+              "oof_fold": "06"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 0,
+              "need": 84,
+              "oof_fold": "07"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 0,
+              "need": 72,
+              "oof_fold": "08"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 0,
+              "need": 74,
+              "oof_fold": "09"
+            }
+          ]
+        },
+        "mean_p_defect": {
+          "feasible_unique_quota": false,
+          "shortages": [
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 0,
+              "need": 67,
+              "oof_fold": "00"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 0,
+              "need": 102,
+              "oof_fold": "01"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 0,
+              "need": 99,
+              "oof_fold": "02"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 0,
+              "need": 77,
+              "oof_fold": "03"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 43,
+              "need": 45,
+              "oof_fold": "04"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 0,
+              "need": 75,
+              "oof_fold": "04"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 0,
+              "need": 77,
+              "oof_fold": "05"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 0,
+              "need": 80,
+              "oof_fold": "06"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 0,
+              "need": 84,
+              "oof_fold": "07"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 0,
+              "need": 72,
+              "oof_fold": "08"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 0,
+              "need": 74,
+              "oof_fold": "09"
+            }
+          ]
+        },
+        "std_p_defect": {
+          "feasible_unique_quota": false,
+          "shortages": [
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 0,
+              "need": 67,
+              "oof_fold": "00"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 0,
+              "need": 102,
+              "oof_fold": "01"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 0,
+              "need": 99,
+              "oof_fold": "02"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 0,
+              "need": 77,
+              "oof_fold": "03"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 43,
+              "need": 45,
+              "oof_fold": "04"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 0,
+              "need": 75,
+              "oof_fold": "04"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 0,
+              "need": 77,
+              "oof_fold": "05"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 0,
+              "need": 80,
+              "oof_fold": "06"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 0,
+              "need": 84,
+              "oof_fold": "07"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 0,
+              "need": 72,
+              "oof_fold": "08"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 0,
+              "need": 74,
+              "oof_fold": "09"
+            }
+          ]
+        }
+      },
+      "method": "Boundary-0.5-Clean",
+      "pool_id": "clean_normal",
+      "status": "PROVEN_BLOCKER",
+      "violating_features": {
+        "correct_rate": {
+          "feasible_unique_quota": false,
+          "shortages": [
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 0,
+              "need": 67,
+              "oof_fold": "00"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 0,
+              "need": 102,
+              "oof_fold": "01"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 0,
+              "need": 99,
+              "oof_fold": "02"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 0,
+              "need": 77,
+              "oof_fold": "03"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 43,
+              "need": 45,
+              "oof_fold": "04"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 0,
+              "need": 75,
+              "oof_fold": "04"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 0,
+              "need": 77,
+              "oof_fold": "05"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 0,
+              "need": 80,
+              "oof_fold": "06"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 0,
+              "need": 84,
+              "oof_fold": "07"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 0,
+              "need": 72,
+              "oof_fold": "08"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 0,
+              "need": 74,
+              "oof_fold": "09"
+            }
+          ]
+        },
+        "mean_p_defect": {
+          "feasible_unique_quota": false,
+          "shortages": [
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 0,
+              "need": 67,
+              "oof_fold": "00"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 0,
+              "need": 102,
+              "oof_fold": "01"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 0,
+              "need": 99,
+              "oof_fold": "02"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 0,
+              "need": 77,
+              "oof_fold": "03"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 43,
+              "need": 45,
+              "oof_fold": "04"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 0,
+              "need": 75,
+              "oof_fold": "04"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 0,
+              "need": 77,
+              "oof_fold": "05"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 0,
+              "need": 80,
+              "oof_fold": "06"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 0,
+              "need": 84,
+              "oof_fold": "07"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 0,
+              "need": 72,
+              "oof_fold": "08"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 0,
+              "need": 74,
+              "oof_fold": "09"
+            }
+          ]
+        },
+        "std_p_defect": {
+          "feasible_unique_quota": false,
+          "shortages": [
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 0,
+              "need": 67,
+              "oof_fold": "00"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 0,
+              "need": 102,
+              "oof_fold": "01"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 0,
+              "need": 99,
+              "oof_fold": "02"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 0,
+              "need": 77,
+              "oof_fold": "03"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 43,
+              "need": 45,
+              "oof_fold": "04"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 0,
+              "need": 75,
+              "oof_fold": "04"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 0,
+              "need": 77,
+              "oof_fold": "05"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 0,
+              "need": 80,
+              "oof_fold": "06"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 0,
+              "need": 84,
+              "oof_fold": "07"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 0,
+              "need": 72,
+              "oof_fold": "08"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 0,
+              "need": 74,
+              "oof_fold": "09"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "allow_treatment_overlap": false,
+      "budget": 600,
+      "condition_slot": "A09",
+      "features": {
+        "correct_rate": {
+          "feasible_unique_quota": true,
+          "maximum_achievable_control_mean": 0.7087083333333332,
+          "minimum_achievable_control_mean": 0.21543333333333337,
+          "target_mean_inside_achievable_interval": false,
+          "treatment_mean": 0.06849166666666666,
+          "unavoidable_absolute_mean_difference": 0.1469416666666667
+        },
+        "mean_p_defect": {
+          "feasible_unique_quota": true,
+          "maximum_achievable_control_mean": 0.6740807854671665,
+          "minimum_achievable_control_mean": 0.29386635520766663,
+          "target_mean_inside_achievable_interval": false,
+          "treatment_mean": 0.7336890498851667,
+          "unavoidable_absolute_mean_difference": 0.059608264418000156
+        },
+        "std_p_defect": {
+          "feasible_unique_quota": true,
+          "maximum_achievable_control_mean": 0.2766758830256666,
+          "minimum_achievable_control_mean": 0.10975764498866666,
+          "target_mean_inside_achievable_interval": true,
+          "treatment_mean": 0.13752420089016668,
+          "unavoidable_absolute_mean_difference": 0.0
+        }
+      },
+      "method": "Persistent-0.5-Clean",
+      "pool_id": "clean_normal",
+      "status": "PROVEN_BLOCKER",
+      "violating_features": {
+        "correct_rate": {
+          "feasible_unique_quota": true,
+          "maximum_achievable_control_mean": 0.7087083333333332,
+          "minimum_achievable_control_mean": 0.21543333333333337,
+          "target_mean_inside_achievable_interval": false,
+          "treatment_mean": 0.06849166666666666,
+          "unavoidable_absolute_mean_difference": 0.1469416666666667
+        },
+        "mean_p_defect": {
+          "feasible_unique_quota": true,
+          "maximum_achievable_control_mean": 0.6740807854671665,
+          "minimum_achievable_control_mean": 0.29386635520766663,
+          "target_mean_inside_achievable_interval": false,
+          "treatment_mean": 0.7336890498851667,
+          "unavoidable_absolute_mean_difference": 0.059608264418000156
+        }
+      }
+    },
+    {
+      "allow_treatment_overlap": false,
+      "budget": 3000,
+      "condition_slot": "A10",
+      "features": {
+        "correct_rate": {
+          "feasible_unique_quota": false,
+          "shortages": [
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 70,
+              "oof_fold": "00"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 19,
+              "need": 48,
+              "oof_fold": "00"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 67,
+              "oof_fold": "01"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 28,
+              "need": 74,
+              "oof_fold": "01"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 92,
+              "oof_fold": "02"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 37,
+              "need": 62,
+              "oof_fold": "02"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 60,
+              "oof_fold": "03"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 23,
+              "need": 54,
+              "oof_fold": "03"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 88,
+              "oof_fold": "04"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 24,
+              "need": 51,
+              "oof_fold": "04"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 70,
+              "oof_fold": "05"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 27,
+              "need": 50,
+              "oof_fold": "05"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 67,
+              "oof_fold": "06"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 24,
+              "need": 56,
+              "oof_fold": "06"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 59,
+              "oof_fold": "07"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 35,
+              "need": 49,
+              "oof_fold": "07"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 62,
+              "oof_fold": "08"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 30,
+              "need": 42,
+              "oof_fold": "08"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 67,
+              "oof_fold": "09"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 27,
+              "need": 47,
+              "oof_fold": "09"
+            }
+          ]
+        },
+        "mean_p_defect": {
+          "feasible_unique_quota": false,
+          "shortages": [
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 70,
+              "oof_fold": "00"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 19,
+              "need": 48,
+              "oof_fold": "00"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 67,
+              "oof_fold": "01"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 28,
+              "need": 74,
+              "oof_fold": "01"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 92,
+              "oof_fold": "02"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 37,
+              "need": 62,
+              "oof_fold": "02"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 60,
+              "oof_fold": "03"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 23,
+              "need": 54,
+              "oof_fold": "03"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 88,
+              "oof_fold": "04"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 24,
+              "need": 51,
+              "oof_fold": "04"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 70,
+              "oof_fold": "05"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 27,
+              "need": 50,
+              "oof_fold": "05"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 67,
+              "oof_fold": "06"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 24,
+              "need": 56,
+              "oof_fold": "06"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 59,
+              "oof_fold": "07"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 35,
+              "need": 49,
+              "oof_fold": "07"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 62,
+              "oof_fold": "08"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 30,
+              "need": 42,
+              "oof_fold": "08"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 67,
+              "oof_fold": "09"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 27,
+              "need": 47,
+              "oof_fold": "09"
+            }
+          ]
+        },
+        "std_p_defect": {
+          "feasible_unique_quota": false,
+          "shortages": [
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 70,
+              "oof_fold": "00"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 19,
+              "need": 48,
+              "oof_fold": "00"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 67,
+              "oof_fold": "01"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 28,
+              "need": 74,
+              "oof_fold": "01"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 92,
+              "oof_fold": "02"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 37,
+              "need": 62,
+              "oof_fold": "02"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 60,
+              "oof_fold": "03"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 23,
+              "need": 54,
+              "oof_fold": "03"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 88,
+              "oof_fold": "04"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 24,
+              "need": 51,
+              "oof_fold": "04"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 70,
+              "oof_fold": "05"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 27,
+              "need": 50,
+              "oof_fold": "05"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 67,
+              "oof_fold": "06"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 24,
+              "need": 56,
+              "oof_fold": "06"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 59,
+              "oof_fold": "07"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 35,
+              "need": 49,
+              "oof_fold": "07"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 62,
+              "oof_fold": "08"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 30,
+              "need": 42,
+              "oof_fold": "08"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 67,
+              "oof_fold": "09"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 27,
+              "need": 47,
+              "oof_fold": "09"
+            }
+          ]
+        }
+      },
+      "method": "Persistent-0.5-Clean",
+      "pool_id": "clean_normal",
+      "status": "PROVEN_BLOCKER",
+      "violating_features": {
+        "correct_rate": {
+          "feasible_unique_quota": false,
+          "shortages": [
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 70,
+              "oof_fold": "00"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 19,
+              "need": 48,
+              "oof_fold": "00"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 67,
+              "oof_fold": "01"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 28,
+              "need": 74,
+              "oof_fold": "01"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 92,
+              "oof_fold": "02"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 37,
+              "need": 62,
+              "oof_fold": "02"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 60,
+              "oof_fold": "03"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 23,
+              "need": 54,
+              "oof_fold": "03"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 88,
+              "oof_fold": "04"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 24,
+              "need": 51,
+              "oof_fold": "04"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 70,
+              "oof_fold": "05"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 27,
+              "need": 50,
+              "oof_fold": "05"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 67,
+              "oof_fold": "06"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 24,
+              "need": 56,
+              "oof_fold": "06"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 59,
+              "oof_fold": "07"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 35,
+              "need": 49,
+              "oof_fold": "07"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 62,
+              "oof_fold": "08"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 30,
+              "need": 42,
+              "oof_fold": "08"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 67,
+              "oof_fold": "09"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 27,
+              "need": 47,
+              "oof_fold": "09"
+            }
+          ]
+        },
+        "mean_p_defect": {
+          "feasible_unique_quota": false,
+          "shortages": [
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 70,
+              "oof_fold": "00"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 19,
+              "need": 48,
+              "oof_fold": "00"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 67,
+              "oof_fold": "01"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 28,
+              "need": 74,
+              "oof_fold": "01"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 92,
+              "oof_fold": "02"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 37,
+              "need": 62,
+              "oof_fold": "02"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 60,
+              "oof_fold": "03"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 23,
+              "need": 54,
+              "oof_fold": "03"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 88,
+              "oof_fold": "04"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 24,
+              "need": 51,
+              "oof_fold": "04"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 70,
+              "oof_fold": "05"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 27,
+              "need": 50,
+              "oof_fold": "05"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 67,
+              "oof_fold": "06"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 24,
+              "need": 56,
+              "oof_fold": "06"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 59,
+              "oof_fold": "07"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 35,
+              "need": 49,
+              "oof_fold": "07"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 62,
+              "oof_fold": "08"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 30,
+              "need": 42,
+              "oof_fold": "08"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 67,
+              "oof_fold": "09"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 27,
+              "need": 47,
+              "oof_fold": "09"
+            }
+          ]
+        },
+        "std_p_defect": {
+          "feasible_unique_quota": false,
+          "shortages": [
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 70,
+              "oof_fold": "00"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 19,
+              "need": 48,
+              "oof_fold": "00"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 67,
+              "oof_fold": "01"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 28,
+              "need": 74,
+              "oof_fold": "01"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 92,
+              "oof_fold": "02"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 37,
+              "need": 62,
+              "oof_fold": "02"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 60,
+              "oof_fold": "03"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 23,
+              "need": 54,
+              "oof_fold": "03"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 88,
+              "oof_fold": "04"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 24,
+              "need": 51,
+              "oof_fold": "04"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 70,
+              "oof_fold": "05"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 27,
+              "need": 50,
+              "oof_fold": "05"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 67,
+              "oof_fold": "06"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 24,
+              "need": 56,
+              "oof_fold": "06"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 59,
+              "oof_fold": "07"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 35,
+              "need": 49,
+              "oof_fold": "07"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 62,
+              "oof_fold": "08"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 30,
+              "need": 42,
+              "oof_fold": "08"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 0,
+              "need": 67,
+              "oof_fold": "09"
+            },
+            {
+              "dynamic_bucket": "unstable_boundary",
+              "have": 27,
+              "need": 47,
+              "oof_fold": "09"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "allow_treatment_overlap": false,
+      "budget": 3000,
+      "condition_slot": "A12",
+      "features": {
+        "correct_rate": {
+          "feasible_unique_quota": true,
+          "maximum_achievable_control_mean": 0.9941533333333332,
+          "minimum_achievable_control_mean": 0.7700566666666665,
+          "target_mean_inside_achievable_interval": false,
+          "treatment_mean": 0.7523983333333333,
+          "unavoidable_absolute_mean_difference": 0.01765833333333322
+        },
+        "mean_p_defect": {
+          "feasible_unique_quota": true,
+          "maximum_achievable_control_mean": 0.3227338567603,
+          "minimum_achievable_control_mean": 0.056767454176633335,
+          "target_mean_inside_achievable_interval": true,
+          "treatment_mean": 0.2956043855955333,
+          "unavoidable_absolute_mean_difference": 0.0
+        },
+        "std_p_defect": {
+          "feasible_unique_quota": true,
+          "maximum_achievable_control_mean": 0.1748790757978,
+          "minimum_achievable_control_mean": 0.07005315662423334,
+          "target_mean_inside_achievable_interval": false,
+          "treatment_mean": 0.17529007062433333,
+          "unavoidable_absolute_mean_difference": 0.00041099482653333963
+        }
+      },
+      "method": "EndpointTrend",
+      "pool_id": "learnable_normal",
+      "status": "PROVEN_BLOCKER",
+      "violating_features": {
+        "correct_rate": {
+          "feasible_unique_quota": true,
+          "maximum_achievable_control_mean": 0.9941533333333332,
+          "minimum_achievable_control_mean": 0.7700566666666665,
+          "target_mean_inside_achievable_interval": false,
+          "treatment_mean": 0.7523983333333333,
+          "unavoidable_absolute_mean_difference": 0.01765833333333322
+        },
+        "std_p_defect": {
+          "feasible_unique_quota": true,
+          "maximum_achievable_control_mean": 0.1748790757978,
+          "minimum_achievable_control_mean": 0.07005315662423334,
+          "target_mean_inside_achievable_interval": false,
+          "treatment_mean": 0.17529007062433333,
+          "unavoidable_absolute_mean_difference": 0.00041099482653333963
+        }
+      }
+    },
+    {
+      "allow_treatment_overlap": false,
+      "budget": 3000,
+      "condition_slot": "A13",
+      "features": {
+        "correct_rate": {
+          "feasible_unique_quota": false,
+          "shortages": [
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 9,
+              "need": 61,
+              "oof_fold": "00"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 6,
+              "need": 61,
+              "oof_fold": "01"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 7,
+              "need": 85,
+              "oof_fold": "02"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 16,
+              "need": 44,
+              "oof_fold": "03"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 10,
+              "need": 78,
+              "oof_fold": "04"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 13,
+              "need": 57,
+              "oof_fold": "05"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 18,
+              "need": 49,
+              "oof_fold": "06"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 12,
+              "need": 47,
+              "oof_fold": "07"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 12,
+              "need": 50,
+              "oof_fold": "08"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 8,
+              "need": 59,
+              "oof_fold": "09"
+            }
+          ]
+        },
+        "mean_p_defect": {
+          "feasible_unique_quota": false,
+          "shortages": [
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 9,
+              "need": 61,
+              "oof_fold": "00"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 6,
+              "need": 61,
+              "oof_fold": "01"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 7,
+              "need": 85,
+              "oof_fold": "02"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 16,
+              "need": 44,
+              "oof_fold": "03"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 10,
+              "need": 78,
+              "oof_fold": "04"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 13,
+              "need": 57,
+              "oof_fold": "05"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 18,
+              "need": 49,
+              "oof_fold": "06"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 12,
+              "need": 47,
+              "oof_fold": "07"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 12,
+              "need": 50,
+              "oof_fold": "08"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 8,
+              "need": 59,
+              "oof_fold": "09"
+            }
+          ]
+        },
+        "std_p_defect": {
+          "feasible_unique_quota": false,
+          "shortages": [
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 9,
+              "need": 61,
+              "oof_fold": "00"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 6,
+              "need": 61,
+              "oof_fold": "01"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 7,
+              "need": 85,
+              "oof_fold": "02"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 16,
+              "need": 44,
+              "oof_fold": "03"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 10,
+              "need": 78,
+              "oof_fold": "04"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 13,
+              "need": 57,
+              "oof_fold": "05"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 18,
+              "need": 49,
+              "oof_fold": "06"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 12,
+              "need": 47,
+              "oof_fold": "07"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 12,
+              "need": 50,
+              "oof_fold": "08"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 8,
+              "need": 59,
+              "oof_fold": "09"
+            }
+          ]
+        }
+      },
+      "method": "BottomGap-3000-stress-control",
+      "pool_id": "clean_normal",
+      "status": "PROVEN_BLOCKER",
+      "violating_features": {
+        "correct_rate": {
+          "feasible_unique_quota": false,
+          "shortages": [
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 9,
+              "need": 61,
+              "oof_fold": "00"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 6,
+              "need": 61,
+              "oof_fold": "01"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 7,
+              "need": 85,
+              "oof_fold": "02"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 16,
+              "need": 44,
+              "oof_fold": "03"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 10,
+              "need": 78,
+              "oof_fold": "04"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 13,
+              "need": 57,
+              "oof_fold": "05"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 18,
+              "need": 49,
+              "oof_fold": "06"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 12,
+              "need": 47,
+              "oof_fold": "07"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 12,
+              "need": 50,
+              "oof_fold": "08"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 8,
+              "need": 59,
+              "oof_fold": "09"
+            }
+          ]
+        },
+        "mean_p_defect": {
+          "feasible_unique_quota": false,
+          "shortages": [
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 9,
+              "need": 61,
+              "oof_fold": "00"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 6,
+              "need": 61,
+              "oof_fold": "01"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 7,
+              "need": 85,
+              "oof_fold": "02"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 16,
+              "need": 44,
+              "oof_fold": "03"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 10,
+              "need": 78,
+              "oof_fold": "04"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 13,
+              "need": 57,
+              "oof_fold": "05"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 18,
+              "need": 49,
+              "oof_fold": "06"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 12,
+              "need": 47,
+              "oof_fold": "07"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 12,
+              "need": 50,
+              "oof_fold": "08"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 8,
+              "need": 59,
+              "oof_fold": "09"
+            }
+          ]
+        },
+        "std_p_defect": {
+          "feasible_unique_quota": false,
+          "shortages": [
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 9,
+              "need": 61,
+              "oof_fold": "00"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 6,
+              "need": 61,
+              "oof_fold": "01"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 7,
+              "need": 85,
+              "oof_fold": "02"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 16,
+              "need": 44,
+              "oof_fold": "03"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 10,
+              "need": 78,
+              "oof_fold": "04"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 13,
+              "need": 57,
+              "oof_fold": "05"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 18,
+              "need": 49,
+              "oof_fold": "06"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 12,
+              "need": 47,
+              "oof_fold": "07"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 12,
+              "need": 50,
+              "oof_fold": "08"
+            },
+            {
+              "dynamic_bucket": "persistent_hard",
+              "have": 8,
+              "need": 59,
+              "oof_fold": "09"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "allow_treatment_overlap": false,
+      "budget": 3000,
+      "condition_slot": "A14",
+      "features": {
+        "correct_rate": {
+          "feasible_unique_quota": true,
+          "maximum_achievable_control_mean": 0.9944466666666667,
+          "minimum_achievable_control_mean": 0.8772483333333333,
+          "target_mean_inside_achievable_interval": false,
+          "treatment_mean": 0.6824683333333333,
+          "unavoidable_absolute_mean_difference": 0.19477999999999995
+        },
+        "mean_p_defect": {
+          "feasible_unique_quota": true,
+          "maximum_achievable_control_mean": 0.239525899737,
+          "minimum_achievable_control_mean": 0.04892108133916666,
+          "target_mean_inside_achievable_interval": false,
+          "treatment_mean": 0.35612786255583334,
+          "unavoidable_absolute_mean_difference": 0.11660196281883334
+        },
+        "std_p_defect": {
+          "feasible_unique_quota": true,
+          "maximum_achievable_control_mean": 0.12905659953619997,
+          "minimum_achievable_control_mean": 0.06868955803643334,
+          "target_mean_inside_achievable_interval": false,
+          "treatment_mean": 0.21653591891686666,
+          "unavoidable_absolute_mean_difference": 0.08747931938066669
+        }
+      },
+      "method": "FoldBalanced-Gap",
+      "pool_id": "strict_normal",
+      "status": "PROVEN_BLOCKER",
+      "violating_features": {
+        "correct_rate": {
+          "feasible_unique_quota": true,
+          "maximum_achievable_control_mean": 0.9944466666666667,
+          "minimum_achievable_control_mean": 0.8772483333333333,
+          "target_mean_inside_achievable_interval": false,
+          "treatment_mean": 0.6824683333333333,
+          "unavoidable_absolute_mean_difference": 0.19477999999999995
+        },
+        "mean_p_defect": {
+          "feasible_unique_quota": true,
+          "maximum_achievable_control_mean": 0.239525899737,
+          "minimum_achievable_control_mean": 0.04892108133916666,
+          "target_mean_inside_achievable_interval": false,
+          "treatment_mean": 0.35612786255583334,
+          "unavoidable_absolute_mean_difference": 0.11660196281883334
+        },
+        "std_p_defect": {
+          "feasible_unique_quota": true,
+          "maximum_achievable_control_mean": 0.12905659953619997,
+          "minimum_achievable_control_mean": 0.06868955803643334,
+          "target_mean_inside_achievable_interval": false,
+          "treatment_mean": 0.21653591891686666,
+          "unavoidable_absolute_mean_difference": 0.08747931938066669
+        }
+      }
+    },
+    {
+      "allow_treatment_overlap": false,
+      "budget": 3000,
+      "condition_slot": "A15",
+      "features": {
+        "correct_rate": {
+          "feasible_unique_quota": true,
+          "maximum_achievable_control_mean": 0.9941416666666667,
+          "minimum_achievable_control_mean": 0.8493333333333334,
+          "target_mean_inside_achievable_interval": false,
+          "treatment_mean": 0.7106566666666666,
+          "unavoidable_absolute_mean_difference": 0.13867666666666678
+        },
+        "mean_p_defect": {
+          "feasible_unique_quota": true,
+          "maximum_achievable_control_mean": 0.26263500729850003,
+          "minimum_achievable_control_mean": 0.05106932205363334,
+          "target_mean_inside_achievable_interval": false,
+          "treatment_mean": 0.3313304470059334,
+          "unavoidable_absolute_mean_difference": 0.06869543970743336
+        },
+        "std_p_defect": {
+          "feasible_unique_quota": true,
+          "maximum_achievable_control_mean": 0.14497770622839998,
+          "minimum_achievable_control_mean": 0.06965750952643333,
+          "target_mean_inside_achievable_interval": false,
+          "treatment_mean": 0.19981440847063334,
+          "unavoidable_absolute_mean_difference": 0.05483670224223336
+        }
+      },
+      "method": "GroupDiverse-Gap",
+      "pool_id": "strict_normal",
+      "status": "PROVEN_BLOCKER",
+      "violating_features": {
+        "correct_rate": {
+          "feasible_unique_quota": true,
+          "maximum_achievable_control_mean": 0.9941416666666667,
+          "minimum_achievable_control_mean": 0.8493333333333334,
+          "target_mean_inside_achievable_interval": false,
+          "treatment_mean": 0.7106566666666666,
+          "unavoidable_absolute_mean_difference": 0.13867666666666678
+        },
+        "mean_p_defect": {
+          "feasible_unique_quota": true,
+          "maximum_achievable_control_mean": 0.26263500729850003,
+          "minimum_achievable_control_mean": 0.05106932205363334,
+          "target_mean_inside_achievable_interval": false,
+          "treatment_mean": 0.3313304470059334,
+          "unavoidable_absolute_mean_difference": 0.06869543970743336
+        },
+        "std_p_defect": {
+          "feasible_unique_quota": true,
+          "maximum_achievable_control_mean": 0.14497770622839998,
+          "minimum_achievable_control_mean": 0.06965750952643333,
+          "target_mean_inside_achievable_interval": false,
+          "treatment_mean": 0.19981440847063334,
+          "unavoidable_absolute_mean_difference": 0.05483670224223336
+        }
+      }
+    }
+  ],
+  "logic": "PROVEN_BLOCKER means the treatment raw feature mean lies outside the exact hard-stratum control interval under the contract overlap rule. NECESSARY_CONDITION_NOT_BLOCKED is not a guarantee that the full SMD/bin/L3 matcher will pass.",
+  "scope": "Phase-A conditions whose rankings are available without the raw OOF rescan",
+  "skipped": [
+    {
+      "condition_slot": "A16",
+      "method": "TailGap-Strict",
+      "reason": "ranking_requires_raw_oof_scan"
+    },
+    {
+      "condition_slot": "A17",
+      "method": "WindowEarlyLate40",
+      "reason": "ranking_requires_raw_oof_scan"
+    },
+    {
+      "condition_slot": "A18",
+      "method": "LOFO-GapStrict",
+      "reason": "ranking_requires_raw_oof_scan"
+    },
+    {
+      "condition_slot": "A19",
+      "method": "Exclude178-GapStrict",
+      "reason": "ranking_requires_raw_oof_scan"
+    }
+  ],
+  "status": "BLOCKED",
+  "summary": {
+    "audited_conditions": 15,
+    "proven_blockers": 12,
+    "skipped_dynamic_conditions": 4
+  }
+}

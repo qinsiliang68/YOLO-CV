@@ -1,0 +1,8 @@
+{
+  "pool_id": "clean_normal",
+  "candidate_count": 57541,
+  "score_column": "boundary_0p5_score",
+  "ascending": false,
+  "sha256": "0BC361129833BD6E82768886FE574CF4C6B21D85549BB2AD25F07043C0EEE704",
+  "rows": 57541
+}

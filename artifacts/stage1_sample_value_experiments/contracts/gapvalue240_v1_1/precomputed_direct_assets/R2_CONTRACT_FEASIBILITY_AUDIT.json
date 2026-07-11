@@ -1,0 +1,298 @@
+{
+  "audits": [
+    {
+      "budget": 600,
+      "contract_requires_zero_overlap": true,
+      "features": {
+        "correct_rate": {
+          "feasible_unique_quota": true,
+          "maximum_achievable_control_mean": 0.995,
+          "minimum_achievable_control_mean": 0.17586666666666667,
+          "target_mean_inside_achievable_interval": true,
+          "treatment_mean": 0.4479333333333333,
+          "unavoidable_absolute_mean_difference": 0.0
+        },
+        "mean_p_defect": {
+          "feasible_unique_quota": true,
+          "maximum_achievable_control_mean": 0.6844699293788332,
+          "minimum_achievable_control_mean": 0.015883506758666666,
+          "target_mean_inside_achievable_interval": true,
+          "treatment_mean": 0.4852863568923334,
+          "unavoidable_absolute_mean_difference": 0.0
+        },
+        "std_p_defect": {
+          "feasible_unique_quota": true,
+          "maximum_achievable_control_mean": 0.24623283988783332,
+          "minimum_achievable_control_mean": 0.04795229855016667,
+          "target_mean_inside_achievable_interval": false,
+          "treatment_mean": 0.29461463486583334,
+          "unavoidable_absolute_mean_difference": 0.04838179497800002
+        }
+      },
+      "method": "GapCritical-Strict",
+      "pool_id": "strict_normal"
+    },
+    {
+      "budget": 3000,
+      "contract_requires_zero_overlap": true,
+      "features": {
+        "correct_rate": {
+          "feasible_unique_quota": true,
+          "maximum_achievable_control_mean": 0.9942833333333333,
+          "minimum_achievable_control_mean": 0.8776333333333334,
+          "target_mean_inside_achievable_interval": false,
+          "treatment_mean": 0.6822016666666667,
+          "unavoidable_absolute_mean_difference": 0.19543166666666667
+        },
+        "mean_p_defect": {
+          "feasible_unique_quota": true,
+          "maximum_achievable_control_mean": 0.23835500831636666,
+          "minimum_achievable_control_mean": 0.04906183178946666,
+          "target_mean_inside_achievable_interval": false,
+          "treatment_mean": 0.3568561374608333,
+          "unavoidable_absolute_mean_difference": 0.11850112914446662
+        },
+        "std_p_defect": {
+          "feasible_unique_quota": true,
+          "maximum_achievable_control_mean": 0.1286331804621,
+          "minimum_achievable_control_mean": 0.06869777531646667,
+          "target_mean_inside_achievable_interval": false,
+          "treatment_mean": 0.2170236403578,
+          "unavoidable_absolute_mean_difference": 0.08839045989569999
+        }
+      },
+      "method": "GapCritical-Strict",
+      "pool_id": "strict_normal"
+    },
+    {
+      "budget": 6000,
+      "contract_requires_zero_overlap": false,
+      "features": {
+        "correct_rate": {
+          "feasible_unique_quota": true,
+          "maximum_achievable_control_mean": 0.9850958333333332,
+          "minimum_achievable_control_mean": 0.7797266666666668,
+          "target_mean_inside_achievable_interval": true,
+          "treatment_mean": 0.8025225,
+          "unavoidable_absolute_mean_difference": 0.0
+        },
+        "mean_p_defect": {
+          "feasible_unique_quota": true,
+          "maximum_achievable_control_mean": 0.29828157121501664,
+          "minimum_achievable_control_mean": 0.09623887672283334,
+          "target_mean_inside_achievable_interval": true,
+          "treatment_mean": 0.2706871829228833,
+          "unavoidable_absolute_mean_difference": 0.0
+        },
+        "std_p_defect": {
+          "feasible_unique_quota": true,
+          "maximum_achievable_control_mean": 0.17323909891161668,
+          "minimum_achievable_control_mean": 0.09223262618248333,
+          "target_mean_inside_achievable_interval": true,
+          "treatment_mean": 0.16926673507346668,
+          "unavoidable_absolute_mean_difference": 0.0
+        }
+      },
+      "method": "GapCritical-Strict",
+      "pool_id": "strict_normal"
+    },
+    {
+      "budget": 600,
+      "contract_requires_zero_overlap": true,
+      "features": {
+        "correct_rate": {
+          "feasible_unique_quota": true,
+          "maximum_achievable_control_mean": 0.995,
+          "minimum_achievable_control_mean": 0.14909166666666665,
+          "target_mean_inside_achievable_interval": true,
+          "treatment_mean": 0.4479333333333333,
+          "unavoidable_absolute_mean_difference": 0.0
+        },
+        "mean_p_defect": {
+          "feasible_unique_quota": true,
+          "maximum_achievable_control_mean": 0.7060276399681666,
+          "minimum_achievable_control_mean": 0.015883506758666666,
+          "target_mean_inside_achievable_interval": true,
+          "treatment_mean": 0.4852863568923334,
+          "unavoidable_absolute_mean_difference": 0.0
+        },
+        "std_p_defect": {
+          "feasible_unique_quota": true,
+          "maximum_achievable_control_mean": 0.24820757584666667,
+          "minimum_achievable_control_mean": 0.04777990266483333,
+          "target_mean_inside_achievable_interval": false,
+          "treatment_mean": 0.29461463486583334,
+          "unavoidable_absolute_mean_difference": 0.04640705901916667
+        }
+      },
+      "method": "GapCritical-Strict",
+      "pool_id": "learnable_normal"
+    },
+    {
+      "budget": 3000,
+      "contract_requires_zero_overlap": true,
+      "features": {
+        "correct_rate": {
+          "feasible_unique_quota": true,
+          "maximum_achievable_control_mean": 0.9944316666666665,
+          "minimum_achievable_control_mean": 0.8393533333333333,
+          "target_mean_inside_achievable_interval": false,
+          "treatment_mean": 0.6822016666666667,
+          "unavoidable_absolute_mean_difference": 0.15715166666666658
+        },
+        "mean_p_defect": {
+          "feasible_unique_quota": true,
+          "maximum_achievable_control_mean": 0.2765367992641333,
+          "minimum_achievable_control_mean": 0.048826846875466665,
+          "target_mean_inside_achievable_interval": false,
+          "treatment_mean": 0.3568561374608333,
+          "unavoidable_absolute_mean_difference": 0.08031933819669995
+        },
+        "std_p_defect": {
+          "feasible_unique_quota": true,
+          "maximum_achievable_control_mean": 0.1368281625679,
+          "minimum_achievable_control_mean": 0.06796479022560001,
+          "target_mean_inside_achievable_interval": false,
+          "treatment_mean": 0.2170236403578,
+          "unavoidable_absolute_mean_difference": 0.0801954777899
+        }
+      },
+      "method": "GapCritical-Strict",
+      "pool_id": "learnable_normal"
+    },
+    {
+      "budget": 6000,
+      "contract_requires_zero_overlap": false,
+      "features": {
+        "correct_rate": {
+          "feasible_unique_quota": true,
+          "maximum_achievable_control_mean": 0.9876299999999998,
+          "minimum_achievable_control_mean": 0.7605108333333335,
+          "target_mean_inside_achievable_interval": true,
+          "treatment_mean": 0.8025225,
+          "unavoidable_absolute_mean_difference": 0.0
+        },
+        "mean_p_defect": {
+          "feasible_unique_quota": true,
+          "maximum_achievable_control_mean": 0.3175766446272,
+          "minimum_achievable_control_mean": 0.09413927805276667,
+          "target_mean_inside_achievable_interval": true,
+          "treatment_mean": 0.2706871829228833,
+          "unavoidable_absolute_mean_difference": 0.0
+        },
+        "std_p_defect": {
+          "feasible_unique_quota": true,
+          "maximum_achievable_control_mean": 0.17733514944255,
+          "minimum_achievable_control_mean": 0.09002004752609999,
+          "target_mean_inside_achievable_interval": true,
+          "treatment_mean": 0.16926673507346668,
+          "unavoidable_absolute_mean_difference": 0.0
+        }
+      },
+      "method": "GapCritical-Strict",
+      "pool_id": "learnable_normal"
+    }
+  ],
+  "blockers": [
+    {
+      "budget": 600,
+      "pool_id": "strict_normal",
+      "violating_features": {
+        "std_p_defect": {
+          "feasible_unique_quota": true,
+          "maximum_achievable_control_mean": 0.24623283988783332,
+          "minimum_achievable_control_mean": 0.04795229855016667,
+          "target_mean_inside_achievable_interval": false,
+          "treatment_mean": 0.29461463486583334,
+          "unavoidable_absolute_mean_difference": 0.04838179497800002
+        }
+      }
+    },
+    {
+      "budget": 3000,
+      "pool_id": "strict_normal",
+      "violating_features": {
+        "correct_rate": {
+          "feasible_unique_quota": true,
+          "maximum_achievable_control_mean": 0.9942833333333333,
+          "minimum_achievable_control_mean": 0.8776333333333334,
+          "target_mean_inside_achievable_interval": false,
+          "treatment_mean": 0.6822016666666667,
+          "unavoidable_absolute_mean_difference": 0.19543166666666667
+        },
+        "mean_p_defect": {
+          "feasible_unique_quota": true,
+          "maximum_achievable_control_mean": 0.23835500831636666,
+          "minimum_achievable_control_mean": 0.04906183178946666,
+          "target_mean_inside_achievable_interval": false,
+          "treatment_mean": 0.3568561374608333,
+          "unavoidable_absolute_mean_difference": 0.11850112914446662
+        },
+        "std_p_defect": {
+          "feasible_unique_quota": true,
+          "maximum_achievable_control_mean": 0.1286331804621,
+          "minimum_achievable_control_mean": 0.06869777531646667,
+          "target_mean_inside_achievable_interval": false,
+          "treatment_mean": 0.2170236403578,
+          "unavoidable_absolute_mean_difference": 0.08839045989569999
+        }
+      }
+    },
+    {
+      "budget": 600,
+      "pool_id": "learnable_normal",
+      "violating_features": {
+        "std_p_defect": {
+          "feasible_unique_quota": true,
+          "maximum_achievable_control_mean": 0.24820757584666667,
+          "minimum_achievable_control_mean": 0.04777990266483333,
+          "target_mean_inside_achievable_interval": false,
+          "treatment_mean": 0.29461463486583334,
+          "unavoidable_absolute_mean_difference": 0.04640705901916667
+        }
+      }
+    },
+    {
+      "budget": 3000,
+      "pool_id": "learnable_normal",
+      "violating_features": {
+        "correct_rate": {
+          "feasible_unique_quota": true,
+          "maximum_achievable_control_mean": 0.9944316666666665,
+          "minimum_achievable_control_mean": 0.8393533333333333,
+          "target_mean_inside_achievable_interval": false,
+          "treatment_mean": 0.6822016666666667,
+          "unavoidable_absolute_mean_difference": 0.15715166666666658
+        },
+        "mean_p_defect": {
+          "feasible_unique_quota": true,
+          "maximum_achievable_control_mean": 0.2765367992641333,
+          "minimum_achievable_control_mean": 0.048826846875466665,
+          "target_mean_inside_achievable_interval": false,
+          "treatment_mean": 0.3568561374608333,
+          "unavoidable_absolute_mean_difference": 0.08031933819669995
+        },
+        "std_p_defect": {
+          "feasible_unique_quota": true,
+          "maximum_achievable_control_mean": 0.1368281625679,
+          "minimum_achievable_control_mean": 0.06796479022560001,
+          "target_mean_inside_achievable_interval": false,
+          "treatment_mean": 0.2170236403578,
+          "unavoidable_absolute_mean_difference": 0.0801954777899
+        }
+      }
+    }
+  ],
+  "contract_clause": {
+    "hard_fields": [
+      "y_true",
+      "method_eligible_pool_id",
+      "oof_fold",
+      "dynamic_bucket"
+    ],
+    "maximum_absolute_smd": 0.1,
+    "zero_overlap_B600_B3000": true
+  },
+  "interpretation": "A blocker means no implementation can satisfy the frozen disjoint/hard-stratum contract for the listed raw feature without changing the pool, overlap rule, hard fields, or SMD gate.",
+  "status": "BLOCKED"
+}

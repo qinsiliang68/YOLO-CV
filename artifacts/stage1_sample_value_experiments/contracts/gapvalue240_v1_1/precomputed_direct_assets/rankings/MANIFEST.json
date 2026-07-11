@@ -1,0 +1,80 @@
+[
+  {
+    "method": "GapCritical-Strict",
+    "rows": 9574,
+    "path": "GapCritical-Strict.csv",
+    "sha256": "B796CCA2CF485D8023580B9D4D69D233E34AEF670ACC6433B7C75DAA4C6B01E1"
+  },
+  {
+    "method": "GapCritical-Global",
+    "rows": 54697,
+    "path": "GapCritical-Global.csv",
+    "sha256": "D6901EDAFF6F5A9AB0ECB892D9A1BA62C5D364AC634C789D2C59227FDC17D7B2"
+  },
+  {
+    "method": "Confidence-Clean",
+    "rows": 57541,
+    "path": "Confidence-Clean.csv",
+    "sha256": "B143285A45C8736F73F14A8FB0E31C68470BFAF490F8E9A1D2B17486C6D80290"
+  },
+  {
+    "method": "Boundary-0.5-Clean",
+    "rows": 57541,
+    "path": "Boundary-0.5-Clean.csv",
+    "sha256": "0BC361129833BD6E82768886FE574CF4C6B21D85549BB2AD25F07043C0EEE704"
+  },
+  {
+    "method": "Persistent-0.5-Clean",
+    "rows": 57541,
+    "path": "Persistent-0.5-Clean.csv",
+    "sha256": "F468D723E21993DAAE19858E263A52D71CB5BD2AC35E964CDDC5FF80A587F313"
+  },
+  {
+    "method": "EndpointTrend",
+    "rows": 10109,
+    "path": "EndpointTrend.csv",
+    "sha256": "67C1263E6760F4FB4295E0C9CE7C68E689BA5F8F4A4152490D22B9FE3EC68586"
+  },
+  {
+    "method": "BottomGap-3000-stress-control",
+    "rows": 57541,
+    "path": "BottomGap-3000-stress-control.csv",
+    "sha256": "06CF2A08EB8CD8E8D95E4DAD1B7BF5C1B1E6299F0614618CF60C2549EB38472B"
+  },
+  {
+    "method": "FoldBalanced-Gap",
+    "rows": 9574,
+    "path": "FoldBalanced-Gap.csv",
+    "sha256": "B6CC05382184C144EB2BB6AE836D7CAC92DD45FE5A0D572699FDB6E3C4581920"
+  },
+  {
+    "method": "GroupDiverse-Gap",
+    "rows": 9574,
+    "path": "GroupDiverse-Gap.csv",
+    "sha256": "EC1D4E247CD64687A3D410CE9B37054D8319C57874D015D8147A3DF77AAD6049"
+  },
+  {
+    "method": "LowConfidence-Defect",
+    "rows": 57881,
+    "path": "LowConfidence-Defect.csv",
+    "sha256": "DE3AC39AFF595B53EDE5150122815313096ADDFA6574A6FC65FBE15B7CA0AF18"
+  },
+  {
+    "method": "Persistent-FN",
+    "rows": 57881,
+    "path": "Persistent-FN.csv",
+    "sha256": "9F24ECF5851EAD11711738CCD3C69B77BFFA270AC3C73CD6F2DD5ABBC97F76D5"
+  },
+  {
+    "method": "GapGuard-Raw",
+    "rows": 55850,
+    "path": "GapGuard-Raw.csv",
+    "sha256": "0122D018CAD970E747B9B47E9849E9A82386038CB4E379A60C250373D6035136"
+  },
+  {
+    "method": "GapGuard-ClassStrat",
+    "rows": 55850,
+    "path": "GapGuard-ClassStrat.csv",
+    "sha256": "0B2C0F398A715327820EB70CB7A70CC02EE3BAD1D78F36C87B2762F070BA161C"
+  }
+]

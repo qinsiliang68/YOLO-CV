@@ -1,0 +1,8 @@
+{
+  "pool_id": "clean_defect_positive_guard",
+  "candidate_count": 55850,
+  "score_column": "class_strat_score",
+  "ascending": false,
+  "sha256": "0B2C0F398A715327820EB70CB7A70CC02EE3BAD1D78F36C87B2762F070BA161C",
+  "rows": 55850
+}

@@ -1,0 +1,8 @@
+{
+  "pool_id": "clean_defect",
+  "candidate_count": 57881,
+  "score_column": "mean_p_defect",
+  "ascending": true,
+  "sha256": "DE3AC39AFF595B53EDE5150122815313096ADDFA6574A6FC65FBE15B7CA0AF18",
+  "rows": 57881
+}

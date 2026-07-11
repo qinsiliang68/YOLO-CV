@@ -1,0 +1,8 @@
+{
+  "pool_id": "learnable_normal",
+  "candidate_count": 10109,
+  "score_column": "endpoint_trend_score",
+  "ascending": false,
+  "sha256": "67C1263E6760F4FB4295E0C9CE7C68E689BA5F8F4A4152490D22B9FE3EC68586",
+  "rows": 10109
+}

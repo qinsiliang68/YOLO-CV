@@ -1,0 +1,69 @@
+{
+  "files": [
+    {
+      "expected_rows": 120000,
+      "expected_sha256": "EE82D19D8B8BC2875842B1DF433CC1B6098D7F88A300B330CA5E45B3642AE0C6",
+      "file": "train_oof_assignments.csv",
+      "path": "C:\\GitHub\\YOLO-CV\\artifacts\\stage1_sample_value_experiments\\contracts\\gapvalue240_v1_1\\frozen_inputs\\reference_tables\\train_oof_assignments.csv",
+      "rows": 120000,
+      "rows_ok": true,
+      "sha256": "EE82D19D8B8BC2875842B1DF433CC1B6098D7F88A300B330CA5E45B3642AE0C6",
+      "sha_ok": true,
+      "size_bytes": 51199918
+    },
+    {
+      "expected_rows": 120000,
+      "expected_sha256": "84EE044693E9D47295C5A4C6DF05470379FA5CE79B838EDE0CEE3EB1E0DE959F",
+      "file": "sample_dynamics_summary.csv",
+      "path": "C:\\GitHub\\YOLO-CV\\artifacts\\stage1_sample_value_experiments\\contracts\\gapvalue240_v1_1\\frozen_inputs\\reference_tables\\sample_dynamics_summary.csv",
+      "rows": 120000,
+      "rows_ok": true,
+      "sha256": "84EE044693E9D47295C5A4C6DF05470379FA5CE79B838EDE0CEE3EB1E0DE959F",
+      "sha_ok": true,
+      "size_bytes": 30737786
+    },
+    {
+      "expected_rows": 120000,
+      "expected_sha256": "376674FCFD5C8378051FC5D1A588ED415CA8DEFA06A19AAD72505AB49B20B980",
+      "file": "sample_value_table.csv",
+      "path": "C:\\GitHub\\YOLO-CV\\artifacts\\stage1_sample_value_experiments\\contracts\\gapvalue240_v1_1\\frozen_inputs\\reference_tables\\sample_value_table.csv",
+      "rows": 120000,
+      "rows_ok": true,
+      "sha256": "376674FCFD5C8378051FC5D1A588ED415CA8DEFA06A19AAD72505AB49B20B980",
+      "sha_ok": true,
+      "size_bytes": 31819678
+    },
+    {
+      "expected_rows": 200,
+      "expected_sha256": "FFC4103DE604E3673068AE592A2D4603C1C8FD5163C7F47046F0CE974ABB78EB",
+      "file": "epoch_gap_metrics.csv",
+      "path": "C:\\GitHub\\YOLO-CV\\artifacts\\stage1_sample_value_experiments\\contracts\\gapvalue240_v1_1\\frozen_inputs\\reference_tables\\epoch_gap_metrics.csv",
+      "rows": 200,
+      "rows_ok": true,
+      "sha256": "FFC4103DE604E3673068AE592A2D4603C1C8FD5163C7F47046F0CE974ABB78EB",
+      "sha_ok": true,
+      "size_bytes": 28139
+    },
+    {
+      "expected_rows": 2000,
+      "expected_sha256": "136D0EBC2EA268F9639F2726145FFD2CC3159B69C863C9AC99C5813235600F5A",
+      "file": "summary_input_manifest.csv",
+      "path": "C:\\GitHub\\YOLO-CV\\artifacts\\stage1_sample_value_experiments\\contracts\\gapvalue240_v1_1\\frozen_inputs\\reference_tables\\summary_input_manifest.csv",
+      "rows": 2000,
+      "rows_ok": true,
+      "sha256": "136D0EBC2EA268F9639F2726145FFD2CC3159B69C863C9AC99C5813235600F5A",
+      "sha_ok": true,
+      "size_bytes": 126025
+    },
+    {
+      "expected_sha256": "E087B48514085236B597A465DED5467EC6A15D1B6DFEA60869AF051C7CBB905F",
+      "file": "group_summary.csv",
+      "path": "C:\\GitHub\\YOLO-CV\\artifacts\\stage1_sample_value_experiments\\contracts\\gapvalue240_v1_1\\frozen_inputs\\reference_tables\\group_summary.csv",
+      "sha256": "E087B48514085236B597A465DED5467EC6A15D1B6DFEA60869AF051C7CBB905F",
+      "sha_ok": true,
+      "size_bytes": 71384
+    }
+  ],
+  "issues": [],
+  "status": "PASS"
+}

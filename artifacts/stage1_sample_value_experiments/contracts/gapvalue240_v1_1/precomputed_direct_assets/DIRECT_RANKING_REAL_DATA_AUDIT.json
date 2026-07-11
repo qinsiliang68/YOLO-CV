@@ -1,0 +1,37 @@
+{
+  "rows": 120000,
+  "normal": 60000,
+  "defect": 60000,
+  "clean_normal": 57541,
+  "clean_defect": 57881,
+  "candidate_counts": {
+    "GapCritical-Strict": 9574,
+    "GapCritical-Global": 54697,
+    "Confidence-Clean": 57541,
+    "Boundary-0.5-Clean": 57541,
+    "Persistent-0.5-Clean": 57541,
+    "EndpointTrend": 10109,
+    "BottomGap-3000-stress-control": 57541,
+    "FoldBalanced-Gap": 9574,
+    "GroupDiverse-Gap": 9574,
+    "LowConfidence-Defect": 57881,
+    "Persistent-FN": 57881,
+    "GapGuard-Raw": 55850,
+    "GapGuard-ClassStrat": 55850
+  },
+  "bottom_gap_top3000_negative_count": 2844,
+  "top3000_overlap_with_gapcritical_strict": {
+    "GapCritical-Global": 0.9513333333333334,
+    "Confidence-Clean": 0.31133333333333335,
+    "Boundary-0.5-Clean": 0.37233333333333335,
+    "Persistent-0.5-Clean": 0.39066666666666666,
+    "EndpointTrend": 0.5183333333333333,
+    "BottomGap-3000-stress-control": 0.0,
+    "FoldBalanced-Gap": 0.9316666666666666,
+    "GroupDiverse-Gap": 0.722,
+    "LowConfidence-Defect": 0.0,
+    "Persistent-FN": 0.0,
+    "GapGuard-Raw": 0.0,
+    "GapGuard-ClassStrat": 0.0
+  }
+}

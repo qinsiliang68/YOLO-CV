@@ -1,0 +1,38 @@
+{
+  "collection_validation_20260709.json": {
+    "size_bytes": 4582,
+    "sha256": "887588CD206FF688386049E27448552AF76D42698719DDF1D96754DE647FBB1B"
+  },
+  "epoch_gap_metrics.csv": {
+    "size_bytes": 28139,
+    "sha256": "FFC4103DE604E3673068AE592A2D4603C1C8FD5163C7F47046F0CE974ABB78EB"
+  },
+  "group_summary.csv": {
+    "size_bytes": 71384,
+    "sha256": "E087B48514085236B597A465DED5467EC6A15D1B6DFEA60869AF051C7CBB905F"
+  },
+  "sample_dynamics_summary.csv": {
+    "size_bytes": 30737786,
+    "sha256": "84EE044693E9D47295C5A4C6DF05470379FA5CE79B838EDE0CEE3EB1E0DE959F"
+  },
+  "sample_value_table.csv": {
+    "size_bytes": 31819678,
+    "sha256": "376674FCFD5C8378051FC5D1A588ED415CA8DEFA06A19AAD72505AB49B20B980"
+  },
+  "source_file_manifest.csv": {
+    "size_bytes": 9644,
+    "sha256": "EEFD79F4406C0FC3D54BEB176BFDB3B842A7871184FD704D5F76F62CE7155ACA"
+  },
+  "summary_input_manifest.csv": {
+    "size_bytes": 126025,
+    "sha256": "136D0EBC2EA268F9639F2726145FFD2CC3159B69C863C9AC99C5813235600F5A"
+  },
+  "summary_validation.json": {
+    "size_bytes": 54705,
+    "sha256": "654E8D2DEC7E24843DBF740A553D40A7464E9C38258E83DB309CFDE4DA78CCAC"
+  },
+  "train_oof_assignments.csv": {
+    "size_bytes": 51199918,
+    "sha256": "EE82D19D8B8BC2875842B1DF433CC1B6098D7F88A300B330CA5E45B3642AE0C6"
+  }
+}

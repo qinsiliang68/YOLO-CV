@@ -1,0 +1,8 @@
+{
+  "pool_id": "global_clean_normal_positive_gap",
+  "candidate_count": 54697,
+  "score_column": "gap_critical_score",
+  "ascending": false,
+  "sha256": "D6901EDAFF6F5A9AB0ECB892D9A1BA62C5D364AC634C789D2C59227FDC17D7B2",
+  "rows": 54697
+}
