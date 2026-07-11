@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Stage1 GapValue machine configuration",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["machine_id", "repo_root", "dataset_root", "artifact_root", "output_root", "cache_root", "gpu_id", "num_workers"],
+  "properties": {
+    "machine_id": {"type": "string"}, "repo_root": {"type": "string"}, "dataset_root": {"type": "string"},
+    "oof_raw_root": {"type": ["string", "null"]}, "artifact_root": {"type": "string"}, "output_root": {"type": "string"},
+    "cache_root": {"type": "string"}, "local_scratch_root": {"type": ["string", "null"]}, "gpu_id": {"type": ["integer", "string"]},
+    "num_workers": {"type": "integer", "minimum": 0}, "python_executable": {"type": "string"}, "base_checkpoint": {"type": "string"},
+    "train_manifest": {"type": "string"}, "normal_train_manifest": {"type": "string"},
+    "val_model_defect_manifest": {"type": ["string", "null"]}, "val_model_normal_manifest": {"type": ["string", "null"]},
+    "val_cal_defect_manifest": {"type": ["string", "null"]}, "val_cal_normal_manifest": {"type": ["string", "null"]},
+    "val_op_defect_manifest": {"type": ["string", "null"]}, "val_op_normal_manifest": {"type": ["string", "null"]},
+    "dry_run": {"type": "boolean"}, "command_timeout_seconds": {"type": "integer", "minimum": 0}
+  }
+}

@@ -1,0 +1,538 @@
+contract_id: stage1_gapvalue_240run_contract_v1_1
+contract_version: 1.1.0
+contract_sha256: B5BF55446E0B6E4BE0911295C8E666879C6031D0F7BD6B48E6791C74A0CBC4E9
+created_date: '2026-07-10'
+purpose: Use frozen 10-fold/200-epoch OOF training dynamics to construct falsifiable sample-value rankings and test them with
+  80 independent paired triads (Treatment, Global-Random, Method-Matched-Random), yielding exactly 240 validated replay-training
+  runs.
+repository:
+  branch: push-info-sampling-lite
+  commit: 07dc63763606
+  existing_trainer: scripts/train_stage1_cls_sweep.py
+  existing_evaluator: scripts/evaluate_stage1_cls_gate.py
+  integration_policy: wrapper_not_rewrite
+  protected_paths:
+  - scripts/train_stage1_cls_sweep.py
+  - scripts/evaluate_stage1_cls_gate.py
+  - ultralytics
+  - YOLOv11
+  allowed_overlay_paths:
+  - stage1_gapvalue240
+  - scripts/stage1_gapvalue240
+  - configs/stage1_gapvalue240
+  - schemas/stage1_gapvalue240
+  - docs/stage1_gapvalue240
+  - tests/stage1_gapvalue240
+  - artifacts/stage1_sample_value_experiments/contracts/gapvalue240_v1_1
+environment:
+  python: 3.11.14
+  pytorch: 2.11.0+cu128
+  cuda_build: '12.8'
+  cudnn: 9.1.9
+  ultralytics: 8.4.66
+  numpy: 1.26.4
+  pandas: 3.0.1
+  scikit_learn: 1.8.0
+  polars: 1.41.2
+  pyarrow_required: false
+  strict_major_minor: true
+frozen_inputs:
+  reference_root_relative: artifacts/stage1_sample_value_experiments/contracts/gapvalue240_v1_1/frozen_inputs/reference_tables
+  files:
+    train_oof_assignments.csv:
+      rows: 120000
+      sha256: EE82D19D8B8BC2875842B1DF433CC1B6098D7F88A300B330CA5E45B3642AE0C6
+    sample_dynamics_summary.csv:
+      rows: 120000
+      columns: 26
+      sha256: 84EE044693E9D47295C5A4C6DF05470379FA5CE79B838EDE0CEE3EB1E0DE959F
+    sample_value_table.csv:
+      rows: 120000
+      columns: 31
+      sha256: 376674FCFD5C8378051FC5D1A588ED415CA8DEFA06A19AAD72505AB49B20B980
+    epoch_gap_metrics.csv:
+      rows: 200
+      columns: 13
+      sha256: FFC4103DE604E3673068AE592A2D4603C1C8FD5163C7F47046F0CE974ABB78EB
+    summary_input_manifest.csv:
+      rows: 2000
+      sha256: 136D0EBC2EA268F9639F2726145FFD2CC3159B69C863C9AC99C5813235600F5A
+    group_summary.csv:
+      sha256: E087B48514085236B597A465DED5467EC6A15D1B6DFEA60869AF051C7CBB905F
+  base_checkpoint:
+    filename: yolo11l-cls.pt
+    known_sha256_prefix: 6B56513A
+    known_sha256_suffix: 3366C
+    full_sha256: null
+    binding_rule: The first machine-binding operation must compute the full 64-character SHA-256, verify the known prefix
+      and suffix, and freeze it in generated/site_asset_binding.json. All machines must match that exact full value. Similar
+      filenames are forbidden.
+raw_oof:
+  file_count: 2000
+  prediction_rows: 24000000
+  epochs: 200
+  folds: 10
+  schema:
+    sample_id: string
+    y_true: int8
+    p_defect_raw: float64
+  path_pattern: '*/fold_(?P<fold>[0-9]{2})/epoch_(?P<epoch>[0-9]{3})_predictions.csv'
+  source_manifest: summary_input_manifest.csv
+  scan_policy: single_scan_to_memmap_cache
+  inference_required: false
+data_semantics:
+  sample_id_column: sample_id
+  canonical_identity_column: canonical_image_relpath
+  label_column: y_true
+  assignment_label_column: oof_y_true
+  fold_column: oof_fold
+  fold_values:
+  - '00'
+  - '01'
+  - '02'
+  - '03'
+  - '04'
+  - '05'
+  - '06'
+  - '07'
+  - 08
+  - 09
+  epoch_base: 1
+  probability_column: p_defect_raw
+  noise_bucket: possible_noise_or_label_issue
+  learnable_bucket: learnable_hard
+  clean_rule: dynamic_bucket != possible_noise_or_label_issue
+  confidence_clean_score: mean_p_defect
+  boundary_0p5_score: 1 - 2 * abs(mean_p_defect - 0.5)
+  persistent_0p5_score: 1 - correct_rate
+  endpoint_trend_score: max(p_defect_start - p_defect_end, 0), learnable_hard only
+  gapcritical_normal_score: mean_p_bad_gap_epochs - mean_p_good_gap_epochs
+  gapguard_defect_score: mean_p_good_gap_epochs - mean_p_bad_gap_epochs
+  gradient_methods_status: NOT_READY
+  gradient_reason: five gradient score fields are entirely empty
+  epoch178_provenance:
+    fold: '01'
+    logical_epoch: 178
+    copied_from_epoch: 177
+    affected_samples: 12003
+    reason: copied_checkpoint_repair
+training:
+  training_seeds:
+    discovery:
+    - 1829910790
+    - 1385197443
+    - 1343723075
+    confirmation_new:
+    - 440790218
+    - 1625332720
+    - 1024521099
+    - 216172108
+    - 53303004
+    derivation: SHA256(contract_id|training_seed|phase|index), first 31 bits
+  model_code: l
+  epochs: 200
+  image_size: 224
+  batch_size: 128
+  drop_last: false
+  deterministic: true
+  save_period: -1
+  keep_data: true
+  optimizer_and_lr: existing_train_entry_frozen_defaults
+  trainer_cli_fixed_args:
+  - --mode
+  - full
+  - --models
+  - l
+  - --epochs
+  - '200'
+  - --imgsz
+  - '224'
+  - --batch
+  - '128'
+  - --save-period
+  - '-1'
+  - --keep-data
+  expected_steps:
+    B600: 943
+    B3000: 961
+    B6000: 985
+replay:
+  base_samples: 120000
+  mode: additive
+  base_exposure_per_epoch: 1
+  replay_exposure_per_epoch: 1
+  total_selected_exposure_per_epoch: 2
+  budgets:
+  - 600
+  - 3000
+  - 6000
+  epoch_samples:
+    B600: 120600
+    B3000: 123000
+    B6000: 126000
+  phase_b:
+    total_replay_slots: 3000
+    replacement_scope: replay_slots_only
+    nested_normal_sets:
+      R5: 2850
+      R10: 2700
+      R20: 2400
+    defect_counts:
+      R5: 150
+      R10: 300
+      R20: 600
+    base_samples_never_removed: true
+controls:
+  arms:
+  - T
+  - R1
+  - R2
+  no_control_reuse: true
+  no_silent_deduplication: true
+  treatment_set_constant_across_training_seeds: true
+  selection_seed_rule: SHA256(contract_id|condition_id|training_seed|arm), first 31 bits
+  r1:
+    name: Global-Random-Clean
+    without_replacement: true
+    exclude_treatment: true
+  r2:
+    name: Method-Matched-Random
+    without_replacement: true
+    hard_fields:
+    - y_true
+    - oof_fold
+    quantile_bins:
+      mean_p_defect: 20
+      correct_rate: 20
+      std_p_defect: 10
+    bin_edges_scope: full_eligible_pool_once
+    duplicate_quantile_edges: merge_and_record
+    fallback:
+      L0: same fold and exact three precomputed quantile bins, non-treatment candidate
+      L1: same fold; std bin +/-1, non-treatment candidate
+      L2: same fold; correct_rate and std bins +/-1, non-treatment candidate
+      L3: same fold; nearest non-treatment neighbor in standardized three-feature space
+      L4_FORCED_OVERLAP: use the treatment sample itself only when needed for uniqueness/feasibility or to satisfy the SMD
+        gate
+    validation:
+      unmatched_count: 0
+      hard_match_violations: 0
+      maximum_absolute_smd: 0.1
+      forced_overlap_allowed: true
+      report_effective_unique_contrast: true
+      maximum_nonoverlap_L3_fraction: 0.2
+    candidate_pool: global_clean_same_label_plus_treatment_for_forced_overlap
+    balance_fields:
+    - dynamic_bucket
+    matching_objective: minimize feature distance, then minimize treatment overlap; replace controls with their treatment
+      counterparts only as needed to pass SMD
+  overlap:
+    B600_B3000:
+      T_R1: zero
+      T_R2: minimize_nonoverlap_then_allow_audited_forced_overlap
+    B6000:
+      T_R1: zero
+      T_R2: minimize_nonoverlap_then_allow_audited_forced_overlap
+      interpretation: saturation_only
+    report_fields:
+    - overlap_count
+    - overlap_rate
+    - jaccard
+    - unique_to_T
+    - unique_to_R2
+    - forced_overlap_count
+    - R1_R2_overlap_count
+    interpretation_note: R2 overlap is a feasibility correction. Always report forced_overlap_count and effective_unique_contrast;
+      R1 remains fully disjoint.
+conditions:
+  phase_a:
+  - slot: A01
+    method: GapCritical-Strict
+    budget: 600
+    pool: strict_normal
+  - slot: A02
+    method: GapCritical-Strict
+    budget: 3000
+    pool: strict_normal
+    phase_c_primary: true
+  - slot: A03
+    method: GapCritical-Strict
+    budget: 6000
+    pool: strict_normal
+    interpretation: saturation
+  - slot: A04
+    method: GapCritical-Global
+    budget: 3000
+    pool: global_clean_normal_positive_gap
+  - slot: A05
+    method: Confidence-Clean
+    budget: 600
+    pool: clean_normal
+  - slot: A06
+    method: Confidence-Clean
+    budget: 3000
+    pool: clean_normal
+  - slot: A07
+    method: Boundary-0.5-Clean
+    budget: 600
+    pool: clean_normal
+  - slot: A08
+    method: Boundary-0.5-Clean
+    budget: 3000
+    pool: clean_normal
+  - slot: A09
+    method: Persistent-0.5-Clean
+    budget: 600
+    pool: clean_normal
+  - slot: A10
+    method: Persistent-0.5-Clean
+    budget: 3000
+    pool: clean_normal
+  - slot: A11
+    method: EndpointTrend
+    budget: 600
+    pool: learnable_normal
+  - slot: A12
+    method: EndpointTrend
+    budget: 3000
+    pool: learnable_normal
+  - slot: A13
+    method: BottomGap-3000-stress-control
+    budget: 3000
+    pool: clean_normal
+  - slot: A14
+    method: FoldBalanced-Gap
+    budget: 3000
+    pool: strict_normal
+  - slot: A15
+    method: GroupDiverse-Gap
+    budget: 3000
+    pool: strict_normal
+  - slot: A16
+    method: TailGap-Strict
+    budget: 3000
+    pool: strict_normal
+    overlap_gate_candidate: true
+  - slot: A17
+    method: WindowEarlyLate40
+    budget: 3000
+    pool: strict_normal
+    overlap_gate_candidate: true
+  - slot: A18
+    method: LOFO-GapStrict
+    budget: 3000
+    pool: strict_normal
+    overlap_gate_candidate: true
+  - slot: A19
+    method: Exclude178-GapStrict
+    budget: 3000
+    pool: strict_normal
+    overlap_gate_candidate: true
+  phase_b:
+  - slot: B01
+    method: LowConfidence-Defect
+    budget: 3000
+    guard_ratio: 0.1
+    defect_pool: clean_defect
+  - slot: B02
+    method: Persistent-FN
+    budget: 3000
+    guard_ratio: 0.1
+    defect_pool: clean_defect
+  - slot: B03
+    method: GapGuard-Raw
+    budget: 3000
+    guard_ratio: 0.05
+    defect_pool: clean_defect_positive_guard
+  - slot: B04
+    method: GapGuard-Raw
+    budget: 3000
+    guard_ratio: 0.1
+    defect_pool: clean_defect_positive_guard
+  - slot: B05
+    method: GapGuard-Raw
+    budget: 3000
+    guard_ratio: 0.2
+    defect_pool: clean_defect_positive_guard
+  - slot: B06
+    method: GapGuard-ClassStrat
+    budget: 3000
+    guard_ratio: 0.1
+    defect_pool: clean_defect_positive_guard
+  phase_c:
+    source_slot: A02
+    method: GapCritical-Strict
+    budget: 3000
+    new_seed_count: 5
+method_definitions:
+  FoldBalanced-Gap: equal per-fold quota, within-fold descending GapCritical score; deterministic remainder by global score
+  GroupDiverse-Gap: ascending within-group rank then descending GapCritical score, using oof_group_id
+  BottomGap-3000-stress-control: clean normal ascending gap score; sign composition must be reported
+  GapGuard-ClassStrat: proportional allocation by train_primary_class, descending GapGuard within class
+  LowConfidence-Defect: clean defect ascending mean_p_defect
+  Persistent-FN: clean defect descending 1-correct_rate
+overlap_gate:
+  top_k: 3000
+  overlap_definition: intersection_size / 3000
+  redundant_if_greater_or_equal: 0.95
+  compare_against_main_and_retained_dynamic_methods: true
+  candidates_in_order:
+  - A16
+  - A17
+  - A18
+  - A19
+  replacements_in_order:
+  - method: GapResidual-Strict
+    budget: 3000
+    pool: strict_normal
+  - method: GapCritical-Global-B6000
+    budget: 6000
+    pool: global_clean_normal_positive_gap
+  - method: GapCritical-Strict-TimeMatched
+    budget: 3000
+    pool: strict_normal
+  fail_if_replacements_exhausted: true
+  gap_residual:
+    polynomial_degree: 3
+    standardized_epoch: true
+    good_epochs: 40
+    bad_epochs: 40
+    score: mean_p_bad - mean_p_good
+  time_matched:
+    blocks:
+    - - 1
+      - 50
+    - - 51
+      - 100
+    - - 101
+      - 150
+    - - 151
+      - 200
+    good_per_block: 10
+    bad_per_block: 10
+  lofo:
+    epoch_windows_from_other_nine_folds: true
+    good_epochs: 40
+    bad_epochs: 40
+  exclude178:
+    fold: '01'
+    logical_epoch: 178
+    other_folds_epoch178_retained: true
+operational_metrics:
+  version: operational_v2_tie_safe
+  positive_rule: score >= threshold
+  ties: whole_group_only
+  TN_at_FN95:
+    constraint: FN <= 95
+    threshold_choice: highest_achievable_threshold
+  FN_at_TN68253:
+    constraint: TN >= 68253
+    threshold_choice: lowest_achievable_threshold
+  save_fields:
+  - requested_constraint
+  - actual_FN
+  - actual_TN
+  - threshold
+  - constraint_status
+  - tie_group_size
+  unreachable_status: CONSTRAINT_UNREACHABLE
+calibration:
+  method: Platt_on_raw_logit
+  raw_probability_clip:
+  - 1.0e-07
+  - 0.9999999
+  deployment_prior_shift: true
+  deployment_prevalence: 0.5
+  note: The two primary operational count metrics are invariant to a strictly monotone Platt/prior transformation. The neutral
+    deployment prevalence is retained until the existing evaluator's frozen deployment profile is supplied as a new contract
+    version.
+statistics:
+  discovery_seeds_not_confirmatory: true
+  phase_c_total_paired_seeds: 8
+  delta_FN: FN_T - FN_control
+  delta_TN: TN_T - TN_control
+  compare_controls_separately:
+  - R1
+  - R2
+  safety_noninferiority:
+    one_sided_confidence: 0.95
+    upper_t_ci_max: 2
+    worst_single_seed_max: 5
+  strict_safety_improvement_label: mean_delta_FN <= 0
+  confirmed_TN_improvement:
+    requires_safety_gate: true
+    one_sided_confidence: 0.95
+    lower_t_ci_greater_than: 0
+evaluation_roles:
+  val_model: trainer_internal_checkpoint_selection
+  val_cal: required_for_calibration
+  val_op: required_for_240run_selection_and_metrics
+  development_benchmark_120k:
+    optional: true
+    may_not_select_method: true
+    historical_disk_name_may_be_test: true
+  blind_holdout:
+    required_for_final_claim: true
+    may_be_unbound_during_discovery: true
+  external_test:
+    required_for_external_claim: true
+    may_be_unbound_during_discovery: true
+outputs:
+  overwrite_forbidden: true
+  atomic_write_required: true
+  validated_only_aggregation: true
+  permanent:
+  - resolved_config
+  - contract_and_matrix_hashes
+  - selection_manifest
+  - run_manifest
+  - environment_snapshot
+  - input_checksums
+  - training_log
+  - epoch_training_metrics
+  - best_checkpoint
+  - last_checkpoint
+  - val_cal_final_predictions
+  - val_op_final_predictions
+  - frozen_blind_or_external_predictions
+  - calibration_artifact
+  - operational_metrics
+  - threshold_sweep
+  - validation_reports
+  - artifact_manifest
+  default_not_retained_for_all_runs:
+  - all_epoch_checkpoints
+  - all_epoch_full_predictions
+multi_machine:
+  triad_count: 80
+  arms_per_triad: 3
+  validated_run_count: 240
+  main_machine_count: 10
+  reserve_machine_count: 2
+  triads_per_main_machine: 8
+  runs_per_main_machine: 24
+  allocation_unit: complete_triad
+  same_machine_within_triad: preferred_required
+  failed_machine_policy: rerun_complete_triad_on_reserve
+  orphan_arm_status: SUPERSEDED
+  failed_attempts_count_toward_240: false
+  registry: local_jsonl_then_merge
+contract_revision:
+  based_on: stage1_gapvalue_240run_contract_v1
+  reason: The archived v1 disjoint R2 constraint is mathematically infeasible for multiple top-ranked treatments. The executable
+    revision preserves hardness matching and minimizes overlap, but permits auditable forced treatment overlap until the SMD
+    gate is met.
+  scientific_effect: R2 remains a stronger hardness-matched mechanism control; overlap weakens contrast and is reported per
+    run. B600/B3000 conclusions must report effective unique contrast.
+evaluation_adapter:
+  mode: native_ultralytics_val_only
+  accepted_defect_class_names:
+  - defect
+  - Defect
+  - def
+  - Def
+  - abnormal
+  - Abnormal
+  - '1'
+  uses_development_benchmark: false
+  uses_blind_or_external_during_discovery: false

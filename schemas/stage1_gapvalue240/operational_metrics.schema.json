@@ -1,0 +1,7 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "operational_v2_tie_safe metrics",
+  "type": "object",
+  "required": ["metric_version", "TN_at_FN95", "FN_at_TN68253", "gap_q68_q050", "tail_gap_q90_q05"],
+  "properties": {"metric_version": {"const": "operational_v2_tie_safe"}}
+}

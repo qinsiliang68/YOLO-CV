@@ -90,3 +90,9 @@ STAGE1_PHASE1_HN_RN_40RUNS_*_20260628.tar
 artifacts/stage1_phase1_hn_band_20260628/
 artifacts/stage1_phase1_hn_band_20260628_local_smoke*/
 STAGE1_PHASE1_HN_BAND_*_20260628.tar
+
+# Stage-1 GapValue central preparation cache and reproducible ranking workspace.
+# The frozen 240 selection CSVs, matrix, audits, and machine shards remain tracked.
+artifacts/stage1_sample_value_experiments/contracts/gapvalue240_v1_1/generated/oof_cache/
+artifacts/stage1_sample_value_experiments/contracts/gapvalue240_v1_1/generated/master_sample_index.csv
+artifacts/stage1_sample_value_experiments/contracts/gapvalue240_v1_1/generated/rankings/

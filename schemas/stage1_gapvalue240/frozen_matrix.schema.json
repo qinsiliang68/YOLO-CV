@@ -1,0 +1,7 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Frozen experiment matrix row",
+  "type": "object",
+  "required": ["run_slot", "triad_id", "phase", "condition_slot", "condition_id", "method", "budget", "arm", "training_seed", "selection_seed"],
+  "properties": {"arm": {"enum": ["T", "R1", "R2"]}, "budget": {"enum": [600, 3000, 6000]}}
+}

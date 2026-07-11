@@ -1,0 +1,6 @@
+version: 1
+policy: strict_help_probe
+trainer_script: scripts/train_stage1_cls_sweep.py
+evaluator_script: scripts/evaluate_stage1_cls_gate.py
+rule: Each logical argument must resolve to exactly one supported CLI alias from stage1_gapvalue240.integration. Zero or multiple matches stop execution.
+no_source_rewrite: true

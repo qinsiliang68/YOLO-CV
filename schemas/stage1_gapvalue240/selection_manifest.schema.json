@@ -1,0 +1,10 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Selection manifest columns",
+  "type": "object",
+  "required": ["run_slot", "triad_id", "condition_id", "arm", "training_seed", "selection_seed", "sample_id", "y_true", "replay_role", "source_method"],
+  "properties": {
+    "run_slot": {"type": "string", "pattern": "^RUN_[0-9]{3}$"}, "arm": {"enum": ["T", "R1", "R2"]},
+    "y_true": {"enum": [0, 1]}, "replay_role": {"enum": ["normal_replay", "defect_guard"]}
+  }
+}
