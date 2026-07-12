@@ -13,7 +13,7 @@ minimum_output_free_gib: 20
 maximum_staging_files: 151000
 gpu_memory_release_threshold_mib: 256
 gpu_id: 0
-num_workers: 8
+num_workers: 4
 python_executable: python
 base_checkpoint: C:/GitHub/YOLO-CV/yolo11l-cls.pt
 train_manifest: C:/GitHub/YOLO-CV/data/final_sewerml_dataset/manifests/train_manifest.csv

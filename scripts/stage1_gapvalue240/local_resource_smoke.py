@@ -65,7 +65,7 @@ def _parser() -> argparse.ArgumentParser:
     parser.add_argument("--output", help=argparse.SUPPRESS)
     parser.add_argument("--seed", type=int, help=argparse.SUPPRESS)
     parser.add_argument("--gpu-id", default="0", help=argparse.SUPPRESS)
-    parser.add_argument("--workers", type=int, default=8, help=argparse.SUPPRESS)
+    parser.add_argument("--workers", type=int, default=4, help=argparse.SUPPRESS)
     return parser
 
 
