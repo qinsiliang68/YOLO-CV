@@ -8,6 +8,7 @@ import pandas as pd
 import pytest
 import yaml
 
+import stage1_gapvalue240.runtime_contract as runtime_contract_module
 from stage1_gapvalue240.errors import ContractError, ValidationError
 from stage1_gapvalue240.machine import MachineConfig
 from stage1_gapvalue240.machine_assets import (
@@ -15,6 +16,7 @@ from stage1_gapvalue240.machine_assets import (
     validate_machine_asset_report,
 )
 from stage1_gapvalue240.runtime_contract import (
+    RuntimeContract,
     compute_runtime_contract_hash,
     is_aggregatable_status,
     load_runtime_contract,
@@ -22,6 +24,7 @@ from stage1_gapvalue240.runtime_contract import (
     validation_status_for_mode,
     verify_release_identity,
     verify_all_selections_against_index,
+    verify_machine_shard_selections,
     verify_selection_against_index,
 )
 from stage1_gapvalue240.util import sha256_file
@@ -322,3 +325,32 @@ def test_repository_runtime_contract_binds_all_240_frozen_selections():
     assert links["selection_count"] == 240
     assert links["queue"]["frozen_matrix"]["rows"] == 240
     assert selections["selection_count"] == 240
+
+
+def test_machine_shard_verifies_only_its_24_selections(tmp_path, monkeypatch):
+    rows = []
+    for triad in range(1, 9):
+        for arm in ("T", "R1", "R2"):
+            rows.append(
+                {"run_slot": f"RUN_{len(rows) + 1:03d}", "triad_id": f"TRIAD_{triad:03d}", "arm": arm}
+            )
+    shard = tmp_path / "machine_01_jobs.csv"
+    pd.DataFrame(rows).to_csv(shard, index=False)
+    linked = {
+        "queue": {
+            "machine_shards": {"machine_01": {"path": str(shard)}},
+            "selection_index": {"sha256": "INDEX-SHA"},
+        }
+    }
+    monkeypatch.setattr(runtime_contract_module, "validate_runtime_links", lambda *_: linked)
+    monkeypatch.setattr(
+        runtime_contract_module,
+        "verify_selection_against_index",
+        lambda _contract, _repo, slot: {"run_slot": slot, "selection_sha256": f"SHA-{slot}"},
+    )
+    contract = RuntimeContract(path=tmp_path / "runtime.yaml", data={}, sha256="RUNTIME-SHA")
+    result = verify_machine_shard_selections(contract, tmp_path, "machine_01")
+    assert result["status"] == "PASS"
+    assert result["run_count"] == 24
+    assert result["triad_count"] == 8
+    assert result["arms"] == {"R1": 8, "R2": 8, "T": 8}

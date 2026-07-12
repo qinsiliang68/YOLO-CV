@@ -20,6 +20,7 @@ from stage1_gapvalue240.runtime_contract import (
     validate_runtime_links,
     validation_status_for_mode,
     verify_all_selections_against_index,
+    verify_machine_shard_selections,
     verify_release_identity,
     verify_selection_against_index,
 )
@@ -41,6 +42,9 @@ def _parser() -> argparse.ArgumentParser:
     selection.add_argument("--repo-root", default=".")
     selection.add_argument("--run-slot", required=True)
     selection.add_argument("--selection-path")
+    machine_shard = sub.add_parser("machine-shard")
+    machine_shard.add_argument("--repo-root", default=".")
+    machine_shard.add_argument("--machine-id", required=True)
     build = sub.add_parser("build-machine-assets")
     build.add_argument("--machine-config", required=True)
     build.add_argument("--output", required=True)
@@ -69,6 +73,10 @@ def main(argv: list[str] | None = None) -> int:
         elif args.command == "selection":
             result = verify_selection_against_index(
                 contract, args.repo_root, args.run_slot, args.selection_path
+            )
+        elif args.command == "machine-shard":
+            result = verify_machine_shard_selections(
+                contract, args.repo_root, args.machine_id
             )
         elif args.command == "build-machine-assets":
             machine = load_machine_config(args.machine_config)

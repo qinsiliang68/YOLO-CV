@@ -71,6 +71,15 @@ uv run python scripts/stage1_gapvalue240/runtime_integrity.py `
   all-selections --repo-root .
 ```
 
+The release controller runs `all-selections` once. Each training machine then
+verifies only its own frozen shard:
+
+```powershell
+uv run python scripts/stage1_gapvalue240/runtime_integrity.py `
+  --runtime-contract configs/stage1_gapvalue240/RUNTIME_CONTRACT_v1_2.yaml `
+  machine-shard --repo-root . --machine-id machine_01
+```
+
 Each machine then creates its one-time asset report from its own machine YAML. Formal runs reuse this report and do not rescan all images:
 
 ```powershell
@@ -94,7 +103,9 @@ uv run python scripts/stage1_gapvalue240/smoke_real_integration.py `
 
 This non-scientific smoke runs four small YOLO11n jobs and one YOLO11l job, each with 24 base rows plus 3 replay rows. It verifies real checkpoints, predictions, calibration, threshold sweep, and operational metrics without changing the frozen 240-run contract.
 
-The formal-spec resource smoke uses YOLO11l, batch 128, workers 8, isolated subprocesses, and two sequential three-epoch jobs:
+The formal-spec resource smoke uses YOLO11l, batch 128, the machine YAML's
+worker count (4 for this deployment), isolated subprocesses, and two sequential
+three-epoch jobs:
 
 ```powershell
 uv run python scripts/stage1_gapvalue240/local_resource_smoke.py `

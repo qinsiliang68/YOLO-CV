@@ -11,6 +11,14 @@ Before distributing jobs, verify every frozen selection:
 uv run python scripts/stage1_gapvalue240/runtime_integrity.py all-selections --repo-root .
 ```
 
+Run the global command once on the release controller. On each training node,
+verify only its assigned shard, for example:
+
+```powershell
+uv run python scripts/stage1_gapvalue240/runtime_integrity.py machine-shard `
+  --repo-root . --machine-id machine_01
+```
+
 Each machine must create one durable asset report before formal training. The
 default `existence` mode reads all eight manifests, proves their 384,000 sample
 identities are disjoint, checks labels/splits, and checks every image exists.

@@ -224,6 +224,39 @@ def verify_all_selections_against_index(
     }
 
 
+def verify_machine_shard_selections(
+    contract: RuntimeContract,
+    repo_root: str | Path,
+    machine_id: str,
+) -> dict[str, Any]:
+    """Verify only the frozen selections assigned to one machine shard."""
+
+    repo = Path(repo_root).resolve()
+    linked = validate_runtime_links(contract, repo)
+    shard = linked["queue"]["machine_shards"].get(str(machine_id))
+    if shard is None:
+        raise ValidationError(f"Machine ID is not bound by the runtime contract: {machine_id}")
+    frame = pd.read_csv(
+        shard["path"], dtype={"run_slot": "string", "triad_id": "string", "arm": "string"}
+    )
+    results = [
+        verify_selection_against_index(contract, repo, str(run_slot))
+        for run_slot in frame["run_slot"]
+    ]
+    return {
+        "status": "PASS",
+        "machine_id": str(machine_id),
+        "run_count": len(results),
+        "triad_count": int(frame["triad_id"].nunique()),
+        "arms": frame["arm"].value_counts().sort_index().astype(int).to_dict(),
+        "run_slots": frame["run_slot"].astype(str).tolist(),
+        "selection_index_sha256": linked["queue"]["selection_index"]["sha256"],
+        "selection_hash_digest": stable_hash(
+            [(row["run_slot"], row["selection_sha256"]) for row in results]
+        ),
+    }
+
+
 def _artifact_root(contract: RuntimeContract, repo_root: Path) -> Path:
     return _safe_repo_path(
         repo_root,
