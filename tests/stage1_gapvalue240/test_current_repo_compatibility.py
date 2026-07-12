@@ -9,6 +9,7 @@ from stage1_gapvalue240.integration import trainer_command
 from stage1_gapvalue240.machine import MachineConfig
 from stage1_gapvalue240.predictor import _defect_index
 from stage1_gapvalue240.runtime import ensure_ultralytics_runtime
+from stage1_gapvalue240.validation import _repository_audit
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -81,3 +82,10 @@ def test_ultralytics_runtime_font_is_valid(tmp_path):
     font = config_dir / "Arial.ttf"
     assert font.exists()
     FT2Font(str(font))
+
+
+def test_repository_audit_accepts_overlay_descendant_of_frozen_base():
+    contract = load_contract(ROOT / "configs/stage1_gapvalue240/EXPERIMENT_CONTRACT.yaml")
+    audit = _repository_audit(ROOT, contract)
+    assert audit["commit_ok"]
+    assert audit["contract_base_commit"].startswith(str(contract.data["repository"]["commit"]))

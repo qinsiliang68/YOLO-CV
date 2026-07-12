@@ -42,7 +42,7 @@ def _worker(args: argparse.Namespace) -> int:
     spec = FormalTrainingSpec(
         dataset_dir=Path(args.dataset), checkpoint=Path(args.checkpoint), output_dir=Path(args.output),
         yolo_root=Path(args.yolo_root), epochs=args.epochs, batch=128, imgsz=224,
-        seed=args.seed, device=args.gpu_id, workers=8, expected_steps_per_epoch=1,
+        seed=args.seed, device=args.gpu_id, workers=args.workers, expected_steps_per_epoch=1,
     )
     result = run_formal_training(spec)
     print(json.dumps({"status": "PASS", "audit": str(result.audit_path), "results": str(result.results_csv)}))
@@ -65,7 +65,18 @@ def _parser() -> argparse.ArgumentParser:
     parser.add_argument("--output", help=argparse.SUPPRESS)
     parser.add_argument("--seed", type=int, help=argparse.SUPPRESS)
     parser.add_argument("--gpu-id", default="0", help=argparse.SUPPRESS)
+    parser.add_argument("--workers", type=int, default=8, help=argparse.SUPPRESS)
     return parser
+
+
+def _default_output_root(machine) -> Path:
+    return machine.path_value("output_root") / "runtime_validation/local_resource_smoke"
+
+
+def _temporary_parent(machine) -> Path:
+    # Smoke images are hardlinks. They must be created on the dataset/staging
+    # volume instead of the system TEMP volume, which may be redirected to D:.
+    return machine.path_value("staging_root").parent / ".resource_smoke_tmp"
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -78,13 +89,15 @@ def main(argv: list[str] | None = None) -> int:
 
     machine = load_machine_config(args.machine_config)
     repo = machine.path_value("repo_root")
-    output_root = Path(args.output_root).resolve() if args.output_root else repo / "artifacts/stage1_gapvalue240_runtime_validation/local_resource_smoke"
+    output_root = Path(args.output_root).resolve() if args.output_root else _default_output_root(machine)
     output_root.mkdir(parents=True, exist_ok=True)
     nvidia_smi = str(machine.data.get("nvidia_smi_path") or "nvidia-smi")
     gpu_id = str(machine.data["gpu_id"])
     baseline = _gpu_memory_mib(nvidia_smi, gpu_id)
     report = {"status": "RUNNING", "baseline_gpu_memory_mib": baseline, "runs": []}
-    with tempfile.TemporaryDirectory(prefix="gapvalue240_resource_smoke_") as temp_name:
+    temporary_parent = _temporary_parent(machine)
+    temporary_parent.mkdir(parents=True, exist_ok=True)
+    with tempfile.TemporaryDirectory(prefix="gapvalue240_resource_smoke_", dir=temporary_parent) as temp_name:
         tiny = Path(temp_name) / "dataset"
         _link_rows(machine.path_value("dataset_root"), machine.path_value("normal_train_manifest"), tiny / "train/no_target", args.train_per_class)
         _link_rows(machine.path_value("dataset_root"), machine.path_value("train_manifest"), tiny / "train/target_defect", args.train_per_class)
@@ -98,7 +111,7 @@ def main(argv: list[str] | None = None) -> int:
                 sys.executable, str(Path(__file__).resolve()), "--worker", "--dataset", str(tiny),
                 "--checkpoint", str(machine.path_value("base_checkpoint")), "--yolo-root", str(repo / "YOLOv11"),
                 "--output", str(run_dir), "--epochs", str(args.epochs), "--seed", str(9000 + index),
-                "--gpu-id", gpu_id,
+                "--gpu-id", gpu_id, "--workers", str(int(machine.data["num_workers"])),
             ]
             started = time.time()
             run_logged(command, repo, output_root / f"run_{index:02d}.log", timeout=1800)

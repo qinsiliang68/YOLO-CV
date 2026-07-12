@@ -89,10 +89,17 @@ def _repository_audit(repo: Path, contract: Contract) -> dict:
     expected=contract.data["repository"]
     branch=subprocess.check_output(["git","branch","--show-current"],cwd=repo,text=True).strip()
     commit=subprocess.check_output(["git","rev-parse","--short=12","HEAD"],cwd=repo,text=True).strip()
+    head=subprocess.check_output(["git","rev-parse","HEAD"],cwd=repo,text=True).strip()
+    contract_base=subprocess.check_output(["git","rev-parse",str(expected["commit"])],cwd=repo,text=True).strip()
+    commit_ok=subprocess.run(
+        ["git","merge-base","--is-ancestor",contract_base,head],cwd=repo,
+        stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL,check=False,
+    ).returncode==0
     protected=expected.get("protected_paths",[])
     status=subprocess.check_output(["git","status","--porcelain","--",*protected],cwd=repo,text=True).strip() if protected else ''
-    return {"branch":branch,"commit":commit,"protected_status":status,"branch_ok":branch==expected["branch"],
-            "commit_ok":commit.startswith(str(expected["commit"])),"protected_clean":not bool(status)}
+    return {"branch":branch,"commit":commit,"head":head,"contract_base_commit":contract_base,
+            "protected_status":status,"branch_ok":branch==expected["branch"],
+            "commit_ok":commit_ok,"protected_clean":not bool(status)}
 
 def _environment_audit(contract: Contract,machine:MachineConfig) -> dict:
     snap=environment_snapshot(); expected=contract.data["environment"]; checks={}
