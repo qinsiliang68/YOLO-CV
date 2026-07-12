@@ -67,8 +67,8 @@ def ensure_ultralytics_assets(yolo_root: str | Path) -> dict[str, dict[str, str]
     """Provide the two local images required by the Ultralytics AMP self-check.
 
     The repository intentionally ignores upstream sample assets. Training nodes
-    already retain the known-good historical runtime under AI/projects, so copy
-    from that local source and never make formal startup depend on the network.
+    retain them in the pinned venv or known-good historical runtime, so copy from
+    those local sources and never make formal startup depend on the network.
     """
 
     root = Path(yolo_root).resolve()
@@ -76,7 +76,12 @@ def ensure_ultralytics_assets(yolo_root: str | Path) -> dict[str, dict[str, str]
     ai_root = root.parents[2] if len(root.parents) >= 3 else None
     source_roots = []
     if ai_root is not None:
-        source_roots.append(ai_root / "projects/YOLO-CV/YOLOv11/ultralytics/assets")
+        source_roots.extend(
+            [
+                ai_root / "venvs/yolo-cv/Lib/site-packages/ultralytics/assets",
+                ai_root / "projects/YOLO-CV/YOLOv11/ultralytics/assets",
+            ]
+        )
     source_roots.append(Path.home() / "Desktop/ssh/AI/projects/YOLO-CV/YOLOv11/ultralytics/assets")
 
     report: dict[str, dict[str, str]] = {}

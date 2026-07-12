@@ -84,11 +84,11 @@ def test_ultralytics_runtime_font_is_valid(tmp_path):
     FT2Font(str(font))
 
 
-def test_ultralytics_assets_bootstrap_from_historical_runtime(tmp_path):
+def test_ultralytics_assets_bootstrap_from_pinned_venv(tmp_path):
     from PIL import Image
 
     yolo_root = tmp_path / "AI/repos/current/YOLOv11"
-    source = tmp_path / "AI/projects/YOLO-CV/YOLOv11/ultralytics/assets"
+    source = tmp_path / "AI/venvs/yolo-cv/Lib/site-packages/ultralytics/assets"
     source.mkdir(parents=True)
     for filename, color in (("bus.jpg", "red"), ("zidane.jpg", "blue")):
         Image.new("RGB", (8, 8), color=color).save(source / filename)
