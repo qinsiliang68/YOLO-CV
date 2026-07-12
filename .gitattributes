@@ -21,3 +21,8 @@
 *.pt binary
 *.onnx binary
 *.engine binary
+
+# GapValue v1.1 was frozen on Windows and its immutable SHA-256 contracts bind
+# the CRLF byte representation. Keep this scope narrow so historical CSVs are
+# unaffected while fresh Windows/Linux checkouts reproduce the frozen hashes.
+artifacts/stage1_sample_value_experiments/contracts/gapvalue240_v1_1/**/*.csv text eol=crlf
