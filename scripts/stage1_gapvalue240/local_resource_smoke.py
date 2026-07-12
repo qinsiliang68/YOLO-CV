@@ -86,9 +86,11 @@ def main(argv: list[str] | None = None) -> int:
     if not args.machine_config:
         raise ValueError("--machine-config is required")
     from stage1_gapvalue240.machine import load_machine_config
+    from stage1_gapvalue240.runtime import ensure_ultralytics_assets
 
     machine = load_machine_config(args.machine_config)
     repo = machine.path_value("repo_root")
+    ensure_ultralytics_assets(repo / "YOLOv11")
     output_root = Path(args.output_root).resolve() if args.output_root else _default_output_root(machine)
     output_root.mkdir(parents=True, exist_ok=True)
     nvidia_smi = str(machine.data.get("nvidia_smi_path") or "nvidia-smi")

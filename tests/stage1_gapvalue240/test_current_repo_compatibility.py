@@ -8,7 +8,7 @@ from stage1_gapvalue240.contract import load_contract
 from stage1_gapvalue240.integration import trainer_command
 from stage1_gapvalue240.machine import MachineConfig
 from stage1_gapvalue240.predictor import _defect_index
-from stage1_gapvalue240.runtime import ensure_ultralytics_runtime
+from stage1_gapvalue240.runtime import ensure_ultralytics_assets, ensure_ultralytics_runtime
 from stage1_gapvalue240.validation import _repository_audit
 
 
@@ -82,6 +82,19 @@ def test_ultralytics_runtime_font_is_valid(tmp_path):
     font = config_dir / "Arial.ttf"
     assert font.exists()
     FT2Font(str(font))
+
+
+def test_ultralytics_assets_bootstrap_from_historical_runtime(tmp_path):
+    from PIL import Image
+
+    yolo_root = tmp_path / "AI/repos/current/YOLOv11"
+    source = tmp_path / "AI/projects/YOLO-CV/YOLOv11/ultralytics/assets"
+    source.mkdir(parents=True)
+    for filename, color in (("bus.jpg", "red"), ("zidane.jpg", "blue")):
+        Image.new("RGB", (8, 8), color=color).save(source / filename)
+    report = ensure_ultralytics_assets(yolo_root)
+    assert set(report) == {"bus.jpg", "zidane.jpg"}
+    assert all(Path(item["path"]).is_file() for item in report.values())
 
 
 def test_repository_audit_accepts_overlay_descendant_of_frozen_base():

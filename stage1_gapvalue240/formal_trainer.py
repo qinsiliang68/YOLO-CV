@@ -18,6 +18,7 @@ import yaml
 
 from .contract import Contract
 from .errors import ValidationError
+from .runtime import ensure_ultralytics_assets
 from .util import atomic_write_json, sha256_file
 
 
@@ -42,6 +43,7 @@ def validate_formal_environment(contract: Contract, yolo_root: str | Path) -> di
     root = Path(yolo_root).resolve()
     if not root.is_dir():
         raise FileNotFoundError(root)
+    runtime_assets = ensure_ultralytics_assets(root)
     sys.path.insert(0, str(root))
     modules = {
         "numpy": importlib.import_module("numpy"),
@@ -67,6 +69,7 @@ def validate_formal_environment(contract: Contract, yolo_root: str | Path) -> di
         "polars": str(modules["polars"].__version__),
         "cuda_build": str(modules["torch"].version.cuda),
         "ultralytics_module": str(ultralytics_path),
+        "runtime_assets": runtime_assets,
     }
     checks = {}
     for key in ("python", "numpy", "pandas", "scikit_learn", "pytorch", "ultralytics", "polars", "cuda_build"):
