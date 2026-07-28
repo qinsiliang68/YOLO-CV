@@ -1043,7 +1043,12 @@ def _reliability_tables(
     training: pd.DataFrame,
     completeness: dict[str, Any],
 ) -> dict[str, pd.DataFrame]:
-    merged = runs.merge(training, on="run_slot", how="one_to_one", validate="one_to_one")
+    merged = runs.merge(
+        training,
+        on="run_slot",
+        how="inner",
+        validate="one_to_one",
+    )
     execution_records: list[dict[str, Any]] = []
     for _, row in merged.iterrows():
         audit = json.loads(

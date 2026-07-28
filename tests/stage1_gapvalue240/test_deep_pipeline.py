@@ -9,6 +9,7 @@ import pytest
 from stage1_gapvalue240.deep_analysis import CanonicalInputError
 from stage1_gapvalue240.deep_pipeline import (
     _a02_training_curves,
+    _reliability_tables,
     _tail_plot_summary,
     _training_contract_audit,
     _validate_prediction_identity,
@@ -279,3 +280,56 @@ def test_training_contract_reports_completed_model_partial_step_reconciliation(
     assert result["partial_step_reconciled"]
     assert result["discarded_partial_optimizer_steps"] == 211
     assert result["optimizer_steps_exact"]
+
+
+def test_reliability_tables_use_one_to_one_validation_not_invalid_merge_mode(
+    tmp_path,
+):
+    attempts = []
+    for index in range(2):
+        attempt = tmp_path / f"attempt_{index}"
+        audit_path = attempt / "02_logs" / "training_execution_audit.json"
+        audit_path.parent.mkdir(parents=True)
+        audit_path.write_text(
+            json.dumps(
+                {
+                    "resume_segments": [
+                        {
+                            "started_at": 100.0,
+                            "ended_at": 160.0 + index,
+                        }
+                    ]
+                }
+            ),
+            encoding="utf-8",
+        )
+        attempts.append(str(attempt))
+    runs = pd.DataFrame(
+        {
+            "run_slot": ["RUN_001", "RUN_002"],
+            "attempt_dir": attempts,
+            "machine_id": ["M1", "M1"],
+            "input_snapshot_id": ["S1", "S1"],
+            "resume_count": [0, 1],
+            "TN_at_FN95": [68_300, 68_310],
+            "FN_at_TN68253": [90, 89],
+            "gap_q68_q050": [0.1, 0.2],
+        }
+    )
+    training = pd.DataFrame(
+        {
+            "run_slot": ["RUN_001", "RUN_002"],
+            "optimizer_steps_total": [188_600, 188_600],
+            "completed_epochs": [200, 200],
+            "final_top1": [0.9, 0.91],
+            "final_val_loss": [0.2, 0.19],
+        }
+    )
+    result = _reliability_tables(
+        runs,
+        training,
+        {"nonvalidated_evidence": [{"run_slot": "RUN_044"}]},
+    )
+    assert len(result["run_execution_reliability"]) == 2
+    assert result["reliability_by_machine"]["run_count"].item() == 2
+    assert result["historical_failed_attempts"]["run_slot"].tolist() == ["RUN_044"]
