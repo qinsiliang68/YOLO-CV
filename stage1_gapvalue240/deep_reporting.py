@@ -239,9 +239,12 @@ def _save_r2_contrast(frame: pd.DataFrame, output: Path) -> bool:
     )
     values = plot["_value"].to_numpy(dtype=float)
     labels = plot["_label"]
-    fig, ax = plt.subplots(figsize=(max(8.5, len(frame) * 0.55), 5.5), constrained_layout=True)
-    bars = ax.bar(np.arange(len(frame)), values * 100, color="#bf8700")
-    ax.set_xticks(np.arange(len(frame)), labels, rotation=45, ha="right")
+    fig, ax = plt.subplots(
+        figsize=(max(8.5, len(plot) * 0.55), 5.5),
+        constrained_layout=True,
+    )
+    bars = ax.bar(np.arange(len(plot)), values * 100, color="#bf8700")
+    ax.set_xticks(np.arange(len(plot)), labels, rotation=45, ha="right")
     ax.set_ylabel("Effective unique contrast (%)")
     ax.set_xlabel("Condition")
     ax.set_title("R2 effective unique contrast (zero-based axis)")

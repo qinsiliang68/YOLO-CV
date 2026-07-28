@@ -179,8 +179,8 @@ def test_build_deep_report_writes_contract_audits_narrative_and_all_available_ch
         ),
         "r2_overlap_power_audit": pd.DataFrame(
             {
-                "condition_id": ["A01", "A02", "A03"],
-                "effective_unique_contrast_rate": [0.105, 0.087, 0.071],
+                "condition_id": ["A01", "A02", "A02", "A03"],
+                "effective_unique_contrast_rate": [0.105, 0.087, 0.081, 0.071],
             }
         ),
         "budget_response": pd.DataFrame(
