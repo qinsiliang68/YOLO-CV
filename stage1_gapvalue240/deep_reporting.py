@@ -441,6 +441,25 @@ def _normalize_narrative(value: Mapping[str, str] | str | None) -> dict[str, str
     return {str(key): str(text) for key, text in value.items()}
 
 
+def _assert_no_suspicious_question_runs(value: Any, *, context: str) -> None:
+    """Reject likely encoding-loss placeholders before any report files are written."""
+
+    if isinstance(value, Mapping):
+        for key, item in value.items():
+            _assert_no_suspicious_question_runs(key, context=context)
+            _assert_no_suspicious_question_runs(item, context=context)
+        return
+    if isinstance(value, Sequence) and not isinstance(value, (str, bytes, bytearray)):
+        for item in value:
+            _assert_no_suspicious_question_runs(item, context=context)
+        return
+    if isinstance(value, str) and re.search(r"\?{3,}", value):
+        raise UnicodeError(
+            f"Suspicious question-mark run found in report {context}; "
+            "this usually indicates encoding loss"
+        )
+
+
 def _write_audits(
     audit_dir: Path,
     audits: Mapping[str, pd.DataFrame | Mapping[str, Any] | Sequence[Any] | str | Path],
@@ -682,6 +701,12 @@ def build_deep_report(
 
     output = Path(output_dir)
     partial = output.with_name(output.name + ".inprogress")
+    narrative_sections = _normalize_narrative(narrative)
+    contract = _load_contract(analysis_contract)
+    _assert_no_suspicious_question_runs(title, context="title")
+    _assert_no_suspicious_question_runs(metadata, context="metadata")
+    _assert_no_suspicious_question_runs(narrative_sections, context="narrative")
+    _assert_no_suspicious_question_runs(contract, context="analysis contract")
     for candidate in (output, partial):
         if candidate.exists():
             raise FileExistsError(f"Refusing to overwrite: {candidate}")
@@ -821,8 +846,6 @@ def build_deep_report(
     )
 
     table_names = list(materialized)
-    narrative_sections = _normalize_narrative(narrative)
-    contract = _load_contract(analysis_contract)
     atomic_write_yaml(partial / "analysis_contract.yaml", contract)
     audit_names = _write_audits(partial / "audit", audits or {})
     _write_markdown(

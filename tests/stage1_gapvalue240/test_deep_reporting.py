@@ -303,3 +303,25 @@ def test_build_deep_report_writes_contract_audits_narrative_and_all_available_ch
     assert "audit/metric_recompute_audit.csv" in manifested
     assert "audit/source_provenance.json" in manifested
     assert manifest["counts"]["audits"] == 2
+
+
+def test_build_deep_report_rejects_question_mark_runs_from_encoding_loss(
+    tmp_path: Path,
+) -> None:
+    tables, metadata, hypotheses = _fixtures()
+    output = tmp_path / "corrupted_report"
+
+    with pytest.raises(UnicodeError, match="question-mark run"):
+        build_deep_report(
+            output,
+            tables=tables,
+            metadata={
+                **metadata,
+                "primary_result": "A02 ?????? R1/R2",
+            },
+            hypothesis_registry=hypotheses,
+            narrative={"核心结论": "??????"},
+        )
+
+    assert not output.exists()
+    assert not output.with_name(output.name + ".inprogress").exists()
