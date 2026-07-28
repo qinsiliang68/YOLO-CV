@@ -1,0 +1,3 @@
+run_slot,package,attempt_id,state
+RUN_044,P14,attempt_20260716T200732_R1_c993a3567f.inprogress,FAILED_TRAIN
+RUN_095,P63,evidence_INVALID_ARTIFACT_attempt_20260719T100010_R1_a793421eac.inprogress,INVALID_ARTIFACT

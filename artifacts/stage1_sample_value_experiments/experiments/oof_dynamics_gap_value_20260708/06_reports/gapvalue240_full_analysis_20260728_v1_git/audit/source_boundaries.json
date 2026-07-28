@@ -1,0 +1,12 @@
+{
+  "completeness_audit": "C:\\baidunetdiskdownload\\stage1_gapvalue240_extract_audit_20260728\\GLOBAL_COMPLETENESS_AUDIT.json",
+  "extracted_root": "C:\\baidunetdiskdownload\\stage1_gapvalue240_all_uploads_extracted",
+  "inventory": "C:\\baidunetdiskdownload\\stage1_gapvalue240_extract_audit_20260728\\GLOBAL_VALIDATED_RUN_INVENTORY.csv",
+  "matrix": "C:\\GitHub\\YOLO-CV\\artifacts\\stage1_sample_value_experiments\\contracts\\gapvalue240_v1_1\\generated\\frozen_experiment_matrix.csv",
+  "output_outside_extracted_root": true,
+  "recovery_reason": "chart-only failure after all 43 analysis CSVs were completely written and independently validated",
+  "recovery_source": "C:\\GitHub\\YOLO-CV\\artifacts\\stage1_sample_value_experiments\\experiments\\oof_dynamics_gap_value_20260708\\06_reports\\gapvalue240_full_analysis_20260728_v1.failed_chart_recovery_source",
+  "selection_root": "C:\\GitHub\\YOLO-CV\\artifacts\\stage1_sample_value_experiments\\contracts\\gapvalue240_v1_1\\generated\\selections",
+  "source_read_only": true,
+  "value_table": "C:\\GitHub\\YOLO-CV\\artifacts\\stage1_sample_value_experiments\\experiments\\oof_dynamics_gap_value_20260708\\02_sample_value_tables\\sample_value_table.csv"
+}

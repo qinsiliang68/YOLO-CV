@@ -1,0 +1,290 @@
+{
+  "arm_counts": {
+    "R1": 80,
+    "R2": 80,
+    "T": 80
+  },
+  "attempt_count": 242,
+  "bad_triads": {},
+  "duplicate_validated_runs": [],
+  "extra_runs": [],
+  "input_snapshot_ids": [
+    "9C51D6B23600CBED36CFFA2537C7DC9C02A093536976ECA80D4968F18691E598",
+    "F6EB65A7878DEFF112BC81661D2D227419F9D7B0CF31BCDDBED923AFF4DE3AC8"
+  ],
+  "input_snapshot_semantic_audit": {
+    "baseline_snapshot": "9C51D6B23600CBED36CFFA2537C7DC9C02A093536976ECA80D4968F18691E598",
+    "comparisons": {
+      "9C51D6B23600CBED36CFFA2537C7DC9C02A093536976ECA80D4968F18691E598": {
+        "files": {
+          "base_train_defect_manifest.csv": {
+            "newline_normalized_equal": true,
+            "raw_bytes_equal": true
+          },
+          "base_train_normal_manifest.csv": {
+            "newline_normalized_equal": true,
+            "raw_bytes_equal": true
+          },
+          "base_val_model_defect_manifest.csv": {
+            "newline_normalized_equal": true,
+            "raw_bytes_equal": true
+          },
+          "base_val_model_normal_manifest.csv": {
+            "newline_normalized_equal": true,
+            "raw_bytes_equal": true
+          },
+          "val_cal_defect_manifest.csv": {
+            "newline_normalized_equal": true,
+            "raw_bytes_equal": true
+          },
+          "val_cal_normal_manifest.csv": {
+            "newline_normalized_equal": true,
+            "raw_bytes_equal": true
+          },
+          "val_op_defect_manifest.csv": {
+            "newline_normalized_equal": true,
+            "raw_bytes_equal": true
+          },
+          "val_op_normal_manifest.csv": {
+            "newline_normalized_equal": true,
+            "raw_bytes_equal": true
+          }
+        },
+        "representative_package": "P35",
+        "representative_run": "RUN_001"
+      },
+      "F6EB65A7878DEFF112BC81661D2D227419F9D7B0CF31BCDDBED923AFF4DE3AC8": {
+        "files": {
+          "base_train_defect_manifest.csv": {
+            "newline_normalized_equal": true,
+            "raw_bytes_equal": false
+          },
+          "base_train_normal_manifest.csv": {
+            "newline_normalized_equal": true,
+            "raw_bytes_equal": false
+          },
+          "base_val_model_defect_manifest.csv": {
+            "newline_normalized_equal": true,
+            "raw_bytes_equal": false
+          },
+          "base_val_model_normal_manifest.csv": {
+            "newline_normalized_equal": true,
+            "raw_bytes_equal": false
+          },
+          "val_cal_defect_manifest.csv": {
+            "newline_normalized_equal": true,
+            "raw_bytes_equal": false
+          },
+          "val_cal_normal_manifest.csv": {
+            "newline_normalized_equal": true,
+            "raw_bytes_equal": false
+          },
+          "val_op_defect_manifest.csv": {
+            "newline_normalized_equal": true,
+            "raw_bytes_equal": false
+          },
+          "val_op_normal_manifest.csv": {
+            "newline_normalized_equal": true,
+            "raw_bytes_equal": false
+          }
+        },
+        "representative_package": "P12",
+        "representative_run": "RUN_182"
+      }
+    },
+    "newline_normalized_all_frozen_csv_equal": true,
+    "run_counts": {
+      "9C51D6B23600CBED36CFFA2537C7DC9C02A093536976ECA80D4968F18691E598": 220,
+      "F6EB65A7878DEFF112BC81661D2D227419F9D7B0CF31BCDDBED923AFF4DE3AC8": 20
+    },
+    "snapshot_count": 2
+  },
+  "issues": [],
+  "machine_asset_semantic_evidence": {
+    "all_13_machine_reports_share_image_and_id_digests": true,
+    "image_asset_digest_values": [
+      "8BB1340A858D30820038E5390007CEB230148029BB3B72F6FBD8E0AFFE7B8601"
+    ],
+    "image_content_hashes_computed": [
+      false
+    ],
+    "manifest_id_digest_values": {
+      "train_defect": [
+        "136FDF394539F016AFD6DFCC212EF0424EE2279BDB41E219D9D1C35DB54E4531"
+      ],
+      "train_normal": [
+        "AE7C4992199B4049BDBE9748AFB5388D836BBADEE93AAA7C2F7032CDAE961A13"
+      ],
+      "val_cal_defect": [
+        "97921E2AE5E7132DD84A0CCE4DACC2C9E342C3BF0C0BD0B086EAB7BC3D1403EA"
+      ],
+      "val_cal_normal": [
+        "078ADAF63DB291B498294C328360B97447AD95D43FB94B94A5EBA48CB0FA0891"
+      ],
+      "val_model_defect": [
+        "E30F5D91321F1D47881E587A87AEBB46794F8C907EF6AD8F3A78F7A27711330E"
+      ],
+      "val_model_normal": [
+        "09C41BF71A0FC4BAF985243208868F213B12A700D90F78538396D92111D52646"
+      ],
+      "val_op_defect": [
+        "CADC0F22A3A0C522CAEF1040AD569B011F7CCEF96FE232934FEA1D8640982B53"
+      ],
+      "val_op_normal": [
+        "39A5E2094E733A6BB51C7DD6A5125281DDD697990DA31C46BBD9057688A47F9B"
+      ]
+    }
+  },
+  "material_completeness": "COMPLETE",
+  "matrix_sha256": "F72E4509F8AB0E5AE017A36C39DD6656CAC820D5616D0EC8AE8F1BE374CF8783",
+  "missing_runs": [],
+  "mixed_machine_triad_count": 24,
+  "mixed_machine_triads": {
+    "TRIAD_051": [
+      "machine_01",
+      "machine_11"
+    ],
+    "TRIAD_052": [
+      "machine_02",
+      "tail_accel_62"
+    ],
+    "TRIAD_055": [
+      "machine_05",
+      "machine_11"
+    ],
+    "TRIAD_056": [
+      "machine_06",
+      "machine_11"
+    ],
+    "TRIAD_061": [
+      "machine_01",
+      "machine_12"
+    ],
+    "TRIAD_062": [
+      "machine_02",
+      "machine_12"
+    ],
+    "TRIAD_063": [
+      "machine_03",
+      "machine_12"
+    ],
+    "TRIAD_064": [
+      "machine_04",
+      "tail_accel_62"
+    ],
+    "TRIAD_065": [
+      "machine_05",
+      "tail_accel_62"
+    ],
+    "TRIAD_066": [
+      "machine_06",
+      "tail_accel_62"
+    ],
+    "TRIAD_067": [
+      "machine_07",
+      "machine_12"
+    ],
+    "TRIAD_068": [
+      "machine_08",
+      "machine_12"
+    ],
+    "TRIAD_069": [
+      "machine_09",
+      "tail_accel_62"
+    ],
+    "TRIAD_070": [
+      "machine_02",
+      "machine_10",
+      "machine_12"
+    ],
+    "TRIAD_071": [
+      "machine_01",
+      "machine_12"
+    ],
+    "TRIAD_072": [
+      "machine_07",
+      "machine_12"
+    ],
+    "TRIAD_073": [
+      "machine_03",
+      "tail_accel_62"
+    ],
+    "TRIAD_074": [
+      "machine_11",
+      "machine_12"
+    ],
+    "TRIAD_075": [
+      "machine_05",
+      "machine_12"
+    ],
+    "TRIAD_076": [
+      "machine_06",
+      "tail_accel_62"
+    ],
+    "TRIAD_077": [
+      "machine_07",
+      "machine_11"
+    ],
+    "TRIAD_078": [
+      "machine_08",
+      "machine_12"
+    ],
+    "TRIAD_079": [
+      "machine_09",
+      "tail_accel_62"
+    ],
+    "TRIAD_080": [
+      "machine_10",
+      "machine_11"
+    ]
+  },
+  "nonvalidated_attempt_count": 2,
+  "nonvalidated_evidence": [
+    {
+      "attempt_id": "attempt_20260716T200732_R1_c993a3567f.inprogress",
+      "package": "P14",
+      "run_slot": "RUN_044",
+      "state": "FAILED_TRAIN"
+    },
+    {
+      "attempt_id": "evidence_INVALID_ARTIFACT_attempt_20260719T100010_R1_a793421eac.inprogress",
+      "package": "P63",
+      "run_slot": "RUN_095",
+      "state": "INVALID_ARTIFACT"
+    }
+  ],
+  "package_report_count": 13,
+  "package_status_counts": {
+    "PASS": 13
+  },
+  "paired_comparison_count": 160,
+  "phase_counts": {
+    "A": 171,
+    "B": 54,
+    "C": 15
+  },
+  "release_commits": [
+    "73662c8d4fdcc1dc682308b65c7f021de645f41e"
+  ],
+  "release_refs": [
+    "stage1-gapvalue240-runtime-v1.2.0"
+  ],
+  "resume_count_distribution": {
+    "0": 225,
+    "1": 14,
+    "2": 1
+  },
+  "runtime_contract_sha256_values": [
+    "6C9C6283493C58466FA7DFC17E326F531AD8A913BAEDDC97D27995B21FBE1A8C"
+  ],
+  "selection_index_sha256": "C58C2BED62FF49859F05C852D53BE2B6935EF438B23FB29E59AC9B8CB64C58F8",
+  "status": "COMPLETE_WITH_WARNINGS",
+  "triad_count": 80,
+  "unique_validated_run_count": 240,
+  "validated_attempt_count": 240,
+  "warnings": [
+    "24 triads are split across multiple physical machine IDs",
+    "2 failed/invalid historical attempts are retained alongside later VALIDATED results",
+    "Two input_snapshot_id values exist; all eight frozen CSV manifests are cell-equivalent after CRLF/LF normalization"
+  ]
+}

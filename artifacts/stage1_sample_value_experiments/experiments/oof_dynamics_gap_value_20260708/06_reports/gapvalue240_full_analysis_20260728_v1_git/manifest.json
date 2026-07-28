@@ -1,0 +1,338 @@
+{
+  "counts": {
+    "audits": 7,
+    "charts": 11,
+    "files_excluding_manifest": 61,
+    "tables": 39
+  },
+  "created_at_utc": "2026-07-28T08:50:46.224637+00:00",
+  "files": [
+    {
+      "relative_path": "analysis_contract.yaml",
+      "sha256": "8FF767C83A6B19D744B8818D635415EDBB9D9EC91BA3C29C2893610D0BF67D7F",
+      "size_bytes": 1363
+    },
+    {
+      "relative_path": "audit/completeness.json",
+      "sha256": "1047C7F2F55A88D9464352B5457D099E4EC4D41429D205602540821AD7316EF4",
+      "size_bytes": 7899
+    },
+    {
+      "relative_path": "audit/metric_recompute.csv",
+      "sha256": "D873DAD1549716DE7EC538CDA72634980EB44E56967A8C6CD8DDDA3B55038A67",
+      "size_bytes": 11280
+    },
+    {
+      "relative_path": "audit/prediction_identity.csv",
+      "sha256": "8FDF0D38058BAD3C48C9FA4FC430DF55FF2CC3F49627745685F3DEC642BCE79F",
+      "size_bytes": 27708
+    },
+    {
+      "relative_path": "audit/selection_sha.csv",
+      "sha256": "DCFD2C2272AD2DFC94532D331C1C4850420C9C39BB6A26E956239E0867D142FE",
+      "size_bytes": 34391
+    },
+    {
+      "relative_path": "audit/source_boundaries.json",
+      "sha256": "D1A7D58FB9559FAB20AD71776954F0941101541F6560ABBE1FA3BB4ACEC36025",
+      "size_bytes": 1213
+    },
+    {
+      "relative_path": "audit/subgroup_field_availability.json",
+      "sha256": "83246256671D0227680225854363EB3B7443F0BB0FADBDBA2132ED08BE73F184",
+      "size_bytes": 412
+    },
+    {
+      "relative_path": "audit/training_contract.csv",
+      "sha256": "12BEBE52D9F0DC84A9291AC17E9F82223460C2FFB0D16557A21B90513BDE9407",
+      "size_bytes": 16811
+    },
+    {
+      "relative_path": "charts/a02_seed_forest_zoomed.png",
+      "sha256": "5E6E952A56A8DF87CCC48F93069E7D7D13567A89EF0362BE2B9D85ECEECF8C17",
+      "size_bytes": 135042
+    },
+    {
+      "relative_path": "charts/a02_threshold_frontier_zoomed.png",
+      "sha256": "FC79F1A7A9ACFD9F1992603A837444639584A69261E39EC344B81176F32F68FD",
+      "size_bytes": 89496
+    },
+    {
+      "relative_path": "charts/a02_training_curves_zoomed.png",
+      "sha256": "6781667A7E3A39EAF58CB6B0080FB10391E02140220A443B828043EF61361109",
+      "size_bytes": 216141
+    },
+    {
+      "relative_path": "charts/budget_response_zoomed.png",
+      "sha256": "DCFA6EB0242DEEDC64A2E3135C4DCCFB5270EF4B34E70239C448291A88E294E9",
+      "size_bytes": 141116
+    },
+    {
+      "relative_path": "charts/condition_effects_zoomed.png",
+      "sha256": "C7A21096D9CCD138DA1D481FFFDCAFAD5364C46802EBE62ACB1869378A7F94D8",
+      "size_bytes": 397670
+    },
+    {
+      "relative_path": "charts/condition_pareto_zoomed.png",
+      "sha256": "E14B71CC42E34C365E1870F49721F4C5FF94E3359F9B98C7673E57145815A9F8",
+      "size_bytes": 240178
+    },
+    {
+      "relative_path": "charts/guard_response_zoomed.png",
+      "sha256": "DA1F42EC763E16460876040C1E13E25B93033147C907A83787B2D6A443B6F005",
+      "size_bytes": 133979
+    },
+    {
+      "relative_path": "charts/hypothesis_status.png",
+      "sha256": "0F870613BEE1BB0B9343407E3AF59101F59EF58C601288780260975817729951",
+      "size_bytes": 33789
+    },
+    {
+      "relative_path": "charts/r2_effective_unique_contrast.png",
+      "sha256": "164221D2BA8E41105BE5565393AB0F5B7E046E5BB2FC55CC2A4F2691172785D2",
+      "size_bytes": 225808
+    },
+    {
+      "relative_path": "charts/resume_machine_reliability.png",
+      "sha256": "7FBE0BDF287E41134E76F0E7264140164C3D804235FF457529EFD07C66946311",
+      "size_bytes": 62676
+    },
+    {
+      "relative_path": "charts/tail_shift_zoomed.png",
+      "sha256": "8475657D22D66C3F063C09FA7F5077C3E3900F74DC4F8E8E32F7E40EDE2F8807",
+      "size_bytes": 285632
+    },
+    {
+      "relative_path": "FINAL_REPORT_CN.md",
+      "sha256": "1356742C1E17F35C7EFA581A1793AAA8BE7817C78D0DFE917F1DB463EBEFF4AB",
+      "size_bytes": 7579
+    },
+    {
+      "relative_path": "index.html",
+      "sha256": "31033AA277419203DB88E7F63B71F615EA7023DFF53055EADAB6D8ADDB8B6850",
+      "size_bytes": 334675
+    },
+    {
+      "relative_path": "README.md",
+      "sha256": "4FB57CBCAC3579F667C7BEB85328EBEE56A53D8D2DF4D73D5DB20B210A687281",
+      "size_bytes": 929
+    },
+    {
+      "relative_path": "tables/a02_discovery_confirmation_combined.csv",
+      "sha256": "64F90E8A1D309D245D519F1205DFB3D96CEB3D7700C9A552317ED436CDDB1B18",
+      "size_bytes": 3967
+    },
+    {
+      "relative_path": "tables/a02_extended_sensitivity.csv",
+      "sha256": "962392ED8ECCB646352F3EEB0EAAE1F6660DA102BF82D561761AD6AC167F2E3E",
+      "size_bytes": 3267
+    },
+    {
+      "relative_path": "tables/a02_leave_one_seed_out.csv",
+      "sha256": "B468F3ED3E7B25D1579426C48F7B7CF49C4321F9EC7B92F9DA64DC439172772C",
+      "size_bytes": 3402
+    },
+    {
+      "relative_path": "tables/a02_shift_subgroups.csv",
+      "sha256": "68B7EC017F4B4F38C407BF2161798A7B2E38682545C9411535E1BA8662D5DD3D",
+      "size_bytes": 13802
+    },
+    {
+      "relative_path": "tables/a02_threshold_frontier.csv",
+      "sha256": "16A8AEA2D2B350EA97E9433E9892AED00EAF8FC39C7C69EE72CA6AFECBC7C924",
+      "size_bytes": 90204
+    },
+    {
+      "relative_path": "tables/a02_threshold_frontier_detail.csv",
+      "sha256": "44179BA58325DCEAD872282A2F05703E09D336ECA13A6E43855D5B742A879B0E",
+      "size_bytes": 366718
+    },
+    {
+      "relative_path": "tables/a02_training_curves.csv",
+      "sha256": "60E4B1B39DA1AA43C17C1A1B62C0435E29365A394F15AAE7BFED7CBEFA251638",
+      "size_bytes": 162867
+    },
+    {
+      "relative_path": "tables/bottom_gap_signs.csv",
+      "sha256": "67AEA7F78DF8132F9FDEA11AC2124500AB85642C2EBF72BF5F4EBB07B55B9F48",
+      "size_bytes": 338
+    },
+    {
+      "relative_path": "tables/budget_response.csv",
+      "sha256": "BCDDA4C5B7C4C8E52C3A3D4AF995F5E8A70F0B9CE8752B5D8550CA23D587288B",
+      "size_bytes": 8553
+    },
+    {
+      "relative_path": "tables/calibration_diagnostics.csv",
+      "sha256": "0C02E0334072AC7D4D37CA7EC260D0F67F6435194DEAE2A8200A3F1D0A1BE451",
+      "size_bytes": 84817
+    },
+    {
+      "relative_path": "tables/canonical_run_metrics.csv",
+      "sha256": "719D0A946D27B20D318F4E57EF1962125227665A3B6DA856349863D019DB6DEA",
+      "size_bytes": 182193
+    },
+    {
+      "relative_path": "tables/condition_control_summaries.csv",
+      "sha256": "7FB624EAFD1786E29E1CB2F6BF746767C643A67CEF81AAFD02A8AE3065A27DFC",
+      "size_bytes": 31700
+    },
+    {
+      "relative_path": "tables/cross_method_seed_paired.csv",
+      "sha256": "84E3CD30EA54A352F65E3D14D3826A0DCFD0C79E5246F5622C84DA9F145E1371",
+      "size_bytes": 18745
+    },
+    {
+      "relative_path": "tables/direct_treatment_comparisons.csv",
+      "sha256": "B57622C04D0449717C5C29F9922839AB40BD4F9E71B2013A10A7BDB676F5693F",
+      "size_bytes": 10275
+    },
+    {
+      "relative_path": "tables/guard_policy_contrasts.csv",
+      "sha256": "EB4D0C60A7AA5C2E1892737466BB28455865FE9289A1DA990816BDF94DCBFE92",
+      "size_bytes": 6396
+    },
+    {
+      "relative_path": "tables/guard_vs_a02_normal_only_direct.csv",
+      "sha256": "071A7CA687F9FB82D3057342B29125C4331A23135F0F0811B03BA40996E5F212",
+      "size_bytes": 4026
+    },
+    {
+      "relative_path": "tables/historical_failed_attempts.csv",
+      "sha256": "D7FBD646909E6E468CFA4DC19AFEC8F96ACA7E20BD94DB0CD800514360BB3368",
+      "size_bytes": 212
+    },
+    {
+      "relative_path": "tables/hypothesis_registry.csv",
+      "sha256": "7505A8180CC60C791465863BE26F7716CD0718164DFBAA557357D00FFBCA5226",
+      "size_bytes": 1875
+    },
+    {
+      "relative_path": "tables/metric_recompute_audit.csv",
+      "sha256": "D873DAD1549716DE7EC538CDA72634980EB44E56967A8C6CD8DDDA3B55038A67",
+      "size_bytes": 11280
+    },
+    {
+      "relative_path": "tables/prediction_identity_audit.csv",
+      "sha256": "8FDF0D38058BAD3C48C9FA4FC430DF55FF2CC3F49627745685F3DEC642BCE79F",
+      "size_bytes": 27708
+    },
+    {
+      "relative_path": "tables/prediction_tail_detail.csv",
+      "sha256": "43CB512BFD5D7CED9D96B69EEFAF8BA25FB05DB8A600F7947AEA08BA1995096F",
+      "size_bytes": 369529
+    },
+    {
+      "relative_path": "tables/prediction_tail_summary.csv",
+      "sha256": "4FF72B395740EEF2E644C108710A493E0135264308DE921BBE362F5DF90F0AB9",
+      "size_bytes": 4160
+    },
+    {
+      "relative_path": "tables/r2_overlap_power_audit.csv",
+      "sha256": "9CB3A8BD0FDFF04729D90747EA6623B2375F73A4675B1DAC9656D2508830C6F4",
+      "size_bytes": 11502
+    },
+    {
+      "relative_path": "tables/reliability_by_machine.csv",
+      "sha256": "98050D3421889093711EDA41B973EC664770AF66F7BD06E29F982188D5C1A0E5",
+      "size_bytes": 1413
+    },
+    {
+      "relative_path": "tables/resume_sensitivity.csv",
+      "sha256": "5085FF66C76D3D7F63715BD5DA08CB56FC25AB67889CB0F244B793579710671A",
+      "size_bytes": 263
+    },
+    {
+      "relative_path": "tables/run_execution_reliability.csv",
+      "sha256": "BFD9037F16E67704A9738905CA12D62F0FA4CC75A738CE6553FB40E241CEFC4A",
+      "size_bytes": 17986
+    },
+    {
+      "relative_path": "tables/selection_composition.csv",
+      "sha256": "94DBF6713DDE3609F8858356C292037ECAC486B2FEA5573CB88BC87BC626F764",
+      "size_bytes": 90939
+    },
+    {
+      "relative_path": "tables/selection_feature_smd.csv",
+      "sha256": "9212FC71A4D76EB932E0670B0CF654E4808E7D5EDC5ECD45C427252B4E7949B4",
+      "size_bytes": 15012
+    },
+    {
+      "relative_path": "tables/selection_identity_quality.csv",
+      "sha256": "13AB729D8918BDCDC754D784BE228F789D094FD1900B0376F7BBA7D2C069CB22",
+      "size_bytes": 94185
+    },
+    {
+      "relative_path": "tables/selection_method_overlap.csv",
+      "sha256": "38A4E7AFE7A8BA596E3B927A652AC0C8188BF4121BFD350F231AF20D2D5DB500",
+      "size_bytes": 31495
+    },
+    {
+      "relative_path": "tables/selection_run_audit.csv",
+      "sha256": "1DA7843E86E7A9A29D3D1321967E84EE035AA98DEB7C6BF71CE67432D345C58F",
+      "size_bytes": 33293
+    },
+    {
+      "relative_path": "tables/selection_sha_audit.csv",
+      "sha256": "DCFD2C2272AD2DFC94532D331C1C4850420C9C39BB6A26E956239E0867D142FE",
+      "size_bytes": 34391
+    },
+    {
+      "relative_path": "tables/selection_triad_overlap.csv",
+      "sha256": "1D02DF29C25636F4AE92A36A22EEFD7F193F9076A500F151EA2DE01CFB63E084",
+      "size_bytes": 35277
+    },
+    {
+      "relative_path": "tables/sensitivity_results.csv",
+      "sha256": "1DCE128CCCAA9E32086A6707188B0771C07B3178BB085E1706AB6D54BB8FF7DA",
+      "size_bytes": 90880
+    },
+    {
+      "relative_path": "tables/snapshot_sensitivity.csv",
+      "sha256": "69E2FFC99BAA794B981B8B7A7610CDA90824E891ADF46C485D49DEED878C56BB",
+      "size_bytes": 321
+    },
+    {
+      "relative_path": "tables/subgroup_field_availability.csv",
+      "sha256": "DA0DCE0702ADA6C5B1EE56BE3DA3695E400493E1908CEE56E390076A24CA2623",
+      "size_bytes": 412
+    },
+    {
+      "relative_path": "tables/training_contract_audit.csv",
+      "sha256": "12BEBE52D9F0DC84A9291AC17E9F82223460C2FFB0D16557A21B90513BDE9407",
+      "size_bytes": 16811
+    },
+    {
+      "relative_path": "tables/training_curve_summary.csv",
+      "sha256": "AE551466CC71D99D4ED71BE0C665B9AC308AE156B8FB760E25EFE7E04DD00D80",
+      "size_bytes": 40123
+    },
+    {
+      "relative_path": "tables/triad_control_deltas.csv",
+      "sha256": "DAB407BEE2C308BF31646DDBDF8D127D4624CAA958D511A83682A07D7DA8A590",
+      "size_bytes": 72269
+    }
+  ],
+  "lifecycle": "regenerate",
+  "manifest_self_excluded": true,
+  "metadata": {
+    "a02_vs_r1_status": "NOT_SUPPORTED",
+    "a02_vs_r2_status": "NOT_SUPPORTED",
+    "conclusion_boundary": "val_op internal discovery/replication only; no blind/external claim",
+    "control_consensus_runs": 160,
+    "epoch_rows": 48000,
+    "full_val_op_recompute": true,
+    "input_snapshots": 2,
+    "package_scope": "Git-lightweight; four large regenerable mechanism tables remain in the local full report",
+    "paired_comparisons": 160,
+    "prediction_identity_audits": 480,
+    "primary_result": "A02 GapCritical-Strict B3000 未通过预注册双对照成功门槛：R1: n=8, mean ΔFN=+5.875, FN upper95=+9.499, worst ΔFN=+11.000, mean ΔTN=-789.500, TN lower95=-1461.006；R2: n=8, mean ΔFN=+5.000, FN upper95=+11.592, worst ΔFN=+19.000, mean ΔTN=-571.625, TN lower95=-1532.313。因此当前 240-run val_op 证据不支持把 A02 作为优于随机对照的主方法。",
+    "resumed_runs": 15,
+    "semantic_snapshot_exception_authorized": true,
+    "triads": 80,
+    "val_cal_prediction_files_verified": 240,
+    "val_op_prediction_files_verified": 240,
+    "validated_runs": 240
+  },
+  "schema_version": "stage1_gapvalue240_deep_report_v1"
+}

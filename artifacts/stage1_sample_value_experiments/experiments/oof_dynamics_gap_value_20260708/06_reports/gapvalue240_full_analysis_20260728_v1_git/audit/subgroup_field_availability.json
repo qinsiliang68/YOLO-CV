@@ -1,0 +1,10 @@
+{
+  "WaterLevel": "True",
+  "canonical_image_relpath": "True",
+  "category_columns": "[\"VA\", \"RB\", \"OB\", \"PF\", \"DE\", \"FS\", \"IS\", \"RO\", \"IN\", \"AF\", \"BE\", \"FO\", \"GR\", \"PH\", \"PB\", \"OS\", \"OP\", \"OK\", \"ND\", \"Defect\"]",
+  "primary_defect_class": "False",
+  "primary_defect_class_source": NaN,
+  "source_basename": "True",
+  "source_csv_path": "True",
+  "target_labels": "True"
+}

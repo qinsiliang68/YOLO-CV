@@ -1,0 +1,9 @@
+field,available,details
+canonical_image_relpath,True,True
+WaterLevel,True,True
+target_labels,True,True
+source_csv_path,True,True
+primary_defect_class,False,False
+primary_defect_class_source,False,
+category_columns,True,"[""VA"", ""RB"", ""OB"", ""PF"", ""DE"", ""FS"", ""IS"", ""RO"", ""IN"", ""AF"", ""BE"", ""FO"", ""GR"", ""PH"", ""PB"", ""OS"", ""OP"", ""OK"", ""ND"", ""Defect""]"
+source_basename,True,True

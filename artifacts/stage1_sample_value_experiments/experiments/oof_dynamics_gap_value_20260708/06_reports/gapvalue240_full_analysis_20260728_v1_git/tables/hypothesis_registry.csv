@@ -1,0 +1,9 @@
+hypothesis_id,hypothesis,status,rationale,causal_claim_allowed
+H1_A02_vs_R1,GapCritical-Strict B3000 outperforms global random,NOT_SUPPORTED,"A02 contract pooled-8 fails registered evidence vs R1; mean delta_FN=5.875, FN upper95=9.499, worst delta_FN=11.000, mean delta_TN=-789.500, TN lower95=-1461.006.",False
+H2_A02_vs_R2,GapCritical-Strict B3000 outperforms matched random,NOT_SUPPORTED,"A02 contract pooled-8 fails registered evidence vs R2; mean delta_FN=5.000, FN upper95=11.592, worst delta_FN=19.000, mean delta_TN=-571.625, TN lower95=-1532.313. Median effective unique contrast=0.076; R2 is a high-overlap, low-power near-treatment control.",False
+H3_vs_traditional_rankings,GapCritical is stronger than traditional static rankings,NOT_SUPPORTED,Cross-method effect tables are required for interpretation; condition summaries alone do not create a causal ranking.,False
+H4_directional_negative_control,GapCritical and BottomGap produce opposite directions,NOT_SUPPORTED,Requires dual-control positive A02 evidence and dual-control opposite-direction A13 evidence.,False
+H5_budget_response,Replay response varies coherently across B600/B3000/B6000,NOT_SUPPORTED,Budget contrasts are exploratory because optimizer steps differ by budget.,False
+H6_not_simple_early_late,Gap-linked dynamics add evidence beyond simple early/late change,NOT_SUPPORTED,Residual and time-matched ablations are descriptive n=3 evidence.,False
+H7_defect_guard,Defect guard protects FN without sacrificing TN,INCONCLUSIVE,Guard contrasts are exploratory; mixed-machine Phase B evidence cannot establish an unqualified causal guard effect.,False
+H8_robust_to_execution_factors,"A02 evidence is robust to machine, resume, and snapshot factors",INCONCLUSIVE,Pooled A02 confirmation is machine-confounded; sensitivity tables must be consulted rather than statistically correcting it away.,False

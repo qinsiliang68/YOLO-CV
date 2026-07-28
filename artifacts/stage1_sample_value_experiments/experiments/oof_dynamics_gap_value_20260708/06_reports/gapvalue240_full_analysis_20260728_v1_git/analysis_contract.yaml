@@ -1,0 +1,29 @@
+analysis_id: stage1_gapvalue240_full_analysis_v1
+source_policy: canonical inventory attempts only; extracted root read-only
+expected_runs: 240
+expected_triads: 80
+expected_comparisons: 160
+primary_delta_FN: FN_at_TN68253(T)-FN_at_TN68253(control)
+primary_delta_TN: TN_at_FN95(T)-TN_at_FN95(control)
+safety_gate: one-sided 95% t-CI upper <= +2 and worst seed <= +5
+tn_gate: after safety, one-sided 95% t-CI lower > 0
+controls: R1 and R2 are never pooled
+a02_primary_contract_cohort: pooled-8; discovery-3 and confirmation-5 also reported separately
+a02_machine_rule: Phase C and pooled-8 retain machine-confounded labels; no causal correction
+r2_rule: high-overlap near-treatment mechanism control; effective unique contrast shown beside effects
+fixed_reference_tails:
+  reference: median score_raw across all 160 control runs
+  operational_normal_high_risk_count: 31747
+  operational_defect_low_risk_count: 95
+  tail_gap_normal_fraction: 0.1
+  tail_gap_defect_fraction: 0.05
+score_roles:
+  score_raw: model-output mechanism analysis
+  score: Platt-calibrated deployment probability
+tie_rule: score >= threshold; whole equal-score group moves together
+steps_per_epoch_by_budget:
+  600: 943
+  3000: 961
+  6000: 985
+three_seed_conditions: exploratory; never labelled confirmed
+conclusion_boundary: val_op internal discovery/replication only; no blind/external claim
