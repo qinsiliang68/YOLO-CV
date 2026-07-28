@@ -399,6 +399,82 @@ def build_cross_method_comparisons(deltas: pd.DataFrame) -> pd.DataFrame:
     return _comparison_summaries(deltas, _METHOD_COMPARISONS, "cross_method")
 
 
+def build_direct_treatment_comparisons(
+    run_results: pd.DataFrame,
+    *,
+    specs: Sequence[tuple[str, str]] = _METHOD_COMPARISONS,
+    metric_columns: Sequence[str] = METRIC_COLUMNS,
+) -> pd.DataFrame:
+    """Compare treatment arms directly at the same training seed.
+
+    These rows are easier to read than a delta-of-deltas, but unlike a
+    within-triad effect they do not automatically cancel machine differences.
+    The machine pairing flag is therefore mandatory output.
+    """
+
+    _require_columns(
+        run_results,
+        (
+            "condition_slot",
+            "training_seed",
+            "arm",
+            "run_slot",
+            "machine_id",
+            "resume_count",
+            *metric_columns,
+        ),
+    )
+    treatments = run_results[run_results.arm.astype(str) == "T"].copy()
+    records: list[dict] = []
+    for reference, comparator in specs:
+        left = treatments[treatments.condition_slot.astype(str) == reference]
+        right = treatments[treatments.condition_slot.astype(str) == comparator]
+        if left.empty or right.empty:
+            continue
+        columns = [
+            "training_seed",
+            "run_slot",
+            "machine_id",
+            "resume_count",
+            *metric_columns,
+        ]
+        merged = left[columns].merge(
+            right[columns],
+            on="training_seed",
+            how="inner",
+            suffixes=("_reference", "_comparator"),
+            validate="one_to_one",
+        )
+        for _, row in merged.iterrows():
+            record = {
+                "reference_condition": reference,
+                "comparator_condition": comparator,
+                "training_seed": int(row.training_seed),
+                "reference_run_slot": row.run_slot_reference,
+                "comparator_run_slot": row.run_slot_comparator,
+                "reference_machine_id": row.machine_id_reference,
+                "comparator_machine_id": row.machine_id_comparator,
+                "machine_pair": (
+                    "same_machine"
+                    if row.machine_id_reference == row.machine_id_comparator
+                    else "cross_machine"
+                ),
+                "any_resumed": bool(
+                    int(row.resume_count_reference) > 0
+                    or int(row.resume_count_comparator) > 0
+                ),
+            }
+            for metric in metric_columns:
+                name = DELTA_NAMES.get(metric, f"delta_{metric}").removeprefix(
+                    "delta_"
+                )
+                record[f"direct_delta_{name}"] = float(
+                    row[f"{metric}_reference"] - row[f"{metric}_comparator"]
+                )
+            records.append(record)
+    return pd.DataFrame(records)
+
+
 def build_budget_comparisons(deltas: pd.DataFrame) -> pd.DataFrame:
     """Compare preregistered budgets by paired treatment effects."""
 

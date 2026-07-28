@@ -8,6 +8,7 @@ from stage1_gapvalue240.deep_statistics import (
     build_budget_comparisons,
     build_condition_summaries,
     build_cross_method_comparisons,
+    build_direct_treatment_comparisons,
     build_guard_comparisons,
     build_sensitivity_summaries,
     build_triad_deltas,
@@ -223,3 +224,33 @@ def test_preregistered_method_budget_and_guard_comparisons_are_seed_paired():
     ]
     assert comparison["n"].item() == 3
     assert comparison["mean_diff_delta_FN"].item() == -1.0
+
+
+def test_direct_treatment_comparisons_pair_seed_and_flag_machine():
+    reference = _triad(
+        "TRIAD_001",
+        "A01",
+        11,
+        budget=600,
+        treatment_shift=2,
+        machine_ids=("machine_1", "machine_1", "machine_1"),
+    )[0]
+    comparator = _triad(
+        "TRIAD_002",
+        "A05",
+        11,
+        method="Confidence-Clean",
+        budget=600,
+        treatment_shift=1,
+        machine_ids=("machine_2", "machine_2", "machine_2"),
+    )[0]
+    result = build_direct_treatment_comparisons(
+        pd.DataFrame([reference, comparator]),
+        specs=[("A01", "A05")],
+    )
+    row = result.iloc[0]
+    assert row.reference_condition == "A01"
+    assert row.comparator_condition == "A05"
+    assert row.direct_delta_TN == 10
+    assert row.direct_delta_FN == -1
+    assert row.machine_pair == "cross_machine"
