@@ -1,0 +1,41 @@
+{
+  "artifacts": [
+    {
+      "relative_path": "FIELD_INVENTORY.csv",
+      "sha256": "C6CBA926A209545A98D8191432947059CF2760B4F689F54718AF9EA72EC688C0",
+      "size_bytes": 1692239
+    },
+    {
+      "relative_path": "FIELD_GAP_REPORT.md",
+      "sha256": "6E56033A5F1897A7B052155FAFD04DD94035D8C2D46DD866EED946D67B0AEBE2",
+      "size_bytes": 5401
+    },
+    {
+      "relative_path": "DATA_VOLUME_FORECAST.csv",
+      "sha256": "5843801A53B6EBF2151CC4804F90D28748D32F93F4D0706843216EED97E0D165",
+      "size_bytes": 1375
+    },
+    {
+      "relative_path": "RETENTION_POLICY.md",
+      "sha256": "00DEDA383A73B8E3D81698AA2ED702C2B5729675CBC0D469973C5DF0B7BB0E09",
+      "size_bytes": 1789
+    },
+    {
+      "relative_path": "DATA_LINEAGE.json",
+      "sha256": "F801C68CBA7BAC28EBFB5570F8197325665D5BEB29C36CFEEF858EBB8BA3097F",
+      "size_bytes": 3452
+    }
+  ],
+  "campaign_id": "dynamic_replay_budget_efficiency_20260807",
+  "field_rows": 1493,
+  "forecast_scenarios": 3,
+  "inventory_gates": {
+    "duplicate_field_identities": 0,
+    "invalid_coverage_rate": 0,
+    "invalid_priority": 0,
+    "missing_decision_metadata": 0
+  },
+  "logical_sources": 8,
+  "p0_gap_rows": 18,
+  "status": "complete"
+}

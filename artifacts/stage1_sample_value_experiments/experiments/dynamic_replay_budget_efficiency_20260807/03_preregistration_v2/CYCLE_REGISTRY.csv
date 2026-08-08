@@ -1,0 +1,5 @@
+cycle_id,question,seed_scope,seed_count,release_state,depends_on,result_deadline_days
+CYCLE_1,Does reducing late replay change the paired tail outcome at high pressure?,DISCOVERY_TIMING_DOSE,8,ENGINEERING_GATE,LOCAL_SMOKE_AND_TEN_MACHINE_CANARY,7
+CYCLE_2,"Is any timing effect caused by timing, cumulative dose, or replay ratio?",DISCOVERY_TIMING_DOSE,8,HELD,CYCLE_1_REGISTERED_DECISION,7
+CYCLE_3,Does a learnable weak-defect guard reduce tail harm at fixed total slots?,DISCOVERY_GUARD,8,HELD,CYCLE_2_POLICY_FREEZE,7
+CYCLE_4,Does one frozen combined policy replicate on entirely unseen seeds?,UNSEEN_CONFIRMATION,14,HELD,CYCLE_3_FINAL_POLICY_FREEZE,7

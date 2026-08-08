@@ -1,0 +1,44 @@
+{
+  "schema_version": "1.0",
+  "experiment_id": "dynamic_replay_budget_efficiency_20260807",
+  "experiment_group": "conditional_sample_value_dynamic_replay",
+  "status": "code_ready_for_owner_canary",
+  "created_at": "2026-08-07T19:12:19+08:00",
+  "deadline": "2026-09-10",
+  "stage_dirs": {
+    "00_registry": "00_registry",
+    "01_field_audit": "01_field_audit",
+    "02_literature": "02_literature",
+    "03_preregistration": "03_preregistration",
+    "04_run_queue": "04_run_queue",
+    "05_training_runs": "05_training_runs",
+    "06_process_exports": "06_process_exports",
+    "07_evaluation": "07_evaluation",
+    "08_reports": "08_reports",
+    "09_aiops": "09_aiops"
+  },
+  "legacy_evidence_dirs": {
+    "preregistration": "03_preregistration",
+    "run_queue": "04_run_queue"
+  },
+  "active_runtime_dirs": {
+    "preregistration": "03_preregistration_v2",
+    "run_queue": "04_run_queue_v2"
+  },
+  "scientific_protocol_source": "03_preregistration_v2/PREREGISTRATION_VALIDATION.json",
+  "runtime_queue_source": "04_run_queue_v2/RUN_QUEUE_VALIDATION.json",
+  "key_checkpoint_epochs": [
+    120,
+    140,
+    150,
+    160,
+    180,
+    200
+  ],
+  "layout_rule": "family/experiments/experiment_id/stage/registered_artifact",
+  "source_experiments": [
+    "hn_rn_40runs_20260630",
+    "hn_band_120runs_20260707",
+    "oof_dynamics_gap_value_20260708"
+  ]
+}

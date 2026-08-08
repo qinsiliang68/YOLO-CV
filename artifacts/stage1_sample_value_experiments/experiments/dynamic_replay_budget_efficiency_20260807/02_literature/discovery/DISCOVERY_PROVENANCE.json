@@ -1,0 +1,15 @@
+{
+  "built_at": "2026-08-07",
+  "campaign_id": "dynamic_replay_budget_efficiency_20260807",
+  "candidate_rows": 303,
+  "discovery_counts": {
+    "deduplicated": 1403,
+    "raw_results": 1900,
+    "shortlisted": 303
+  },
+  "snapshot_sha256": "35EAC78AACD7CE1FBDB2BDEF970C90C805C581E7D76CA74430425007F3FA8182",
+  "source": "OpenAlex API high-recall discovery followed by local screening",
+  "source_path_at_build": "C:\\Users\\28898\\AppData\\Local\\Temp\\stage1_literature_openalex_candidates_20260807.csv",
+  "source_sha256": "35EAC78AACD7CE1FBDB2BDEF970C90C805C581E7D76CA74430425007F3FA8182",
+  "unique_queries": 34
+}

@@ -1,0 +1,94 @@
+{
+  "artifacts": [
+    {
+      "relative_path": "discovery/DISCOVERY_PROVENANCE.json",
+      "sha256": "85675642EC12CD93AD0E2F58F763C140E1F733569957FCFCFBA1B0232FD8DD3E",
+      "size_bytes": 634
+    },
+    {
+      "relative_path": "discovery/DISCOVERY_QUERY_LOG.csv",
+      "sha256": "177C0BA05807C6666E93BBDEEAC681AD11E28DDE1212BCF3CC32D03EBBFB90DE",
+      "size_bytes": 2037
+    },
+    {
+      "relative_path": "discovery/OPENALEX_CANDIDATES.csv",
+      "sha256": "35EAC78AACD7CE1FBDB2BDEF970C90C805C581E7D76CA74430425007F3FA8182",
+      "size_bytes": 529614
+    },
+    {
+      "relative_path": "LITERATURE_EVIDENCE_MATRIX.csv",
+      "sha256": "6F8AC1D3A3B0A02EE118CC31B89F8A06B26CFCCDC5F81425E828AFA37DFDB2D7",
+      "size_bytes": 304167
+    },
+    {
+      "relative_path": "LITERATURE_REVIEW_METHOD.md",
+      "sha256": "D37FB169AC84B0AAFFE8316D87666D5261F955AB97876E39C6745948E74C3EB7",
+      "size_bytes": 1632
+    },
+    {
+      "relative_path": "LITERATURE_VALIDATION.json",
+      "sha256": "87B7BAD7F96EB62009B923CB718C9B8245E5A87FA82FD6FDC130ED203E68F3AF",
+      "size_bytes": 913
+    },
+    {
+      "relative_path": "READING_LOG.csv",
+      "sha256": "D59DC37C27018C851973B00FCD3085FB037012A0DCE762D2F8ED0C833C6E37B8",
+      "size_bytes": 51721
+    },
+    {
+      "relative_path": "RESEARCH_SYNTHESIS.md",
+      "sha256": "B15183B760266B29A273CC05F765F1C57C1C5255F609EC3632674C942BC80774",
+      "size_bytes": 3369
+    },
+    {
+      "relative_path": "SCREENING_EXCLUSIONS.csv",
+      "sha256": "CA4823251389130844E12DB968322A787BFD7E62DD90FF50420306926D1D0BEB",
+      "size_bytes": 22649
+    }
+  ],
+  "campaign_id": "dynamic_replay_budget_efficiency_20260807",
+  "candidate_rows": 303,
+  "counts": {
+    "deep_read": 33,
+    "duplicate_evidence_ids": 0,
+    "duplicate_normalized_titles": 0,
+    "invalid_primary_urls": 0,
+    "invalid_reading_evidence": 0,
+    "method_read": 55,
+    "missing_required_metadata": 0,
+    "screened": 155
+  },
+  "exclusion_rows": 181,
+  "review_validation": {
+    "artifacts": [
+      {
+        "relative_path": "LITERATURE_EVIDENCE_MATRIX.csv",
+        "sha256": "6F8AC1D3A3B0A02EE118CC31B89F8A06B26CFCCDC5F81425E828AFA37DFDB2D7",
+        "size_bytes": 304167
+      },
+      {
+        "relative_path": "READING_LOG.csv",
+        "sha256": "D59DC37C27018C851973B00FCD3085FB037012A0DCE762D2F8ED0C833C6E37B8",
+        "size_bytes": 51721
+      },
+      {
+        "relative_path": "RESEARCH_SYNTHESIS.md",
+        "sha256": "B15183B760266B29A273CC05F765F1C57C1C5255F609EC3632674C942BC80774",
+        "size_bytes": 3369
+      }
+    ],
+    "campaign_id": "dynamic_replay_budget_efficiency_20260807",
+    "counts": {
+      "deep_read": 33,
+      "duplicate_evidence_ids": 0,
+      "duplicate_normalized_titles": 0,
+      "invalid_primary_urls": 0,
+      "invalid_reading_evidence": 0,
+      "method_read": 55,
+      "missing_required_metadata": 0,
+      "screened": 155
+    },
+    "status": "complete"
+  },
+  "status": "complete"
+}

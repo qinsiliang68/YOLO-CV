@@ -1,0 +1,35 @@
+category_query,query,shortlisted_records
+active_learning,active learning class imbalance label noise,6
+active_learning,active learning core-set deep learning,2
+active_learning,deep active learning uncertainty diversity,6
+data_subset,coreset selection neural network training,30
+data_subset,data pruning information maximization,1
+data_subset,data subset selection deep learning,4
+data_subset,dataset pruning deep learning,1
+data_subset,generalization based data subset selection,1
+data_subset,gradient matching data subset selection,6
+influence_attribution,data Shapley valuation machine learning,27
+influence_attribution,influence functions training data neural network,1
+influence_attribution,training data attribution machine learning,1
+influence_attribution,training data influence deep learning,1
+noisy_label,co-teaching noisy labels,33
+noisy_label,hard clean samples noisy labels,21
+noisy_label,sample selection noisy labels deep learning,1
+noisy_label,training dynamics label noise,2
+operational_tail,Neyman Pearson classification machine learning,10
+operational_tail,calibration neural networks classification,12
+operational_tail,long tailed recognition class imbalance,39
+optimization_stability,algorithmic stability stochastic gradient descent,1
+optimization_stability,edge of stability neural networks,2
+optimization_stability,random seed deep learning variance,1
+optimization_stability,weight averaging generalization deep learning,2
+replay,experience replay continual learning,27
+replay,gradient based sample selection continual learning,4
+replay,maximally interfered retrieval continual learning,20
+replay,replay scheduling continual learning,10
+training_dynamics,area under margin mislabeled data,8
+training_dynamics,dataset cartography training dynamics,2
+training_dynamics,dynamic uncertainty dataset pruning,3
+training_dynamics,example forgetting deep neural network,7
+training_dynamics,memorization training examples deep networks,9
+training_dynamics,reducible loss data selection,2
