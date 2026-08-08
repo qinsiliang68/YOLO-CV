@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://stage1.local/schemas/stage1.cycle_closeout_validation.v1.json",
+  "title": "stage1.cycle_closeout_validation.v1",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "status",
+    "issues",
+    "expected_job_count",
+    "observed_job_count",
+    "state_counts",
+    "identities",
+    "blind_or_external_accessed",
+    "read_only"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "stage1.cycle_closeout_validation.v1"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "PASS",
+        "FAIL"
+      ]
+    }
+  },
+  "additionalProperties": true
+}

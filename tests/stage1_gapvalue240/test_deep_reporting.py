@@ -230,6 +230,55 @@ def test_build_deep_report_writes_contract_audits_narrative_and_all_available_ch
                 "resume_count": [0, 0, 1, 2],
             }
         ),
+        "selection_value_effect_associations": pd.DataFrame(
+            {
+                "analysis_scope": ["phase_a_normal_gapcritical"] * 4,
+                "control": ["R1", "R1", "R2", "R2"],
+                "predictor": ["treatment_mean_gap_critical_score"] * 4,
+                "outcome": ["delta_TN", "delta_FN", "delta_TN", "delta_FN"],
+                "n_conditions": [8, 8, 8, 8],
+                "spearman_rho": [0.42, -0.31, 0.18, -0.11],
+                "p_value": [0.2, 0.3, 0.6, 0.7],
+            }
+        ),
+        "raw_calibrated_operational_sensitivity": pd.DataFrame(
+            {
+                "triad_id": ["TRIAD_004", "TRIAD_004"],
+                "condition_slot": ["A02", "A02"],
+                "control": ["R1", "R2"],
+                "delta_TN": [21.0, 7.0],
+                "delta_FN": [-1.0, 0.5],
+                "delta_raw_TN_at_FN95": [21.0, 7.0],
+                "delta_raw_FN_at_TN68253": [-1.0, 0.5],
+                "integer_effects_equal": [True, True],
+            }
+        ),
+        "paired_epoch_differences": pd.DataFrame(
+            [
+                {
+                    "condition_slot": "A02",
+                    "control": control,
+                    "training_seed": seed,
+                    "epoch": epoch,
+                    "delta_top1": 0.001 * seed + 0.0001 * epoch,
+                    "delta_val_loss": -0.002 * seed - 0.00005 * epoch,
+                }
+                for control in ["R1", "R2"]
+                for seed in [1, 2]
+                for epoch in [1, 100, 200]
+            ]
+        ),
+        "paired_epoch_effect_summary": pd.DataFrame(
+            {
+                "condition_slot": ["A02", "A02"],
+                "condition_id": ["A02_gapcritical", "A02_gapcritical"],
+                "phase": ["A", "A"],
+                "control": ["R1", "R2"],
+                "seed_count": [3, 3],
+                "final_delta_top1": [0.012, 0.008],
+                "final_delta_val_loss": [-0.009, -0.004],
+            }
+        ),
     }
     output = tmp_path / "rich_report"
     contract = {
@@ -287,6 +336,9 @@ def test_build_deep_report_writes_contract_audits_narrative_and_all_available_ch
         "a02_threshold_frontier_zoomed.png",
         "a02_training_curves_zoomed.png",
         "resume_machine_reliability.png",
+        "selection_value_effect_associations.png",
+        "raw_calibrated_operational_sensitivity.png",
+        "paired_epoch_effects_zoomed.png",
     }
     assert expected_charts == {path.name for path in (output / "charts").glob("*.png")}
     index = (output / "index.html").read_text(encoding="utf-8")
@@ -295,6 +347,10 @@ def test_build_deep_report_writes_contract_audits_narrative_and_all_available_ch
     assert index.index('src="charts/a02_seed_forest_zoomed.png"') < index.index(
         'href="tables/triad_control_deltas.csv"',
         index.index('src="charts/a02_seed_forest_zoomed.png"'),
+    )
+    assert index.index('src="charts/paired_epoch_effects_zoomed.png"') < index.index(
+        'href="tables/paired_epoch_differences.csv"',
+        index.index('src="charts/paired_epoch_effects_zoomed.png"'),
     )
 
     manifest = json.loads((output / "manifest.json").read_text(encoding="utf-8"))

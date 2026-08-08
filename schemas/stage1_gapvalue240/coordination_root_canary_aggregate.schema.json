@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://stage1.local/schemas/stage1.coordination_root_canary_aggregate.v1.json",
+  "title": "stage1.coordination_root_canary_aggregate.v1",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "status",
+    "issues",
+    "campaign_id",
+    "generation",
+    "expected_machine_ids",
+    "node_count",
+    "atomic_competition_winner_count",
+    "visible_token_matrix_complete"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "stage1.coordination_root_canary_aggregate.v1"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "PASS",
+        "FAIL"
+      ]
+    }
+  },
+  "additionalProperties": true
+}

@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://stage1.local/schemas/stage1.dynamic_campaign_engineering_gate.v2.json",
+  "title": "stage1.dynamic_campaign_engineering_gate.v2",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "status",
+    "issues",
+    "identity",
+    "evidence",
+    "validation_complete"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "stage1.dynamic_campaign_engineering_gate.v2"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "PASS",
+        "FAIL"
+      ]
+    }
+  },
+  "additionalProperties": true
+}

@@ -43,6 +43,19 @@ def _job(tmp_path: Path, split: str = "val_cal") -> PredictionJob:
     )
 
 
+def test_campaign_causal_probe_is_an_allowed_prediction_split(tmp_path: Path) -> None:
+    job = _job(tmp_path, split="causal_train_probe")
+
+    def fake_predict(**kwargs):
+        pd.DataFrame(
+            {"sample_id": ["d1", "d2", "n1"], "y_true": [1, 1, 0], "score": [0.9, 0.8, 0.1]}
+        ).to_csv(kwargs["output"], index=False)
+
+    result = execute_prediction_job(job, predict_fn=fake_predict)
+
+    assert result["status"] == "PASS"
+
+
 def test_prediction_worker_writes_atomic_pass_result_with_exact_inputs(tmp_path):
     job = _job(tmp_path)
 

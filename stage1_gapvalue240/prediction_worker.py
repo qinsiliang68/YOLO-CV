@@ -60,7 +60,7 @@ def _resolved(job: PredictionJob) -> PredictionJob:
 
 
 def _validate_inputs(job: PredictionJob) -> tuple[int, int]:
-    if job.split not in {"val_cal", "val_op"}:
+    if job.split not in {"val_cal", "val_op", "causal_train_probe"}:
         raise ValueError(f"Unsupported split: {job.split}")
     for path in (job.checkpoint, job.defect_manifest, job.normal_manifest):
         if not path.is_file():
@@ -193,7 +193,7 @@ def execute_prediction_job(
 
 def _parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Run one Stage-1 val_cal or val_op prediction in an isolated process.")
-    parser.add_argument("--split", choices=("val_cal", "val_op"), required=True)
+    parser.add_argument("--split", choices=("val_cal", "val_op", "causal_train_probe"), required=True)
     parser.add_argument("--checkpoint", type=Path, required=True)
     parser.add_argument("--dataset-root", type=Path, required=True)
     parser.add_argument("--defect-manifest", type=Path, required=True)

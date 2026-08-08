@@ -11,9 +11,11 @@ from stage1_gapvalue240.errors import ValidationError
 from stage1_gapvalue240.hardlink_staging import (
     StagingExpectedCounts,
     prepare_base_cache,
+    staged_identity_replay_session,
     storage_preflight,
     staged_replay_session,
 )
+from stage1_gapvalue240.util import sha256_file
 
 
 def _write_image(dataset: Path, relpath: str, payload: bytes) -> dict[str, str]:
@@ -96,6 +98,83 @@ def test_base_cache_and_replay_use_hardlinks_then_cleanup(tmp_path):
     reused = prepare_base_cache(dataset, staging_root, manifests, expected_counts=expected)
     assert reused.reused is True
     assert reused.snapshot_id == cache.snapshot_id
+
+
+def test_identity_replay_session_links_registered_sources_and_cleans_up(tmp_path):
+    dataset, manifests, expected = _fixture_manifests(tmp_path)
+    cache = prepare_base_cache(dataset, tmp_path / "staging", manifests, expected_counts=expected)
+    identity = _write_manifest(
+        tmp_path / "replay_identity.csv",
+        [
+            {
+                "selection_rank": 1,
+                "role_rank": 1,
+                "sample_id": "Det/images/normal_train/n0.png",
+                "y_true": 0,
+                "replay_role": "normal_replay",
+                "source_canonical_image_relpath": "Det/images/normal_train/n0.png",
+                "source_filename": "n0.png",
+                "staged_filename": "replay__JOB_A__00001__n0.png",
+            },
+            {
+                "selection_rank": 2,
+                "role_rank": 1,
+                "sample_id": "Det/images/train/d0.png",
+                "y_true": 1,
+                "replay_role": "defect_guard",
+                "source_canonical_image_relpath": "Det/images/train/d0.png",
+                "source_filename": "d0.png",
+                "staged_filename": "replay__JOB_A__00002__d0.png",
+            },
+        ],
+    )
+
+    with staged_identity_replay_session(
+        cache,
+        identity,
+        run_slot="JOB_A",
+        expected_replay_rows=2,
+    ) as staged:
+        normal = staged.dataset_dir / "train/no_target/replay__JOB_A__00001__n0.png"
+        defect = staged.dataset_dir / "train/target_defect/replay__JOB_A__00002__d0.png"
+        assert os.path.samefile(normal, dataset / "Det/images/normal_train/n0.png")
+        assert os.path.samefile(defect, dataset / "Det/images/train/d0.png")
+        journal = pd.read_json(staged.active_journal, typ="series")
+        assert journal["replay_identity_sha256"] == sha256_file(identity)
+
+    assert not normal.exists()
+    assert not defect.exists()
+    assert not staged.active_journal.exists()
+
+
+def test_identity_replay_session_rejects_unregistered_source(tmp_path):
+    dataset, manifests, expected = _fixture_manifests(tmp_path)
+    cache = prepare_base_cache(dataset, tmp_path / "staging", manifests, expected_counts=expected)
+    extra = _write_image(dataset, "Det/images/normal_train/not_registered.png", b"x")
+    identity = _write_manifest(
+        tmp_path / "replay_identity.csv",
+        [
+            {
+                "selection_rank": 1,
+                "role_rank": 1,
+                "sample_id": extra["canonical_image_relpath"],
+                "y_true": 0,
+                "replay_role": "normal_replay",
+                "source_canonical_image_relpath": extra["canonical_image_relpath"],
+                "source_filename": extra["Filename"],
+                "staged_filename": "replay__JOB_A__00001__not_registered.png",
+            }
+        ],
+    )
+
+    with pytest.raises(ValidationError, match="absent from frozen base manifest"):
+        with staged_identity_replay_session(
+            cache,
+            identity,
+            run_slot="JOB_A",
+            expected_replay_rows=1,
+        ):
+            pass
 
 
 def test_cross_volume_is_rejected_before_any_hardlink(tmp_path, monkeypatch):

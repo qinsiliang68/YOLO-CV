@@ -18,7 +18,8 @@ ALLOWED_KEYS = {
     "train_manifest", "normal_train_manifest", "trainer_output_root", "evaluator_output_root",
     "dry_run", "command_timeout_seconds", "staging_root", "machine_asset_report",
     "minimum_staging_free_gib", "minimum_output_free_gib", "maximum_staging_files",
-    "gpu_memory_release_threshold_mib"
+    "gpu_memory_release_threshold_mib", "coordination_root", "job_lease_ttl_seconds",
+    "job_lease_heartbeat_seconds"
 }
 FORBIDDEN_SCIENCE_KEYS = {
     "method", "budget", "epochs", "training_seed", "selection_seed", "guard_ratio", "batch_size",

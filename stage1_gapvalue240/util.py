@@ -49,7 +49,7 @@ def atomic_write_bytes(path: str | Path, data: bytes, overwrite: bool = False) -
     path.parent.mkdir(parents=True, exist_ok=True)
     if path.exists() and not overwrite:
         raise FileExistsError(f"Refusing to overwrite: {path}")
-    fd, tmp_name = tempfile.mkstemp(prefix=f".{path.name}.", suffix=".tmp", dir=path.parent)
+    fd, tmp_name = tempfile.mkstemp(prefix=".tmp-", suffix=".tmp", dir=path.parent)
     try:
         with os.fdopen(fd, "wb") as f:
             f.write(data)
@@ -118,7 +118,7 @@ def write_sha256_manifest(root: str | Path, output: str | Path, exclude: Iterabl
             continue
         rows.append((rel, path.stat().st_size, sha256_file(path)))
     output.parent.mkdir(parents=True, exist_ok=True)
-    fd, tmp_name = tempfile.mkstemp(prefix=f".{output.name}.", suffix=".tmp", dir=output.parent)
+    fd, tmp_name = tempfile.mkstemp(prefix=".tmp-", suffix=".tmp", dir=output.parent)
     try:
         with os.fdopen(fd, "w", encoding="utf-8", newline="") as f:
             w = csv.writer(f)

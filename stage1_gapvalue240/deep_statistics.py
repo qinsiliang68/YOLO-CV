@@ -75,6 +75,7 @@ _BUDGET_COMPARISONS: tuple[tuple[str, str], ...] = (
 _GUARD_COMPARISONS: tuple[tuple[str, str], ...] = (
     ("B04", "B03"),
     ("B05", "B04"),
+    ("B05", "B03"),
     ("B04", "B01"),
     ("B04", "B02"),
     ("B04", "B06"),
@@ -391,6 +392,126 @@ def _comparison_summaries(
             record["n"] = summary["n"]
             records.append(record)
     return pd.DataFrame(records)
+
+
+def _comparison_detail(
+    deltas: pd.DataFrame,
+    specs: Sequence[tuple[str, str]],
+    comparison_type: str,
+) -> pd.DataFrame:
+    """Return one delta-of-deltas row per seed and control.
+
+    The aggregate comparison tables are useful for concise reporting, but this
+    detail table retains the execution context required to inspect seed,
+    machine, and resume dependence.
+    """
+
+    _require_columns(
+        deltas,
+        (
+            "triad_id",
+            "condition_slot",
+            "training_seed",
+            "control",
+            "machine_pair",
+            "any_resumed",
+            "delta_FN",
+            "delta_TN",
+        ),
+    )
+    delta_columns = _delta_columns(deltas)
+    records: list[dict] = []
+    for reference, comparator in specs:
+        reference_rows = deltas[
+            deltas["condition_slot"].astype(str) == str(reference)
+        ]
+        comparator_rows = deltas[
+            deltas["condition_slot"].astype(str) == str(comparator)
+        ]
+        if reference_rows.empty or comparator_rows.empty:
+            continue
+        keep = [
+            "triad_id",
+            "training_seed",
+            "control",
+            "machine_pair",
+            "any_resumed",
+            "t_run_slot",
+            "control_run_slot",
+            *delta_columns,
+        ]
+        merged = reference_rows[keep].merge(
+            comparator_rows[keep],
+            on=["training_seed", "control"],
+            how="inner",
+            suffixes=("_reference", "_comparator"),
+            validate="one_to_one",
+        )
+        for _, row in merged.iterrows():
+            record = {
+                "comparison_type": comparison_type,
+                "reference_condition": str(reference),
+                "comparator_condition": str(comparator),
+                "training_seed": int(row["training_seed"]),
+                "control": str(row["control"]),
+                "reference_triad_id": str(row["triad_id_reference"]),
+                "comparator_triad_id": str(row["triad_id_comparator"]),
+                "reference_t_run_slot": str(row["t_run_slot_reference"]),
+                "reference_control_run_slot": str(
+                    row["control_run_slot_reference"]
+                ),
+                "comparator_t_run_slot": str(row["t_run_slot_comparator"]),
+                "comparator_control_run_slot": str(
+                    row["control_run_slot_comparator"]
+                ),
+                "reference_machine_pair": str(row["machine_pair_reference"]),
+                "comparator_machine_pair": str(row["machine_pair_comparator"]),
+                "any_cross_machine": bool(
+                    str(row["machine_pair_reference"]) != "same_machine"
+                    or str(row["machine_pair_comparator"]) != "same_machine"
+                ),
+                "any_resumed": bool(
+                    row["any_resumed_reference"]
+                    or row["any_resumed_comparator"]
+                ),
+            }
+            for column in delta_columns:
+                suffix = column.removeprefix("delta_")
+                record[f"diff_delta_{suffix}"] = float(
+                    row[f"{column}_reference"] - row[f"{column}_comparator"]
+                )
+            records.append(record)
+    return pd.DataFrame(records)
+
+
+def build_cross_method_comparison_detail(
+    deltas: pd.DataFrame,
+    *,
+    specs: Sequence[tuple[str, str]] = _METHOD_COMPARISONS,
+) -> pd.DataFrame:
+    """Return per-seed cross-method delta-of-deltas."""
+
+    return _comparison_detail(deltas, specs, "cross_method")
+
+
+def build_budget_comparison_detail(
+    deltas: pd.DataFrame,
+    *,
+    specs: Sequence[tuple[str, str]] = _BUDGET_COMPARISONS,
+) -> pd.DataFrame:
+    """Return per-seed budget delta-of-deltas."""
+
+    return _comparison_detail(deltas, specs, "budget")
+
+
+def build_guard_comparison_detail(
+    deltas: pd.DataFrame,
+    *,
+    specs: Sequence[tuple[str, str]] = _GUARD_COMPARISONS,
+) -> pd.DataFrame:
+    """Return per-seed guard-policy and full-dose delta-of-deltas."""
+
+    return _comparison_detail(deltas, specs, "guard")
 
 
 def build_cross_method_comparisons(deltas: pd.DataFrame) -> pd.DataFrame:

@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://stage1.local/schemas/stage1.source_tree_manifest.v1.json",
+  "title": "stage1.source_tree_manifest.v1",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "status",
+    "file_count",
+    "files",
+    "root_digest"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "stage1.source_tree_manifest.v1"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "COMPLETE"
+      ]
+    }
+  },
+  "additionalProperties": true
+}

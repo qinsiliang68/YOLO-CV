@@ -6,9 +6,12 @@ import pytest
 from stage1_gapvalue240.deep_statistics import (
     build_a02_summaries,
     build_budget_comparisons,
+    build_budget_comparison_detail,
     build_condition_summaries,
+    build_cross_method_comparison_detail,
     build_cross_method_comparisons,
     build_direct_treatment_comparisons,
+    build_guard_comparison_detail,
     build_guard_comparisons,
     build_sensitivity_summaries,
     build_triad_deltas,
@@ -224,6 +227,76 @@ def test_preregistered_method_budget_and_guard_comparisons_are_seed_paired():
     ]
     assert comparison["n"].item() == 3
     assert comparison["mean_diff_delta_FN"].item() == -1.0
+
+
+def test_comparison_detail_preserves_each_seed_and_execution_context():
+    rows: list[dict] = []
+    for seed in (1, 2, 3):
+        rows += _triad(
+            f"A01_{seed}",
+            "A01",
+            seed,
+            budget=600,
+            treatment_shift=2,
+            machine_ids=("m1", "m1", "m1"),
+        )
+        rows += _triad(
+            f"A05_{seed}",
+            "A05",
+            seed,
+            method="Confidence-Clean",
+            budget=600,
+            treatment_shift=1,
+            machine_ids=("m2", "m3", "m3"),
+            resume_counts=(0, 1, 0),
+        )
+    deltas = build_triad_deltas(pd.DataFrame(rows))
+
+    detail = build_cross_method_comparison_detail(
+        deltas, specs=[("A01", "A05")]
+    )
+
+    assert len(detail) == 6
+    assert set(detail["training_seed"]) == {1, 2, 3}
+    assert set(detail["control"]) == {"R1", "R2"}
+    assert set(detail["diff_delta_TN"]) == {10.0}
+    assert set(detail["diff_delta_FN"]) == {-1.0}
+    assert detail["any_cross_machine"].all()
+    assert detail.query("control == 'R1'")["any_resumed"].all()
+
+
+def test_budget_and_guard_detail_include_full_dose_contrast():
+    rows: list[dict] = []
+    for seed in (1, 2, 3):
+        rows += _triad(f"A01_{seed}", "A01", seed, budget=600, treatment_shift=1)
+        rows += _triad(f"A02_{seed}", "A02", seed, budget=3000, treatment_shift=2)
+        for slot, ratio, shift in (
+            ("B03", 0.05, 1),
+            ("B04", 0.10, 2),
+            ("B05", 0.20, 4),
+        ):
+            rows += _triad(
+                f"{slot}_{seed}",
+                slot,
+                seed,
+                phase="B",
+                method="GapGuard-Raw",
+                guard_ratio=ratio,
+                treatment_shift=shift,
+            )
+    deltas = build_triad_deltas(pd.DataFrame(rows))
+
+    budget = build_budget_comparison_detail(
+        deltas, specs=[("A02", "A01")]
+    )
+    assert len(budget) == 6
+    guard = build_guard_comparison_detail(deltas)
+    full = guard[
+        (guard.reference_condition == "B05")
+        & (guard.comparator_condition == "B03")
+    ]
+    assert len(full) == 6
+    assert set(full["diff_delta_TN"]) == {30.0}
 
 
 def test_direct_treatment_comparisons_pair_seed_and_flag_machine():

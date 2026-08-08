@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://stage1.local/schemas/stage1.source_tree_immutability_validation.v1.json",
+  "title": "stage1.source_tree_immutability_validation.v1",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "status",
+    "issues",
+    "expected_source_tree_sha256",
+    "observed_source_tree_sha256"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "stage1.source_tree_immutability_validation.v1"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "PASS",
+        "FAIL"
+      ]
+    }
+  },
+  "additionalProperties": true
+}

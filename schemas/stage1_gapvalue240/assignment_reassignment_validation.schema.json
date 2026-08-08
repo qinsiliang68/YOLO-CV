@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://stage1.local/schemas/stage1.assignment_reassignment_validation.v1.json",
+  "title": "stage1.assignment_reassignment_validation.v1",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "status",
+    "issues",
+    "scientific_identity_equal",
+    "placement_changed"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "stage1.assignment_reassignment_validation.v1"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "PASS",
+        "FAIL"
+      ]
+    }
+  },
+  "additionalProperties": true
+}

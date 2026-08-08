@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://stage1.local/schemas/stage1.dynamic_campaign_dry_generation.v2.json",
+  "title": "stage1.dynamic_campaign_dry_generation.v2",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "status",
+    "activation_status",
+    "queue",
+    "engineering_gate",
+    "release",
+    "assignment",
+    "identity"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "stage1.dynamic_campaign_dry_generation.v2"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "PASS",
+        "FAIL"
+      ]
+    }
+  },
+  "additionalProperties": true
+}

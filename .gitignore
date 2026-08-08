@@ -96,3 +96,17 @@ STAGE1_PHASE1_HN_BAND_*_20260628.tar
 artifacts/stage1_sample_value_experiments/contracts/gapvalue240_v1_1/generated/oof_cache/
 artifacts/stage1_sample_value_experiments/contracts/gapvalue240_v1_1/generated/master_sample_index.csv
 artifacts/stage1_sample_value_experiments/contracts/gapvalue240_v1_1/generated/rankings/
+
+# Stage-1 dynamic replay campaign: commit only frozen v2 science assets.
+# Runtime outputs, local canaries, expert handoffs, and superseded v1 drafts stay local.
+/Ultralytics/
+/artifacts/r144555/
+/artifacts/stage1_expert_handoff_20260808/
+/artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/03_preregistration/
+/artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/04_run_queue/
+/artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/05_training_runs/
+/artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/06_process_exports/
+/artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/07_evaluation/
+/artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/07_expert_handoff/
+/artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/08_reports/
+/artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/09_aiops/

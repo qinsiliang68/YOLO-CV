@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://stage1.local/schemas/stage1.ten_machine_real_data_canary_aggregate.v1.json",
+  "title": "stage1.ten_machine_real_data_canary_aggregate.v1",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "status",
+    "issues",
+    "node_count",
+    "expected_machine_ids",
+    "commands_sha256"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "stage1.ten_machine_real_data_canary_aggregate.v1"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "PASS",
+        "FAIL"
+      ]
+    }
+  },
+  "additionalProperties": true
+}

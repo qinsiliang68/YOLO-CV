@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://stage1.local/schemas/stage1.ten_machine_real_data_canary_node.v1.json",
+  "title": "stage1.ten_machine_real_data_canary_node.v1",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "status",
+    "machine_id",
+    "job_id",
+    "canonical_lock_validation",
+    "machine_config_validation",
+    "dataset_identity_validation",
+    "workers",
+    "lease_validation",
+    "completed_epochs",
+    "telemetry_validation",
+    "checkpoint_sidecar_validation",
+    "resource_log_validation",
+    "gpu_memory_released",
+    "child_workers_released"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "stage1.ten_machine_real_data_canary_node.v1"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "PASS",
+        "FAIL"
+      ]
+    }
+  },
+  "additionalProperties": true
+}

@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://stage1.local/schemas/stage1.validation_evidence_envelope.v1.json",
+  "title": "stage1.validation_evidence_envelope.v1",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "status",
+    "evidence_type",
+    "payload_relpath",
+    "payload_sha256",
+    "payload_schema",
+    "identity"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "stage1.validation_evidence_envelope.v1"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "PASS"
+      ]
+    }
+  },
+  "additionalProperties": true
+}

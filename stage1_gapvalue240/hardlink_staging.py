@@ -20,6 +20,15 @@ from .util import atomic_write_json, sha256_file, stable_hash
 REPLAY_PREFIX = "replay__"
 BASE_CACHE_SCHEMA = "stage1_gapvalue240.hardlink_base_cache.v1"
 REQUIRED_COLUMNS = {"canonical_image_relpath", "Filename"}
+REPLAY_IDENTITY_COLUMNS = {
+    "selection_rank",
+    "sample_id",
+    "y_true",
+    "replay_role",
+    "source_canonical_image_relpath",
+    "source_filename",
+    "staged_filename",
+}
 
 
 @dataclass(frozen=True)
@@ -513,3 +522,119 @@ def staged_replay_session(
             _cleanup_ultralytics_cache(cache.dataset_dir)
             if active_journal.exists():
                 active_journal.unlink()
+
+
+def _read_replay_identities(path: Path) -> list[dict[str, str]]:
+    if not path.is_file():
+        raise FileNotFoundError(path)
+    with path.open("r", encoding="utf-8-sig", newline="") as handle:
+        reader = csv.DictReader(handle)
+        missing = REPLAY_IDENTITY_COLUMNS - set(reader.fieldnames or ())
+        if missing:
+            raise ValidationError(f"Replay identity manifest missing columns {sorted(missing)}: {path}")
+        return [dict(row) for row in reader]
+
+
+@contextmanager
+def staged_identity_replay_session(
+    cache: BaseCache,
+    replay_identity_manifest: str | Path,
+    *,
+    run_slot: str,
+    expected_replay_rows: int,
+) -> Iterator[StagedReplay]:
+    """Stage only compact registered replay identities, without 120k-row combined manifests."""
+
+    identity_path = Path(replay_identity_manifest).resolve()
+    rows = _read_replay_identities(identity_path)
+    if len(rows) != expected_replay_rows:
+        raise ValidationError(
+            f"Replay identity row count mismatch for {run_slot}: {len(rows)} != {expected_replay_rows}"
+        )
+    metadata = json.loads(cache.metadata_path.read_text(encoding="utf-8"))
+    dataset_root = Path(metadata["dataset_root"]).resolve()
+    if not dataset_root.is_dir():
+        raise ValidationError(f"Base-cache dataset_root is unavailable: {dataset_root}")
+
+    frozen_pairs: dict[int, set[tuple[str, str]]] = {}
+    for y_true, manifest_key in ((0, "train_normal"), (1, "train_defect")):
+        manifest = Path(str(metadata["manifests"][manifest_key]["path"])).resolve()
+        frozen_pairs[y_true] = {
+            (str(row["canonical_image_relpath"]), str(row["Filename"]))
+            for row in _read_rows(manifest)
+        }
+
+    resolved: list[tuple[Path, Path]] = []
+    seen_sources: set[tuple[int, str]] = set()
+    seen_destinations: set[Path] = set()
+    expected_prefix = f"replay__{run_slot}__"
+    for row in rows:
+        try:
+            y_true = int(row["y_true"])
+            rank = int(row["selection_rank"])
+        except (TypeError, ValueError) as exc:
+            raise ValidationError(f"Invalid replay identity numeric field in {identity_path}") from exc
+        if y_true not in (0, 1) or rank <= 0:
+            raise ValidationError(f"Invalid replay identity label/rank in {identity_path}")
+        role = str(row["replay_role"])
+        expected_role = "normal_replay" if y_true == 0 else "defect_guard"
+        if role != expected_role:
+            raise ValidationError(f"Replay identity role conflicts with label: {row['sample_id']}")
+        relpath = str(row["source_canonical_image_relpath"])
+        source_filename = str(row["source_filename"])
+        if str(row["sample_id"]) != relpath:
+            raise ValidationError(f"Replay identity sample_id differs from canonical source: {row['sample_id']}")
+        if (relpath, source_filename) not in frozen_pairs[y_true]:
+            raise ValidationError(f"Replay identity is absent from frozen base manifest: {relpath}")
+        source, verified_relpath, verified_filename = _safe_source(
+            dataset_root,
+            {"canonical_image_relpath": relpath, "Filename": source_filename},
+            identity_path,
+        )
+        if verified_relpath != relpath or verified_filename != source_filename:
+            raise ValidationError(f"Replay source identity changed: {relpath}")
+        source_key = (y_true, relpath)
+        if source_key in seen_sources:
+            raise ValidationError(f"Duplicate replay source identity: {relpath}")
+        seen_sources.add(source_key)
+        staged_filename = str(row["staged_filename"])
+        if (
+            not staged_filename.startswith(expected_prefix)
+            or Path(staged_filename).name != staged_filename
+            or not staged_filename.startswith(REPLAY_PREFIX)
+        ):
+            raise ValidationError(f"Invalid staged replay filename: {staged_filename}")
+        class_name = "no_target" if y_true == 0 else "target_defect"
+        destination = cache.dataset_dir / "train" / class_name / staged_filename
+        if destination in seen_destinations:
+            raise ValidationError(f"Duplicate replay destination: {destination}")
+        seen_destinations.add(destination)
+        resolved.append((source, destination))
+
+    active_journal = cache.staging_root / "ACTIVE_REPLAY.json"
+    with ExclusiveStagingLock(cache.staging_root):
+        _cleanup_replay_links(cache.dataset_dir)
+        _cleanup_ultralytics_cache(cache.dataset_dir)
+        created: list[Path] = []
+        try:
+            for source, destination in resolved:
+                _hardlink(source, destination)
+                created.append(destination)
+            atomic_write_json(
+                active_journal,
+                {
+                    "run_slot": run_slot,
+                    "snapshot_id": cache.snapshot_id,
+                    "replay_rows": len(created),
+                    "replay_identity_manifest": str(identity_path),
+                    "replay_identity_sha256": sha256_file(identity_path),
+                    "created_links": [path.relative_to(cache.dataset_dir).as_posix() for path in created],
+                    "pid": os.getpid(),
+                },
+                overwrite=True,
+            )
+            yield StagedReplay(cache.dataset_dir, len(created), active_journal)
+        finally:
+            _cleanup_replay_links(cache.dataset_dir)
+            _cleanup_ultralytics_cache(cache.dataset_dir)
+            active_journal.unlink(missing_ok=True)

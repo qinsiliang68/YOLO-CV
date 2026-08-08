@@ -76,6 +76,12 @@ INTEGER_METRIC_LEAVES = {
     "FN_at_TN68253.actual_TP",
     "FN_at_TN68253.tie_group_size",
 }
+RAW_CALIBRATED_INTEGER_FIELDS = (
+    "TN_at_FN95",
+    "actual_FN_at_FN95",
+    "FN_at_TN68253",
+    "actual_TN_at_TN68253",
+)
 
 
 def _read_json(path: Path) -> dict[str, Any]:
@@ -321,12 +327,63 @@ def _training_summary(
     top1 = epochs["metrics/accuracy_top1"].astype(float)
     train_loss = epochs["train/loss"].astype(float)
     val_loss = epochs["val/loss"].astype(float)
-    best_index = int(top1.idxmax())
+    best_top1_index = int(top1.idxmax())
+    best_val_loss_index = int(val_loss.idxmin())
     window_size = min(last_window, expected_epochs)
     tail = epochs.tail(window_size)
     x = np.arange(window_size, dtype=float)
+    top1_tail = tail["metrics/accuracy_top1"].to_numpy(dtype=float)
+    train_tail = tail["train/loss"].to_numpy(dtype=float)
     val_tail = tail["val/loss"].to_numpy(dtype=float)
+    top1_slope = (
+        float(np.polyfit(x, top1_tail, 1)[0]) if window_size > 1 else 0.0
+    )
+    train_slope = (
+        float(np.polyfit(x, train_tail, 1)[0]) if window_size > 1 else 0.0
+    )
     val_slope = float(np.polyfit(x, val_tail, 1)[0]) if window_size > 1 else 0.0
+
+    def direction_changes(values: np.ndarray) -> int:
+        differences = np.diff(values)
+        signs = np.sign(differences[np.abs(differences) > 1e-12])
+        return int(np.sum(signs[1:] != signs[:-1])) if len(signs) > 1 else 0
+
+    best_top1 = float(top1.loc[best_top1_index])
+    final_top1 = float(top1.iloc[-1])
+    best_val_loss = float(val_loss.loc[best_val_loss_index])
+    final_val_loss = float(val_loss.iloc[-1])
+    best_final_top1_gap = best_top1 - final_top1
+    final_minus_best_val_loss = final_val_loss - best_val_loss
+    top1_tail_std = float(np.std(top1_tail, ddof=0))
+    val_tail_std = float(np.std(val_tail, ddof=0))
+    top1_tail_range = float(np.ptp(top1_tail))
+    val_tail_range = float(np.ptp(val_tail))
+    top1_direction_changes = direction_changes(top1_tail)
+    val_direction_changes = direction_changes(val_tail)
+
+    # These flags are intentionally conservative descriptive diagnostics, not
+    # model-selection rules.  Overfit requires an early best validation loss,
+    # a rising tail, and degradation larger than ordinary tail variability.
+    tail_start_epoch = expected_epochs - window_size + 1
+    val_gap_threshold = max(0.02, 2.0 * val_tail_std)
+    top1_gap_threshold = max(0.005, top1_tail_std)
+    overfit_flag = bool(
+        int(epochs.loc[best_val_loss_index, "epoch"]) < tail_start_epoch
+        and val_slope > 0.0
+        and final_minus_best_val_loss > val_gap_threshold
+        and best_final_top1_gap > top1_gap_threshold
+    )
+
+    # Oscillation requires repeated reversals in both validation signals plus
+    # material amplitude, avoiding a flag for monotonic drift or tiny noise.
+    minimum_direction_changes = max(2, (window_size - 1) // 3)
+    oscillation_flag = bool(
+        window_size >= 5
+        and top1_direction_changes >= minimum_direction_changes
+        and val_direction_changes >= minimum_direction_changes
+        and top1_tail_range >= 0.02
+        and val_tail_range >= max(0.05, 0.15 * abs(float(np.mean(val_tail))))
+    )
     if expected_epochs > 1:
         top1_auc = float(
             np.trapz(top1.to_numpy(dtype=float), epochs["epoch"].to_numpy(dtype=float))
@@ -340,19 +397,33 @@ def _training_summary(
         "expected_steps_per_epoch": int(audit["expected_steps_per_epoch"]),
         "optimizer_steps_total": int(audit["optimizer_steps_total"]),
         "loss_finite": bool(audit["loss_finite"]),
-        "best_top1_epoch": int(epochs.loc[best_index, "epoch"]),
-        "best_top1": float(top1.loc[best_index]),
-        "final_top1": float(top1.iloc[-1]),
+        "best_top1_epoch": int(epochs.loc[best_top1_index, "epoch"]),
+        "best_top1": best_top1,
+        "final_top1": final_top1,
+        "best_final_top1_gap": best_final_top1_gap,
+        "best_val_loss_epoch": int(epochs.loc[best_val_loss_index, "epoch"]),
+        "best_val_loss": best_val_loss,
+        "final_minus_best_val_loss": final_minus_best_val_loss,
         "final_train_loss": float(train_loss.iloc[-1]),
-        "final_val_loss": float(val_loss.iloc[-1]),
+        "final_val_loss": final_val_loss,
         "last_window_epochs": window_size,
         "last_window_top1_mean": float(tail["metrics/accuracy_top1"].mean()),
-        "last_window_top1_std": float(
-            tail["metrics/accuracy_top1"].std(ddof=0)
-        ),
+        "last_window_top1_std": top1_tail_std,
+        "last_window_top1_slope": top1_slope,
+        "last_window_top1_range": top1_tail_range,
+        "last_window_top1_direction_changes": top1_direction_changes,
+        "last_window_train_loss_mean": float(np.mean(train_tail)),
+        "last_window_train_loss_std": float(np.std(train_tail, ddof=0)),
+        "last_window_train_loss_slope": train_slope,
         "last_window_val_loss_mean": float(tail["val/loss"].mean()),
-        "last_window_val_loss_std": float(tail["val/loss"].std(ddof=0)),
+        "last_window_val_loss_std": val_tail_std,
         "last_window_val_loss_slope": val_slope,
+        "last_window_val_loss_range": val_tail_range,
+        "last_window_val_loss_direction_changes": val_direction_changes,
+        "overfit_val_loss_gap_threshold": val_gap_threshold,
+        "overfit_top1_gap_threshold": top1_gap_threshold,
+        "overfit_flag": overfit_flag,
+        "oscillation_flag": oscillation_flag,
         "top1_normalized_auc": top1_auc,
     }
 
@@ -548,14 +619,18 @@ def ingest_canonical_runs(
             "recomputed": False,
             "exact_match": pd.NA,
             "integer_fields_exact": pd.NA,
+            "raw_calibrated_integer_metrics_exact": pd.NA,
             "max_float_abs_error": pd.NA,
             "metric_issue": "",
+        }
+        raw_metric_fields = {
+            f"raw_{field}": pd.NA for field in metric_fields
         }
         if recompute_predictions:
             prediction_path = attempt / "04_predictions/val_op_predictions.csv"
             predictions = pd.read_csv(
                 prediction_path,
-                usecols=["sample_id", "y_true", "score"],
+                usecols=["sample_id", "y_true", "score", "score_raw"],
                 dtype={"sample_id": "string"},
             )
             if (
@@ -580,11 +655,45 @@ def ingest_canonical_runs(
                 predictions, fn_limit=fn_limit, tn_target=tn_target
             )
             comparison = _metric_comparison(saved_metrics, recomputed)
-            audit_row.update({"recomputed": True, **comparison})
             if not comparison["exact_match"]:
                 raise CanonicalInputError(
                     f"{slot} operational metric recompute mismatch: "
                     f"{comparison['metric_issue']}"
+                )
+
+            raw_predictions = predictions[
+                ["sample_id", "y_true", "score_raw"]
+            ].rename(columns={"score_raw": "score"})
+            raw_metrics, _ = operational_metrics(
+                raw_predictions, fn_limit=fn_limit, tn_target=tn_target
+            )
+            raw_values = _metric_run_fields(raw_metrics)
+            raw_metric_fields = {
+                f"raw_{field}": value for field, value in raw_values.items()
+            }
+            calibrated_values = _metric_run_fields(recomputed)
+            raw_calibrated_exact = all(
+                int(raw_values[field]) == int(calibrated_values[field])
+                for field in RAW_CALIBRATED_INTEGER_FIELDS
+            )
+            audit_row.update(
+                {
+                    "recomputed": True,
+                    **comparison,
+                    "raw_calibrated_integer_metrics_exact": raw_calibrated_exact,
+                    **{
+                        f"calibrated_{field}": calibrated_values[field]
+                        for field in RAW_CALIBRATED_INTEGER_FIELDS
+                    },
+                    **{
+                        f"raw_{field}": raw_values[field]
+                        for field in RAW_CALIBRATED_INTEGER_FIELDS
+                    },
+                }
+            )
+            if not raw_calibrated_exact:
+                raise CanonicalInputError(
+                    f"{slot} raw/calibrated operational integer metrics differ"
                 )
         metric_audit_rows.append(audit_row)
 
@@ -606,6 +715,7 @@ def ingest_canonical_runs(
                 "resume_count": int(inventory_row["resume_count"]),
                 "resume_mode": str(identity.get("resume_mode", "none")),
                 **metric_fields,
+                **raw_metric_fields,
             }
         )
         run_rows.append(run_row)
@@ -622,4 +732,3 @@ def ingest_canonical_runs(
         metric_audit=metric_audit,
         training_summaries=training_summaries,
     )
-
