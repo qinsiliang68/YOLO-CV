@@ -8,6 +8,8 @@ Current documentation:
 | `stage1_oof_200epoch_archives_20260621.md` | CURRENT_OOF_ARCHIVES | Which OOF folds have completed, where their archive indexes are, and how to export OOF predictions. |
 | `stage1_sample_value_oof_dynamics_20260708.md` | CURRENT_SAMPLE_VALUE_RUNBOOK | Operational runbook and directory layout for the OOF dynamics sample-value experiment. |
 | `stage1_oof_gap_value_experiment_design_20260708.md` | CURRENT_SAMPLE_VALUE_DESIGN | Human handoff design for OOF gap-value sample selection, metrics, replay matrix, and success/failure criteria. |
+| `stage1_gapvalue240/DYNAMIC_REPLAY_CAMPAIGN_OPERATOR_BRIEFING_V2.md` | CURRENT_OPERATOR_BRIEFING | Scientific background, frozen experiment matrix, output interpretation, monitoring rules, and failure boundaries for the current ten-machine campaign. |
+| `stage1_gapvalue240/DYNAMIC_REPLAY_CAMPAIGN_OPERATIONS_V2.md` | CURRENT_CAMPAIGN_OPERATIONS | Formal v2 release, assignment, single-job worker, lease, recovery, and ten-machine canary procedure. |
 
 Top-level scope document:
 

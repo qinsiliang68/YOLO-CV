@@ -1,4 +1,4 @@
-# Stage1 GapValue 240-run deep analysis
+# Stage1 GapValue 240-run pattern analysis v2
 
 ## Purpose
 
@@ -49,8 +49,8 @@ uv run python scripts/stage1_gapvalue240/analyze_results.py `
   --completeness-audit C:\baidunetdiskdownload\stage1_gapvalue240_extract_audit_20260728\GLOBAL_COMPLETENESS_AUDIT.json `
   --matrix artifacts\stage1_sample_value_experiments\contracts\gapvalue240_v1_1\generated\frozen_experiment_matrix.csv `
   --selection-root artifacts\stage1_sample_value_experiments\contracts\gapvalue240_v1_1\generated\selections `
-  --value-table artifacts\stage1_sample_value_experiments\experiments\oof_dynamics_gap_value_20260708\02_sample_value_tables\sample_value_table.csv `
-  --output-dir artifacts\stage1_sample_value_experiments\experiments\oof_dynamics_gap_value_20260708\06_reports\gapvalue240_full_analysis_20260728_v1
+  --value-table artifacts\stage1_sample_value_experiments\contracts\gapvalue240_v1_1\frozen_inputs\reference_tables\sample_value_table.csv `
+  --output-dir artifacts\stage1_sample_value_experiments\experiments\oof_dynamics_gap_value_20260708\06_reports\gapvalue240_pattern_analysis_20260728_v2
 ```
 
 Prediction recomputation is enabled by default and is required for the formal
@@ -58,10 +58,10 @@ report.  `--skip-prediction-recompute` exists only for fast development of
 tables or report layout; an output created with it is not formal metric
 recalculation evidence.
 
-`--selection-root` and `--value-table` are optional.  Without them, the run,
-triad, training, and operational analyses still run, while selection
-composition and score-linked analyses are recorded as unavailable rather than
-being guessed.
+`--selection-root` and `--value-table` have repository defaults, but the formal
+command supplies both paths explicitly.  The resolved selection directory and
+value table must exist; the analyzer fails instead of guessing or silently
+omitting the score-linked analyses.
 
 The command prints a JSON completion summary.  A successful run returns exit
 code `0`; validation or analysis failures propagate as a nonzero process exit.
@@ -74,10 +74,16 @@ The finalized output contains:
 - `analysis_contract.yaml`, `manifest.json`, and audit evidence;
 - canonical run metrics;
 - T-R1 and T-R2 triad deltas;
+- raw-score T-control deltas and raw-versus-Platt operational sensitivity;
 - condition, A02 discovery/confirmation/pooled, sensitivity, method, budget,
   and guard summaries;
-- metric-recomputation, training-curve, prediction-tail, selection-overlap,
-  and hypothesis tables when their required inputs are present;
+- per-seed method/budget/guard delta-of-deltas;
+- selection-value summaries, value/effect associations, and R2 overlap audits;
+- 48,000 raw epoch rows, 32,000 paired T-control epoch differences, and
+  descriptive paired-curve summaries;
+- capability/provenance and four-layer hypothesis registries;
+- metric-recomputation, prediction-tail, selection-overlap, execution
+  reliability, and sensitivity tables;
 - charts linked to the source tables.
 
 The report distinguishes four different statements:
@@ -114,21 +120,31 @@ A formal analysis is acceptable only when:
 2. the matrix and canonical inventory agree one-to-one;
 3. every formal `val_op` prediction file has the frozen row and sample-ID set;
 4. recomputed tie-safe integer operational metrics exactly match saved metrics,
-   and floating quantiles match within the declared numerical tolerance;
+   floating quantiles match within the declared numerical tolerance, and all
+   160 raw/calibrated paired integer effects are identical;
 5. A02 is represented once each as discovery (3), confirmation (5), and pooled
    (8), separately for R1 and R2;
-6. same-machine/cross-machine and resumed/non-resumed sensitivity tables are
-   emitted;
-7. the finalized manifest covers every permanent report artifact;
-8. source evidence remains unchanged and no output is written under the
+6. all 240 selection manifests match their frozen SHA and join to the frozen
+   120,000-row sample-value table;
+7. exactly 48,000 epoch records and 32,000 T-control paired epoch records are
+   emitted; epochs remain descriptive rather than statistical replicates;
+8. same-machine/cross-machine, resumed/non-resumed, snapshot, discovery, and
+   confirmation sensitivity tables are emitted;
+9. the finalized manifest covers every permanent report artifact;
+10. source evidence remains unchanged and no output is written under the
    extracted root;
-9. HTML links and chart files validate successfully.
+11. HTML links and chart files validate successfully.
 
 Run the focused verification with:
 
 ```powershell
 uv run --extra dev python -m pytest -q `
   tests/stage1_gapvalue240/test_deep_analysis_cli.py `
+  tests/stage1_gapvalue240/test_deep_analysis_ingestion.py `
+  tests/stage1_gapvalue240/test_deep_statistics.py `
+  tests/stage1_gapvalue240/test_deep_mechanisms.py `
+  tests/stage1_gapvalue240/test_deep_subgroups.py `
+  tests/stage1_gapvalue240/test_deep_patterns.py `
   tests/stage1_gapvalue240/test_deep_pipeline.py `
   tests/stage1_gapvalue240/test_deep_reporting.py
 ```
