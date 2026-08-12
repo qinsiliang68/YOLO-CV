@@ -1,0 +1,43 @@
+{
+  "schema_version": "stage1.sctsr.expert_taskbook_mirror_manifest.v1",
+  "asset_id": "STAGE1_SCTSR_V4_EXPERT_IMPLEMENTATION_TASKBOOK_20260812",
+  "created_at_local": "2026-08-12",
+  "created_by": "codex",
+  "purpose": "Expert-facing implementation contract for isolated SCTSR v4 construction",
+  "document_role": "IMPLEMENTATION_TASKBOOK_NOT_SCIENTIFIC_RESULT",
+  "canonical": {
+    "path": "C:\\GitHub\\YOLO-CV\\artifacts\\stage1_sample_value_experiments\\experiments\\dynamic_replay_budget_efficiency_20260807\\03_preregistration_v4_sctsr\\SCTSR_EXPERT_IMPLEMENTATION_TASKBOOK.md",
+    "bytes": 87333,
+    "sha256": "732FF49FC9DF90707B2C64F962ACC17256514612AED89B8B74B4E3E643498A66"
+  },
+  "desktop_mirror": {
+    "path": "C:\\Users\\28898\\Desktop\\YOLO笔记\\04_SCTSR_专家实施任务书_20260812\\SCTSR_EXPERT_IMPLEMENTATION_TASKBOOK.md",
+    "bytes": 87333,
+    "sha256": "732FF49FC9DF90707B2C64F962ACC17256514612AED89B8B74B4E3E643498A66"
+  },
+  "verification": {
+    "byte_count_equal": true,
+    "sha256_equal": true,
+    "utf8_readable": true,
+    "required_contract_tokens_present": true,
+    "self_audit_checklist_present": true,
+    "self_audit_first_id": "SA-001",
+    "self_audit_last_id": "SA-309"
+  },
+  "lifecycle": {
+    "canonical": "keep",
+    "desktop_mirror": "review_handoff_mirror",
+    "canonical_is_source_of_truth": true,
+    "desktop_is_training_source": false
+  },
+  "authorization_state": {
+    "formal_training_started": false,
+    "engineering_gate_generated": false,
+    "assignments_generated": false,
+    "pilot_release_generated": false,
+    "blind_holdout_opened": false,
+    "selector_trained": false,
+    "method_effectiveness_claimed": false
+  },
+  "notes": "The manifest authenticates only this taskbook and its Desktop mirror. It does not authorize training and does not claim SCTSR effectiveness."
+}
