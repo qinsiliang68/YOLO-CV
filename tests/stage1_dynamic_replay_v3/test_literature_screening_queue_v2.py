@@ -15,7 +15,7 @@ from stage1_dynamic_replay_v3.literature_screening_queue_v2 import (
     build_screening_queue,
 )
 from stage1_dynamic_replay_v3.literature_tier_freeze_v2 import TierSelectionPolicy
-from tests.stage1_dynamic_replay_v3.test_literature_broad_staging_v2 import (
+from test_literature_broad_staging_v2 import (
     _fixture_corpus,
     _write_csv,
 )
