@@ -1,0 +1,154 @@
+{
+  "schema_version": "3.0",
+  "paper_id": "P0430",
+  "canonical_work_id": "CWA30DF06C8D4A2F1ECC29",
+  "title": "Estimating Training Data Influence by Tracing Gradient Descent",
+  "decision": "SCREENED_ELIGIBLE",
+  "reviewed_at": "2026-08-10T20:05:00+08:00",
+  "reviewer": "codex_primary_fulltext_review",
+  "method_source": {
+    "path": "staging/broad_freeze_anchor_complete_v3/sources/P0430.pdf",
+    "bytes": 5307415,
+    "sha256": "B31C94316EF78E2E5F28553FE7F54098E2AAFB431405471D5624D073465D09C9"
+  },
+  "text_source": {
+    "path": "staging/screened_text_anchor_complete_v3/text/P0430.txt",
+    "bytes": 42079,
+    "sha256": "671C63052DAC83C76B478046007BA3AB94E5F0EA3C8593C5716446D11052CCC5"
+  },
+  "rq_ids": ["RQ1", "RQ3", "RQ4", "RQ6", "RQ8"],
+  "section_evidence": {
+    "METHODS": {
+      "status": "READ",
+      "pages": "2-4",
+      "anchors": [
+        {
+          "page": 3,
+          "line": 24,
+          "quote": "the change in the loss",
+          "paraphrase_zh": "TracIn 用训练路径上每次使用训练点时，训练梯度与目标点梯度的学习率加权点积近似目标损失下降。"
+        }
+      ]
+    },
+    "EXPERIMENTS": {
+      "status": "READ",
+      "pages": "4-9 and supplementary references",
+      "anchors": [
+        {
+          "page": 4,
+          "line": 27,
+          "quote": "We use an evaluation technique that has been used by the previous papers",
+          "paraphrase_zh": "主评估通过人为错标 10% 训练数据，再看 self-influence 排名的前缀能找回多少错标样本。"
+        }
+      ]
+    },
+    "ABLATIONS": {
+      "status": "READ",
+      "pages": "5-7 and supplementary material",
+      "anchors": [
+        {
+          "page": 6,
+          "line": 37,
+          "quote": "Effect of checkpoints",
+          "paraphrase_zh": "作者把 checkpoint 数量、位置和高损失下降时段分开比较，显示不同训练阶段包含不同归因信息。"
+        }
+      ]
+    },
+    "LIMITATIONS": {
+      "status": "READ",
+      "pages": "5, 7, 9-10",
+      "anchors": [
+        {
+          "page": 9,
+          "line": 42,
+          "quote": "some human judgment is required to apply TracIn correctly",
+          "paraphrase_zh": "论文明确要求人工选择合理的 checkpoint、层和损失头，并谨慎解释归因结果。"
+        }
+      ]
+    }
+  },
+  "formulas": [
+    "TracInIdeal(z,z') = sum_{t:z_t=z} [loss(w_t,z') - loss(w_{t+1},z')]",
+    "first-order TracIn(z,z') = sum_{t:z_t=z} eta_t grad loss(w_t,z') dot grad loss(w_t,z)",
+    "TracInCP(z,z') = sum_i eta_i grad loss(w_ti,z) dot grad loss(w_ti,z')",
+    "positive influence denotes a proponent that reduces target loss; negative influence denotes an opponent"
+  ],
+  "algorithm_steps": [
+    "Choose a target example or target loss and a set of training checkpoints spanning the optimization path.",
+    "At every chosen checkpoint, compute target and training-example gradients for selected layers or a projected gradient representation.",
+    "Accumulate learning-rate-weighted gradient dot products across checkpoints to form TracInCP.",
+    "Rank proponents, opponents or self-influence values and validate the ranking on a task such as synthetic mislabel recovery."
+  ],
+  "variables": ["training example z", "target example z prime", "training state w_t", "learning rate eta_t", "checkpoint set", "chosen layers", "gradient projection dimension"],
+  "selection_timing": "The exact definition attributes every optimizer use along training; practical TracInCP samples saved checkpoints and therefore depends on which training phases are retained.",
+  "refresh_rule": "Attribution is recomputed by summing over a specified checkpoint set; checkpoints with high loss reduction can carry more information than equally spaced late checkpoints.",
+  "budget": {
+    "unit": "number of checkpoints, scored examples and gradient dimensions used for attribution",
+    "denominator": "the available training trajectory and training dataset",
+    "unique_sample_definition": "Each training identity receives a target-specific or self-influence score; the method does not choose a fixed replay cardinality.",
+    "repeat_definition": "Idealized TracIn sums each actual use of a sample, whereas TracInCP counterfactually evaluates every scored sample at each selected checkpoint.",
+    "cumulative_exposure_definition": "The original optimizer path determines idealized influence, but the paper does not intervene with or equalize additional replay exposures.",
+    "compute_cost": "Practical cost scales with examples, selected checkpoints, layers and gradient dimension; last-layer gradients and random projections make CIFAR and ImageNet analyses feasible."
+  },
+  "random_baselines": [
+    "NOT_REPORTED_BY_PAPER: the main mislabel ranking compares TracInCP with influence functions and representer points rather than a same-budget uniform random ranking",
+    "100 randomly selected test points are used to evaluate approximation correlations, but this is not a replay control"
+  ],
+  "datasets": ["CIFAR-10", "MNIST", "California Housing", "DBPedia", "ImageNet"],
+  "models": ["ResNet-56", "three-hidden-layer MNIST network", "three-hidden-layer regression network", "SWEM", "ResNet-50"],
+  "seed_count": "NOT_REPORTED_BY_PAPER",
+  "checkpoint_selection": "Checkpoints are analysis inputs, not competing model endpoints: examples include every 30th CIFAR checkpoint, every 30th MNIST checkpoint, six evenly spaced DBPedia checkpoints, and ImageNet epochs 30, 60 and 90.",
+  "results": [
+    {
+      "claim": "在 CIFAR-10 合成错标识别中，TracInCP 比影响函数和 representer points 更快找回错标。",
+      "locator": "page 5, Figure 1a",
+      "value": "more than 80% of mislabeled data is recovered in the first 20% of the TracIn ranking versus less than 50% for the compared methods",
+      "anchor": {
+        "page": 5,
+        "line": 14,
+        "quote": "TracIn recovers more than 80% of the mislabelled data",
+        "paraphrase_zh": "该结果验证的是脏标签识别排序，不等价于把高 TracIn 样本重复训练会改善测试指标。"
+      }
+    },
+    {
+      "claim": "训练阶段决定归因信息，晚期低梯度 checkpoint 可能比中期高损失下降 checkpoint 更弱。",
+      "locator": "pages 5-7, checkpoint analysis",
+      "value": "one middle checkpoint correlates better with stepwise TracIn than the final checkpoint, and more high-loss-reduction checkpoints improve correlation",
+      "anchor": {
+        "page": 6,
+        "line": 40,
+        "quote": "selecting checkpoints with high loss reduction, are more informational",
+        "paraphrase_zh": "这为 Stage1 记录全 epoch 动态和阶段一致性提供依据，也否定只看 epoch-200 的充分性。"
+      }
+    }
+  ],
+  "ablations": [
+    "idealized stepwise TracIn versus checkpoint heuristic TracInCP",
+    "one, multiple, evenly spaced and high-loss-reduction checkpoints",
+    "last-layer versus all-model gradients depending on model size",
+    "random projection dimensions for influence estimation",
+    "learning-rate weighting versus equal checkpoint weighting"
+  ],
+  "negative_results": [
+    "The MNIST model sometimes failed to converge and produced noisy influence estimates, requiring lower learning rates and larger batches.",
+    "A final checkpoint alone correlated less with stepwise influence than a middle checkpoint because late gradients were small.",
+    "Misclassified training examples have large gradients and dominate proponent or opponent lists without being discriminative, so the authors filtered them in qualitative applications.",
+    "Checkpoint-based attribution discards the exact sample visitation order and is a heuristic counterfactual rather than the exact realized path."
+  ],
+  "failure_conditions": [
+    "Checkpoint placement misses the phases with substantial target-loss reduction.",
+    "The selected loss head or layer does not represent the deployment objective.",
+    "Gradient noise is large relative to the one-example effect, especially under non-convergence or small batches.",
+    "Large self-influence identifies memorization, outliers or mislabels rather than beneficial data to repeat."
+  ],
+  "limitations": [
+    "TracIn estimates target-specific attribution along a realized trajectory; it is not a prospective replay utility guarantee.",
+    "The practical checkpoint approximation depends on human choices of checkpoints, layers, loss heads and projections.",
+    "The main quantitative task is mislabeled-data recovery and lacks a strict same-budget random replay intervention.",
+    "No cross-seed stability analysis, FN95 endpoint or equal cumulative replay exposure is reported."
+  ],
+  "transfer_class": "MECHANISM_ONLY",
+  "stage1_mechanism_zh": "TracIn 对 Stage1 最重要的启示是 A 必须沿训练路径记录，而不是仅在终点计算一次：在 120/140/150/160 等 checkpoint 上，可对固定候选和独立 FN95-critical probe 计算最后一层梯度点积、符号及跨阶段一致性，并把高 self-influence 当作 Q 风险信号而非奖励。",
+  "stage1_non_inference_zh": "高 TracIn、自影响或多 checkpoint 正点积都不能直接定义高价值样本。论文主要验证归因和错标识别，没有增加样本曝光；checkpoint 近似忽略真实访问顺序，且错误分类样本会因大梯度占据榜首。Stage1 必须用固定曝光 T/R1/R2/current-loss/no-replay 干预验证任何 TracIn-inspired 规则。",
+  "exclusion_reason": "NOT_APPLICABLE_WITH_REASON:eligible for SCREENED evidence tier"
+}

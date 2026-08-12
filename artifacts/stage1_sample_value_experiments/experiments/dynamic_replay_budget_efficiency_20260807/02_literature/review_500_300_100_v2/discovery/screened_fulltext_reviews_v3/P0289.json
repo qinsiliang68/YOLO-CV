@@ -1,0 +1,159 @@
+{
+  "schema_version": "3.0",
+  "paper_id": "P0289",
+  "canonical_work_id": "CW1C4264F5AD37FAA5A2B2",
+  "title": "Prioritized Training on Points that are Learnable, Worth Learning, and Not Yet Learnt",
+  "decision": "SCREENED_ELIGIBLE",
+  "reviewed_at": "2026-08-10T09:02:00+08:00",
+  "reviewer": "codex_primary_fulltext_review",
+  "method_source": {
+    "path": "staging/broad_freeze_anchor_complete_v3/sources/P0289.pdf",
+    "bytes": 1545992,
+    "sha256": "0462CCB03E6139A33420CE44C17E51CC6388124F2AE3C285750D564D23405157"
+  },
+  "text_source": {
+    "path": "staging/screened_text_anchor_complete_v3/text/P0289.txt",
+    "bytes": 108499,
+    "sha256": "7026BEB30F36E19F62FAC4656CFE18FA8305A59F1119DF3D76C2FBE34FE1FE47"
+  },
+  "rq_ids": ["RQ1", "RQ2", "RQ4", "RQ6", "RQ7", "RQ8"],
+  "section_evidence": {
+    "METHODS": {
+      "status": "READ",
+      "pages": "2-4",
+      "anchors": [
+        {
+          "page": 4,
+          "line": 14,
+          "quote": "Randomly select a large batch Bt of size nB",
+          "paraphrase_zh": "RHO-LOSS 每步先均匀预采较大候选批次，再按当前损失减参考损失选择较小反向传播批次。"
+        }
+      ]
+    },
+    "EXPERIMENTS": {
+      "status": "READ",
+      "pages": "5-9 and appendices",
+      "anchors": [
+        {
+          "page": 5,
+          "line": 32,
+          "quote": "Baselines. Aside from uniform sampling",
+          "paraphrase_zh": "实验把均匀无放回采样设为主要基线，并加入 loss、gradient norm、importance sampling 和 SVP。"
+        }
+      ]
+    },
+    "ABLATIONS": {
+      "status": "READ",
+      "pages": "5-7 and appendices",
+      "anchors": [
+        {
+          "page": 5,
+          "line": 31,
+          "quote": "4.1. Impact of Approximations",
+          "paraphrase_zh": "作者逐层替换贝叶斯条件化、收敛训练、动态参考模型和参考模型规模，比较选择排序相关性。"
+        }
+      ]
+    },
+    "LIMITATIONS": {
+      "status": "READ",
+      "pages": "9 and ethics statement",
+      "anchors": [
+        {
+          "page": 9,
+          "line": 27,
+          "quote": "Compute-efficient data selection. While we limit our",
+          "paraphrase_zh": "论文主要比较选择函数并采用朴素实现，墙钟成本、选择偏差和群体公平性仍未充分解决。"
+        }
+      ]
+    }
+  },
+  "formulas": [
+    "RHO-LOSS(x,y,t) = L[y|x;D_t] - L[y|x;D_holdout]",
+    "the first term is current training loss and the second is the irreducible holdout-loss proxy",
+    "selection chooses top n_b examples from a uniformly pre-sampled candidate batch of size n_B"
+  ],
+  "algorithm_steps": [
+    "用独立 holdout 或交叉拆分数据训练一个参考 IL 模型，并预计算每个训练样本的参考损失。",
+    "每个优化步骤均匀无放回预采大小 n_B 的候选批次，并由当前模型计算候选当前损失。",
+    "以当前损失减参考损失得到 reducible score，选 top n_b 进入反向传播，未选候选在该步跳过。"
+  ],
+  "variables": ["current training history D_t", "holdout set D_ho", "candidate batch n_B", "selected batch n_b", "irreducible-loss proxy"],
+  "selection_timing": "每一个优化步骤在线重算当前损失；参考损失在目标训练开始前计算并冻结。",
+  "refresh_rule": "候选池每步随无放回数据洗牌更新，current-loss 每步刷新，IL reference 默认不随目标模型更新。",
+  "budget": {
+    "unit": "optimizer-visible selected examples per candidate batch",
+    "denominator": "uniformly pre-sampled candidate batch size n_B",
+    "unique_sample_definition": "一个 epoch 内候选样本无放回预采，但只有 top n_b 参与梯度；唯一身份与候选遍历相关。",
+    "repeat_definition": "跨 epoch 重新洗牌后同一身份可再次被选，已学会样本因当前损失下降通常会被降权。",
+    "cumulative_exposure_definition": "所有训练步骤的 n_b 求和；论文主要固定 n_b/n_B=0.1 并按达到目标准确率所需 epoch 比较。",
+    "compute_cost": "每步对 n_B 做前向打分、对 n_b 做前后向，并另计一次可复用 IL 模型训练成本。"
+  },
+  "random_baselines": [
+    "uniform sampling without replacement under the same selected batch size",
+    "training-loss selection",
+    "gradient-norm selection with and without importance correction",
+    "Selection-via-Proxy and negative irreducible-loss controls"
+  ],
+  "datasets": ["QMNIST", "CIFAR-10", "CIFAR-100", "CINIC-10", "Clothing-1M", "CoLA", "SST-2"],
+  "models": ["MLP", "ResNet18", "ResNet50", "small CNN IL model", "ALBERT v2", "seven architecture-transfer targets"],
+  "seed_count": {
+    "counts": [
+      "3 seeds for approximation rank-correlation analysis",
+      "2-4 seeds depending on dataset for main speedup table",
+      "40 target seeds across five architectures reused one IL model in the architecture experiment"
+    ],
+    "scope": "Table 1, Table 2, Figure 1 and architecture-transfer study",
+    "aggregation": "Means are reported, but the number of seeds varies by experiment and is not one global constant."
+  },
+  "checkpoint_selection": "The IL checkpoint is chosen by lowest validation loss, while target speedup is reported using test-accuracy crossing times and final accuracy; this is not a Stage1-valid checkpoint-selection protocol.",
+  "results": [
+    {
+      "claim": "RHO-LOSS 在七个数据集的主要表中比均匀采样更快达到目标准确率，并在噪声设置下保持更高最终准确率。",
+      "locator": "page 8, Table 2",
+      "value": "for noisy CIFAR-10, 49 epochs to 85% versus uniform not reaching 85%; final 91% versus 85%",
+      "anchor": {
+        "page": 8,
+        "line": 3,
+        "quote": "Epochs required to reach a given target test accuracy",
+        "paraphrase_zh": "表二按达到预定测试准确率所需 epoch 与最终准确率比较各选择函数。"
+      }
+    },
+    {
+      "claim": "在 Clothing-1M 上，高 loss 和 gradient norm 未达到均匀组峰值，而 RHO-LOSS 更快并提高最终准确率。",
+      "locator": "pages 8-9, speedup on web-scraped data",
+      "value": "2 epochs to uniform peak and 72% final accuracy versus 70% for uniform; reported average architecture speedup 18x",
+      "anchor": {
+        "page": 8,
+        "line": 58,
+        "quote": "loss-based and gradient norm-based selection fail to match",
+        "paraphrase_zh": "网页噪声数据上单纯困难度选择输给均匀采样，而可约损失仍取得速度和终值收益。"
+      }
+    }
+  ],
+  "ablations": [
+    "逐一引入三层理论近似并计算选择排序相关性。",
+    "比较大、小 IL 模型、有无独立 holdout、跨架构与跨超参数复用。",
+    "加入均匀标签噪声、类相关噪声、歧义样本和低相关类别，分析被选样本属性。",
+    "改变 selected-to-candidate 比例并报告速度曲线。"
+  ],
+  "negative_results": [
+    "RHO-LOSS 在 VGG11/CIFAR-10 上没有加速，但该架构的均匀训练本身也最弱。",
+    "近似越强时与理论金标准的排序相关性降至约 0.51，说明 reference proxy 并非真实不可约损失。",
+    "高 loss 与 gradient norm 在噪声和网页数据上可明显差于均匀采样。"
+  ],
+  "failure_conditions": [
+    "参考模型训练分布与真正目标分布不一致时，差值会偏向错误样本群体。",
+    "把 OOF epoch-200 损失直接称为 irreducible loss 会超过论文假设。",
+    "若只离线排序一次而不保留 current-state 项，就不再是原始在线 RHO-LOSS。"
+  ],
+  "limitations": [
+    "目标主要是训练速度与普通测试准确率，不是固定训练计算下的额外 replay 或 FN95。",
+    "测试准确率 crossing 被用于速度报告，不能照搬为 Stage1 方法筛选数据角色。",
+    "作者承认选择会引入偏差，并可能降低少数群体的重要性。",
+    "计算节省依赖额外前向并行硬件，FLOPs 与实际墙钟收益并不等价。"
+  ],
+  "transfer_class": "INSPIRED_ADAPTATION",
+  "stage1_mechanism_zh": "Stage1 可将 R 定义为当前 run 的样本损失减去严格交叉拟合、未见该样本的 OOF reference loss，并保持至少一轮 epoch lag；同时必须以 current-loss arm 隔离减法项，以随机和 no-replay 检验实际回流效用。",
+  "stage1_non_inference_zh": "现有 OOF epoch-200 只提供参考可预测性而非 Bayes 不可约损失；原方法是每步候选批在线选择且优化速度指标，不能由其结果推出离线全局 Top-K、长期重复回流或 FN95 上跨 seed 稳压随机。",
+  "exclusion_reason": "NOT_APPLICABLE_WITH_REASON:eligible for SCREENED evidence tier"
+}

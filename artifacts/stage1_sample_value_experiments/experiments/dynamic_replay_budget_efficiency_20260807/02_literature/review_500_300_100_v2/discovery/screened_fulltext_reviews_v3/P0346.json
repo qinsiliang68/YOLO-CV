@@ -1,0 +1,196 @@
+{
+  "schema_version": "3.0",
+  "paper_id": "P0346",
+  "canonical_work_id": "CWD3A985789ECF796B7740",
+  "title": "Optimizing Two-Way Partial AUC With an End-to-End Framework",
+  "decision": "SCREENED_ELIGIBLE",
+  "reviewed_at": "2026-08-10T16:19:30+08:00",
+  "reviewer": "codex_primary_fulltext_review",
+  "method_source": {
+    "path": "staging/broad_freeze_anchor_complete_v3/sources/P0346.pdf",
+    "bytes": 8837691,
+    "sha256": "6E2A30F89760272B0783F0017DD7B318BCB265B37DC46C0A8B301D038FBD6127"
+  },
+  "text_source": {
+    "path": "staging/screened_text_anchor_complete_v3/text/P0346.txt",
+    "bytes": 292466,
+    "sha256": "B9A2207AFB7F2F0FDAE32C672C2B124A8C2841E9DF056054BA8D18D460317D69"
+  },
+  "rq_ids": [
+    "RQ6",
+    "RQ7",
+    "RQ8"
+  ],
+  "section_evidence": {
+    "METHODS": {
+      "status": "READ",
+      "pages": "4-10, Propositions 1-3, Algorithm 1, Theorems 1-5, and proof appendices A-G on pages 19-31",
+      "anchors": [
+        {
+          "page": 5,
+          "line": 31,
+          "quote": "The inner-level problems provide a sparse sample selection process,",
+          "paraphrase_zh": "原始两端局部 AUC 风险被改写成内部稀疏难例选择与外部加权优化，再用光滑惩罚和凹权重把硬选择替换为可端到端训练的软权重风险。"
+        }
+      ]
+    },
+    "EXPERIMENTS": {
+      "status": "READ",
+      "pages": "11-14 and Appendix H on pages 31-40",
+      "anchors": [
+        {
+          "page": 11,
+          "line": 32,
+          "quote": "In this section, we present our empirical results and some of the",
+          "paraphrase_zh": "实验在三个长尾二分类数据族、九个子集和三个 TPAUC 区间上比较不平衡损失、全 AUC、单向 pAUC、截断难例与软权重/极小极大实现。"
+        }
+      ]
+    },
+    "ABLATIONS": {
+      "status": "READ",
+      "pages": "13-15 and Appendix H.3-H.5 on pages 33-40",
+      "anchors": [
+        {
+          "page": 33,
+          "line": 40,
+          "quote": "we show the sensitivity analysis results w.r.t the warm-up iterations.",
+          "paraphrase_zh": "附录改变 warm-up 轮数并设置无 warm-up 对照，同时分析同质/异质 gamma 与单向退化版本，直接暴露早期只看难例会严重过拟合。"
+        }
+      ]
+    },
+    "LIMITATIONS": {
+      "status": "NOT_REPORTED_BY_PAPER",
+      "pages": "1-40 including main conclusion, all proofs, implementation details, additional comparisons, and sensitivity analyses",
+      "anchors": [],
+      "absence_reason_zh": "全文没有独立局限章节；结论未系统讨论未报告随机种子与方差、验证集反复搜索、软权重与固定 replay 曝光不可比、理论假设与深网差距，以及 TPAUC 和 Stage1 FN95 安全前沿估计量的差异。"
+    }
+  },
+  "formulas": [
+    "TPAUC(alpha,beta) retains the ROC region with TPR at least 1-alpha and FPR at most beta and can be written as a hard-positive/hard-negative pairwise ranking risk.",
+    "The bilevel formulation minimizes pairwise surrogate loss weighted by sparse v_i+ and v_j- selected through score-dependent inner maximizations.",
+    "The relaxed risk uses calibrated weights v_i+=psi_gamma(1-f(x_i+)) and v_j-=psi_gamma(f(x_j-)).",
+    "Polynomial and exponential instantiations use psi_poly(t)=t^(1/(gamma-1)) and psi_exp(t)=1-exp(-gamma t).",
+    "The minimax reformulation replaces the pairwise sum with an instance-wise stochastic objective and has stated O(1/epsilon^4) iteration complexity for an epsilon-stationary point under smooth strong concavity.",
+    "The generalization results upper-bound population TPAUC risk by relaxed empirical risk plus class-count and hypothesis-complexity terms under sufficient conditions."
+  ],
+  "algorithm_steps": [
+    "Construct an imbalanced binary task and freeze alpha, beta, model family, validation split, and hyperparameter search grids.",
+    "Train for E_k warm-up epochs with ordinary AUC optimization over the complete training set to avoid early hard-example overfitting.",
+    "After warm-up, compute current score-dependent positive and negative weights with the chosen calibrated polynomial or exponential function for every mini-batch.",
+    "Optimize either the pairwise relaxed risk directly or Algorithm 1's stochastic gradient descent-ascent minimax objective, updating model parameters and auxiliary variables until the fixed training procedure ends.",
+    "Choose E_k and gamma by validation TPAUC and report the corresponding held-out test result."
+  ],
+  "variables": [
+    "alpha and beta: TPR-tail and FPR-tail region parameters",
+    "f_theta: sigmoid scoring network",
+    "v_i+ and v_j-: current score-dependent positive and negative weights",
+    "phi_gamma and psi_gamma: calibrated penalty and weighting functions",
+    "gamma or gamma+/gamma-: weight-shape hyperparameters",
+    "E_k: warm-up epoch count",
+    "a and b: minimax auxiliary variables",
+    "n+ and n-: class-specific training counts"
+  ],
+  "selection_timing": "For the proposed soft-weight methods, model-state-dependent weights are recomputed during each post-warm-up mini-batch. Hard truncation baselines rank negatives at each epoch. The paper first delays all hard-tail emphasis for E_k full-data AUC epochs.",
+  "refresh_rule": "Soft weights refresh whenever current predictions change; truncation baselines refresh the ranked negative set once per epoch. Alpha and beta stay fixed, while E_k and gamma are selected on validation data.",
+  "budget": {
+    "unit": "weighted positive-negative loss terms or instance-wise minimax contributions per optimizer update",
+    "denominator": "all training examples within each dataset split, with class ratio constrained to 1:10 per batch; hard TPAUC uses n_alpha+ times n_beta- pairs",
+    "unique_sample_definition": "All training IDs remain eligible under soft weighting, while hard truncation uses current score ranks; the union of nonzero or selected IDs across epochs is not reported.",
+    "repeat_definition": "Examples can reappear across mini-batches and epochs with changing weights; no per-ID weighted-repeat or hard-selection repeat histogram is provided.",
+    "cumulative_exposure_definition": "Neither weighted optimizer-visible exposure nor equivalent unweighted example slots are accumulated, so proposed, truncation, AUC, and imbalance-loss arms are not exposure matched.",
+    "compute_cost": "Pairwise objectives are quadratic in positive-negative mini-batch combinations; the minimax reformulation becomes instance-wise and reports O(1/epsilon^4) iterations under assumptions. Experiments use an RTX 3090, batch size 128, and validation/test batch size 256."
+  },
+  "random_baselines": [
+    "class-reweighted cross entropy",
+    "Focal loss",
+    "class-balanced cross entropy and class-balanced Focal loss",
+    "SqAUC full-AUC optimization",
+    "TruncOPAUC and TruncTPAUC hard-tail baselines",
+    "OPAUC polynomial and exponential soft weights",
+    "No equal-slot global-random or method-matched-random replay baseline is evaluated."
+  ],
+  "datasets": [
+    "three binary CIFAR-10-LT subsets",
+    "three binary CIFAR-100-LT subsets",
+    "three binary Tiny-ImageNet-200-LT subsets"
+  ],
+  "models": [
+    "ResNet-20 with sigmoid scoring head for CIFAR",
+    "ResNet-18 with sigmoid scoring head for Tiny-ImageNet",
+    "pairwise soft-weight TPAUC optimizers",
+    "instance-wise minimax TPAUC optimizers"
+  ],
+  "seed_count": "NOT_REPORTED_BY_PAPER",
+  "checkpoint_selection": "E_k and gamma are searched on the validation split, the model with best validation performance is selected, and its test result is reported. The paper does not state the number of training initializations or a fixed endpoint tie-breaking rule.",
+  "results": [
+    {
+      "claim": "在 CIFAR-10-LT 子集 1 的最窄报告区间，软权重 TPAUC 方法高于 SqAUC 和截断 TPAUC，但没有种子分布。",
+      "locator": "page 12, Table 2, Subset 1 at TPAUC(0.3,0.3)",
+      "value": "TPAUC-Poly 21.43 and minimax-Poly 31.77 versus SqAUC 18.05 and TruncTPAUC 11.90.",
+      "anchor": {
+        "page": 12,
+        "line": 19,
+        "quote": "Poly          21.43       44.41       59.10",
+        "paraphrase_zh": "单表最佳值支持该任务中的方法候选，但缺少训练种子、误差条和最差种子，不能据此声称稳定优越。"
+      }
+    },
+    {
+      "claim": "去掉 warm-up 会在困难子集和小局部区间导致灾难性退化，显示样本价值随训练阶段反转。",
+      "locator": "page 33, Appendix H.4 and Table 9",
+      "value": "Without warm-up, several CIFAR-100-LT TruncOPAUC/TruncTPAUC cells are 0.00 or near zero; corresponding warm-up rows are substantially higher, for example square TruncTPAUC Subset3 at 0.3 is 0.00 without versus 26.34 with warm-up.",
+      "anchor": {
+        "page": 33,
+        "line": 46,
+        "quote": "The performances drop dramatically when the warm-up phase is removed.",
+        "paraphrase_zh": "早期只聚焦当前难例会过拟合，说明选择时点和模型状态是必要析因因素，不能把静态高难度永久解释为高效用。"
+      }
+    },
+    {
+      "claim": "论文展示的代理上界并非每个训练轨迹都成立，部分子集出现失败案例。",
+      "locator": "page 13, Section 6.6 and Figure 6(e,f)",
+      "value": "The authors identify Figure 6(e,f) as failure cases where the proposed risk is not always an upper bound, although the curves decrease together.",
+      "anchor": {
+        "page": 13,
+        "line": 60,
+        "quote": "Even for the failure case Fig.6-(e),(f), we",
+        "paraphrase_zh": "代理目标的理论条件需要逐状态检查；共同下降不能替代上界成立，也不能证明相对独立 FN95 目标的方向正确。"
+      }
+    }
+  ],
+  "ablations": [
+    "warm-up epochs E_k including explicit no-warm-up arms",
+    "polynomial versus exponential calibrated weights",
+    "pairwise direct optimization versus minimax reformulation",
+    "hard truncation versus soft weighting",
+    "homogeneous gamma versus heterogeneous gamma+ and gamma-",
+    "gamma sensitivity across target alpha and beta values",
+    "TPAUC formulation versus its OPAUC degeneration"
+  ],
+  "negative_results": [
+    "Removing warm-up can drive TPAUC to zero on hard subsets because the network attends only to hard examples and overfits.",
+    "OPAUC methods sometimes underperform SqAUC on CIFAR-100-LT, illustrating that OPAUC and TPAUC rankings can conflict.",
+    "Direct and minimax implementations reach different practical optima despite sharing a global optimum in theory.",
+    "The surrogate upper-bound condition fails for some training curves in Figure 6(e,f).",
+    "No random-seed distribution or worst-seed result is available."
+  ],
+  "failure_conditions": [
+    "Hard-tail weighting starts before the model has learned global structure.",
+    "Gamma is transferred across datasets or local target regions without validation.",
+    "The sufficient condition for surrogate upper-bounding does not hold at the current model state.",
+    "Soft weights are compared with random replay without matching optimizer-visible weighted exposure and steps.",
+    "Validation-selected local performance is mistaken for stability across fresh training seeds.",
+    "TPAUC tail parameters are chosen using held-out test outcomes."
+  ],
+  "limitations": [
+    "Training seed counts, variance, per-seed direction, and worst-seed behavior are not reported.",
+    "Hyperparameters and model checkpoints are selected by best validation performance across substantial grids, but multiplicity is not adjusted.",
+    "Soft weights, hard truncation, and full-data losses do not share a frozen cumulative exposure ledger.",
+    "The theory relies on calibrated-function, no-tie, upper-bound, smoothness, and hypothesis-complexity assumptions that need not hold throughout deep-network training.",
+    "TPAUC is a two-way ROC-region metric and is not identical to the Stage1 FN=0..95 raw safety-frontier normalized AUC.",
+    "The task is primary imbalanced training, not fixed-base-process replay."
+  ],
+  "transfer_class": "MECHANISM_ONLY",
+  "stage1_mechanism_zh": "最可迁移的机制是阶段依赖性：模型尚未建立全局结构时只强调当前难例会严重过拟合，而 warm-up 后同一类难例权重才可能有利。因此 Q/R/A/D 的候选信号必须使用显式 epoch lag 并把选择时点或刷新期作为析因因素；局部目标参数也必须在独立验证角色上冻结。",
+  "stage1_non_inference_zh": "论文中的软权重和 hard-tail 截断改变了基础训练目标、可见样本权重与 optimizer steps，并未在固定基础过程和固定累计 replay 曝光下比较 R1、R2、current-loss、严格随机与 no-replay。TPAUC、代理风险下降或 warm-up 消融只能提供机制与反证，不能作为真实 replay utility evidence，也不能预先声称 Q/R/A/D 方法有效。",
+  "exclusion_reason": "NOT_APPLICABLE_WITH_REASON:eligible as a training-stage and local-tail mechanism paper"
+}

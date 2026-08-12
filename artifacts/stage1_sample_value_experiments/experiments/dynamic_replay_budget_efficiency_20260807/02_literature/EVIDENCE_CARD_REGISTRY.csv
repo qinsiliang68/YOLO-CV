@@ -1,0 +1,6 @@
+evidence_card_id,formal_stage,mechanism,primary_supporting_papers,primary_counterevidence,minimal_falsifier,release_effect
+EC01,CYCLE_1,late_replay_exposure,P002;P017;P019;P032;P040;P041;P042;P045,P031;P045,continuous_vs_same_peak_taper,determines_whether_timing_remains_eligible
+EC02,CYCLE_2,timing_vs_cumulative_dose,P017;P018;P032;P040;P041;P045,NO_DIRECT_STAGE1_EQUIVALENT,continuous_vs_same_peak_vs_dose_matched,identifies_timing_or_total_dose
+EC03,CYCLE_3,weak_defect_protection,P004;P005;P006;P024;P025;P026;P027;P028;P034;P041;P050,P008;P009;P010;P020;P021;P022;P023;P036;P044,no_guard_vs_targeted_vs_matched_random_guard,determines_guard_and_fraction_eligibility
+EC04,CYCLE_4,cross_seed_policy_replication,P008;P043;P049;P050;P051;P052,CONDITIONAL_NOT_UNIVERSAL,six_arm_unseen_seed_block,freezes_or_rejects_final_policy
+EC05,DIAGNOSTIC,gradient_direction_and_finite_effect,P004;P005;P006;P008;P011;P012;P015;P016;P029;P030;P031;P034;P035;P036;P038;P042,P013;P014;P036,repeated_key_checkpoint_probe_and_finite_update,blocks_or_qualifies_future_gradient_selection

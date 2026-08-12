@@ -1,0 +1,161 @@
+{
+  "artifacts": {
+    "epoch_exposure_ledger": {
+      "format": "JSONL_OR_PARQUET",
+      "identity_bound": true,
+      "required_fields": [
+        "run_id",
+        "attempt_id",
+        "assignment_generation",
+        "logical_epoch",
+        "arm_id",
+        "base_slots_planned",
+        "base_slots_actual",
+        "replay_slots_planned",
+        "replay_slots_actual",
+        "unique_replay_ids_epoch",
+        "unique_replay_ids_cumulative",
+        "repeat_occurrences_epoch",
+        "cumulative_repeat_occurrences_actual",
+        "optimizer_visible_base_exposure_actual",
+        "optimizer_visible_replay_exposure_actual",
+        "optimizer_steps_planned",
+        "optimizer_steps_actual",
+        "global_step"
+      ]
+    },
+    "paired_endpoint": {
+      "format": "CSV",
+      "identity_bound": true,
+      "required_fields": [
+        "training_seed",
+        "seed_scope",
+        "treatment_arm",
+        "comparator_arm",
+        "raw_frontier_normalized_auc_treatment",
+        "raw_frontier_normalized_auc_comparator",
+        "raw_frontier_normalized_auc_delta",
+        "tn_at_fn95_delta",
+        "fn_at_tn68253_delta",
+        "dual_end_degradation",
+        "seed_win"
+      ]
+    },
+    "prediction_artifact": {
+      "format": "CSV_WITH_SHA256_SIDECAR",
+      "identity_bound": true,
+      "required_fields": [
+        "run_id",
+        "attempt_id",
+        "assignment_generation",
+        "sample_id",
+        "y_true",
+        "p_defect_raw",
+        "checkpoint_epoch",
+        "checkpoint_sha256",
+        "split_role",
+        "defect_manifest_sha256",
+        "normal_manifest_sha256"
+      ]
+    },
+    "replay_occurrence": {
+      "format": "PARQUET",
+      "identity_bound": true,
+      "required_fields": [
+        "run_id",
+        "attempt_id",
+        "assignment_generation",
+        "logical_epoch",
+        "draw_slot",
+        "sample_id",
+        "draw_role",
+        "occurrence",
+        "augmentation_seed",
+        "optimizer_step_index"
+      ]
+    },
+    "run_closeout": {
+      "format": "JSON",
+      "identity_bound": true,
+      "required_fields": [
+        "run_id",
+        "attempt_id",
+        "job_id",
+        "assignment_generation",
+        "training_seed",
+        "arm_id",
+        "status",
+        "base_exposure_actual",
+        "replay_slots_actual",
+        "unique_replay_ids_actual",
+        "repeat_occurrences_actual",
+        "optimizer_visible_replay_exposure_actual",
+        "optimizer_steps_actual",
+        "checkpoint_policy",
+        "rng_receipt_sha256",
+        "completion_receipt_sha256",
+        "resource_telemetry_status"
+      ]
+    },
+    "sample_signal_snapshot": {
+      "format": "PARQUET",
+      "identity_bound": true,
+      "required_fields": [
+        "run_id",
+        "attempt_id",
+        "assignment_generation",
+        "training_seed",
+        "seed_scope",
+        "arm_id",
+        "logical_epoch",
+        "source_epoch",
+        "sample_id",
+        "label",
+        "source_id",
+        "video_id",
+        "q_signal_name",
+        "q_value",
+        "q_eligible",
+        "r_signal_name",
+        "r_value",
+        "r_stratum",
+        "a_signal_name",
+        "a_value",
+        "a_direction",
+        "d_feature_ref",
+        "d_gradient_ref",
+        "evidence_type"
+      ]
+    },
+    "selection_decision": {
+      "format": "PARQUET",
+      "identity_bound": true,
+      "required_fields": [
+        "run_id",
+        "attempt_id",
+        "assignment_generation",
+        "logical_epoch",
+        "source_epoch",
+        "arm_id",
+        "sample_id",
+        "selected",
+        "gate_sequence",
+        "selection_stage",
+        "selection_reason",
+        "composition_mode",
+        "random_seed"
+      ]
+    }
+  },
+  "evidence_type_enum": [
+    "PAPER",
+    "EXPERT_CLAIM",
+    "CODE",
+    "SYNTHETIC",
+    "STAGE1_OBSERVATION",
+    "FUTURE_INTERVENTION"
+  ],
+  "exposure_denominator": "optimizer_visible_sample_occurrence",
+  "schema_version": "stage1.dynamic_replay.data_collection.v3",
+  "weighted_score_field_allowed": false
+}

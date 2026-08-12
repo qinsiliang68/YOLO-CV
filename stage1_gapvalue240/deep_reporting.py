@@ -409,6 +409,152 @@ def _save_reliability(frame: pd.DataFrame, output: Path) -> bool:
     return True
 
 
+def _save_value_effect_associations(frame: pd.DataFrame, output: Path) -> bool:
+    required = {"control", "outcome", "spearman_rho"}
+    if not required.issubset(frame.columns) or frame.empty:
+        return False
+    plot = frame.copy()
+    plot["spearman_rho"] = pd.to_numeric(plot["spearman_rho"], errors="coerce")
+    plot = plot.dropna(subset=["spearman_rho"])
+    if plot.empty:
+        return False
+    labels = plot["control"].astype(str) + "/" + plot["outcome"].astype(str)
+    if "analysis_scope" in plot:
+        labels = plot["analysis_scope"].astype(str) + "/" + labels
+    colors = ["#0969da" if "TN" in str(value) else "#cf222e" for value in plot["outcome"]]
+    y = np.arange(len(plot))
+    fig, ax = plt.subplots(figsize=(10.5, max(5.2, len(plot) * 0.48)), constrained_layout=True)
+    ax.axvline(0, color="#57606a", linewidth=1, linestyle="--")
+    ax.barh(y, plot["spearman_rho"], color=colors)
+    ax.set_yticks(y, labels)
+    ax.invert_yaxis()
+    ax.set_xlim(-1.05, 1.05)
+    ax.set_xlabel("Spearman rho")
+    ax.set_ylabel("Analysis scope/control/outcome")
+    ax.set_title("Selection-value/effect associations (full Spearman range)")
+    ax.grid(axis="x", alpha=0.25)
+    fig.savefig(output, dpi=160)
+    plt.close(fig)
+    return True
+
+
+def _save_raw_calibrated_sensitivity(frame: pd.DataFrame, output: Path) -> bool:
+    required = {
+        "delta_TN",
+        "delta_FN",
+        "delta_raw_TN_at_FN95",
+        "delta_raw_FN_at_TN68253",
+    }
+    if not required.issubset(frame.columns) or frame.empty:
+        return False
+    fig, axes = plt.subplots(1, 2, figsize=(12.0, 5.6))
+    pairs = [
+        (
+            "delta_TN",
+            "delta_raw_TN_at_FN95",
+            "TN effect: raw versus calibrated",
+            "Delta TN",
+        ),
+        (
+            "delta_FN",
+            "delta_raw_FN_at_TN68253",
+            "FN effect: raw versus calibrated",
+            "Delta FN",
+        ),
+    ]
+    controls = frame["control"].astype(str) if "control" in frame else pd.Series(["all"] * len(frame))
+    palette = {name: color for name, color in zip(sorted(controls.unique()), ["#0969da", "#cf222e", "#8250df", "#238636"])}
+    for ax, (calibrated_column, raw_column, title, label) in zip(axes, pairs):
+        calibrated = pd.to_numeric(frame[calibrated_column], errors="coerce").to_numpy(dtype=float)
+        raw = pd.to_numeric(frame[raw_column], errors="coerce").to_numpy(dtype=float)
+        combined = np.concatenate([calibrated, raw, np.array([0.0])])
+        low, high = _expanded_limits(combined)
+        ax.axhline(0, color="#8c959f", linewidth=0.8)
+        ax.axvline(0, color="#8c959f", linewidth=0.8)
+        ax.plot([low, high], [low, high], color="#57606a", linestyle="--", label="Identity")
+        for control in sorted(controls.unique()):
+            mask = controls.eq(control).to_numpy()
+            ax.scatter(calibrated[mask], raw[mask], label=str(control), color=palette[control], s=40)
+        ax.set_xlim(low, high)
+        ax.set_ylim(low, high)
+        ax.set_aspect("equal", adjustable="box")
+        ax.set_title(f"{title} [Zero-referenced observed range]")
+        ax.set_xlabel(f"Calibrated {label}")
+        ax.set_ylabel(f"Raw {label}")
+        ax.grid(alpha=0.22)
+        ax.legend(title="Control")
+    fig.suptitle("Operational sensitivity: monotone raw/calibrated consistency")
+    fig.tight_layout()
+    fig.savefig(output, dpi=160)
+    plt.close(fig)
+    return True
+
+
+def _save_paired_epoch_effects(frame: pd.DataFrame, output: Path) -> bool:
+    context = frame.copy()
+    if "condition_slot" in context:
+        a02 = context.loc[context["condition_slot"].astype(str).eq("A02")]
+        if not a02.empty:
+            context = a02
+    if {"epoch", "delta_top1", "delta_val_loss", "control"}.issubset(context.columns):
+        grouping = ["control", "epoch"]
+        if "condition_slot" in context:
+            grouping.insert(0, "condition_slot")
+        plot = (
+            context.groupby(grouping, sort=True)[["delta_top1", "delta_val_loss"]]
+            .mean()
+            .reset_index()
+        )
+        fig, axes = plt.subplots(2, 1, figsize=(10.0, 8.0), sharex=True)
+        line_groups = ["condition_slot", "control"] if "condition_slot" in plot else ["control"]
+        for keys, group in plot.groupby(line_groups, sort=True):
+            label = "/".join(map(str, keys if isinstance(keys, tuple) else (keys,)))
+            ordered = group.sort_values("epoch")
+            axes[0].plot(ordered["epoch"], ordered["delta_top1"], label=label)
+            axes[1].plot(ordered["epoch"], ordered["delta_val_loss"], label=label)
+        for ax, column, direction in [
+            (axes[0], "delta_top1", "higher favors treatment"),
+            (axes[1], "delta_val_loss", "lower favors treatment"),
+        ]:
+            values = pd.to_numeric(plot[column], errors="coerce").to_numpy(dtype=float)
+            ax.axhline(0, color="#57606a", linewidth=1, linestyle="--")
+            ax.set_ylim(*_expanded_limits(np.append(values, 0.0)))
+            ax.set_ylabel(f"{column}\n({direction})")
+            ax.set_title(f"Paired {column} [Zoomed y-axis, zero shown]")
+            ax.grid(alpha=0.25)
+            ax.legend(title="Condition/control")
+        axes[1].set_xlabel("Epoch")
+    elif {
+        "condition_slot",
+        "control",
+        "final_delta_top1",
+        "final_delta_val_loss",
+    }.issubset(context.columns):
+        labels = context["condition_slot"].astype(str) + "/" + context["control"].astype(str)
+        x = np.arange(len(context))
+        fig, axes = plt.subplots(2, 1, figsize=(10.0, 7.6), sharex=True)
+        for ax, column, direction, color in [
+            (axes[0], "final_delta_top1", "higher favors treatment", "#0969da"),
+            (axes[1], "final_delta_val_loss", "lower favors treatment", "#cf222e"),
+        ]:
+            values = pd.to_numeric(context[column], errors="coerce").to_numpy(dtype=float)
+            ax.axhline(0, color="#57606a", linewidth=1, linestyle="--")
+            ax.scatter(x, values, color=color)
+            ax.set_ylim(*_expanded_limits(np.append(values, 0.0)))
+            ax.set_ylabel(f"{column}\n({direction})")
+            ax.set_title(f"Paired final-epoch {column} [Zoomed y-axis, zero shown]")
+            ax.grid(axis="y", alpha=0.25)
+        axes[1].set_xticks(x, labels, rotation=40, ha="right")
+        axes[1].set_xlabel("Condition/control")
+    else:
+        return False
+    fig.suptitle("T-control training-dynamics differences")
+    fig.tight_layout()
+    fig.savefig(output, dpi=160)
+    plt.close(fig)
+    return True
+
+
 def _table_preview(frame: pd.DataFrame, max_rows: int = 20) -> str:
     preview = frame.head(max_rows)
     note = ""
@@ -843,6 +989,32 @@ def build_deep_report(
         ("canonical_run_metrics",),
         "机器运行量和 native resume 次数均使用从零开始的计数轴。",
         _save_reliability,
+    )
+    add_chart(
+        "selection_value_effect_associations.png",
+        "Selection value/effect associations",
+        ("selection_value_effect_associations",),
+        "Spearman rho 按 control/outcome 展示，固定使用完整 [-1, 1] 相关系数范围。",
+        _save_value_effect_associations,
+    )
+    add_chart(
+        "raw_calibrated_operational_sensitivity.png",
+        "Raw/calibrated operational sensitivity",
+        ("raw_calibrated_operational_sensitivity",),
+        "raw 与 calibrated 的 TN/FN 配对效应使用含零点的同尺度坐标；虚线为完全一致。",
+        _save_raw_calibrated_sensitivity,
+    )
+    epoch_source = (
+        "paired_epoch_differences"
+        if "paired_epoch_differences" in materialized
+        else "paired_epoch_effect_summary"
+    )
+    add_chart(
+        "paired_epoch_effects_zoomed.png",
+        "Paired epoch effects",
+        (epoch_source,),
+        "优先展示 A02 的 T-control top1/val loss 差异；缩放纵轴保留零参考线。",
+        _save_paired_epoch_effects,
     )
 
     table_names = list(materialized)

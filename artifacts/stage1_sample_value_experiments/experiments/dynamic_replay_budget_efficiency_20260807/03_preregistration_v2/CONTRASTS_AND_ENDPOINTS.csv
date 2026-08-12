@@ -1,0 +1,4 @@
+cycle_id,contrast_id,left_arm,right_arm,estimand,primary_endpoint,safety_endpoint,efficacy_endpoint,analysis_rule
+CYCLE_1,C1_LATE_EXPOSURE,C1_T_RHO_2P5_SAME_PEAK_TAPER,C1_T_RHO_2P5_CONTINUOUS,paired conditional effect of removing late replay at the same peak,raw_safe_frontier_fn_0_95,FN_at_TN68253,TN_at_FN95,paired by seed; safety first; no weighted composite score
+CYCLE_1,C1_REPLAY_VS_NONE,C1_T_RHO_2P5_SAME_PEAK_TAPER,C1_NR_NO_REPLAY,conditional effect of replay relative to the canonical learner,raw_safe_frontier_fn_0_95,FN_at_TN68253,TN_at_FN95,paired descriptive mechanism contrast
+CYCLE_2,C2_TIMING_VS_DOSE,same-ratio dose-matched taper,same-ratio continuous and same-peak taper,separate replay timing from cumulative replay exposure,raw_safe_frontier_fn_0_95,FN_at_TN68253,TN_at_FN95,paired factorial contrasts within ratio; hierarchical interpretation

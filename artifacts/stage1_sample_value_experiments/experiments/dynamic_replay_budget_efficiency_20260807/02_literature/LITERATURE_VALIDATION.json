@@ -1,0 +1,31 @@
+{
+  "artifacts": [
+    {
+      "relative_path": "LITERATURE_EVIDENCE_MATRIX.csv",
+      "sha256": "6F8AC1D3A3B0A02EE118CC31B89F8A06B26CFCCDC5F81425E828AFA37DFDB2D7",
+      "size_bytes": 304167
+    },
+    {
+      "relative_path": "READING_LOG.csv",
+      "sha256": "D59DC37C27018C851973B00FCD3085FB037012A0DCE762D2F8ED0C833C6E37B8",
+      "size_bytes": 51721
+    },
+    {
+      "relative_path": "RESEARCH_SYNTHESIS.md",
+      "sha256": "B15183B760266B29A273CC05F765F1C57C1C5255F609EC3632674C942BC80774",
+      "size_bytes": 3369
+    }
+  ],
+  "campaign_id": "dynamic_replay_budget_efficiency_20260807",
+  "counts": {
+    "deep_read": 33,
+    "duplicate_evidence_ids": 0,
+    "duplicate_normalized_titles": 0,
+    "invalid_primary_urls": 0,
+    "invalid_reading_evidence": 0,
+    "method_read": 55,
+    "missing_required_metadata": 0,
+    "screened": 155
+  },
+  "status": "complete"
+}

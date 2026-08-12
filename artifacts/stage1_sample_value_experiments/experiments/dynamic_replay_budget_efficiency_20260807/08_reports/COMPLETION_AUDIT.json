@@ -1,0 +1,265 @@
+{
+  "blocking_conditions": [
+    {
+      "artifacts": [
+        "Stage1_BudgetedReplay_Learnability_20260809_v1.0.0.tar.gz",
+        "Stage1_BudgetedReplay_Learnability_20260809_v1.0.0.zip",
+        "stage1_budgeted_replay-1.0.0-py3-none-any.whl"
+      ],
+      "code": "REPORT_ONLY_SOURCE_MISSING"
+    }
+  ],
+  "candidate_effectiveness_claim": "NOT_EVALUATED",
+  "checks": {
+    "active_v3_gate_and_assignments_not_generated": {
+      "details": {
+        "04_run_queue_v3_file_count": 0,
+        "active_runtime_dirs": {},
+        "execution_authorized": false
+      },
+      "evidence": [
+        {
+          "bytes": 1539,
+          "path": "artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/00_registry/experiment_plan.json",
+          "sha256": "1478D0C092724FE574A52DC4FA6F4E332091604282BA80725269CA2B8AD1C96B"
+        }
+      ],
+      "status": "PASS"
+    },
+    "blind_holdout_not_opened": {
+      "details": {
+        "07_evaluation_file_count": 0,
+        "legacy_status": "UNBOUND",
+        "v2_status": "UNBOUND",
+        "v3_authorized": false
+      },
+      "evidence": [
+        {
+          "bytes": 187,
+          "path": "artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/03_preregistration/BLIND_HOLDOUT_STATUS.json",
+          "sha256": "1B04D69F6FF92D469E5724F93114DCB4BF79E86D15333A25025179B5A0427EDF"
+        },
+        {
+          "bytes": 135,
+          "path": "artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/03_preregistration_v2/BLIND_HOLDOUT_STATUS.json",
+          "sha256": "6FB85A859FB1FBC2398D13DCC855C06787030BCC989EB57FC76AB090DC860FC8"
+        },
+        {
+          "bytes": 3282,
+          "path": "artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/03_preregistration_v3/PREREGISTRATION_VALIDATION.json",
+          "sha256": "ABB024746A7F734C4FA1B628BBBA584E056A05EC2C6F65A95428C2474DB0FB3E"
+        }
+      ],
+      "status": "PASS"
+    },
+    "candidate_effectiveness_not_claimed": {
+      "details": {
+        "claim": "NOT_EVALUATED"
+      },
+      "evidence": [
+        {
+          "bytes": 3282,
+          "path": "artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/03_preregistration_v3/PREREGISTRATION_VALIDATION.json",
+          "sha256": "ABB024746A7F734C4FA1B628BBBA584E056A05EC2C6F65A95428C2474DB0FB3E"
+        }
+      ],
+      "status": "PASS"
+    },
+    "expert_assets_accounted_and_present_hashes_verified": {
+      "details": {
+        "archive_member_rows": 1863,
+        "expected_artifact_identities": 17,
+        "hash_or_archive_failure_count": 0,
+        "observed_inventory_rows": 19
+      },
+      "evidence": [
+        {
+          "bytes": 1772,
+          "path": "artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/01_field_audit/expert_delivery_audit_v3/expert_v1_hash_validation.json",
+          "sha256": "05347B8ABCD95B1D88DF1D0CAF6ED81BFD93AB4E15D33994BA16D0B8886E92D6"
+        }
+      ],
+      "status": "PASS"
+    },
+    "expert_source_level_audit": {
+      "details": {
+        "missing_required_sources": [
+          "Stage1_BudgetedReplay_Learnability_20260809_v1.0.0.tar.gz",
+          "Stage1_BudgetedReplay_Learnability_20260809_v1.0.0.zip",
+          "stage1_budgeted_replay-1.0.0-py3-none-any.whl"
+        ],
+        "report_or_excerpt_substitution_allowed": false
+      },
+      "evidence": [
+        {
+          "bytes": 1772,
+          "path": "artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/01_field_audit/expert_delivery_audit_v3/expert_v1_hash_validation.json",
+          "sha256": "05347B8ABCD95B1D88DF1D0CAF6ED81BFD93AB4E15D33994BA16D0B8886E92D6"
+        }
+      ],
+      "status": "NOT_TESTABLE_SOURCE_MISSING"
+    },
+    "formal_training_not_started": {
+      "details": {
+        "05_training_runs_file_count": 0
+      },
+      "evidence": [],
+      "status": "PASS"
+    },
+    "historical_gate_assets_preserved_nonactive": {
+      "details": {
+        "current_v3_authorized": false,
+        "engineering_gate_v2_jobs": 88,
+        "globally_erased_or_reported_absent": false,
+        "legacy_released_pilot_jobs": 44
+      },
+      "evidence": [
+        {
+          "bytes": 1377,
+          "path": "artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/04_run_queue_v2/RUN_QUEUE_VALIDATION.json",
+          "sha256": "AEBB090D503946E93EA4318C62733B2CBEF28EE0DE25C84C890A11DF3D4292B6"
+        },
+        {
+          "bytes": 2101,
+          "path": "artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/04_run_queue/releases/PILOT_S001_S005_RELEASED.json",
+          "sha256": "3C3765AD06F63D53081E97C825783FF1A41E52BD7F8BAD20CCDA7E45D599051E"
+        }
+      ],
+      "status": "PASS"
+    },
+    "legacy_formal_literature_audit": {
+      "details": {
+        "observed_status": "INCOMPLETE",
+        "still_reported_not_relabelled_pass": true
+      },
+      "evidence": [
+        {
+          "bytes": 924,
+          "path": "artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/02_literature/review_500_300_100_v2/validation/COMPLETION_AUDIT.json",
+          "sha256": "95BC8C6E4604DD19AC4CAA919E18304411F8163ADBC996F7DA2ECFB37F5E485D"
+        }
+      ],
+      "status": "SUPERSEDED_BY_USER_SCOPE_DECISION"
+    },
+    "literature_desktop_mirror_integrity": {
+      "details": {
+        "errors": [],
+        "manifest_rows": 610
+      },
+      "evidence": [
+        {
+          "bytes": 2334,
+          "path": "C:\\Users\\28898\\Desktop\\YOLO笔记\\01_Stage1_有限预算动态回流_文献证据_20260810\\PACKAGE_VALIDATION.json",
+          "sha256": "ED6D7CE6C229B753694DA1EFBBD65C2CA50F51E1325EF638D01CD3B602B5F0E5"
+        },
+        {
+          "bytes": 242201,
+          "path": "C:\\Users\\28898\\Desktop\\YOLO笔记\\01_Stage1_有限预算动态回流_文献证据_20260810\\MANIFEST_SHA256.csv",
+          "sha256": "E264920830073069E62D6E041511EC7367CFCAB70C52F161B351AD0B81EFAB25"
+        }
+      ],
+      "status": "PASS"
+    },
+    "literature_user_scope_decision_registered": {
+      "details": {
+        "decision": "LITERATURE_EXPANSION_STOPPED",
+        "legacy_formal_gate_overridden_for_current_scope": true
+      },
+      "evidence": [
+        {
+          "bytes": 2145,
+          "path": "artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/02_literature/review_500_300_100_v2/USER_LITERATURE_SUFFICIENCY_DECISION_20260810.md",
+          "sha256": "274054D8DF83CE717BF680CE33E041F324DC4BC4CE59E1C3A668DB42308F4662"
+        }
+      ],
+      "status": "PASS"
+    },
+    "preregistration_v3_contract": {
+      "details": {
+        "arm_ids": [
+          "NO_REPLAY",
+          "R1_GLOBAL_RANDOM",
+          "R2_METHOD_MATCHED_RANDOM",
+          "CURRENT_LOSS",
+          "T_Q",
+          "T_QR",
+          "T_QRA",
+          "T_QRAD"
+        ],
+        "candidate_effectiveness_claim": "NOT_EVALUATED",
+        "confirmation_seed_count": 14,
+        "scientific_status": "PREREGISTERED_NOT_RUN"
+      },
+      "evidence": [
+        {
+          "bytes": 3282,
+          "path": "artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/03_preregistration_v3/PREREGISTRATION_VALIDATION.json",
+          "sha256": "ABB024746A7F734C4FA1B628BBBA584E056A05EC2C6F65A95428C2474DB0FB3E"
+        }
+      ],
+      "status": "PASS"
+    },
+    "tripartite_46_rows_hash_bound": {
+      "details": {
+        "errors": [],
+        "executed_command_count": 46,
+        "row_count": 46
+      },
+      "evidence": [
+        {
+          "bytes": 3230,
+          "path": "artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/01_field_audit/expert_review_reproductions/TRIPARTITE_CROSSWALK_VALIDATION_v2.json",
+          "sha256": "587328A416DED4E01D25372057F3354028A9658661099B07FB8FE9BE81998739"
+        },
+        {
+          "bytes": 25096,
+          "path": "artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/01_field_audit/expert_review_reproductions/tripartite_reproduction_v2/EXECUTION_RECEIPT.json",
+          "sha256": "F45C08397F5D148BD0069101292A1D075D59973B7403BA35ABD39E16C5ABEAE8"
+        },
+        {
+          "bytes": 32914,
+          "path": "artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/01_field_audit/expert_review_reproductions/expert_vs_v3_tripartite_v2.csv",
+          "sha256": "B0EB425126EFEADC3EF2AF65228E622C0D40917A47F0107AA27C5D46E25C6191"
+        },
+        {
+          "bytes": 19591,
+          "path": "artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/01_field_audit/expert_review_reproductions/dynamic_review_vs_v3_tripartite_v2.csv",
+          "sha256": "ACAE0529B0484B12203F21D238E417049C0C6914A9B508B0CC6F696B0243BDB2"
+        }
+      ],
+      "status": "PASS"
+    },
+    "v3_test_suite": {
+      "details": {
+        "exit_code": 0,
+        "passed": 231
+      },
+      "evidence": [
+        {
+          "bytes": 419,
+          "path": "artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/08_reports/V3_TEST_SUITE_20260810.txt",
+          "sha256": "B7C4175D58C053F02D0D31ECADBE31C599EF3DB79849CB2258D7826AE07C2076"
+        }
+      ],
+      "status": "PASS"
+    }
+  },
+  "completion_allowed": false,
+  "created_at_utc": "2026-08-10T13:37:07.711303+00:00",
+  "experiment_id": "dynamic_replay_budget_efficiency_20260807",
+  "literature_policy": {
+    "current_scope": "USER_DECLARED_SUFFICIENT_STOP_EXPANSION",
+    "legacy_500_300_100_audit_status": "INCOMPLETE",
+    "legacy_status_relabelled_pass": false
+  },
+  "prohibited_actions": {
+    "active_v3_assignments_generated": false,
+    "active_v3_engineering_gate_generated": false,
+    "blind_holdout_opened": false,
+    "formal_training_started": false,
+    "historical_gate_assets_detected": true
+  },
+  "schema_version": "stage1.dynamic_replay.global_completion_audit.v2",
+  "scope": "GLOBAL_RESEARCH_FINALIZATION",
+  "status": "INCOMPLETE_SOURCE_MISSING"
+}

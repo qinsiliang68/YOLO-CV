@@ -1,0 +1,196 @@
+{
+  "schema_version": "3.0",
+  "paper_id": "P0173",
+  "canonical_work_id": "CWF8F6623D2632364B5CFB",
+  "title": "GRAD-MATCH: Gradient Matching based Data Subset Selection for Efficient Deep Model Training",
+  "decision": "SCREENED_ELIGIBLE",
+  "reviewed_at": "2026-08-10T18:45:00+08:00",
+  "reviewer": "codex_primary_fulltext_review",
+  "method_source": {
+    "path": "staging/broad_freeze_canonical_repaired_v4/sources/P0173.pdf",
+    "bytes": 1120432,
+    "sha256": "27CA3618BE53A4F5F4F783A48629D2A17C0D7C93FAFE359E6729CBB18879CE79"
+  },
+  "text_source": {
+    "path": "staging/screened_text_canonical_repaired_v4/text/P0173.txt",
+    "bytes": 232613,
+    "sha256": "85D3B8C9D327D1FE018D50F1F0820846D14FDEE736F46207974C338B275F0BDB"
+  },
+  "rq_ids": [
+    "RQ2",
+    "RQ3",
+    "RQ5",
+    "RQ6",
+    "RQ7"
+  ],
+  "section_evidence": {
+    "METHODS": {
+      "status": "READ",
+      "pages": "3-6 and theoretical appendices",
+      "anchors": [
+        {
+          "page": 4,
+          "line": 51,
+          "quote": "wt , X t = argmin Err",
+          "paraphrase_zh": "GradMatch 直接优化加权子集梯度与训练或验证目标梯度之间的二范数误差，并以子集大小 k 约束集合。"
+        }
+      ]
+    },
+    "EXPERIMENTS": {
+      "status": "READ",
+      "pages": "6-9 and appendices C.1-C.5",
+      "anchors": [
+        {
+          "page": 6,
+          "line": 54,
+          "quote": "randomly select points equal to",
+          "paraphrase_zh": "主实验包含与子集预算相同的随机选择，并另设按墙钟或能耗匹配的完整数据 early-stop 基线。"
+        }
+      ]
+    },
+    "ABLATIONS": {
+      "status": "READ",
+      "pages": "8-9 and appendices",
+      "anchors": [
+        {
+          "page": 9,
+          "line": 52,
+          "quote": "Ablation study results",
+          "paraphrase_zh": "作者分别检验刷新间隔、批级近似、warm start、正则强度与训练阶段比例，说明方法效果依赖训练时机与近似配置。"
+        }
+      ]
+    },
+    "LIMITATIONS": {
+      "status": "READ",
+      "pages": "4, 6 and 9; no dedicated limitations section",
+      "anchors": [
+        {
+          "page": 4,
+          "line": 47,
+          "quote": "subset of mini-batches selected directly",
+          "paraphrase_zh": "批级版本直接使用被选批次，没有额外打乱或增强采样；作者把这些覆盖改进留给未来工作。"
+        }
+      ]
+    }
+  },
+  "formulas": [
+    "Err(w,X,L,L_T,theta_t) = ||sum_{i in X} w_i grad L_i^T(theta_t) - grad L(theta_t)||_2",
+    "Err_lambda = Err + lambda ||w||_2",
+    "(w_t,X_t) = argmin_{w,X:|X|<=k} Err_lambda(w,X,L,L_T,theta_t)",
+    "OMP greedily adds the coordinate with the largest absolute residual correlation and refits weights"
+  ],
+  "algorithm_steps": [
+    "Choose whether the target is the full training gradient or an independent validation gradient.",
+    "At each refresh epoch, compute individual or mini-batch gradient embeddings and run orthogonal matching pursuit under subset size k and tolerance epsilon.",
+    "Train for the next R epochs on the weighted selected subset, then recompute the model-state-dependent subset.",
+    "Use optional last-layer, per-class, per-gradient, per-batch and warm-start approximations to control memory and wall-clock cost."
+  ],
+  "variables": [
+    "weighted subset X and weights w",
+    "target loss L",
+    "training loss L_T",
+    "subset budget k",
+    "selection interval R",
+    "regularizer lambda",
+    "tolerance epsilon",
+    "warm-start fraction kappa"
+  ],
+  "selection_timing": "Adaptive selection is recomputed every R epochs; main experiments set R=20 and warm variants allocate part of the training schedule to full-data warm start.",
+  "refresh_rule": "The OMP-selected weighted subset replaces the previous subset at each refresh and remains fixed between refreshes; the model parameters determine every later selection.",
+  "budget": {
+    "unit": "active subset fraction or selected mini-batch count per epoch",
+    "denominator": "full training-set size, with budgets of 1-10% on MNIST, 5-30% on ImageNet, and 5-30% on most other datasets",
+    "unique_sample_definition": "Point-level variants select at most k distinct examples per refresh; per-batch variants select whole existing mini-batches.",
+    "repeat_definition": "Selected identities are repeatedly trained during the R-epoch interval and may reappear after later refreshes; per-sample repeat parity is not enforced against random.",
+    "cumulative_exposure_definition": "Main comparisons keep epoch counts fixed while subset epochs contain fewer optimizer-visible examples, so total exposure and optimizer steps differ from full training and are not a Stage1 fixed-replay budget.",
+    "compute_cost": "Gradient construction, OMP and subset training are included in wall-clock and energy comparisons; last-layer and per-batch approximations reduce selection cost and memory."
+  },
+  "random_baselines": [
+    "uniform random subset with points equal to the target budget",
+    "random warm-start variant",
+    "full-data early stopping matched approximately on time or energy"
+  ],
+  "datasets": [
+    "CIFAR-10",
+    "CIFAR-100",
+    "MNIST",
+    "SVHN",
+    "ImageNet-2012"
+  ],
+  "models": [
+    "LeNet",
+    "ResNet-18",
+    "MobileNet-V1",
+    "MobileNet-V2"
+  ],
+  "seed_count": {
+    "counts": [
+      "5 independent runs for reported mean accuracies"
+    ],
+    "scope": "main data-selection accuracy comparisons",
+    "aggregation": "The paper reports mean accuracies after five runs and standard deviations in Appendix C.5."
+  },
+  "checkpoint_selection": "Main comparisons use fixed 200, 300 or 350 epoch schedules; one explicitly separate CIFAR-100 experiment extends GradMatch by 30-50 epochs rather than silently selecting a best checkpoint.",
+  "results": [
+    {
+      "claim": "GradMatch-PB-Warm 在多个子集比例上取得较好的精度与训练成本折中。",
+      "locator": "page 8, speedup and energy results",
+      "value": "CIFAR-10 reports 7x, 4.2x and 3x speedups at 10%, 20% and 30% subsets with 2.8%, 1.5% and 0.9% accuracy drops",
+      "anchor": {
+        "page": 8,
+        "line": 73,
+        "quote": "achieves a 7x, 4.2x and 3x speedup",
+        "paraphrase_zh": "这一结果证明梯度匹配可服务于高效子集训练，但并未在等累计曝光 replay 条件下测量业务尾部收益。"
+      }
+    },
+    {
+      "claim": "Warm start 和刷新周期不是装饰参数，而是显著影响小预算选择质量。",
+      "locator": "page 9, ablation discussion",
+      "value": "kappa=1/2 is reported best in the shown CIFAR-100 setting; too little warm start gives a poor initial state and too much approaches early stopping",
+      "anchor": {
+        "page": 9,
+        "line": 9,
+        "quote": "Setting a small value of",
+        "paraphrase_zh": "低质量初始模型会污染梯度选择，过长 warm start 又会压缩真正选样训练的空间。"
+      }
+    }
+  ],
+  "ablations": [
+    "refresh interval R in {5,10,20}",
+    "point-level versus per-batch selection",
+    "warm-start versus no warm-start and kappa sweep",
+    "regularization coefficient lambda and OMP tolerance epsilon",
+    "last-layer, per-class and per-gradient approximations",
+    "subset percentages from 1% to 30% depending on dataset"
+  ],
+  "negative_results": [
+    "GradMatch does not beat every baseline in every setting; GLISTER is better in the reported 30% imbalanced MNIST case.",
+    "Both very small lambda, including zero, and very large lambda reduce performance.",
+    "Small warm-start fractions produce poor starting models, while large fractions leave too little subset-selection training.",
+    "GLISTER and CRAIG could not run on ImageNet under the reported memory and runtime constraints."
+  ],
+  "failure_conditions": [
+    "Last-layer or per-batch gradients do not preserve the target directions relevant to the downstream endpoint.",
+    "The target gradient is computed from a biased or reused validation set.",
+    "The model is too early in training for gradients to form a stable selection signal, or refresh is too sparse for the selected subset to remain relevant.",
+    "The selected gradient sum matches a global gradient but omits rare endpoint-critical modes that have small aggregate mass."
+  ],
+  "limitations": [
+    "The paper optimizes subset-training efficiency, not additional replay under a fixed base-data pass and fixed cumulative replay exposure.",
+    "Gradient matching quality is a surrogate objective; the paper does not establish that better matching implies better FN95 safety or cross-seed replay utility.",
+    "Random is cardinality matched, but actual optimizer-visible exposures, repeated identities and augmentation draws are not matched to a Stage1 replay intervention.",
+    "Most experiments target full training gradients; validation-gradient matching is mainly used for class imbalance."
+  ],
+  "transfer_class": "INSPIRED_ADAPTATION",
+  "stage1_mechanism_zh": "GradMatch supports testing A at the set level rather than ranking only by individual gradient norm: Stage1 can ask whether a bounded replay set approximates the independent FN95-critical target gradient, while holding current model state, cumulative exposures, base order and augmentations fixed. Last-layer embeddings are a cost-controlled first approximation, not the final truth criterion.",
+  "stage1_non_inference_zh": "论文不能推出梯度和匹配误差最小的集合一定跨 seed 胜过随机，也不能把同 epoch 的子集训练称为同 replay 预算。它没有验证弱缺陷尾部、双阈值业务指标或 120,000 基础样本每轮恒定曝光；后续负结果还要求把 gradient-norm、positive-alignment 与匹配随机作为独立可证伪臂。",
+  "exclusion_reason": "NOT_APPLICABLE_WITH_REASON:eligible for SCREENED evidence tier",
+  "migration_provenance": {
+    "source_review": "discovery/screened_fulltext_reviews_v3/P0173.json",
+    "source_paper_id": "P0173",
+    "migration_basis": "CANONICAL_WORK_ID_AND_BYTE_IDENTICAL_EVIDENCE",
+    "content_review_reused": true,
+    "evidence_provenance_class": "USER_ACCEPTED_INHERITED_EVIDENCE",
+    "independent_content_rereview_performed": false
+  }
+}

@@ -1,0 +1,155 @@
+{
+  "schema_version": "3.0",
+  "paper_id": "P0020",
+  "canonical_work_id": "CWE6B9AC3B38B527C49DFD",
+  "title": "GLISTER: Generalization based Data Subset Selection for Efficient and Robust Learning",
+  "decision": "SCREENED_ELIGIBLE",
+  "reviewed_at": "2026-08-10T18:20:00+08:00",
+  "reviewer": "codex_primary_fulltext_review",
+  "method_source": {
+    "path": "staging/broad_freeze_anchor_complete_v3/sources/P0020.pdf",
+    "bytes": 797498,
+    "sha256": "88ECDA6540A7E528B2CB7C7763492CFB5763A0D421580ADB50E130FB9551BAF6"
+  },
+  "text_source": {
+    "path": "staging/screened_text_anchor_complete_v3/text/P0020.txt",
+    "bytes": 65331,
+    "sha256": "A59C155D4D3780F19C4BA49F636927323E2ECA850393900FE982A9710211BB78"
+  },
+  "rq_ids": ["RQ3", "RQ5", "RQ6", "RQ7"],
+  "section_evidence": {
+    "METHODS": {
+      "status": "READ",
+      "pages": "2-5",
+      "anchors": [
+        {
+          "page": 3,
+          "line": 52,
+          "quote": "performing data selection every epoch",
+          "paraphrase_zh": "GLISTER-Online 不是永久冻结一个子集，而是按间隔 L 重新选择，并在两次刷新之间继续使用上一子集。"
+        }
+      ]
+    },
+    "EXPERIMENTS": {
+      "status": "READ",
+      "pages": "6-7 and supplementary references",
+      "anchors": [
+        {
+          "page": 6,
+          "line": 30,
+          "quote": "Random: Just randomly select k (budget size) training examples",
+          "paraphrase_zh": "主实验把同样子集大小 k 的随机选择作为效率基线，并在类别不平衡情形使用类别平衡随机版本。"
+        }
+      ]
+    },
+    "ABLATIONS": {
+      "status": "READ",
+      "pages": "5-7",
+      "anchors": [
+        {
+          "page": 7,
+          "line": 38,
+          "quote": "overfitting to the validation set",
+          "paraphrase_zh": "消融显示集合正则在较大子集时能缓解对小验证集的过拟合，说明方向目标与覆盖约束应分开检验。"
+        }
+      ]
+    },
+    "LIMITATIONS": {
+      "status": "READ",
+      "pages": "4-7; no dedicated limitations section",
+      "anchors": [
+        {
+          "page": 5,
+          "line": 12,
+          "quote": "we find that the accuracy degradation is considerable",
+          "paraphrase_zh": "作者明确报告某些加速近似会造成明显精度退化，因此理论目标的近似质量和选择计算成本不能忽略。"
+        }
+      ]
+    }
+  },
+  "formulas": [
+    "S* = argmin_{S subset U, |S|<=k} L_V(argmin_theta L_T(theta,S),V)",
+    "G_theta(S) = LL_V(theta + eta * grad_theta LL_T(theta,S), V)",
+    "the Taylor marginal is proportional to the dot product between a candidate training gradient and the current validation gradient",
+    "the validation-loss decrease condition requires grad L_V(theta_l)^T grad L_T(theta_l,S) >= 0"
+  ],
+  "algorithm_steps": [
+    "Initialize a size-k training subset and model parameters, then train one epoch at a time on the active subset.",
+    "Every L epochs, approximate the bilevel validation objective with one training step and greedily select a new subset of size k.",
+    "Optionally regularize the validation objective with facility-location or random set functions to reduce validation-set overfitting.",
+    "Reuse the selected subset between refreshes and return the final model and final subset."
+  ],
+  "variables": ["training universe U", "held-out validation set V", "subset S", "subset budget k", "refresh interval L", "Taylor refresh count r", "regularization coefficient lambda"],
+  "selection_timing": "Selection is model-state dependent and occurs every L epochs; the paper fixes L=20 in the main experiments rather than selecting every optimizer step.",
+  "refresh_rule": "GreedyDSS replaces the active size-k subset at each refresh; between refresh epochs the immediately preceding subset and weights remain active.",
+  "budget": {
+    "unit": "active training-subset cardinality k",
+    "denominator": "full training-set size n",
+    "unique_sample_definition": "Each refresh produces a set of at most k distinct training examples; identity can change across refreshes.",
+    "repeat_definition": "A selected example is revisited during every epoch for which its subset remains active, but the paper does not equalize per-example repeats across methods.",
+    "cumulative_exposure_definition": "Optimizer-visible exposure is the sum of active subset sizes over epochs; the paper reports subset percentages and equal epoch counts rather than a matched cumulative-exposure ledger.",
+    "compute_cost": "Subset selection uses validation and training gradients; last-layer, Taylor, stochastic-greedy and r-greedy approximations reduce selection overhead, which is included in reported wall-clock speedups."
+  },
+  "random_baselines": [
+    "uniform random subset with the same cardinality k",
+    "class-balanced random subset under class imbalance",
+    "random set-function regularization inside the GLISTER objective"
+  ],
+  "datasets": ["DNA", "SVMGuide", "Digits", "Letter", "USPS", "MNIST", "CIFAR-10"],
+  "models": ["two-layer fully connected network", "LeNet", "ResNet-18", "nearest-neighbor and naive-Bayes special cases"],
+  "seed_count": "NOT_REPORTED_BY_PAPER",
+  "checkpoint_selection": "Main comparisons use the models reached under the stated training schedules; a separate business-metric checkpoint-selection rule is not reported.",
+  "results": [
+    {
+      "claim": "在 CIFAR-10 的固定子集训练中，GLISTER 以较小精度损失换取明显墙钟加速。",
+      "locator": "page 7, data-selection timing results",
+      "value": "reported speedups are 6x, 2.5x and 1.5x at 10%, 30% and 50% subsets, with accuracy drops of 3%, 1.2% and 0.2%",
+      "anchor": {
+        "page": 7,
+        "line": 44,
+        "quote": "achieves a 6x speedup at 10%",
+        "paraphrase_zh": "该收益是子集训练效率结果，包含选样时间，但不是固定累计 replay 曝光下的增益。"
+      }
+    },
+    {
+      "claim": "刷新频率和近似强度存在明确的效率与精度折中，并非越频繁选择越好。",
+      "locator": "page 7, ablation study",
+      "value": "L=20 and r about 3% of k are reported as the best observed trade-off; smaller L costs efficiency and larger L hurts accuracy",
+      "anchor": {
+        "page": 7,
+        "line": 38,
+        "quote": "accuracy gets affected",
+        "paraphrase_zh": "动态重选存在有效时间尺度，过于频繁或过于稀疏都可能降低净收益。"
+      }
+    }
+  ],
+  "ablations": [
+    "subset budgets 10%, 30% and 50%",
+    "selection intervals L=20, 35 and 50",
+    "Taylor refresh counts r from 1 to 20",
+    "unregularized, facility-location-regularized and random-regularized objectives",
+    "last-layer, Taylor, stochastic-greedy and r-greedy approximations"
+  ],
+  "negative_results": [
+    "CRAIG performs poorly at small subset sizes in the reported deep-learning comparisons.",
+    "Selecting more often than every 20 epochs did not provide accuracy gains worth its efficiency cost in the reported ablation.",
+    "Larger refresh intervals reduced accuracy, while stochastic r-greedy could produce poor sets when many items were chosen per greedy round.",
+    "A small validation set can overfit selection; facility-location or random regularization helped particularly for larger subsets."
+  ],
+  "failure_conditions": [
+    "The held-out target set is biased, too small, or reused later for method selection, causing validation-target overfitting or leakage.",
+    "The one-step Taylor approximation is poor at the current model state, so gradient alignment does not predict the true post-training effect.",
+    "Subset refresh frequency or approximation budget is mismatched to training dynamics.",
+    "A cardinality-matched random baseline still receives a different cumulative optimizer-visible exposure or training-step count."
+  ],
+  "limitations": [
+    "The task is subset training for efficiency and robustness, not base-data-plus-finite-budget replay.",
+    "Same epoch counts imply different optimizer-visible examples and steps, so the experiment does not isolate selection utility under equal cumulative exposure.",
+    "Independent training-seed counts and cross-seed win rates are not reported in the main paper.",
+    "The objective is generic validation likelihood or accuracy, not the Stage1 FN95 local safety frontier."
+  ],
+  "transfer_class": "INSPIRED_ADAPTATION",
+  "stage1_mechanism_zh": "GLISTER 为 A 和 D 提供可迁移机制：先用独立 val_target 定义 FN95 局部目标梯度，再在候选集合层面优化与该梯度同向的边际，并用来源或特征覆盖正则抑制冗余。Stage1 必须把刷新时点、实际曝光和验证角色另行冻结，且用严格同预算随机回流验证干预收益。",
+  "stage1_non_inference_zh": "论文不能证明任意正梯度点积样本都值得长期 replay，也不能证明 GLISTER 排名能跨 seed 稳压随机。其子集训练减少了每轮数据量和计算量，和 Stage1 每轮完整训练 120,000 个基础样本再追加有限回流的干预不同；报告的通用准确率收益不能外推到 FN95。",
+  "exclusion_reason": "NOT_APPLICABLE_WITH_REASON:eligible for SCREENED evidence tier"
+}

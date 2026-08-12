@@ -1,0 +1,209 @@
+{
+  "schema_version": "3.0",
+  "paper_id": "P0137",
+  "canonical_work_id": "CW93B4FAD9149BE660C0D7",
+  "title": "Rethinking Data Selection at Scale: Random Selection is Almost All You Need",
+  "decision": "SCREENED_ELIGIBLE",
+  "reviewed_at": "2026-08-10T16:20:00+08:00",
+  "reviewer": "codex_primary_fulltext_review",
+  "method_source": {
+    "path": "staging/broad_freeze_anchor_complete_v3/sources/P0137.pdf",
+    "bytes": 443364,
+    "sha256": "852A3674E15D19DA82F4B57BE22EC9FA0A7119F65C7D9272658E5196C4AE4989"
+  },
+  "text_source": {
+    "path": "staging/screened_text_anchor_complete_v3/text/P0137.txt",
+    "bytes": 72538,
+    "sha256": "0FC5190A5329515075C5E6442222427CBC0018E7112F82F53B412D033F7827C1"
+  },
+  "rq_ids": [
+    "RQ5",
+    "RQ7"
+  ],
+  "section_evidence": {
+    "METHODS": {
+      "status": "READ",
+      "pages": "3-5 and reproduction modifications in Appendix A.1 on page 12",
+      "anchors": [
+        {
+          "page": 3,
+          "line": 45,
+          "quote": "In this paper, we focus on self-scoring methods",
+          "paraphrase_zh": "论文复现质量型与多样性型离线数据选择：梯度相似度、指令难度、模型置信、交叉熵、K-center 多样性与压缩率，并把其工程改动逐项写入附录。"
+        }
+      ]
+    },
+    "EXPERIMENTS": {
+      "status": "READ",
+      "pages": "5-9 and complete 50k result tables on pages 13-14",
+      "anchors": [
+        {
+          "page": 5,
+          "line": 29,
+          "quote": "We conduct 5 random runs and the out-",
+          "paraphrase_zh": "核心对照在同为一万条训练数据的选择方法与五个随机子集之间进行，并在两套百万级指令数据、两个基础模型和多项下游基准上报告结果。"
+        }
+      ]
+    },
+    "ABLATIONS": {
+      "status": "READ",
+      "pages": "6-9, Tables 4-5, Figure 2, and 50k-size Appendix Tables 6-7",
+      "anchors": [
+        {
+          "page": 6,
+          "line": 28,
+          "quote": "To examine whether prioritizing diversity",
+          "paraphrase_zh": "补充实验在质量分数之上加入 K-means 覆盖，并另测仅用长度的选择以及一万条与五万条规模，试图区分质量、覆盖与规模因素。"
+        }
+      ]
+    },
+    "LIMITATIONS": {
+      "status": "READ",
+      "pages": "7-9 and Appendix A.1 on page 12",
+      "anchors": [
+        {
+          "page": 9,
+          "line": 49,
+          "quote": "Due to financial limitations, the External-scoring",
+          "paraphrase_zh": "作者承认没有实现外部大模型评分对照，也没有找到跨模型通用的选择法；附录还披露了因内存和成本而修改复现流程。"
+        }
+      ]
+    }
+  },
+  "formulas": [
+    "LESS scores a training point by learning-rate-weighted cosine similarity between projected Adam/LoRA gradients and validation-task gradients across optimization states.",
+    "IFD(Q,A)=s(A|Q)/s(A), a ratio of conditional and direct-answer token log-probability scores.",
+    "SelectIT aggregates token-rating confidence across prompts and model sizes with variance and parameter-count weighting.",
+    "Cross-entropy selection ranks examples by model negative log likelihood, which is also length sensitive.",
+    "DiverseEvol applies K-center selection by maximizing each candidate's minimum embedding distance to the current pool.",
+    "ZIP ranks additions using the ratio Bits(D)/Bits(C(D)) and greedily grows a low-redundancy subset."
+  ],
+  "algorithm_steps": [
+    "Freeze source corpus, target subset size, base model, three-epoch fine-tuning schedule, and downstream evaluation suite.",
+    "Compute one offline score or iterative diversity criterion for each candidate according to LESS, IFD, SelectIT, cross-entropy, DiverseEvol, or ZIP; apply disclosed scalability modifications where necessary.",
+    "Select 10,000 unique records per method, and independently draw five 10,000-record random subsets from the same source corpus.",
+    "Fine-tune LLaMA3-8B or Qwen2-7B for three epochs with batch size 128 and evaluate BBH, GSM, HumanEval, MMLU, and IFEval.",
+    "Repeat the comparison at 50,000 selected records and add K-means-plus-quality and token-length selection analyses."
+  ],
+  "variables": [
+    "source corpus D and fixed selected training subset D_train",
+    "D_val and D_warmup used by LESS",
+    "selection score and top-k subset size k",
+    "gradient projection Pi and optimization states theta_i",
+    "K-center clusters and embedding distances",
+    "compression ratio and token length",
+    "base model, three training epochs, batch size, and input length"
+  ],
+  "selection_timing": "Selection is performed offline before supervised fine-tuning. LESS uses a warm-up model and a sampled validation set; DiverseEvol uses three iterative model-selection cycles; the final selected subset for the reported fine-tuning run is then frozen.",
+  "refresh_rule": "The reported three-epoch fine-tuning does not refresh the selected IDs. Only the selection-stage algorithms have internal recomputation, and those schedules differ substantially across methods.",
+  "budget": {
+    "unit": "unique instruction-response records chosen for supervised fine-tuning",
+    "denominator": "the corresponding OpenHermes2.5 or English WildChat candidate corpus, each at roughly million scale",
+    "unique_sample_definition": "A selected instruction-response record is one unique ID; primary tables use 10,000 records and appendix tables use 50,000.",
+    "repeat_definition": "Every selected record is nominally reused across three fine-tuning epochs, but shuffle, truncation, drop-last behavior, and per-ID visibility are not reported.",
+    "cumulative_exposure_definition": "Nominal record exposure is subset size times three epochs for equal-size subset arms, but actual optimizer-visible examples and tokens are not ledgered; full-data arms have far larger exposure and are not budget matched.",
+    "compute_cost": "Scoring costs differ sharply: DiverseEvol used 8 A100-80G GPUs for about 5-7 days after a memory-saving modification; ZIP took about 7 days for 50k; a discarded baseline was estimated above 2,000 hours on 40 A100-80G GPUs."
+  },
+  "random_baselines": [
+    "five independently sampled 10,000-record random subsets per source/model table",
+    "five independently sampled 50,000-record random subsets in appendix tables",
+    "unfine-tuned base model",
+    "full-source-data fine-tuning, which is informative but not exposure matched",
+    "quality methods with and without a K-means diversity stage"
+  ],
+  "datasets": [
+    "OpenHermes2.5 instruction tuning corpus",
+    "English subset of WildChat-1M",
+    "BBH",
+    "GSM",
+    "HumanEval",
+    "MMLU",
+    "IFEval"
+  ],
+  "models": [
+    "LLaMA3-8B",
+    "Qwen2-7B",
+    "Qwen2-1.5B for part of SelectIT scoring",
+    "LoRA warm-up models for LESS"
+  ],
+  "seed_count": {
+    "counts": [
+      "5 random subset draws for each reported random-selection comparison",
+      "NOT_REPORTED_BY_PAPER for independent training initializations or data-order seeds within each deterministic selection method"
+    ],
+    "scope": "Tables 2-3 and Appendix Tables 6-7",
+    "aggregation": "Random arms are shown separately; method arms are single reported rows. The paper also averages heterogeneous task metrics and applies a right-tailed Mann-Whitney U comparison, but provides no paired training-seed distribution or worst seed."
+  },
+  "checkpoint_selection": "Models are trained for a fixed three epochs, but the paper does not state whether the final checkpoint or a best checkpoint is evaluated, nor does it report a validation-based checkpoint rule for the SFT runs.",
+  "results": [
+    {
+      "claim": "在论文的十万分之一规模选择设定中，没有一种复现选择法在统计检验中显著高于五次随机选择。",
+      "locator": "page 5 Table 1 and page 6 Section 5.1",
+      "value": "All reported one-sided Mann-Whitney U p-values are above 0.05; the table ranges from 0.30 to 0.92 across methods, source corpora, and base models.",
+      "anchor": {
+        "page": 6,
+        "line": 42,
+        "quote": "We found that the p-",
+        "paraphrase_zh": "结果反驳了复杂选择法在该设置下稳定超过随机的主张，但单方法训练重复不足、检验单位混合任务，不能视为强等效性证明。"
+      }
+    },
+    {
+      "claim": "高交叉熵选择在一个模型与数据源组合上低于五个随机子集中的最差结果。",
+      "locator": "page 6, Table 2 and Section 5.1",
+      "value": "Qwen2-7B on OpenHermes: cross-entropy average 54.02 versus the lowest of five random averages 57.04.",
+      "anchor": {
+        "page": 6,
+        "line": 31,
+        "quote": "average result is a mere 54.02, significantly below",
+        "paraphrase_zh": "当前损失或交叉熵高并不自动代表可约减或有利样本；在覆盖被破坏时，简单难度选择可以稳定劣于随机。"
+      }
+    },
+    {
+      "claim": "加入聚类覆盖通常改变质量选择的结果，说明集合多样性与单点质量不可互换。",
+      "locator": "pages 6 and 8, Section 5.2 and Table 5",
+      "value": "The paper reports more than 5-point and 3-point average improvements for cross-entropy selection on LLaMA3 and Qwen2 in its summarized analysis, while individual task cells and other methods remain mixed.",
+      "anchor": {
+        "page": 6,
+        "line": 36,
+        "quote": "Table 5 illustrates that integrating the K-means",
+        "paraphrase_zh": "覆盖步骤对结果有实质影响，但表中并非所有方法和任务都改善，因此证据应标为混合，不能推出固定的质量加多样性总分。"
+      }
+    }
+  ],
+  "ablations": [
+    "quality-score selection versus the same quality score stratified by K-means clusters",
+    "quality-oriented methods versus diversity-oriented methods",
+    "10,000 versus 50,000 selected records",
+    "OpenHermes2.5 versus WildChat source corpora",
+    "LLaMA3-8B versus Qwen2-7B base models",
+    "token-length-plus-clustering versus crafted scoring rules",
+    "five random subset realizations rather than a single random row"
+  ],
+  "negative_results": [
+    "No evaluated selection method is significantly better than random under the paper's reported one-sided tests.",
+    "Several quality-score methods fall below the worst random subset in specific source/model settings.",
+    "LESS depends strongly on the choice of target validation set and was modified to use random broad validation points.",
+    "IFD is confounded by response length, SelectIT becomes expensive across model scales, ZIP is slow and model independent, and DiverseEvol is memory intensive.",
+    "The authors could not identify a selection method that applies universally across models."
+  ],
+  "failure_conditions": [
+    "The selection score narrows source or semantic coverage relative to random sampling.",
+    "A score such as loss, perplexity, or compression is confounded by response length.",
+    "The target validation set used for gradient influence is too narrow for the eventual task mixture.",
+    "Method and random arms do not use the same unique count, epochs, token budget, optimizer steps, and training seed.",
+    "Engineering modifications made for scale alter the original selection algorithm.",
+    "A single deterministic method run is compared with random-subset variation and interpreted as seed stability."
+  ],
+  "limitations": [
+    "External-model scoring methods are omitted for financial reasons.",
+    "Several reproduced methods are materially modified for million-scale memory and compute constraints.",
+    "Only random-subset draws are replicated; method training initialization and order seeds are not reported.",
+    "The statistical test pools or summarizes heterogeneous downstream task metrics and is not a paired unseen-training-seed intervention test.",
+    "Actual token exposure, optimizer-visible record exposure, optimizer steps, checkpoints, and worst-seed outcomes are absent.",
+    "The work studies LLM supervised fine-tuning, not sewer-defect FN95 replay."
+  ],
+  "transfer_class": "MECHANISM_ONLY",
+  "stage1_mechanism_zh": "该文最直接的贡献是把多次随机选择放到选择方法的中心对照位置，并给出复杂评分在规模扩大或覆盖受损时可能低于随机的反证。它同时支持 D 必须作为集合条件约束而非与 Q/R/A 任意加权：单点损失或质量分高，如果破坏来源与语义覆盖，可能整体有害。",
+  "stage1_non_inference_zh": "论文只重复随机子集，没有对每个方法运行配对的新 training seed，也没有 no-replay、current-loss 与 R1/R2、FN95 局部目标、固定 optimizer-visible replay slots 或实际累计曝光。其大模型三轮 SFT 和任务平均分不能证明 Stage1 中随机必胜或任何选择法无效；它只要求 Stage1 用严格匹配随机基线和未见种子来证伪候选。",
+  "exclusion_reason": "NOT_APPLICABLE_WITH_REASON:eligible as strict-random counterevidence and set-coverage mechanism"
+}

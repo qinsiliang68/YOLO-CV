@@ -1,0 +1,161 @@
+{
+  "schema_version": "3.0",
+  "paper_id": "P0471",
+  "canonical_work_id": "CW3073B4D03E5D1D452B9F",
+  "title": "Learning to Reweight Examples for Robust Deep Learning",
+  "decision": "SCREENED_ELIGIBLE",
+  "reviewed_at": "2026-08-10T19:10:00+08:00",
+  "reviewer": "codex_primary_fulltext_review",
+  "method_source": {
+    "path": "staging/broad_freeze_anchor_complete_v3/sources/P0471.pdf",
+    "bytes": 3044218,
+    "sha256": "55976D603D1EF3620A1B0289F27A5F51ABFB60FA0A00F1A2F12364BC146CD88B"
+  },
+  "text_source": {
+    "path": "staging/screened_text_anchor_complete_v3/text/P0471.txt",
+    "bytes": 122381,
+    "sha256": "3DADFDDFE6D127B7D4F498418B36D72DCB894C9DB36070C55FDEB17E562D96F3"
+  },
+  "rq_ids": ["RQ2", "RQ3", "RQ4", "RQ6", "RQ7"],
+  "section_evidence": {
+    "METHODS": {
+      "status": "READ",
+      "pages": "3-5 and appendices A-C",
+      "anchors": [
+        {
+          "page": 3,
+          "line": 47,
+          "quote": "Online approximation Calculating the optimal wi re- quires two nested loops",
+          "paraphrase_zh": "原始双层样本权重优化被近似成每个训练步的一步前瞻，并由独立干净验证批次产生样本权重。"
+        }
+      ]
+    },
+    "EXPERIMENTS": {
+      "status": "READ",
+      "pages": "5-8",
+      "anchors": [
+        {
+          "page": 5,
+          "line": 48,
+          "quote": "ratios averaged from 10 runs with random splits",
+          "paraphrase_zh": "MNIST 类别不平衡实验按十次随机划分平均；CIFAR 噪声实验另按五个随机标签划分报告。"
+        }
+      ]
+    },
+    "ABLATIONS": {
+      "status": "READ",
+      "pages": "7-8",
+      "anchors": [
+        {
+          "page": 8,
+          "line": 82,
+          "quote": "does not grow after having more than 100 validation images",
+          "paraphrase_zh": "干净验证集规模消融显示收益在约一百张后趋于饱和，同时极小验证集仍可能带来抽样偏差。"
+        }
+      ]
+    },
+    "LIMITATIONS": {
+      "status": "READ",
+      "pages": "4, 7-8; no dedicated limitations section",
+      "anchors": [
+        {
+          "page": 8,
+          "line": 48,
+          "quote": "our method only slightly underperforms baseline",
+          "paraphrase_zh": "在零噪声条件下方法略低于普通训练，作者将其归因于验证子集自身的抽样偏差。"
+        }
+      ]
+    }
+  },
+  "formulas": [
+    "theta*(w) = argmin_theta sum_i w_i f_i(theta)",
+    "w* = argmin_{w>=0} mean_j f_j^v(theta*(w))",
+    "u_i,t = -eta * d validation_loss(theta_hat(epsilon))/d epsilon_i at epsilon_i=0",
+    "w_tilde_i,t = max(u_i,t,0), followed by within-batch L1 normalization",
+    "the meta-gradient contains dot products between training and validation gradient directions"
+  ],
+  "algorithm_steps": [
+    "Sample one noisy or biased training mini-batch and one small clean unbiased validation mini-batch at every optimizer step.",
+    "Set temporary example perturbation weights to zero and take one differentiable pseudo-update on the weighted training loss.",
+    "Differentiate the validation loss through that pseudo-update with respect to every training-example perturbation.",
+    "Rectify negative utility weights to zero, normalize positive weights within the batch, and update the real model on the reweighted training loss."
+  ],
+  "variables": ["training mini-batch D_f", "clean validation mini-batch D_g", "training batch size n", "validation batch size m", "temporary weights epsilon", "nonnegative normalized weights w", "training step size alpha", "meta step eta"],
+  "selection_timing": "Weights are recomputed online at every training iteration from the current model, current training mini-batch and a newly sampled clean validation mini-batch.",
+  "refresh_rule": "There is no persistent global ranking: every mini-batch begins with zero perturbation weights and receives a fresh one-step validation meta-gradient.",
+  "budget": {
+    "unit": "nonnegative within-mini-batch training weight mass normalized to one",
+    "denominator": "the current training mini-batch rather than the full dataset",
+    "unique_sample_definition": "The method reweights whatever examples ordinary data loading places in the current mini-batch; it does not define a fixed unique replay set.",
+    "repeat_definition": "Repeat counts follow the ordinary training sampler; the paper changes per-step weights rather than adding matched replay occurrences.",
+    "cumulative_exposure_definition": "All training steps remain, but effective weighted exposure varies by sample and step; no finite total replay-exposure budget is defined.",
+    "compute_cost": "The paper estimates approximately three times ordinary training time because it requires training and validation passes plus backward-on-backward differentiation."
+  },
+  "random_baselines": [
+    "rectified-Gaussian random example weights normalized within the batch",
+    "class resampling and inverse-frequency proportion weighting",
+    "hard mining based on highest majority-class loss",
+    "fine-tuning baselines given the same clean validation examples"
+  ],
+  "datasets": ["MNIST 4-versus-9", "CIFAR-10", "CIFAR-100"],
+  "models": ["LeNet", "ResNet-32", "WideResNet-28-10"],
+  "seed_count": {
+    "counts": ["10 random splits for the MNIST imbalance curve", "5 random clean/noisy splits for CIFAR experiments"],
+    "scope": "Figure 2 and Tables 1-2 respectively",
+    "aggregation": "MNIST reports an average across ten splits; CIFAR reports mean test accuracy with 95% intervals across five specified background-class trials."
+  },
+  "checkpoint_selection": "The proposed method is evaluated after fixed training steps; several baselines additionally use noisy hyper-validation for tuning or explicit early stopping, and these are labeled as separate ES variants.",
+  "results": [
+    {
+      "claim": "方向性重加权在两类噪声设置中优于论文所列基线，并且五次 CIFAR 划分给出不确定性范围。",
+      "locator": "pages 6-7, Tables 1 and 2",
+      "value": "under 40% background flip, the method reports 86.73 +/- 0.48 on CIFAR-10 and 59.30 +/- 0.60 on CIFAR-100",
+      "anchor": {
+        "page": 7,
+        "line": 39,
+        "quote": "O URS               86.73",
+        "paraphrase_zh": "表二显示方法在 40% background-flip 下超过比较方法，但其监督来自额外干净验证集。"
+      }
+    },
+    {
+      "claim": "随机权重本身是强基线，说明动态噪声或正则效应可能解释部分收益。",
+      "locator": "page 7, Results and Discussion",
+      "value": "random weighting outperformed all compared historical methods on uniform flip and was comparable to baseline on other settings",
+      "anchor": {
+        "page": 7,
+        "line": 60,
+        "quote": "The first result that draws our attention",
+        "paraphrase_zh": "作者主动报告随机权重意外强势，因此目标方向法必须与严格随机干预而非弱基线比较。"
+      }
+    }
+  ],
+  "ablations": [
+    "clean validation-set size from 15 to 1000 examples",
+    "uniform-flip versus background-flip noise mechanisms",
+    "noise ratio sweep from 0% to 50%",
+    "early stopping and fine-tuning variants for competing methods",
+    "inspection of learned weight distributions for clean and flipped examples"
+  ],
+  "negative_results": [
+    "Random rectified-Gaussian weights were surprisingly strong and beat all compared historical methods on uniform flip.",
+    "At zero noise the proposed method slightly underperformed ordinary baseline training because the clean validation subset has its own sampling bias.",
+    "Training only on the small clean set performed poorly, showing that target alignment cannot replace broad training coverage.",
+    "The method incurs about three times standard training cost in the authors' estimate."
+  ],
+  "failure_conditions": [
+    "The clean validation set is not representative of the deployment endpoint, causing meta-gradients to optimize a biased target.",
+    "The same validation identities are reused for method construction and later method or threshold selection.",
+    "Within-batch positive clipping discards complementary examples whose immediate dot product is negative but whose set-level or delayed effect is useful.",
+    "The method is compared with random sampling rather than an equal-compute random weighting or replay intervention."
+  ],
+  "limitations": [
+    "This is per-step reweighting, not finite-budget replay or global sample selection.",
+    "It requires a separate accurately labeled unbiased validation set and assumes that its objective represents evaluation utility.",
+    "Reported endpoints are ordinary classification accuracy under synthetic imbalance or noise, not FN95 local safety metrics.",
+    "The random baseline randomizes weights rather than matching Stage1 replay identities, unique count, repeats and cumulative exposure."
+  ],
+  "transfer_class": "INSPIRED_ADAPTATION",
+  "stage1_mechanism_zh": "该文为 A 提供最直接的一阶依据：训练样本只有在其更新方向降低独立目标损失时才获得正权重。Stage1 可把独立 val_target 上的 FN95 局部成对损失作为目标，并比较 positive alignment、negative alignment 与 gradient norm；但要采用上一 epoch 状态、固定曝光以及独立 val_study 才能避免同时态和验证泄漏。",
+  "stage1_non_inference_zh": "论文不支持把梯度点积直接称为 replay 价值，更不支持从普通干净验证 CE 外推到 FN95。它没有固定 unique IDs、累计额外曝光或基础样本顺序，也没有 R1/R2/no-replay 三联；正点积只是一阶局部方向，长期重复、非凸路径、样本互补和跨 seed 反转仍须真实干预检验。",
+  "exclusion_reason": "NOT_APPLICABLE_WITH_REASON:eligible for SCREENED evidence tier"
+}

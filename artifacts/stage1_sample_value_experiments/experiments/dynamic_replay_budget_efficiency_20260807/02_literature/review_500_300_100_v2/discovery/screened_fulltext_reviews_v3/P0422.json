@@ -1,0 +1,159 @@
+{
+  "schema_version": "3.0",
+  "paper_id": "P0422",
+  "canonical_work_id": "CW4393E96BD48909A90BAF",
+  "title": "Understanding Black-box Predictions via Influence Functions",
+  "decision": "SCREENED_ELIGIBLE",
+  "reviewed_at": "2026-08-10T19:40:00+08:00",
+  "reviewer": "codex_primary_fulltext_review",
+  "method_source": {
+    "path": "sources/legacy_core/P012_Influence_Functions_2017.pdf",
+    "bytes": 4815350,
+    "sha256": "715FB9F935B0AF32C7AE1F0D834FD5158EDB279A575A4AE91196D1830F281F65"
+  },
+  "text_source": {
+    "path": "staging/screened_text_anchor_complete_v3/text/P0422.txt",
+    "bytes": 67984,
+    "sha256": "796DCF151DA794B76275A91F3B12A88F2208E71834879A298B00C21A65769805"
+  },
+  "rq_ids": ["RQ2", "RQ3", "RQ4", "RQ7", "RQ8"],
+  "section_evidence": {
+    "METHODS": {
+      "status": "READ",
+      "pages": "2-4 and appendices",
+      "anchors": [
+        {
+          "page": 2,
+          "line": 60,
+          "quote": "upweighting z on the loss at a test point",
+          "paraphrase_zh": "方法通过隐式求逆 Hessian，把无穷小上调一个训练点对指定测试点损失的局部影响写成闭式近似。"
+        }
+      ]
+    },
+    "EXPERIMENTS": {
+      "status": "READ",
+      "pages": "4-8",
+      "anchors": [
+        {
+          "page": 4,
+          "line": 31,
+          "quote": "Influence functions vs. leave-one-out retraining",
+          "paraphrase_zh": "核心有效性检验是将影响函数近似与真实删除单点后重训的损失变化直接比较。"
+        }
+      ]
+    },
+    "ABLATIONS": {
+      "status": "READ",
+      "pages": "3-5 and 8",
+      "anchors": [
+        {
+          "page": 5,
+          "line": 6,
+          "quote": "Smooth approximations to the hinge loss",
+          "paraphrase_zh": "作者改变平滑 hinge 的温度并与原始 hinge 重训差异比较，验证非可微损失近似何时有效。"
+        }
+      ]
+    },
+    "LIMITATIONS": {
+      "status": "READ",
+      "pages": "4-5 and Discussion on page 8",
+      "anchors": [
+        {
+          "page": 8,
+          "line": 47,
+          "quote": "At their core, influence functions measure the effect",
+          "paraphrase_zh": "讨论明确承认影响函数只刻画局部无穷小改变；模型变化较大的群体级操作仍是开放问题。"
+        }
+      ]
+    }
+  },
+  "formulas": [
+    "I_up,params(z) = -H_theta_hat^{-1} grad_theta L(z,theta_hat)",
+    "I_up,loss(z,z_test) = -grad L(z_test)^T H_theta_hat^{-1} grad L(z)",
+    "removing z is approximated by theta_hat_-z - theta_hat approximately -(1/n) I_up,params(z)",
+    "I_pert,loss uses -grad L(z_test)^T H^{-1} grad_x grad_theta L(z)"
+  ],
+  "algorithm_steps": [
+    "Train a model to a parameter point and choose a target prediction or target loss to explain.",
+    "Compute an inverse-Hessian-vector product for the target gradient using conjugate gradients or stochastic Hessian-vector products.",
+    "Take a dot product with every training-example gradient to estimate how infinitesimal upweighting changes the target loss.",
+    "Validate selected estimates against leave-one-out retraining or use their signs and magnitudes for diagnosis, relabeling triage or controlled perturbation."
+  ],
+  "variables": ["training point z", "target point z_test", "empirical-risk minimizer theta_hat", "training-set Hessian H", "upweighting mass epsilon", "input perturbation delta"],
+  "selection_timing": "Classical influence is computed around a trained parameter point rather than refreshed throughout the SGD path; non-converged networks require a damped local quadratic approximation.",
+  "refresh_rule": "No online refresh policy is defined; changing the checkpoint changes gradients, Hessian curvature and therefore the estimated influence, so each parameter state is a separate local analysis.",
+  "budget": {
+    "unit": "infinitesimal training-point weight perturbation, with deletion approximated by negative 1/n mass",
+    "denominator": "n training examples in the empirical-risk objective",
+    "unique_sample_definition": "Influence is scored separately for each training identity relative to a chosen target point or target loss.",
+    "repeat_definition": "The derivation does not model repeated replay occurrences; it locally changes one point's objective weight.",
+    "cumulative_exposure_definition": "No cumulative optimizer-visible replay budget is present because the counterfactual is an infinitesimal objective perturbation or one-point deletion.",
+    "compute_cost": "All-point influence costs O(np + rtp) after an inverse-Hessian target solve under the paper's notation; exact retraining is used only for small validation experiments."
+  },
+  "random_baselines": [
+    "random inspection of suspected mislabeled training examples",
+    "highest training-loss inspection",
+    "exact leave-one-out retraining as a validation reference rather than a deployable baseline"
+  ],
+  "datasets": ["MNIST", "ImageNet-derived dog-versus-fish", "diabetic hospital readmission", "Enron1 spam"],
+  "models": ["logistic regression", "linear SVM", "small convolutional network", "frozen Inception-v3 features plus top layer", "RBF SVM"],
+  "seed_count": {
+    "counts": ["40 repeats for the Enron label-repair experiment"],
+    "scope": "Figure 6 mislabeled-data inspection; other case studies do not report one common independent training-seed count",
+    "aggregation": "Figure 6 uses standard-deviation error bars across independently flipped subsets, while most other examples are targeted case studies."
+  },
+  "checkpoint_selection": "The derivation assumes an empirical-risk minimizer; the non-convex experiment instead uses a stated non-converged parameter point with damping, not an endpoint chosen by the downstream business metric.",
+  "results": [
+    {
+      "claim": "在小型可重训设置中，影响函数对删除单点后的实际测试损失变化给出较高相关近似。",
+      "locator": "pages 4-5, Figures 2-3",
+      "value": "the non-converged CNN reports Pearson R=0.86, and smoothed-hinge SVM reports R=0.95 at temperature 0.001",
+      "anchor": {
+        "page": 5,
+        "line": 28,
+        "quote": "actual changes in loss were highly correlated",
+        "paraphrase_zh": "即使非凸网络未收敛，加入阻尼后的局部近似仍与受控重训变化相关，但不是精确因果效应。"
+      }
+    },
+    {
+      "claim": "用于脏标签人工审查时，影响排序优于最高训练损失和随机检查。",
+      "locator": "page 8, Figure 6",
+      "value": "10% of Enron training labels were flipped; influence-prioritized correction improved recovery and test accuracy over loss and random across 40 repeats",
+      "anchor": {
+        "page": 8,
+        "line": 10,
+        "quote": "to prioritize the training points to inspect",
+        "paraphrase_zh": "影响值在该线性文本模型中适合做人工排查优先级，但该实验不是回流训练收益检验。"
+      }
+    }
+  ],
+  "ablations": [
+    "exact conjugate-gradient inverse Hessian versus stochastic approximation",
+    "training-gradient and inverse-Hessian components removed from the score",
+    "smooth-hinge temperatures including 0.001 and 0.1",
+    "linear convex, non-converged non-convex and non-differentiable model settings",
+    "one versus multiple perturbed training images in attack experiments"
+  ],
+  "negative_results": [
+    "Raw derivatives of the non-differentiable hinge loss substantially overestimated leave-one-out effects.",
+    "Removing the training-loss or inverse-Hessian term failed to identify genuinely influential points.",
+    "The local method does not directly answer large group or subpopulation interventions because the model may move too far.",
+    "Ambiguous or mislabeled high-loss points can be highly influential and can also be effective attack points, so large influence is not equivalent to beneficial value."
+  ],
+  "failure_conditions": [
+    "The evaluated checkpoint is far from a local optimum and damping does not stabilize the curvature approximation.",
+    "The loss is non-differentiable and no faithful smooth surrogate is used.",
+    "A finite replay set or repeated exposure moves parameters outside the local linear regime.",
+    "Near duplicates make one-at-a-time deletion appear harmless even though the duplicate group jointly drives behavior."
+  ],
+  "limitations": [
+    "Influence is a checkpoint-local attribution approximation, not a demonstrated replay selection policy.",
+    "The strongest leave-one-out validation uses small models and datasets where repeated retraining is feasible.",
+    "Deep-model use requires damping, approximation and often frozen layers, all of which alter the estimand.",
+    "No FN95 target, matched replay budget, base-order parity or cross-training-seed utility experiment is reported."
+  ],
+  "transfer_class": "MECHANISM_ONLY",
+  "stage1_mechanism_zh": "Influence Functions 提醒 Stage1 将“有影响”分成对目标损失有益与有害的符号，并把曲率 H^{-1} 与简单梯度点积分开。它可作为关键 checkpoint 上的小规模诊断或反例工具：针对 FN95 的独立 val_target 比较局部影响符号，再用真实 replay 验证，不宜直接成为 120,000 样本的永久排名。",
+  "stage1_non_inference_zh": "论文绝不能支持“影响绝对值大就是高价值”。其攻击实验恰好显示高影响样本可以有害；局部无穷小上权与数十轮重复曝光不同，单点删除也处理不好近重复集合。没有跨 seed 的同预算 T/R1/R2/no-replay 干预，因此任何 Stage1 排名都只能称 influence-inspired proxy。",
+  "exclusion_reason": "NOT_APPLICABLE_WITH_REASON:eligible for SCREENED evidence tier"
+}

@@ -1,5 +1,6 @@
-﻿experiment_id,experiment_group,status,physical_root,artifact_mode,note
+experiment_id,experiment_group,status,physical_root,artifact_mode,note
 hn_rn_formal_manifest_review_20260623,confidence_only_replay,legacy_review,artifacts/stage1_phase1_hn_rn_20260623_formal_manifest_review,legacy_pointer,Original HN/RN manifest review. Kept in place; registered for experiment lineage.
 hn_rn_40runs_20260630,confidence_only_replay,legacy_result,artifacts/stage1_phase1_hn_rn_40runs_20260630_redownload,legacy_pointer,Exploratory 40-run HN/RN result package. Kept in place; do not move.
 hn_band_120runs_20260707,confidence_band_replay,legacy_result,artifacts/stage1_phase1_hn_band_20260628_120runs_20260707_review,legacy_pointer,Exploratory 120-run HN band/RN review package. Kept in place; do not move.
 oof_dynamics_gap_value_20260708,oof_training_dynamics_sample_value,active,artifacts/stage1_sample_value_experiments/experiments/oof_dynamics_gap_value_20260708,native_grouped_tree,New grouped OOF dynamics and score-gap sample-value experiment.
+dynamic_replay_budget_efficiency_20260807,conditional_sample_value_dynamic_replay,RESEARCH_AUDIT_HELD,artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807,native_grouped_tree,"Evidence audit only. Preserved v2 assets are historical candidates; no canary, engineering gate, assignment, blind holdout, or formal training is authorized."

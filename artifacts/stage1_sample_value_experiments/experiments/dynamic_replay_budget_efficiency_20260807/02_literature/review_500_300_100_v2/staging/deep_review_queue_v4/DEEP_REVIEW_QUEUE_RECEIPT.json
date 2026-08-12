@@ -1,0 +1,298 @@
+{
+  "schema_version": "4.0",
+  "status": "PASS",
+  "created_at": "2026-08-10T20:15:01.848933+08:00",
+  "selected_count": 100,
+  "reserve_count": 200,
+  "mandatory_count": 48,
+  "core_anchor_count": 40,
+  "current_review_count": 31,
+  "byte_identical_legacy_count": 12,
+  "ready_union_count": 31,
+  "quota_counts": {
+    "RQ1": 12,
+    "RQ2": 13,
+    "RQ3": 13,
+    "RQ4": 13,
+    "RQ5": 13,
+    "RQ6": 13,
+    "RQ7": 13,
+    "RQ8": 10
+  },
+  "selection_policy": {
+    "total": 100,
+    "minimum_per_rq": 10,
+    "maximum_per_rq": 20,
+    "maximum_transfer": 35,
+    "minimum_counterevidence_per_rq": 1,
+    "mandatory_canonical_work_ids": [
+      "CW12F28373D588C9FE1E43",
+      "CW15F14534F94F6674F9AB",
+      "CW1C4264F5AD37FAA5A2B2",
+      "CW1ECA2D0D8F67549BD4E1",
+      "CW2058BFE8C66EA619873D",
+      "CW27EA65DC3E285E30085F",
+      "CW2C31D4B8DEFAADCBE53F",
+      "CW3073B4D03E5D1D452B9F",
+      "CW4393E96BD48909A90BAF",
+      "CW4918AE07F58C343F96B6",
+      "CW4C77EBF77047F31CF885",
+      "CW501F9ECF2E222F2564D1",
+      "CW50D21FC725813C0F96F7",
+      "CW538E0F4861D2EB4BB06D",
+      "CW5BBB2D6BD039C272F48A",
+      "CW5FC42DA69418A757FE68",
+      "CW60DE20FF6EBD0732725C",
+      "CW650ABBBE424F1071637C",
+      "CW6987DB4646B2490FEC86",
+      "CW6B828EA30AEEF829012E",
+      "CW6B8A991F073C69958D99",
+      "CW6C0BF6537DFBB5C10C15",
+      "CW73982D015AB40FEE5E6B",
+      "CW79D4A4F6C4BBCA526958",
+      "CW85DF4BCD773E47F4EE59",
+      "CW873DA6584A48FA664017",
+      "CW88F86EF870BFBAD35193",
+      "CW9313629F9AEE4C100021",
+      "CW93B4FAD9149BE660C0D7",
+      "CW95905E41363466AB9C06",
+      "CW9931898DACDCBE6274B7",
+      "CW9E249AC4F35D83423946",
+      "CWA06EB02B84C505EE335C",
+      "CWA30DF06C8D4A2F1ECC29",
+      "CWA507196A9C503BF59049",
+      "CWAD8481EF113E1665A9A3",
+      "CWAEC0D9840DD20625A997",
+      "CWB5B86A61D2D40B74403B",
+      "CWBEC6D4B8418EE862A458",
+      "CWD3A985789ECF796B7740",
+      "CWE157D064AB0EE690BCEA",
+      "CWE6B9AC3B38B527C49DFD",
+      "CWEB485D837A2F070054C4",
+      "CWEBFB36A95AA2316D6377",
+      "CWF2FC081E239CD34733A4",
+      "CWF500847CB8ED6525F3D3",
+      "CWF7C5971D7D4A537B18DA",
+      "CWF8F6623D2632364B5CFB"
+    ],
+    "tier_label": "DEEP",
+    "frozen_seed": "stage1-literature-deep-review-v4-20260810"
+  },
+  "input_artifacts": [
+    {
+      "input_role": "CANONICAL_REGISTRY",
+      "path": "C:/GitHub/YOLO-CV/artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/02_literature/review_500_300_100_v2/staging/broad_freeze_canonical_repaired_v4/CANONICAL_WORKS.csv",
+      "bytes": 255624,
+      "sha256": "C28175BA3F0E3ACFD20546203B18D2BE8980FB169C45107145FA6EDD27EE4A39"
+    },
+    {
+      "input_role": "SCREENED_PRIMARY",
+      "path": "C:/GitHub/YOLO-CV/artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/02_literature/review_500_300_100_v2/staging/screened_queue_canonical_repaired_pdf_v4/SCREENED_PRIMARY.csv",
+      "bytes": 218458,
+      "sha256": "79227EB25243D4F4EB73388BFB2CC72C934B712C170179A5E1527B23829C6339"
+    },
+    {
+      "input_role": "CORE_ANCHORS",
+      "path": "C:/GitHub/YOLO-CV/artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/02_literature/review_500_300_100_v2/discovery/CORE_METHOD_ANCHORS_v2.csv",
+      "bytes": 18902,
+      "sha256": "5AF6D916B480B0CA4755A0F09151C13FCBF5EA786FBA4AFC1F0E9695BF05CDF3"
+    },
+    {
+      "input_role": "LEGACY_FULLTEXT_LEDGER",
+      "path": "C:/GitHub/YOLO-CV/artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/02_literature/FULL_TEXT_READING_LEDGER.csv",
+      "bytes": 63577,
+      "sha256": "416290F862EB96E59F14E22ABFE788CA769DF473BF5041E9E06CA775A3BACF13"
+    },
+    {
+      "input_role": "CURRENT_SCREENED_REVIEW",
+      "path": "C:/GitHub/YOLO-CV/artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/02_literature/review_500_300_100_v2/discovery/screened_fulltext_reviews_v4/P0008.json",
+      "bytes": 10013,
+      "sha256": "C61A28D389164ED530D8A7A08FB7DE0E379C2624DB3B015F3FE7CA35B50A96DB"
+    },
+    {
+      "input_role": "CURRENT_SCREENED_REVIEW",
+      "path": "C:/GitHub/YOLO-CV/artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/02_literature/review_500_300_100_v2/discovery/screened_fulltext_reviews_v4/P0020.json",
+      "bytes": 9944,
+      "sha256": "8C133AF740F8F2BDC871671DC476FE99A59930F9BE6D4FE5F2BF2468CFD633AB"
+    },
+    {
+      "input_role": "CURRENT_SCREENED_REVIEW",
+      "path": "C:/GitHub/YOLO-CV/artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/02_literature/review_500_300_100_v2/discovery/screened_fulltext_reviews_v4/P0039.json",
+      "bytes": 9454,
+      "sha256": "92FE52F86EA8AC85EAFB135E207A11242B417F2530432790D97DE93DED178B69"
+    },
+    {
+      "input_role": "CURRENT_SCREENED_REVIEW",
+      "path": "C:/GitHub/YOLO-CV/artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/02_literature/review_500_300_100_v2/discovery/screened_fulltext_reviews_v4/P0057.json",
+      "bytes": 8618,
+      "sha256": "710F0FD75AE2BD491191032836140210EF35BE114E4D300A346717F6A901758C"
+    },
+    {
+      "input_role": "CURRENT_SCREENED_REVIEW",
+      "path": "C:/GitHub/YOLO-CV/artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/02_literature/review_500_300_100_v2/discovery/screened_fulltext_reviews_v4/P0073.json",
+      "bytes": 12844,
+      "sha256": "A940C21E73D927DDBA30FE23D25587C7E96C738F0B3AEBED2D53FAEB05D103F4"
+    },
+    {
+      "input_role": "CURRENT_SCREENED_REVIEW",
+      "path": "C:/GitHub/YOLO-CV/artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/02_literature/review_500_300_100_v2/discovery/screened_fulltext_reviews_v4/P0075.json",
+      "bytes": 11685,
+      "sha256": "7652F5E49811BDF34120AC2FE6177235CCD6CD7E8A26DE2A0A9063D8F03BC201"
+    },
+    {
+      "input_role": "CURRENT_SCREENED_REVIEW",
+      "path": "C:/GitHub/YOLO-CV/artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/02_literature/review_500_300_100_v2/discovery/screened_fulltext_reviews_v4/P0082.json",
+      "bytes": 11347,
+      "sha256": "9CBB36ADD39B0263963FDA0B3E61DA29E7504C5321D33ECAC410A713BA53218F"
+    },
+    {
+      "input_role": "CURRENT_SCREENED_REVIEW",
+      "path": "C:/GitHub/YOLO-CV/artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/02_literature/review_500_300_100_v2/discovery/screened_fulltext_reviews_v4/P0104.json",
+      "bytes": 8849,
+      "sha256": "EB8ADA8E7DCC80B72109EDD1A4406A0C6AF4ABF968729760E9824B3EDB309B0A"
+    },
+    {
+      "input_role": "CURRENT_SCREENED_REVIEW",
+      "path": "C:/GitHub/YOLO-CV/artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/02_literature/review_500_300_100_v2/discovery/screened_fulltext_reviews_v4/P0125.json",
+      "bytes": 14847,
+      "sha256": "F30DC1C9452B72287CECC7BA0C2F82173E6A77E94E74C9FE235B44F5A67916F9"
+    },
+    {
+      "input_role": "CURRENT_SCREENED_REVIEW",
+      "path": "C:/GitHub/YOLO-CV/artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/02_literature/review_500_300_100_v2/discovery/screened_fulltext_reviews_v4/P0137.json",
+      "bytes": 13713,
+      "sha256": "FF4B8459B6A0AA2E5AC845D0AEB6CCF672F5AEE3B2EC5056E739708C27D410E9"
+    },
+    {
+      "input_role": "CURRENT_SCREENED_REVIEW",
+      "path": "C:/GitHub/YOLO-CV/artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/02_literature/review_500_300_100_v2/discovery/screened_fulltext_reviews_v4/P0142.json",
+      "bytes": 13910,
+      "sha256": "7237E8D0C7711E4C80AB5422EE8E5AB6077AFEA8AF7B1E65B5AB23D8714B9E06"
+    },
+    {
+      "input_role": "CURRENT_SCREENED_REVIEW",
+      "path": "C:/GitHub/YOLO-CV/artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/02_literature/review_500_300_100_v2/discovery/screened_fulltext_reviews_v4/P0145.json",
+      "bytes": 9674,
+      "sha256": "9E7E1CB7F46E6A493E3BFC32C108C0E5504DE9A52AB9FB4B0C2EA7025E8B5BB8"
+    },
+    {
+      "input_role": "CURRENT_SCREENED_REVIEW",
+      "path": "C:/GitHub/YOLO-CV/artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/02_literature/review_500_300_100_v2/discovery/screened_fulltext_reviews_v4/P0173.json",
+      "bytes": 10484,
+      "sha256": "81B90696A70236E2EF101F9342D3B81194795D27388CA2332B7F96E365C59E78"
+    },
+    {
+      "input_role": "CURRENT_SCREENED_REVIEW",
+      "path": "C:/GitHub/YOLO-CV/artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/02_literature/review_500_300_100_v2/discovery/screened_fulltext_reviews_v4/P0197.json",
+      "bytes": 8590,
+      "sha256": "AD371E0204AE59258B69EA03FC2C306E157506976626025731772204CFCF078B"
+    },
+    {
+      "input_role": "CURRENT_SCREENED_REVIEW",
+      "path": "C:/GitHub/YOLO-CV/artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/02_literature/review_500_300_100_v2/discovery/screened_fulltext_reviews_v4/P0229.json",
+      "bytes": 13988,
+      "sha256": "59B9E11A11B0A3EBB2D136F077091609B553EF700254BC9D63A0B152FD5A3D35"
+    },
+    {
+      "input_role": "CURRENT_SCREENED_REVIEW",
+      "path": "C:/GitHub/YOLO-CV/artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/02_literature/review_500_300_100_v2/discovery/screened_fulltext_reviews_v4/P0244.json",
+      "bytes": 9933,
+      "sha256": "333DA7D9055BAEDEAC8AD6C2C379F712C64F85027DCF6FB397E2496B9FC6FB89"
+    },
+    {
+      "input_role": "CURRENT_SCREENED_REVIEW",
+      "path": "C:/GitHub/YOLO-CV/artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/02_literature/review_500_300_100_v2/discovery/screened_fulltext_reviews_v4/P0254.json",
+      "bytes": 12924,
+      "sha256": "6341F2231CD630D8F2D5FCE4CA66120C65F95195A600F0E707B3309BDBCBB2F3"
+    },
+    {
+      "input_role": "CURRENT_SCREENED_REVIEW",
+      "path": "C:/GitHub/YOLO-CV/artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/02_literature/review_500_300_100_v2/discovery/screened_fulltext_reviews_v4/P0286.json",
+      "bytes": 9413,
+      "sha256": "C14044F190177A7F7E361F9A9F78EE07D377BD27D064AA072D8D6CAAE33EA5A3"
+    },
+    {
+      "input_role": "CURRENT_SCREENED_REVIEW",
+      "path": "C:/GitHub/YOLO-CV/artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/02_literature/review_500_300_100_v2/discovery/screened_fulltext_reviews_v4/P0287.json",
+      "bytes": 11795,
+      "sha256": "3FC754E3C52C85B582D0B1811759E416839E2E51D9ED64F6DEE5A331BBA541B5"
+    },
+    {
+      "input_role": "CURRENT_SCREENED_REVIEW",
+      "path": "C:/GitHub/YOLO-CV/artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/02_literature/review_500_300_100_v2/discovery/screened_fulltext_reviews_v4/P0290.json",
+      "bytes": 13601,
+      "sha256": "A3D7D8D498E91BFC35CEA79030A8912C00A522F3542394F28E6BE942D3B271CC"
+    },
+    {
+      "input_role": "CURRENT_SCREENED_REVIEW",
+      "path": "C:/GitHub/YOLO-CV/artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/02_literature/review_500_300_100_v2/discovery/screened_fulltext_reviews_v4/P0340.json",
+      "bytes": 8548,
+      "sha256": "DA3B78490B47B1F35D1E27D6D98A9BFF737CBD631B2A839774EDB421E12B9582"
+    },
+    {
+      "input_role": "CURRENT_SCREENED_REVIEW",
+      "path": "C:/GitHub/YOLO-CV/artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/02_literature/review_500_300_100_v2/discovery/screened_fulltext_reviews_v4/P0341.json",
+      "bytes": 12329,
+      "sha256": "E8C6B1C999826959F9A47A841E48AC120943AFCAC2AB4B7F91CE319C4E7FD2A7"
+    },
+    {
+      "input_role": "CURRENT_SCREENED_REVIEW",
+      "path": "C:/GitHub/YOLO-CV/artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/02_literature/review_500_300_100_v2/discovery/screened_fulltext_reviews_v4/P0347.json",
+      "bytes": 13693,
+      "sha256": "D2F52747CAD77A9B93D8D3C1C4464E65414777EA9C424F652C8F4E370C12A319"
+    },
+    {
+      "input_role": "CURRENT_SCREENED_REVIEW",
+      "path": "C:/GitHub/YOLO-CV/artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/02_literature/review_500_300_100_v2/discovery/screened_fulltext_reviews_v4/P0365.json",
+      "bytes": 8551,
+      "sha256": "BE820913C2C52063F7E7840AEB3A86639330C32FE6901BD098C90C41C6154121"
+    },
+    {
+      "input_role": "CURRENT_SCREENED_REVIEW",
+      "path": "C:/GitHub/YOLO-CV/artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/02_literature/review_500_300_100_v2/discovery/screened_fulltext_reviews_v4/P0390.json",
+      "bytes": 9185,
+      "sha256": "C556FE45192EE55BEC42DFC15AA75B176480D03FDB7500BB87280BF893DA0232"
+    },
+    {
+      "input_role": "CURRENT_SCREENED_REVIEW",
+      "path": "C:/GitHub/YOLO-CV/artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/02_literature/review_500_300_100_v2/discovery/screened_fulltext_reviews_v4/P0400.json",
+      "bytes": 10100,
+      "sha256": "758689BDE654F5EAE21DF3F363C7983E9FB67A11D39C9FF165D531ABFC356E3B"
+    },
+    {
+      "input_role": "CURRENT_SCREENED_REVIEW",
+      "path": "C:/GitHub/YOLO-CV/artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/02_literature/review_500_300_100_v2/discovery/screened_fulltext_reviews_v4/P0422.json",
+      "bytes": 10421,
+      "sha256": "5CA0B4F84F8E480ED673CB8E3252A08D342EC23198DB0599B84E7549AB764207"
+    },
+    {
+      "input_role": "CURRENT_SCREENED_REVIEW",
+      "path": "C:/GitHub/YOLO-CV/artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/02_literature/review_500_300_100_v2/discovery/screened_fulltext_reviews_v4/P0430.json",
+      "bytes": 10275,
+      "sha256": "F5707876D34F08093B1CA29D41DC71C552AC4BFEDE4DEB77410D8373E55111F4"
+    },
+    {
+      "input_role": "CURRENT_SCREENED_REVIEW",
+      "path": "C:/GitHub/YOLO-CV/artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/02_literature/review_500_300_100_v2/discovery/screened_fulltext_reviews_v4/P0464.json",
+      "bytes": 12045,
+      "sha256": "87F974DEA788363345F87C698F37F2B093C0BAD61CD08239A9D0D1FC0D0663A5"
+    },
+    {
+      "input_role": "CURRENT_SCREENED_REVIEW",
+      "path": "C:/GitHub/YOLO-CV/artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/02_literature/review_500_300_100_v2/discovery/screened_fulltext_reviews_v4/P0471.json",
+      "bytes": 10543,
+      "sha256": "4DA76AF5A2F22CB068BEB4B03416BB82804B1778650EAD61C9024FA829AD77AB"
+    },
+    {
+      "input_role": "CURRENT_SCREENED_REVIEW",
+      "path": "C:/GitHub/YOLO-CV/artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/02_literature/review_500_300_100_v2/discovery/screened_fulltext_reviews_v4/P0476.json",
+      "bytes": 12864,
+      "sha256": "80C94582B3C3A0C1CF383DFB7F7AAEF34930C30B3BEC178E5B15BBA0B0DAD802"
+    }
+  ],
+  "formal_deep_increment": 0,
+  "formal_training_started_by_this_builder": false,
+  "engineering_gate_generated_by_this_builder": false,
+  "blind_holdout_opened_by_this_builder": false,
+  "global_runtime_state_assessed": false
+}

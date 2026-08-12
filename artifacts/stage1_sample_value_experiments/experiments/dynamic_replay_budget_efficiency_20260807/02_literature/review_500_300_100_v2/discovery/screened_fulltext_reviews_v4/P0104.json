@@ -1,0 +1,191 @@
+{
+  "schema_version": "3.0",
+  "paper_id": "P0104",
+  "canonical_work_id": "CW501F9ECF2E222F2564D1",
+  "title": "Active Bias: Training More Accurate Neural Networks by Emphasizing High Variance Samples",
+  "decision": "SCREENED_ELIGIBLE",
+  "reviewed_at": "2026-08-10T09:18:00+08:00",
+  "reviewer": "codex_primary_fulltext_review",
+  "method_source": {
+    "path": "staging/broad_freeze_canonical_repaired_v4/sources/P0104.pdf",
+    "bytes": 924820,
+    "sha256": "0D71370BC89D5CF65DAEB2EC55447732E7ABAD58D32CAABEA5769C052B24301F"
+  },
+  "text_source": {
+    "path": "staging/screened_text_canonical_repaired_v4/text/P0104.txt",
+    "bytes": 54188,
+    "sha256": "9F5B54B5A585AD9D33341292931030CCE16EAAF888A3B4F96612B666AB113179"
+  },
+  "rq_ids": [
+    "RQ1",
+    "RQ4",
+    "RQ6",
+    "RQ7",
+    "RQ8"
+  ],
+  "section_evidence": {
+    "METHODS": {
+      "status": "READ",
+      "pages": "3-6",
+      "anchors": [
+        {
+          "page": 3,
+          "line": 18,
+          "quote": "the most widely used version of SGD samples each training instance uniformly",
+          "paraphrase_zh": "论文从均匀有放回与逐 epoch 无放回两种 SGD 基线出发，分别构造采样和加权版本。"
+        }
+      ]
+    },
+    "EXPERIMENTS": {
+      "status": "READ",
+      "pages": "6-9 and supplementary material",
+      "anchors": [
+        {
+          "page": 6,
+          "line": 49,
+          "quote": "4     Experiments",
+          "paraphrase_zh": "六个视觉和 NLP 数据集比较 uniform、difficulty、easiness、variance 与 threshold-closeness。"
+        }
+      ]
+    },
+    "ABLATIONS": {
+      "status": "READ",
+      "pages": "7-9",
+      "anchors": [
+        {
+          "page": 7,
+          "line": 36,
+          "quote": "there are various versions preferring easy or difficult examples",
+          "paraphrase_zh": "实验同时比较偏向难样本、易样本、方差和阈值接近度，并报告 self-paced 尝试的空结果。"
+        }
+      ]
+    },
+    "LIMITATIONS": {
+      "status": "READ",
+      "pages": "6-9",
+      "anchors": [
+        {
+          "page": 6,
+          "line": 58,
+          "quote": "the proposed techniques are not applicable to every scenario",
+          "paraphrase_zh": "复杂模型在小数据上迅速记忆后，不确定样本会退化为离群点并诱发过拟合。"
+        }
+      ]
+    }
+  },
+  "formulas": [
+    "difficulty sampling probability is proportional to one minus historical mean true-class probability plus exploration epsilon",
+    "prediction-variance sampling uses historical probability variance plus a confidence term and epsilon",
+    "threshold-closeness weighting is largest near the decision boundary and includes a smooth exploration floor"
+  ],
+  "algorithm_steps": [
+    "先用均匀 SGD 执行数据集特定的 burn-in，并保存样本每次被选中时的真实类概率历史。",
+    "由历史均值、方差置信上界或决策阈值接近度计算采样概率或损失权重，并保留 epsilon 探索。",
+    "继续训练至冻结总 epoch，逐 epoch 评估多种 bias 与 uniform、difficulty、easiness 基线。"
+  ],
+  "variables": [
+    "true-class probability history",
+    "prediction variance",
+    "threshold closeness",
+    "burn-in epochs",
+    "exploration epsilon",
+    "sample weight"
+  ],
+  "selection_timing": "在数据集特定 burn-in 后启用，之后每次样本历史更新都会改变软采样概率或损失权重。",
+  "refresh_rule": "在线持续刷新历史统计；低概率样本通过 epsilon 探索项保留再次出现的机会。",
+  "budget": {
+    "unit": "sampling probability or per-example loss weight",
+    "denominator": "training identities eligible at the current SGD iteration",
+    "unique_sample_definition": "SGD-Scan 每轮遍历全部身份，sampling 版本则不保证每轮唯一覆盖。",
+    "repeat_definition": "偏置改变同一身份跨迭代被抽中或被加权的频率。",
+    "cumulative_exposure_definition": "总训练 epoch 固定，但论文未提供逐身份 optimizer-visible exposure 账本。",
+    "compute_cost": "复用历史预测，通常不增加额外前向；需存储每个样本的概率历史统计。"
+  },
+  "random_baselines": [
+    "SGD-Uni uniform sampling with replacement",
+    "SGD-Scan uniform scan without replacement",
+    "difficulty/easiness sampling and weighting controls"
+  ],
+  "datasets": [
+    "MNIST",
+    "noisy MNIST",
+    "CIFAR-10",
+    "CIFAR-100",
+    "Question Type",
+    "CoNLL-2003",
+    "OntoNotes 5.0"
+  ],
+  "models": [
+    "logistic regression",
+    "CNN",
+    "27-layer ResNet",
+    "63-layer ResNet",
+    "fully connected network"
+  ],
+  "seed_count": {
+    "counts": [
+      "10-100 trials depending on dataset",
+      "20 trials for MNIST and CIFAR-100 settings",
+      "30 trials for CIFAR-10 and 100 trials for Question Type"
+    ],
+    "scope": "page 6, Table 2",
+    "aggregation": "Tables report averages and standard errors, but select the best test error across epochs within each trial."
+  },
+  "checkpoint_selection": "After evaluating test performance every epoch, the paper reports the best test result within each trial; this is test-oracle selection and is not admissible for Stage1.",
+  "results": [
+    {
+      "claim": "方差或阈值接近度偏置在多项设置降低平均最佳测试错误，但优势随任务和模型复杂度变化。",
+      "locator": "page 7, Tables 3 and 4",
+      "value": "for noisy MNIST, SGD-WPV error 0.61 versus SGD-Scan 0.81; for CIFAR-100 RN27, 33.69 versus 34.04",
+      "anchor": {
+        "page": 7,
+        "line": 10,
+        "quote": "The average of the best testing error rates",
+        "paraphrase_zh": "表四报告各 weighting 方法跨 trial 的最佳测试错误均值和标准误。"
+      }
+    },
+    {
+      "claim": "在 10% 随机标签噪声 MNIST 中，difficulty sampling 明显过拟合，而不确定性与易样本偏置更稳健。",
+      "locator": "pages 7-8, noisy MNIST",
+      "value": "SGD-SD error 1.00 versus SGD-Uni 0.83 and SGD-STC 0.63",
+      "anchor": {
+        "page": 8,
+        "line": 1,
+        "quote": "reassigning the labels of 10% of the images",
+        "paraphrase_zh": "噪声实验直接显示单纯强调高困难样本会放大错标。"
+      }
+    }
+  ],
+  "ablations": [
+    "比较 sampling 与 weighting 两种实现，以及 uniform、difficulty、easiness、variance、threshold-closeness。",
+    "改变 burn-in epoch 与网络深度，并在多个任务上简化过强模型。",
+    "尝试 self-paced annealing，但在 CIFAR-10 上通常无改善且对日程超参数敏感。"
+  ],
+  "negative_results": [
+    "模型在小数据上很快达到 100% 训练准确率时，不确定性样本主要是离群点，方法会过拟合。",
+    "difficulty bias 在噪声 MNIST 和困难视觉设置中可差于均匀采样。",
+    "self-paced 尝试通常与基线相同，并对退火日程敏感。"
+  ],
+  "failure_conditions": [
+    "burn-in 太短时历史方差主要反映随机初始化，太长时模型已记忆并只剩离群点。",
+    "没有探索下限会使早期低权重样本永久失去重新评估机会。",
+    "使用最佳测试 epoch 会夸大方法优势并破坏独立评价。"
+  ],
+  "limitations": [
+    "方法改变采样概率或损失权重而不是固定额外 replay 槽位，预算语义不同。",
+    "没有逐身份累计曝光账本，也未匹配 base batch order 和 augmentation RNG。",
+    "最终数值依赖测试集最佳 epoch，不能用于 Stage1 方法选择。"
+  ],
+  "transfer_class": "MECHANISM_ONLY",
+  "stage1_mechanism_zh": "可迁移的是 burn-in、历史概率方差、阈值接近度、软优先和 epsilon 探索的动态策略结构；它支持先观察再偏置，并警告训练后期记忆会把不确定性池变成离群池，可用于 RQ6 的时机与刷新消融。",
+  "stage1_non_inference_zh": "论文的最优点来自不同任务、不同 burn-in 和测试最佳 epoch，且没有固定累计回流预算；因此不能说高方差或靠近普通 0.5 阈值就是 Stage1 高价值，也不能把其平均误差收益外推为 FN95 跨 seed 稳压随机。",
+  "exclusion_reason": "NOT_APPLICABLE_WITH_REASON:eligible for SCREENED evidence tier",
+  "migration_provenance": {
+    "source_review": "discovery/screened_fulltext_reviews_v3/P0104.json",
+    "source_paper_id": "P0104",
+    "migration_basis": "CANONICAL_WORK_ID_AND_BYTE_IDENTICAL_EVIDENCE",
+    "content_review_reused": true,
+    "evidence_provenance_class": "USER_ACCEPTED_INHERITED_EVIDENCE",
+    "independent_content_rereview_performed": false
+  }
+}

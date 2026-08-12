@@ -1,0 +1,221 @@
+{
+  "schema_version": "3.0",
+  "paper_id": "P0290",
+  "canonical_work_id": "CW873DA6584A48FA664017",
+  "title": "Selectivity Drives Efficiency: Dataset Pruning for Visual Place Recognition",
+  "decision": "SCREENED_ELIGIBLE",
+  "reviewed_at": "2026-08-10T17:57:13+08:00",
+  "reviewer": "codex_primary_fulltext_review",
+  "method_source": {
+    "path": "staging/broad_freeze_canonical_repaired_v4/sources/P0290.pdf",
+    "bytes": 3119361,
+    "sha256": "1D3A39CC5DEC4802A78DA0696DE255908A202C53B6875F97E5E156B549B2382F"
+  },
+  "text_source": {
+    "path": "staging/screened_text_canonical_repaired_v4/text/P0290.txt",
+    "bytes": 138325,
+    "sha256": "EAFD81814689A463041DC8C288048257DB67C9481DDC03B226D4EBEC66D9E981"
+  },
+  "rq_ids": [
+    "RQ2",
+    "RQ5",
+    "RQ6",
+    "RQ7",
+    "RQ8"
+  ],
+  "section_evidence": {
+    "METHODS": {
+      "status": "READ",
+      "pages": "5-7, Section III and Algorithm 1",
+      "anchors": [
+        {
+          "page": 6,
+          "line": 52,
+          "quote": "sands. To improve scalability, we simply divide all places into",
+          "paraphrase_zh": "方法以 place 而非单图为最小选择单元，用代理描述符计算组内变化 IPD 和邻近 place 相似度 IPS，再在顺序小批组内归一化与裁剪。"
+        }
+      ]
+    },
+    "EXPERIMENTS": {
+      "status": "READ",
+      "pages": "7-12, Section IV, Tables II-VI and Figure 5",
+      "anchors": [
+        {
+          "page": 7,
+          "line": 58,
+          "quote": "All experiments are implemented on NVIDIA RTX A6000",
+          "paraphrase_zh": "实验在 GSV-Cities 及其多数据集合并版本上训练多种 VPR 模型，并在相同 pruning ratio 下与 uniform random 及六种选择方法比较。"
+        }
+      ]
+    },
+    "ABLATIONS": {
+      "status": "READ",
+      "pages": "12 and 17-18, Tables VII-IX and XII-XIV",
+      "anchors": [
+        {
+          "page": 12,
+          "line": 34,
+          "quote": "A BLATION OF IPD AND IPS ON GSV-C ITIES U NDER THE 50% P RUNING",
+          "paraphrase_zh": "消融分别检查 image/place 选择单位、IPD、IPS、代理模型、加权系数 alpha、小批组大小 B、近邻数 k 和最终模型骨干。"
+        }
+      ]
+    },
+    "LIMITATIONS": {
+      "status": "READ",
+      "pages": "15 and 19, extreme-pruning discussion and explicit limitations",
+      "anchors": [
+        {
+          "page": 19,
+          "line": 37,
+          "quote": "H. Limitations and Future Directions",
+          "paraphrase_zh": "作者明确记录代理特征提取、描述符存储和极端裁剪遗漏稀有场景的风险，并建议更紧凑或流式的覆盖机制。"
+        }
+      ]
+    }
+  },
+  "formulas": [
+    "Equation 3 defines intra-place diversity IPD_i as the average L2 distance between each image descriptor in place P_i and the mean descriptor of that place.",
+    "Equations 4-5 define cosine similarity between place prototypes and IPS_i as the average similarity to the k nearest places within the current selection mini-batch.",
+    "Equation 6 min-max normalizes IPD and IPS inside each mini-batch and forms Score_i = alpha times normalized IPD_i plus (1-alpha) times normalized IPS_i.",
+    "The paper supplies no theorem that its alpha-weighted score estimates replay utility; alpha, B, and k are empirical hyperparameters and the Stage1 contract must not combine Q/R/A/D by this weighted-score pattern."
+  ],
+  "algorithm_steps": [
+    "Use a fixed pretrained VPR proxy to extract image descriptors once, then average descriptors within every place.",
+    "Partition the ordered place list into sequential selection mini-batches of at most B places without clustering or stochastic sampling.",
+    "Within each mini-batch, compute IPD for positive-pair variation and IPS against k neighboring place prototypes for hard-negative potential.",
+    "Min-max normalize the two signals, combine them with alpha, remove the requested lowest-scoring fraction, and union retained places across mini-batches.",
+    "Freeze the resulting place identities, train the final VPR model on all images belonging to retained places, and evaluate retrieval Recall at fixed pruning ratios."
+  ],
+  "variables": [
+    "place P_i, K_i images per place, image descriptors f_j^i, and mean place descriptor f-bar_i",
+    "intra-place diversity IPD_i and inter-place similarity IPS_i",
+    "nearest-place count k, selection mini-batch capacity B, and balancing coefficient alpha",
+    "pruning ratio r = 1 - M/N with N candidate places and M retained places",
+    "proxy model, final VPR backbone and aggregator, training time, selection time, and Recall at K"
+  ],
+  "selection_timing": "Selection is performed once before final-model training using a fixed pretrained proxy; it is not conditioned on the evolving final-model checkpoint.",
+  "refresh_rule": "The coreset is frozen for a reported training run and may be reused across final VPR architectures; no epoch-level refresh or lagged online selector is defined.",
+  "budget": {
+    "unit": "unique place identities, with all images of each retained place kept as a relational group",
+    "denominator": "all places in GSV-Cities or in the merged multi-dataset training pool before pruning",
+    "unique_sample_definition": "The selected set is unique at the place level, but place sizes differ and the paper does not publish a normalized image-count or optimizer-visible-example ledger.",
+    "repeat_definition": "Retained images are revisited through ordinary training epochs; per-place and per-image repeat histograms are not reported.",
+    "cumulative_exposure_definition": "Pruning ratio fixes retained places rather than cumulative optimizer-visible exposure; early stopping changes epochs and steps, so method, random, and full-data runs are not exposure matched.",
+    "compute_cost": "Reported selection time excludes the shared initial descriptor extraction in several comparisons; end-to-end tables separately include the one-time extraction and selection overhead, while descriptor storage remains an explicit limitation."
+  },
+  "random_baselines": [
+    "uniform Random pruning at each identical 30%, 50%, and 70% place-pruning ratio",
+    "the unpruned full GSV-Cities training set",
+    "Herding, K-Center, Moderate, CCS, FDMat, and D2Pruning under the same nominal pruning ratio",
+    "random 50% pruning in cumulative-training-time convergence plots",
+    "No method-matched random within IPD/IPS strata and no independent no-replay arm are applicable to this offline pruning study."
+  ],
+  "datasets": [
+    "GSV-Cities",
+    "MSLS train and validation splits",
+    "Pitts30k",
+    "Nordland",
+    "MSLS-challenge",
+    "SF-XL",
+    "SpedTest"
+  ],
+  "models": [
+    "SALAD proxy descriptor model",
+    "DINOv2-B backbone with NetVLAD aggregator",
+    "GeM and SALAD final aggregators",
+    "VGG-16, ResNet-50, and ViT-B backbone transfer checks"
+  ],
+  "seed_count": "NOT_REPORTED_BY_PAPER",
+  "checkpoint_selection": "The final VPR model uses early stopping when MSLS-val performance fails to improve for six epochs, while MSLS-val also appears among reported evaluation columns. This makes MSLS-val a model-study split rather than independent confirmation evidence; seed-wise final-checkpoint outcomes are not reported.",
+  "results": [
+    {
+      "claim": "在 70% place pruning 下，该方法相对同裁剪率随机选择在 Nordland 上有较大表内差异。",
+      "locator": "page 8, Table II, 70% rows",
+      "value": "Ours 84.3% R@1 versus Random 67.6%, with D2Pruning at 75.2%.",
+      "anchor": {
+        "page": 8,
+        "line": 37,
+        "quote": "Ours       92.5    96.6",
+        "paraphrase_zh": "表 II 的完整 70% 行报告四个评估集；Nordland R@1 为 84.3%，但没有训练种子分布。"
+      }
+    },
+    {
+      "claim": "中等裁剪减少训练时间，但性能收益并不随裁剪率单调，50% 和 70% 已出现平均 R@1 下降。",
+      "locator": "page 10, Table VI",
+      "value": "30%: 2.493 h and +0.4 average R@1; 50%: 1.791 h and -0.7; 70%: 1.576 h and -1.6, versus 3.545 h full training.",
+      "anchor": {
+        "page": 10,
+        "line": 13,
+        "quote": "Our Coreset       30%         2.493",
+        "paraphrase_zh": "训练时间表显示 30% 裁剪有小幅平均提升，而更强裁剪换取时间后开始损失平均性能。"
+      }
+    },
+    {
+      "claim": "IPD 和 IPS 单独都高于 uniform random，二者联合在该单次表格中最好。",
+      "locator": "page 12, Table VIII",
+      "value": "At 50% pruning, Nordland R@1 is 71.1 random, 80.6 IPD-only, 83.8 IPS-only, and 85.6 combined.",
+      "anchor": {
+        "page": 12,
+        "line": 41,
+        "quote": "✗          ✗       91.9",
+        "paraphrase_zh": "消融以两项均关闭作为随机选择，并逐项展示 IPD、IPS 及联合条件；这支持分开析因，不支持直接采用加权总分。"
+      }
+    },
+    {
+      "claim": "轻度裁剪的平均性能峰值出现在 20%，说明样本价值随预算阶段变化而非单调。",
+      "locator": "page 15, low-pruning analysis and Table X",
+      "value": "Average R@1 rises from 90.9 at 0% pruning to 91.5 at 20% pruning, while larger ratios later decline.",
+      "anchor": {
+        "page": 15,
+        "line": 69,
+        "quote": "the full dataset. In particular, the 20% pruning setting achieves",
+        "paraphrase_zh": "低比例分析明确指出 20% 是该设置的平均 R@1 峰值，不能外推成所有预算下同一排序有效。"
+      }
+    },
+    {
+      "claim": "极端裁剪会移除稀有或域相关 place，跨域数据 Nordland 的退化尤其明显。",
+      "locator": "page 15, extremely high pruning discussion and Table XI",
+      "value": "All methods degrade at 99% pruning; the paper attributes the larger Nordland loss to rare or domain-relevant places being removed.",
+      "anchor": {
+        "page": 15,
+        "line": 76,
+        "quote": "indicates that extreme pruning may remove rare or domain-",
+        "paraphrase_zh": "作者把极小预算下的失败与稀有场景和域覆盖丢失直接联系，构成 D 覆盖机制的反向边界证据。"
+      }
+    }
+  ],
+  "ablations": [
+    "place-wise versus image-wise pruning units",
+    "IPD only, IPS only, neither metric as random, and both metrics",
+    "DINOv2, VGG16-NetVLAD, and SALAD proxy descriptors",
+    "alpha, selection mini-batch size B, and nearest-neighbor count k",
+    "VGG-16, ResNet-50, ViT-B, DINOv2-B, NetVLAD, GeM, and SALAD final-model transfer",
+    "10%, 20%, 30%, 50%, 70%, 90%, 95%, and 99% pruning ratios"
+  ],
+  "negative_results": [
+    "Average R@1 drops below the full-data baseline at 50% and 70% pruning despite favorable results on several individual datasets.",
+    "At 99% pruning every compared selector degrades, with larger loss on the domain-shifted Nordland set.",
+    "The alpha, B, and k sweeps are non-monotonic and are configured differently across pruning ratios.",
+    "Selection-time plots omit initial descriptor extraction, and full end-to-end savings are smaller after this shared cost is included.",
+    "Uniform random is matched only on nominal place ratio, not on images, optimizer steps, early-stopping epochs, training seed, source strata, or cumulative exposure."
+  ],
+  "failure_conditions": [
+    "Sequential mini-batches omit globally nearest places or normalize scores inconsistently across batches.",
+    "A proxy descriptor emphasizes the wrong domain, causing rare or target-relevant places to receive low scores.",
+    "Extremely small budgets remove scene rarity and domain coverage even when average within-domain redundancy is high.",
+    "Alpha-tuned IPD/IPS weighting hides a reversal that would appear when the two mechanisms are tested separately.",
+    "Early stopping and evaluation reuse MSLS-val, or unreported training seeds hide a worst-seed loss against random."
+  ],
+  "limitations": [
+    "This is a one-shot pretraining coreset study, not additive replay over a fixed base-training trajectory.",
+    "The method uses an arbitrary alpha-weighted combination; Stage1 forbids collapsing Q/R/A/D into such a total score.",
+    "Nominal place ratios do not match unique image IDs, repeats, cumulative exposure, optimizer-visible steps, or early-stopping duration.",
+    "No training-seed count, paired seed result, variance, or worst-seed outcome is reported.",
+    "MSLS-val is used both for early stopping and as a reported benchmark column, so it is not an independent confirmation split.",
+    "Targets are retrieval Recall metrics rather than an independent FN=0..95 safety frontier and two-ended operational constraints."
+  ],
+  "transfer_class": "MECHANISM_ONLY",
+  "stage1_mechanism_zh": "该文直接支持把来源或 place 作为 D 的集合单位，并把组内条件变化、近邻来源相似性、稀有场景覆盖和同预算 random 作为可分开的析因条件。Stage1 可迁移其分组保留、覆盖失败检查和随机对照思路，但 Q、R、A、D 必须顺序门控或析因，不能复制 alpha 加权总分。",
+  "stage1_non_inference_zh": "论文的 VPR coreset 结果不能证明 replay utility：选择发生在训练前、基础训练流和累计 replay 曝光未固定、optimizer steps 与 early-stop 时长未匹配、没有 R1/R2/current-loss/no-replay 配对、没有独立 FN95 目标，也没有未见 training seed 的最差情形。",
+  "exclusion_reason": "NOT_APPLICABLE_WITH_REASON:eligible as a place-group coverage, redundancy, and matched-random mechanism paper"
+}

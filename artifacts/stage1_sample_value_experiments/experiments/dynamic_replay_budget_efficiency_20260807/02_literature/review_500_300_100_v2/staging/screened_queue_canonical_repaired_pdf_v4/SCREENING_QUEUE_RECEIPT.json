@@ -1,0 +1,122 @@
+{
+  "schema_version": "2.0",
+  "status": "PASS",
+  "created_at": "2026-08-10T17:17:06.463190+08:00",
+  "primary_count": 300,
+  "reserve_count": 30,
+  "reserve_read_count": 20,
+  "reading_queue_count": 320,
+  "quota_counts": {
+    "RQ1": 38,
+    "RQ2": 37,
+    "RQ3": 37,
+    "RQ4": 38,
+    "RQ5": 38,
+    "RQ6": 38,
+    "RQ7": 39,
+    "RQ8": 35
+  },
+  "eligible_count": 330,
+  "required_source_format": "PDF",
+  "method_source_override_count": 4,
+  "method_source_override_ids": [
+    "CW15F14534F94F6674F9AB",
+    "CW4393E96BD48909A90BAF",
+    "CW9E249AC4F35D83423946",
+    "CWF7C5971D7D4A537B18DA"
+  ],
+  "formal_screened_increment": 0,
+  "selection_is_provisional_until_full_method_review": true,
+  "selection_policy": {
+    "total": 300,
+    "minimum_per_rq": 25,
+    "maximum_per_rq": 60,
+    "maximum_transfer": 60,
+    "minimum_counterevidence_per_rq": 2,
+    "mandatory_canonical_work_ids": [
+      "CWE157D064AB0EE690BCEA",
+      "CW2058BFE8C66EA619873D",
+      "CW1ECA2D0D8F67549BD4E1",
+      "CWBEC6D4B8418EE862A458",
+      "CW501F9ECF2E222F2564D1",
+      "CWA06EB02B84C505EE335C",
+      "CWB5B86A61D2D40B74403B",
+      "CW1C4264F5AD37FAA5A2B2",
+      "CW9313629F9AEE4C100021",
+      "CW95905E41363466AB9C06",
+      "CW4393E96BD48909A90BAF",
+      "CWA30DF06C8D4A2F1ECC29",
+      "CW3073B4D03E5D1D452B9F",
+      "CWE6B9AC3B38B527C49DFD",
+      "CWF8F6623D2632364B5CFB",
+      "CW6987DB4646B2490FEC86",
+      "CW15F14534F94F6674F9AB",
+      "CW6B8A991F073C69958D99",
+      "CW85DF4BCD773E47F4EE59",
+      "CW6B828EA30AEEF829012E",
+      "CWF7C5971D7D4A537B18DA",
+      "CW9E249AC4F35D83423946",
+      "CWAD8481EF113E1665A9A3",
+      "CWAEC0D9840DD20625A997",
+      "CW2C31D4B8DEFAADCBE53F",
+      "CW79D4A4F6C4BBCA526958",
+      "CW5BBB2D6BD039C272F48A",
+      "CWA507196A9C503BF59049",
+      "CWEB485D837A2F070054C4",
+      "CWF2FC081E239CD34733A4",
+      "CW12F28373D588C9FE1E43",
+      "CW93B4FAD9149BE660C0D7",
+      "CWF500847CB8ED6525F3D3",
+      "CW4C77EBF77047F31CF885",
+      "CW5FC42DA69418A757FE68",
+      "CW27EA65DC3E285E30085F",
+      "CW6C0BF6537DFBB5C10C15",
+      "CW60DE20FF6EBD0732725C",
+      "CWD3A985789ECF796B7740",
+      "CW650ABBBE424F1071637C"
+    ],
+    "tier_label": "SCREENED",
+    "frozen_seed": "stage1-literature-screened-anchor-pdf-complete-v3-20260810"
+  },
+  "input_artifacts": [
+    {
+      "input_role": "BROAD_STAGING_INPUT",
+      "path": "staging/broad_freeze_canonical_repaired_v4/BROAD_500.csv",
+      "bytes": 185509,
+      "sha256": "CCBE405AF4F92C9DF2DD3A93D3328236995051423CF87AA6FF7F54DAA74F3E9F"
+    },
+    {
+      "input_role": "BROAD_STAGING_INPUT",
+      "path": "staging/broad_freeze_canonical_repaired_v4/CANONICAL_WORKS.csv",
+      "bytes": 255624,
+      "sha256": "C28175BA3F0E3ACFD20546203B18D2BE8980FB169C45107145FA6EDD27EE4A39"
+    },
+    {
+      "input_role": "BROAD_STAGING_INPUT",
+      "path": "staging/broad_freeze_canonical_repaired_v4/FREEZE_RECEIPT.json",
+      "bytes": 2377,
+      "sha256": "C97521B1E7D7AB5C94A8BA1F6A8272088D49B7E06A0A37C22D98E1797E4D438E"
+    },
+    {
+      "input_role": "SELECTION_POLICY_SOURCE",
+      "path": "discovery/CORE_METHOD_ANCHORS_v2.csv",
+      "bytes": 18902,
+      "sha256": "5AF6D916B480B0CA4755A0F09151C13FCBF5EA786FBA4AFC1F0E9695BF05CDF3"
+    },
+    {
+      "input_role": "SELECTION_POLICY_SOURCE",
+      "path": "staging/broad_freeze_v2/BROAD_500.csv",
+      "bytes": 185436,
+      "sha256": "0B25767462CECB71EF8CAF289A1A6B4B03C4396909AC0FBAFE0936D94B422D87"
+    },
+    {
+      "input_role": "METHOD_SOURCE_OVERRIDE",
+      "path": "discovery/SCREENED_METHOD_SOURCE_OVERRIDES_v3.csv",
+      "bytes": 2077,
+      "sha256": "D953C9DA483DEACDAF47378116A88E0EDA80D883BE3ACFB3271452238BA2F5A7"
+    }
+  ],
+  "formal_training_started": false,
+  "engineering_gate_generated": false,
+  "blind_holdout_opened": false
+}

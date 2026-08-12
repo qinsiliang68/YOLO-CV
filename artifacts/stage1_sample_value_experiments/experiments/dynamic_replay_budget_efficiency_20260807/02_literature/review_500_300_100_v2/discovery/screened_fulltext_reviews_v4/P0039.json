@@ -1,0 +1,188 @@
+{
+  "schema_version": "3.0",
+  "paper_id": "P0039",
+  "canonical_work_id": "CWF7C5971D7D4A537B18DA",
+  "title": "Early-Learning Regularization Prevents Memorization of Noisy Labels",
+  "decision": "SCREENED_ELIGIBLE",
+  "reviewed_at": "2026-08-10T07:15:39+08:00",
+  "reviewer": "codex_primary_fulltext_review",
+  "method_source": {
+    "path": "sources/legacy_core/P020_Early_Learning_Regularization_NeurIPS_2020.pdf",
+    "bytes": 767183,
+    "sha256": "D29F8D401B62E9E7CDABAAF5B45E08AB2CBB8CB0122A7D610F03573062C4F331"
+  },
+  "text_source": {
+    "path": "staging/screened_text_canonical_repaired_v4/text/P0039.txt",
+    "bytes": 52150,
+    "sha256": "2B232BA0FB8F47EF5D13E24A347CBE4A2136EFA5BA15CC87E715B5E9272BF041"
+  },
+  "rq_ids": [
+    "RQ1",
+    "RQ4",
+    "RQ6"
+  ],
+  "section_evidence": {
+    "METHODS": {
+      "status": "READ",
+      "pages": "3-7",
+      "anchors": [
+        {
+          "page": 6,
+          "line": 23,
+          "quote": "maximize the inner product between the model output and the targets",
+          "paraphrase_zh": "ELR 用历史模型输出形成每样本目标，并通过正则项维持干净样本梯度、抵消错误标签梯度。"
+        }
+      ]
+    },
+    "EXPERIMENTS": {
+      "status": "READ",
+      "pages": "7-9 and supplementary protocol referenced therein",
+      "anchors": [
+        {
+          "page": 7,
+          "line": 46,
+          "quote": "We evaluate the proposed methodology on two standard benchmarks",
+          "paraphrase_zh": "实验覆盖合成对称与非对称噪声、Clothing1M 和 WebVision，并使用独立验证集选择超参数。"
+        }
+      ]
+    },
+    "ABLATIONS": {
+      "status": "READ",
+      "pages": "9",
+      "anchors": [
+        {
+          "page": 9,
+          "line": 11,
+          "quote": "Ablation study evaluating the influence of weight averaging",
+          "paraphrase_zh": "作者分别切换权重平均、双网络与 mixup，显示它们在高噪声时各自贡献明显。"
+        }
+      ]
+    },
+    "LIMITATIONS": {
+      "status": "READ",
+      "pages": "3, 8-9",
+      "anchors": [
+        {
+          "page": 9,
+          "line": 28,
+          "quote": "there remain multiple open problems for future research",
+          "paraphrase_zh": "论文承认线性理论与非线性网络之间仍有缺口，且 ELR 正则化本身的动态理论尚未完成。"
+        }
+      ]
+    }
+  },
+  "formulas": [
+    "L_ELR(theta) = L_CE(theta) + (lambda/n) * sum_i log(1 - <p_i,t_i>)",
+    "grad L_ELR = mean_i J_i(theta) * (p_i - y_i + g_i)",
+    "t_i(k) = beta * t_i(k-1) + (1-beta) * p_i(k)"
+  ],
+  "algorithm_steps": [
+    "先用模型过去的输出为每个样本维护 temporal-ensemble target probability。",
+    "在普通交叉熵上增加 ELR 正则项，使当前输出与早期目标保持一致。",
+    "ELR+ 再使用权重平均、两个互教网络和 mixup；每个网络的目标由另一个网络输出帮助构造。",
+    "持续训练而不是依靠早停，比较最后阶段表现并在独立验证集上选择超参数。"
+  ],
+  "variables": [
+    "current softmax probability p_i",
+    "noisy one-hot label y_i",
+    "historical target probability t_i",
+    "temporal-ensemble momentum",
+    "ELR regularization strength",
+    "per-example gradient correction g_i"
+  ],
+  "selection_timing": "ELR 不离散选择样本；从训练早期开始维护每样本历史目标，并在后续训练中连续改变所有样本的梯度贡献。",
+  "refresh_rule": "每次迭代用当前预测指数更新样本目标；ELR+ 的互教目标和权重平均也随训练持续刷新。",
+  "budget": {
+    "unit": "full-dataset optimizer updates with an added per-example regularizer",
+    "denominator": "all available training examples",
+    "unique_sample_definition": "没有筛除或额外回流子集，所有样本仍参与基础训练。",
+    "repeat_definition": "样本沿常规 epoch 重复出现，论文未设置独立 replay repeat cap。",
+    "cumulative_exposure_definition": "总曝光由完整训练日程决定；ELR 与比较方法没有按 Stage1 方式冻结相同额外曝光账本。",
+    "compute_cost": "基础 ELR 增加每样本 target 状态和正则；ELR+ 还增加第二网络、权重平均与 mixup。"
+  },
+  "random_baselines": [
+    "No matched random sample-selection or replay baseline is reported",
+    "standard cross-entropy full-data training",
+    "published noisy-label methods including Co-teaching, DivideMix and loss corrections"
+  ],
+  "datasets": [
+    "CIFAR-10",
+    "CIFAR-100",
+    "Clothing1M",
+    "mini WebVision",
+    "ILSVRC12 validation"
+  ],
+  "models": [
+    "ResNet-34",
+    "PreAct ResNet-18",
+    "ResNet-50",
+    "InceptionResNetV2"
+  ],
+  "seed_count": {
+    "counts": [
+      "5 independent synthetic-noise realizations for CIFAR result tables",
+      "seed count for real-world dataset tables is not stated in the main text"
+    ],
+    "scope": "Tables 1 and 5 explicitly report five noise realizations",
+    "aggregation": "CIFAR tables use mean and standard deviation; real-world tables provide point estimates."
+  },
+  "checkpoint_selection": "Hyperparameters are chosen on separate validation sets. Some imported baselines report best validation accuracy during training, while ELR+ reports its held-out validation protocol and also a best-observed variant, so checkpoint semantics are not uniform across comparisons.",
+  "results": [
+    {
+      "claim": "在相同 ResNet34 训练设置下，ELR 在列出的 CIFAR 合成噪声条件中普遍高于只改损失的基线。",
+      "locator": "page 7, Table 1",
+      "value": "for CIFAR-10 symmetric 80% noise, ELR 73.86 and ELR with cosine schedule 80.69 versus cross-entropy 53.82",
+      "anchor": {
+        "page": 7,
+        "line": 10,
+        "quote": "ELR          91.16",
+        "paraphrase_zh": "表一显示 ELR 在多个噪声水平上改善全数据训练，但该结果混合了正则机制和学习率日程。"
+      }
+    },
+    {
+      "claim": "ELR+ 的跨方法比较并非完全统一 checkpoint 口径，作者明确指出其他方法可能使用训练期间最佳测试结果。",
+      "locator": "page 8, Section 6",
+      "value": "ELR+ is below DivideMix on several CIFAR settings and below DivideMix on ILSVRC12 top-1",
+      "anchor": {
+        "page": 8,
+        "line": 39,
+        "quote": "may not be completely comparable to ours",
+        "paraphrase_zh": "作者主动提示比较口径不完全一致，因此不能把表中优势直接解释成选择机制的因果胜利。"
+      }
+    }
+  ],
+  "ablations": [
+    "在 40% 和 80% CIFAR-10 对称噪声下分别切换 weight averaging。",
+    "比较单网络与双网络目标交换。",
+    "比较有无 mixup，且作者报告高噪声时各组件贡献更大。",
+    "比较常规学习率与 cosine annealing，显示训练日程本身明显改变结果。"
+  ],
+  "negative_results": [
+    "小 loss 选样会偏向过易样本，导致其交叉熵梯度很小并降低学习速度，且所选集合可能缺乏泛化覆盖。",
+    "用 KL divergence 直接逼近目标会过拟合目标，作者认为不能有效利用 early-learning。",
+    "ELR+ 在部分 CIFAR 与 ILSVRC12 条件下不如 DivideMix，且跨论文 best-checkpoint 口径并不一致。"
+  ],
+  "failure_conditions": [
+    "早期模型输出已经受到系统性噪声污染时，temporal targets 会形成 confirmation bias。",
+    "把样本选择压到最容易区域会使梯度和集合覆盖同时不足。",
+    "把 ELR 的全数据梯度正则结果直接迁移成有限预算 replay 排名，会混淆训练目标修改与样本身份选择。"
+  ],
+  "limitations": [
+    "理论证明基于高维线性生成模型，作者明确留下非线性网络理论缺口。",
+    "方法没有 T/R1/R2 同额外曝光随机对照，也没有估计单样本 replay 的边际作用。",
+    "部分跨方法结果使用不同验证和 checkpoint 规则，不能用于精确方法排序。",
+    "目标是标签噪声鲁棒性和平均准确率，不是 FN95 局部安全前沿。"
+  ],
+  "transfer_class": "MECHANISM_ONLY",
+  "stage1_mechanism_zh": "ELR 给 Q 层提供了底层解释：训练后期错误标签梯度会逐渐主导，而单纯丢弃大 loss 又可能只留下低梯度 easy 样本。Stage1 应记录逐 epoch 梯度/损失方向变化，并把可靠性处理设计为门控或梯度抑制机制，而非把最难或最易直接等同为价值。",
+  "stage1_non_inference_zh": "ELR 不是有限预算 replay 选样实验，也没有严格匹配随机回流、实际曝光、FN95 目标梯度或未见 seed 成功率。因此它只支持早期学习与后期记忆机制，不能证明某个 OOF 动态分数能稳定压过随机。",
+  "exclusion_reason": "NOT_APPLICABLE_WITH_REASON:eligible as gradient-dynamics and reliability evidence",
+  "migration_provenance": {
+    "source_review": "discovery/screened_fulltext_reviews_v3/P0039.json",
+    "source_paper_id": "P0039",
+    "migration_basis": "CANONICAL_WORK_ID_AND_BYTE_IDENTICAL_EVIDENCE",
+    "content_review_reused": true,
+    "evidence_provenance_class": "USER_ACCEPTED_INHERITED_EVIDENCE",
+    "independent_content_rereview_performed": false
+  }
+}

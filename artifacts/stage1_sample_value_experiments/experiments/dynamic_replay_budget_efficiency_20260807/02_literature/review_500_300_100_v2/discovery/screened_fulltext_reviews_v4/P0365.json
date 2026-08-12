@@ -1,0 +1,177 @@
+{
+  "schema_version": "3.0",
+  "paper_id": "P0365",
+  "canonical_work_id": "CW85DF4BCD773E47F4EE59",
+  "title": "Co-teaching: Robust Training of Deep Neural Networks with Extremely Noisy Labels",
+  "decision": "SCREENED_ELIGIBLE",
+  "reviewed_at": "2026-08-10T07:15:39+08:00",
+  "reviewer": "codex_primary_fulltext_review",
+  "method_source": {
+    "path": "staging/broad_freeze_canonical_repaired_v4/sources/P0365.pdf",
+    "bytes": 1984230,
+    "sha256": "217F5E7262AF5BB555E3DDB11D5806F094AF6965C7BCD71D10F159D3657D8593"
+  },
+  "text_source": {
+    "path": "staging/screened_text_canonical_repaired_v4/text/P0365.txt",
+    "bytes": 84290,
+    "sha256": "1462146E02615D581A2294C03B328C487FA3B292632E9A379A645695274FE0D4"
+  },
+  "rq_ids": [
+    "RQ1",
+    "RQ4",
+    "RQ6"
+  ],
+  "section_evidence": {
+    "METHODS": {
+      "status": "READ",
+      "pages": "2-4",
+      "anchors": [
+        {
+          "page": 3,
+          "line": 43,
+          "quote": "Our idea is to train two deep networks simultaneously",
+          "paraphrase_zh": "每个网络在 mini-batch 中选自己的小损失样本，但把所选样本交给另一个网络更新，以减轻自选择偏差累积。"
+        }
+      ]
+    },
+    "EXPERIMENTS": {
+      "status": "READ",
+      "pages": "4-9",
+      "anchors": [
+        {
+          "page": 6,
+          "line": 33,
+          "quote": "All experiments are repeated five times",
+          "paraphrase_zh": "合成噪声实验重复五次，并同时报告测试准确率和所选样本中的干净标签比例。"
+        }
+      ]
+    },
+    "ABLATIONS": {
+      "status": "READ",
+      "pages": "8-9",
+      "anchors": [
+        {
+          "page": 8,
+          "line": 86,
+          "quote": "to show how the decay of R(T ) affects Co-teaching",
+          "paraphrase_zh": "作者改变保留率曲线形状、下降时长和最终丢弃比例，检查动态选样日程的敏感性。"
+        }
+      ]
+    },
+    "LIMITATIONS": {
+      "status": "READ",
+      "pages": "9",
+      "anchors": [
+        {
+          "page": 9,
+          "line": 89,
+          "quote": "we would investigate the theoretical guarantees for Co-teaching",
+          "paraphrase_zh": "作者明确把 Co-teaching 的理论保证和深度网络泛化分析留作未来工作。"
+        }
+      ]
+    }
+  },
+  "formulas": [
+    "D_f = argmin over subsets of size at least R(T)|batch| of network-f loss",
+    "network f is updated using the small-loss subset selected by peer network g, and vice versa",
+    "R(T) = 1 - min((T/T_k) * tau, tau)"
+  ],
+  "algorithm_steps": [
+    "以不同随机初始化建立两个相同结构网络，并在每个 epoch 打乱训练集。",
+    "每个网络在当前 mini-batch 内保留 R(T) 比例的小 loss 样本。",
+    "交叉交换所选样本，由另一个网络的样本集合更新本网络。",
+    "前 T_k 个 epoch 逐渐降低保留比例，之后保持与假定噪声率对应的固定保留率。"
+  ],
+  "variables": [
+    "two network parameter states",
+    "per-sample mini-batch loss",
+    "retained fraction R(T)",
+    "assumed noise rate tau",
+    "retention-ramp duration T_k",
+    "clean-label precision among selected samples"
+  ],
+  "selection_timing": "从训练第一个 epoch 起在每个 mini-batch 动态选择；R(T) 在早期十轮左右下降，之后固定。",
+  "refresh_rule": "每个 mini-batch 都由当前两个网络重新计算 loss 和选择身份，选择集合不跨 batch 或 epoch 冻结。",
+  "budget": {
+    "unit": "fraction of each mini-batch used for optimizer updates",
+    "denominator": "current noisy mini-batch size",
+    "unique_sample_definition": "论文没有冻结 run 级 unique selection；同一样本在不同 epoch 可反复被选或丢弃。",
+    "repeat_definition": "被选样本按常规 epoch 可多次参与更新，但未设置独立 per-sample repeat cap。",
+    "cumulative_exposure_definition": "由每轮 R(T) 与数据遍历共同决定，论文未报告样本级实际累计优化器曝光。",
+    "compute_cost": "同时训练两个网络，每个 batch 对两个网络计算 loss 并执行交叉更新。"
+  },
+  "random_baselines": [
+    "No matched random sample-selection baseline with the same R(T) trace is reported",
+    "standard full-data noisy-label training",
+    "Bootstrap, S-model, F-correction, Decoupling and MentorNet method baselines"
+  ],
+  "datasets": [
+    "MNIST",
+    "CIFAR-10",
+    "CIFAR-100"
+  ],
+  "models": [
+    "9-layer CNN variants with two differently initialized copies"
+  ],
+  "seed_count": 5,
+  "checkpoint_selection": "The reported endpoint is average test accuracy over the last ten of 200 epochs, not a separately frozen validation-selected checkpoint.",
+  "results": [
+    {
+      "claim": "在 CIFAR-10 Pair-45% 合成噪声中，Co-teaching 的最后十轮平均准确率高于所列基线。",
+      "locator": "page 7, Table 5",
+      "value": "72.62% for Co-teaching versus 58.14% for MentorNet",
+      "anchor": {
+        "page": 7,
+        "line": 80,
+        "quote": "Average test accuracy on CIFAR-10 over the last ten epochs",
+        "paraphrase_zh": "该结果说明动态小 loss 互教能抑制合成错标记忆，但不是 replay 与随机对照的预算匹配实验。"
+      }
+    },
+    {
+      "claim": "保留率消融显示丢弃更多样本并非单调有益，超过适当范围后性能下降。",
+      "locator": "page 8, Section 4.2 and page 9, Table 8",
+      "value": "Pair-45% rises to 97.89% at 1.25 epsilon but falls to 69.47% at 1.5 epsilon",
+      "anchor": {
+        "page": 8,
+        "line": 93,
+        "quote": "if too many instances are dropped",
+        "paraphrase_zh": "覆盖不足会抵消可靠性筛选收益，直接支持 Q 门控后仍需控制 D 集合覆盖。"
+      }
+    }
+  ],
+  "ablations": [
+    "改变 R(T) 曲线指数 c 为 0.5、1、2。",
+    "改变下降周期 T_k 为 5、10、15。",
+    "改变最终 drop rate tau 为噪声率的 0.5、0.75、1、1.25、1.5 倍。",
+    "以选择后干净标签比例随 epoch 的轨迹解释不同方法。"
+  ],
+  "negative_results": [
+    "在最容易的低噪声条件中，F-correction 或其他基线可高于 Co-teaching。",
+    "Decoupling 的 disagreement 选样没有提高所选集合的干净标签比例。",
+    "丢弃比例过高会导致训练数据不足并使性能明显恶化。",
+    "方法依赖已知或另行估计的噪声率来设定最终保留率。"
+  ],
+  "failure_conditions": [
+    "两个网络快速形成相同偏差时，交叉选择不能提供真正独立的错误过滤。",
+    "噪声率估计偏差会使 R(T) 长期保留过多噪声或丢弃过多干净样本。",
+    "将小 loss 等同于高 replay 价值会误读方法，因为 Co-teaching 的目标是排除疑似噪声，不是增加额外曝光。"
+  ],
+  "limitations": [
+    "仅使用人工合成噪声的三个小型基准，未验证 CCTV 来源相关噪声和近重复。",
+    "没有同 count trace 的随机选择基线，因此无法隔离动态选择相对于随机少更新的收益。",
+    "作者明确未给出 Co-teaching 的深度网络泛化理论保证。",
+    "指标是平均准确率而非 FN95 局部安全前沿。"
+  ],
+  "transfer_class": "MECHANISM_ONLY",
+  "stage1_mechanism_zh": "Co-teaching 支持两个关键机制：Q 必须随训练阶段刷新，因为网络会从干净模式逐步转向噪声记忆；D 不能被 Q 过度压缩，因为丢弃太多样本会损失覆盖和学习信号。Stage1 应把动态可靠性、累计曝光和实际候选覆盖分别记录。",
+  "stage1_non_inference_zh": "Co-teaching 的小 loss 集合不是高价值 replay 集合，训练预算也没有与随机动态选择匹配。其双网络、噪声率先验和合成标签噪声均不同于 Stage1，因此不能据此认定低 loss、高 loss或某个 R(T) 比例能稳定胜随机。",
+  "exclusion_reason": "NOT_APPLICABLE_WITH_REASON:eligible as dynamic reliability and schedule evidence",
+  "migration_provenance": {
+    "source_review": "discovery/screened_fulltext_reviews_v3/P0364.json",
+    "source_paper_id": "P0364",
+    "migration_basis": "CANONICAL_WORK_ID_AND_BYTE_IDENTICAL_EVIDENCE",
+    "content_review_reused": true,
+    "evidence_provenance_class": "USER_ACCEPTED_INHERITED_EVIDENCE",
+    "independent_content_rereview_performed": false
+  }
+}

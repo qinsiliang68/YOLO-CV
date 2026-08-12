@@ -1,0 +1,16 @@
+{
+  "defect_population": 60000,
+  "group_counts": {
+    "NORMAL_REPLAY_CORE_0P5_CLASS_PERCENT": 300,
+    "NORMAL_REPLAY_REMAINDER_STRATIFIED": 300,
+    "WEAK_DEFECT_BUFFER_0P5_TO_5_CLASS_PERCENT_STRATIFIED": 300,
+    "WEAK_DEFECT_CORE_0P5_CLASS_PERCENT": 300
+  },
+  "monitor_manifest_sha256": "B14343E2140730A5A1D1446A71C6C2081AFF3603E83CA7B41164973DD45937B9",
+  "monitor_sample_count": 1200,
+  "normal_population": 60000,
+  "schema_version": "stage1.dynamic_causal_monitor.v2",
+  "source_path": "C:\\GitHub\\YOLO-CV\\artifacts\\stage1_sample_value_experiments\\experiments\\oof_dynamics_gap_value_20260708\\02_sample_value_tables\\sample_value_table.csv",
+  "source_sha256": "376674FCFD5C8378051FC5D1A588ED415CA8DEFA06A19AAD72505AB49B20B980",
+  "test_data_used": false
+}

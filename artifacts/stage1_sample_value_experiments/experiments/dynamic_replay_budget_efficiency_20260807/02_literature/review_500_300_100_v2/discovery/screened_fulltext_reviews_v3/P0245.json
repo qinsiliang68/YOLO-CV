@@ -1,0 +1,162 @@
+{
+  "schema_version": "3.0",
+  "paper_id": "P0245",
+  "canonical_work_id": "CW9E249AC4F35D83423946",
+  "title": "Combating Noisy Labels with Sample Selection by Mining High-Discrepancy Examples",
+  "decision": "SCREENED_ELIGIBLE",
+  "reviewed_at": "2026-08-10T07:15:39+08:00",
+  "reviewer": "codex_primary_fulltext_review",
+  "method_source": {
+    "path": "sources/screened_anchor_overrides_v3/CW9E249AC4F35D83423946.pdf",
+    "bytes": 1333414,
+    "sha256": "1BF3F39454B23CF65E4E83B186CD14F35DB15C068575B026A6FA01F502ED96E2"
+  },
+  "text_source": {
+    "path": "staging/screened_text_anchor_complete_v3/text/P0245.txt",
+    "bytes": 98950,
+    "sha256": "D36290569F34BAAE4EB2BC52B3EFFC73E4A1FC8CF42FD58FC367752316DAC334"
+  },
+  "rq_ids": ["RQ1", "RQ4", "RQ7"],
+  "section_evidence": {
+    "METHODS": {
+      "status": "READ",
+      "pages": "2-4",
+      "anchors": [
+        {
+          "page": 3,
+          "line": 46,
+          "quote": "Sample selection criterion",
+          "paraphrase_zh": "CoDis 用小分类损失鼓励可靠性，同时减去双网络 JS discrepancy，让高分歧但可能干净的困难样本更容易入选。"
+        }
+      ]
+    },
+    "EXPERIMENTS": {
+      "status": "READ",
+      "pages": "5-8",
+      "anchors": [
+        {
+          "page": 5,
+          "line": 22,
+          "quote": "Experimental results",
+          "paraphrase_zh": "实验覆盖平衡、长尾不平衡和真实噪声数据，并报告准确率、选择比例和部分选择标签精度。"
+        }
+      ]
+    },
+    "ABLATIONS": {
+      "status": "READ",
+      "pages": "6-8; bound main PDF refers additional details to an unavailable appendix",
+      "anchors": [
+        {
+          "page": 7,
+          "line": 75,
+          "quote": "It should be noted that, during training",
+          "paraphrase_zh": "同数量对照显示差异不只来自更新样本数；主文还比较用 CoDis 替换 DivideMix 选择器的组件替换结果。"
+        }
+      ]
+    },
+    "LIMITATIONS": {
+      "status": "NOT_REPORTED_BY_PAPER",
+      "pages": "No explicit limitations section in the bound 11-page main-paper PDF",
+      "anchors": [],
+      "absence_reason_zh": "主文未系统讨论 noisy-validation 调参、测试口径、真实 seed 数和从去噪选样迁移到 replay 的边界。"
+    }
+  },
+  "formulas": [
+    "classification loss L_C = cross_entropy(p_1(x_i), noisy_label_i)",
+    "discrepancy loss L_D = JS(p_1(x_i) || p_2(x_i))",
+    "selection loss L_J = L_C - alpha * L_D",
+    "retained fraction R(T) = 1 - min((T/T_k) * tau, tau)"
+  ],
+  "algorithm_steps": [
+    "维护两个结构相同但随机初始化不同的网络，并在每个 mini-batch 计算分类 loss 与预测分布 JS discrepancy。",
+    "每个网络按联合选择损失 L_C-alpha L_D 选 R(T) 比例样本，使小分类 loss 和高网络分歧同时受益。",
+    "把网络一选出的样本交给网络二，仅用普通分类 loss 更新网络二，反向亦然。",
+    "逐 epoch 降低保留比例；联合 discrepancy 只参与选择，不直接进入参数更新，以避免强制分歧损害干净模式。"
+  ],
+  "variables": [
+    "two-network softmax distributions",
+    "per-sample cross-entropy loss",
+    "Jensen-Shannon discrepancy",
+    "discrepancy weight alpha",
+    "retained fraction R(T)",
+    "selected ratio and clean-label precision"
+  ],
+  "selection_timing": "每个 mini-batch 在线计算联合损失并重新选择；保留率在训练早期下降后固定。",
+  "refresh_rule": "样本身份不冻结，两个网络的当前概率和 loss 在每次出现时共同决定是否被选。",
+  "budget": {
+    "unit": "fraction of mini-batch examples selected for optimizer updates",
+    "denominator": "all examples in the current mini-batch",
+    "unique_sample_definition": "没有 run 级冻结 unique set；相同 identity 可在不同 epoch 反复入选。",
+    "repeat_definition": "重复由动态选择和基础 epoch 遍历共同产生，未设置独立 replay repeat cap。",
+    "cumulative_exposure_definition": "作者报告 200 epoch 平均 selected ratio，但没有导出逐样本实际 optimizer-visible exposure ledger。",
+    "compute_cost": "同时训练两个网络，并在每个候选样本上额外计算两网络概率的 JS divergence。"
+  },
+  "random_baselines": [
+    "No random selector matched to CoDis retained fraction and class/source composition is reported",
+    "Co-teaching with the same number of selected examples in the imbalanced-noise comparison",
+    "MentorNet, SIGUA, Decoupling, Co-teaching+, JoCor and robust-loss baselines"
+  ],
+  "datasets": ["MNIST", "Fashion-MNIST", "SVHN", "CIFAR-10", "CIFAR-100", "NEWS", "Food-101", "Clothing1M", "WebVision"],
+  "models": ["9-layer CNN", "7-layer CNN", "3-layer MLP", "ResNet-50", "Inception-ResNet v2", "DivideMix backbones"],
+  "seed_count": {
+    "counts": [
+      "5 trials for balanced and class-imbalanced synthetic-noise result tables",
+      "seed count is not stated for real-world dataset point estimates"
+    ],
+    "scope": "Tables 1 and 4 explicitly report five trials",
+    "aggregation": "Synthetic-noise tables use mean and standard deviation; real-world tables show point estimates."
+  },
+  "checkpoint_selection": "Synthetic-noise test accuracy is averaged over the last ten of 200 epochs. DivideMix comparisons report both best and last values; no single independent validation checkpoint rule is used across every table.",
+  "results": [
+    {
+      "claim": "CoDis 在平衡噪声表中多数条件最好或第二，但并非每个数据集和噪声条件都胜过所有基线。",
+      "locator": "pages 5-6, Section 4.2 and Table 1",
+      "value": "CIFAR-10 symmetric 20%: CoDis 82.30 versus Co-teaching 82.35; NEWS symmetric 40%: CoDis 54.93 versus JoCor 55.48",
+      "anchor": {
+        "page": 5,
+        "line": 24,
+        "quote": "proposed method achieves superior",
+        "paraphrase_zh": "作者随后限定为多数条件最好、其余常为第二，不能把论文标题式主张写成无条件支配。"
+      }
+    },
+    {
+      "claim": "在相同选择数量下，CoDis 在多个长尾噪声条件高于 Co-teaching，支持分歧覆盖比单纯小 loss 更有信息。",
+      "locator": "page 7, Section 4.3",
+      "value": "same selected count; examples include CIFAR-10 asymmetric 40%: CoDis 75.24 versus Co-teaching 72.81",
+      "anchor": {
+        "page": 7,
+        "line": 75,
+        "quote": "It should be noted that, during training",
+        "paraphrase_zh": "这是接近预算控制的机制线索，但仍不是与随机回流集合比较。"
+      }
+    }
+  ],
+  "ablations": [
+    "CoDis 与 Co-teaching 使用相同选择数量，隔离是否加入高 discrepancy 候选。",
+    "比较强 disagreement 条件的 Co-teaching+ 与连续 JS discrepancy 的 CoDis，报告长期平均选择比例。",
+    "在 DivideMix 中仅替换 sample-selection procedure 为 CoDis，形成 DivideMix+ 组件替换。",
+    "主文声明测试网络结构、数据增强和 alpha 敏感性，但绑定主论文把详细数值指向未随文件提供的附录。"
+  ],
+  "negative_results": [
+    "CoDis 在若干平衡噪声条件只位列第二，不能声称跨条件稳定最优。",
+    "CoDis 需要用 noisy validation set 选择 alpha，并假定噪声率已知以设置 R(T)。",
+    "连续高 discrepancy 可能包含真正噪声或模型分歧，不等同于 hard-clean。",
+    "主论文没有严格 count-and-composition matched random selector。"
+  ],
+  "failure_conditions": [
+    "两个网络的分歧来自随机噪声或标签错误而非可学习边界结构时，减去 discrepancy 会优先危险样本。",
+    "alpha 过大可能让 discrepancy 压过可靠性，alpha 过小则退化成小 loss 选择。",
+    "两个网络过快达成共识会使 discrepancy 信号消失；保持分歧又可能改变训练路径和测试集成收益。",
+    "直接迁移到 Stage1 Top-K replay 会缺少论文中的双网络交叉更新和动态保留率语义。"
+  ],
+  "limitations": [
+    "目标是噪声标签鲁棒训练，不是固定额外 replay 预算下的边际样本效用。",
+    "虽然有同数量 Co-teaching 对照，但没有严格随机、来源匹配和实际曝光对照。",
+    "使用 noisy validation 调 alpha，且多个真实数据集未报告 seed 数。",
+    "主文把部分消融放在未绑定的附录，现有来源不能核验全部敏感性数值。"
+  ],
+  "transfer_class": "MECHANISM_ONLY",
+  "stage1_mechanism_zh": "CoDis 支持把 Q 与 D 分开：先要求小 loss 的可靠性，再用双模型概率分歧扩大可用 hard-clean 覆盖；强 disagreement 会让候选池过小。对 Stage1，模型间分歧可以作为候选分层或覆盖信号，但必须与 OOF 可学习性和严格随机 exposure 对照共同检验。",
+  "stage1_non_inference_zh": "CoDis 没有证明高 discrepancy 样本增加曝光后会改善 FN95，也没有隔离双网络训练、测试集成和选择器的贡献。它使用 noisy validation 和噪声率先验，且缺失匹配随机 replay，因此不能直接定义 A 或最终样本价值。",
+  "exclusion_reason": "NOT_APPLICABLE_WITH_REASON:eligible as hard-clean reliability and coverage evidence"
+}

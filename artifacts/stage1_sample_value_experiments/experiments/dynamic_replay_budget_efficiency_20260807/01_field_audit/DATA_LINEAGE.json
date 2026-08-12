@@ -1,0 +1,77 @@
+{
+  "bulk_sources": [
+    {
+      "content_hash_status": "NOT_RECORDED_IN_LEGACY_EXPORT",
+      "field_inventory_rows": 25,
+      "integrity_basis": "validated input manifest plus per-file completion sidecars",
+      "role": "oof_raw_epoch_predictions"
+    }
+  ],
+  "campaign_id": "dynamic_replay_budget_efficiency_20260807",
+  "inputs": [
+    {
+      "path": "C:\\GitHub\\YOLO-CV\\artifacts\\stage1_sample_value_experiments\\experiments\\oof_dynamics_gap_value_20260708\\06_reports\\gapvalue240_goal_analysis_20260806_v1\\audit\\DATA_USAGE_LEDGER_REFINED.csv",
+      "role": "canonical_240run_refined_field_ledger",
+      "sha256": "4F40789BF7EFA38F5596EDE29C6B92991C0230BE759CA14B72D90804772548E3",
+      "size_bytes": 609122
+    },
+    {
+      "path": "C:\\GitHub\\YOLO-CV\\artifacts\\stage1_sample_value_experiments\\experiments\\oof_dynamics_gap_value_20260708\\06_reports\\gapvalue240_goal_analysis_20260806_v1\\audit\\source_file_ledger.csv",
+      "role": "canonical_240run_source_file_ledger",
+      "sha256": "3698C564847E2D5AC096ADED781AD2B100D3B15C8C436BD1107967342B678F55",
+      "size_bytes": 5919938
+    },
+    {
+      "path": "C:\\GitHub\\YOLO-CV\\artifacts\\stage1_sample_value_experiments\\experiments\\oof_dynamics_gap_value_20260708\\01_oof_dynamics\\summary\\summary_validation.json",
+      "role": "oof_completeness_validation",
+      "sha256": "654E8D2DEC7E24843DBF740A553D40A7464E9C38258E83DB309CFDE4DA78CCAC",
+      "size_bytes": 54705
+    },
+    {
+      "path": "C:\\GitHub\\YOLO-CV\\artifacts\\stage1_sample_value_experiments\\experiments\\oof_dynamics_gap_value_20260708\\01_oof_dynamics\\summary\\summary_input_manifest.csv",
+      "role": "oof_raw_prediction_index",
+      "sha256": "136D0EBC2EA268F9639F2726145FFD2CC3159B69C863C9AC99C5813235600F5A",
+      "size_bytes": 126025
+    },
+    {
+      "path": "C:\\GitHub\\YOLO-CV\\artifacts\\stage1_sample_value_experiments\\experiments\\oof_dynamics_gap_value_20260708\\01_oof_dynamics\\summary\\sample_dynamics_summary.csv",
+      "role": "oof_sample_trajectory_summary",
+      "sha256": "84EE044693E9D47295C5A4C6DF05470379FA5CE79B838EDE0CEE3EB1E0DE959F",
+      "size_bytes": 30737786
+    },
+    {
+      "path": "C:\\GitHub\\YOLO-CV\\artifacts\\stage1_sample_value_experiments\\experiments\\oof_dynamics_gap_value_20260708\\02_sample_value_tables\\sample_value_table.csv",
+      "role": "oof_sample_value_features",
+      "sha256": "376674FCFD5C8378051FC5D1A588ED415CA8DEFA06A19AAD72505AB49B20B980",
+      "size_bytes": 31819678
+    }
+  ],
+  "outputs": [
+    {
+      "relative_path": "FIELD_INVENTORY.csv",
+      "sha256": "C6CBA926A209545A98D8191432947059CF2760B4F689F54718AF9EA72EC688C0",
+      "size_bytes": 1692239
+    },
+    {
+      "relative_path": "FIELD_GAP_REPORT.md",
+      "sha256": "6E56033A5F1897A7B052155FAFD04DD94035D8C2D46DD866EED946D67B0AEBE2",
+      "size_bytes": 5401
+    },
+    {
+      "relative_path": "DATA_VOLUME_FORECAST.csv",
+      "sha256": "5843801A53B6EBF2151CC4804F90D28748D32F93F4D0706843216EED97E0D165",
+      "size_bytes": 1375
+    },
+    {
+      "relative_path": "RETENTION_POLICY.md",
+      "sha256": "00DEDA383A73B8E3D81698AA2ED702C2B5729675CBC0D469973C5DF0B7BB0E09",
+      "size_bytes": 1789
+    }
+  ],
+  "schema_version": "1.0",
+  "transforms": [
+    "discover_oof_field_inventory",
+    "build_campaign_field_inventory",
+    "build_data_volume_forecast"
+  ]
+}

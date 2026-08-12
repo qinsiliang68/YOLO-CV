@@ -1,0 +1,102 @@
+{
+  "arm_ids": [
+    "NO_REPLAY",
+    "R1_GLOBAL_RANDOM",
+    "R2_METHOD_MATCHED_RANDOM",
+    "CURRENT_LOSS",
+    "T_Q",
+    "T_QR",
+    "T_QRA",
+    "T_QRAD"
+  ],
+  "blind_holdout_authorized": false,
+  "candidate_effectiveness_claim": "NOT_EVALUATED",
+  "canonical_training_lock_evidence": {
+    "bytes": 4623,
+    "path": "C:\\GitHub\\YOLO-CV\\configs\\stage1_gapvalue240\\CANONICAL_TRAINING_LOCK_v1.json",
+    "present": true,
+    "sha256": "7AFD96784F4994903892BD5BA8477396AAF5EFFBFF158A1C57225428BF01F74E"
+  },
+  "confirmation_seed_count": 14,
+  "engineering_gate_authorized": false,
+  "error_count": 0,
+  "errors": [],
+  "file_evidence": [
+    {
+      "bytes": 1956,
+      "path": "CONTRAST_REGISTRY.csv",
+      "sha256": "036E2F423CC405FCCDDD19E342BF126326913AE50E8D1C476A1EBA1DF91F3B8A"
+    },
+    {
+      "bytes": 4067,
+      "path": "DATA_COLLECTION_SCHEMA.json",
+      "sha256": "175ABD45F7418F6893B29E3D832BBFDE8BD68D5646B0644EED7D8095642F417D"
+    },
+    {
+      "bytes": 2713,
+      "path": "DATA_COLLECTION_SCHEMA.md",
+      "sha256": "41B3D9F721DF19CCF74E77DA1488F795C7D6FF01DBA26C542EAB8A315C2138A9"
+    },
+    {
+      "bytes": 1073,
+      "path": "MECHANISM_EVIDENCE_REGISTRY.csv",
+      "sha256": "4F626C97637281D4FF723C7711BD1CF35DA2AD6FDAF66DE65E9232E6A536E7BB"
+    },
+    {
+      "bytes": 2992,
+      "path": "MINIMAL_FALSIFIABLE_MATRIX.csv",
+      "sha256": "C06E78047E4FD1D08823F055112FF961984C422E9E9AFBC6250A9E4D34BE6BF3"
+    },
+    {
+      "bytes": 1580,
+      "path": "README.md",
+      "sha256": "7490751A4E817BCF5EA3E2A6CE0C9176468D4A9637776F4BF2C5917A73229E3E"
+    },
+    {
+      "bytes": 8294,
+      "path": "REPOSITORY_CHANGE_SPEC.md",
+      "sha256": "B0C7FD1E4E669C36762DFB04EB925E8F99BB33A524593288EB40EA9DD673DB3C"
+    },
+    {
+      "bytes": 5890,
+      "path": "SCIENTIFIC_CONTRACT.json",
+      "sha256": "BBF40D34E5EC5A8D44AC9F6FEC69CE8278B66D105BCE5DBA16D0F785DE897342"
+    },
+    {
+      "bytes": 5200,
+      "path": "SCIENTIFIC_CONTRACT.md",
+      "sha256": "B105A94BDE500F9D1EF57536E5A83E1F84812E6AEC6C8928A44BEB53FA4A8A0E"
+    },
+    {
+      "bytes": 2260,
+      "path": "STATISTICAL_DECISION_RULES.json",
+      "sha256": "7ECFF218D1DC218EC0C07AB688CA94E29E947CC9FCF7B05708FCA08BDA525923"
+    },
+    {
+      "bytes": 2758,
+      "path": "STATISTICAL_DECISION_RULES.md",
+      "sha256": "9BF73D288685A3C23134B1E947E4162241C076B871C560ACC75D65A1BAD10A79"
+    }
+  ],
+  "formal_training_authorized": false,
+  "preregistration_root": "C:\\GitHub\\YOLO-CV\\artifacts\\stage1_sample_value_experiments\\experiments\\dynamic_replay_budget_efficiency_20260807\\03_preregistration_v3",
+  "required_files": [
+    "CONTRAST_REGISTRY.csv",
+    "DATA_COLLECTION_SCHEMA.json",
+    "DATA_COLLECTION_SCHEMA.md",
+    "MECHANISM_EVIDENCE_REGISTRY.csv",
+    "MINIMAL_FALSIFIABLE_MATRIX.csv",
+    "README.md",
+    "REPOSITORY_CHANGE_SPEC.md",
+    "SCIENTIFIC_CONTRACT.json",
+    "SCIENTIFIC_CONTRACT.md",
+    "STATISTICAL_DECISION_RULES.json",
+    "STATISTICAL_DECISION_RULES.md"
+  ],
+  "schema_version": "stage1.dynamic_replay.preregistration_validation.v3",
+  "scientific_status": "PREREGISTERED_NOT_RUN",
+  "status": "PASS",
+  "validation_executed_training": false,
+  "validation_generated_assignments": false,
+  "validation_opened_blind_holdout": false
+}

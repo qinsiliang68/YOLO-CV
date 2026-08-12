@@ -1,0 +1,205 @@
+{
+  "schema_version": "3.0",
+  "paper_id": "P0464",
+  "canonical_work_id": "CW9931898DACDCBE6274B7",
+  "title": "Partitioned Gradient Matching-based Data Subset Selection for Compute-Efficient Robust ASR Training",
+  "decision": "SCREENED_ELIGIBLE",
+  "reviewed_at": "2026-08-10T17:45:00+08:00",
+  "reviewer": "codex_primary_fulltext_review",
+  "method_source": {
+    "path": "staging/broad_freeze_canonical_repaired_v4/sources/P0464.pdf",
+    "bytes": 523812,
+    "sha256": "314D7A78B2256141654D7F2CE5E5481A14A24BFA358430B6D9D249271FD78C1B"
+  },
+  "text_source": {
+    "path": "staging/screened_text_canonical_repaired_v4/text/P0464.txt",
+    "bytes": 65428,
+    "sha256": "B0829F7BA11669CD64BE8D8F2F44058715A2C43789410FA8C57759CE609DB122"
+  },
+  "rq_ids": [
+    "RQ2",
+    "RQ3",
+    "RQ5",
+    "RQ7"
+  ],
+  "section_evidence": {
+    "METHODS": {
+      "status": "READ",
+      "pages": "4-5, Equations 5-6 and Algorithms 1-2",
+      "anchors": [
+        {
+          "page": 4,
+          "line": 31,
+          "quote": "Let θ denote the ASR system’s parameters",
+          "paraphrase_zh": "方法把当前轮模型参数下的训练或验证梯度作为目标，在每个数据分区内用小批次梯度和 OMP 选择带权子集。"
+        }
+      ]
+    },
+    "EXPERIMENTS": {
+      "status": "READ",
+      "pages": "5-7, Section 5, Figures 2-4 and Tables 2-3",
+      "anchors": [
+        {
+          "page": 6,
+          "line": 63,
+          "quote": "each setting are averaged over 3 runs with different",
+          "paraphrase_zh": "论文在 LibriSpeech 100H、960H 和加噪版本上报告三次不同随机种子的均值，并与同子集比例随机抽样比较。"
+        }
+      ]
+    },
+    "ABLATIONS": {
+      "status": "READ",
+      "pages": "8-9, Section 5.2, Tables 4-7",
+      "anchors": [
+        {
+          "page": 8,
+          "line": 45,
+          "quote": "5.2 Ablation Study",
+          "paraphrase_zh": "消融分别检查分布式学习率、全量 warm-start 长度、连续选择集合重叠、噪声重叠，并在 TIMIT 上对照非分区 GradMatch。"
+        }
+      ]
+    },
+    "LIMITATIONS": {
+      "status": "READ",
+      "pages": "9, explicit Limitations section",
+      "anchors": [
+        {
+          "page": 9,
+          "line": 13,
+          "quote": "Limitations",
+          "paraphrase_zh": "作者明确指出在约四万小时工业语音规模上，全训练集梯度匹配开销会限制方法效用，且实验只覆盖 RNN-T。"
+        }
+      ]
+    }
+  },
+  "formulas": [
+    "Equations 5 and 6 minimize an L2-regularized mismatch between the weighted sum of selected mini-batch gradients and either the full partition gradient or a validation gradient.",
+    "For N training instances, batch size B, subset size k, and D partitions, the method defines bn=N/B total batches and bk=k/B selected batches, then allocates approximately bk/D batches per partition.",
+    "The paper states that partitioned matching minimizes an upper bound on the non-partitioned GradMatch objective; Appendix A supplies the bound rather than an equality guarantee."
+  ],
+  "algorithm_steps": [
+    "Warm-start the RNN-T on the full training data so current gradients are meaningful.",
+    "Every R epochs, divide training data into D partitions and compute last-joint-layer mini-batch loss gradients in parallel.",
+    "Within each partition, greedily run orthogonal matching pursuit against the training gradient or, for noisy data, the validation gradient under the partition budget.",
+    "Union the partial subsets and their nonnegative weights, shuffle the selected examples, and train the next interval with weighted mini-batch SGD.",
+    "Repeat selection using the updated model parameters until the fixed 30-epoch training horizon is reached."
+  ],
+  "variables": [
+    "training set U, validation set V, D data partitions, and current parameters theta_t",
+    "per-example negative log probability loss and mini-batch loss gradients",
+    "subset budget k, batch size B, selected weights w, regularization lambda, and tolerance epsilon",
+    "selection interval R, warm-start length, validation-gradient flag, and learning-rate schedule",
+    "subset fraction, word error rate, relative test error, speed-up, energy ratio, and overlap indices"
+  ],
+  "selection_timing": "PGM is state dependent: after a full-data warm start of seven epochs on LibriSpeech 100H or two epochs on 960H, it refreshes the selected set every fifth training epoch.",
+  "refresh_rule": "At epochs divisible by R=5, the prior subset is replaced by a newly gradient-matched union of partition subsets; between refreshes, the most recently selected weighted subset remains active.",
+  "budget": {
+    "unit": "selected mini-batches and the utterance identities contained in them",
+    "denominator": "the corresponding LibriSpeech training split or its noisy derivative",
+    "unique_sample_definition": "Reported subset fractions are 10%, 20%, and 30% of training examples, but the paper does not publish a per-ID unique-count ledger after batch selection.",
+    "repeat_definition": "An utterance can be selected again after a five-epoch refresh; Table 4 reports consecutive-set overlap rather than per-ID repeat counts.",
+    "cumulative_exposure_definition": "Nominal exposure includes full-data warm-start epochs plus selected-subset epochs between refreshes; actual optimizer-visible per-ID exposure and token or frame counts are not reported.",
+    "compute_cost": "Training uses two A100 GPUs and PGM adds recurrent gradient extraction plus OMP; random selection is faster, and the authors identify industrial-scale gradient matching overhead as a limitation."
+  },
+  "random_baselines": [
+    "uniform Random-Subset at the same reported subset fractions",
+    "full-data training at 100% exposure, which is not compute matched",
+    "LargeOnly and LargeSmall duration heuristics",
+    "non-partitioned GradMatch-PerBatch on the smaller TIMIT comparison"
+  ],
+  "datasets": [
+    "LibriSpeech 100H",
+    "LibriSpeech 960H",
+    "noisy LibriSpeech with 10%, 20%, or 30% corrupted examples",
+    "TIMIT phone recognition dataset"
+  ],
+  "models": [
+    "SpeechBrain RNN-T with a CRDNN encoder, GRU prediction network, and linear joint network",
+    "external transformer language model used during decoding"
+  ],
+  "seed_count": {
+    "counts": [
+      "3 runs with different random seeds for each main experimental setting"
+    ],
+    "scope": "LibriSpeech subset-selection settings described on page 6",
+    "aggregation": "The paper reports setting-level averages and a matched-pairs WER test, but no seed-wise table, paired seed differences, or worst-seed result."
+  },
+  "checkpoint_selection": "Training is fixed at 30 epochs with validation-loss learning-rate annealing; the paper does not state a best-versus-final checkpoint selection rule for the reported WER.",
+  "results": [
+    {
+      "claim": "在 LibriSpeech 960H 的 30% 子集上，PGM 与同规模随机子集的 WER 差异很小，但 PGM 的 TEST-OTHER 相对误差更低。",
+      "locator": "page 7, Table 2, 30% rows",
+      "value": "PGM 4.58/12.45 WER on TEST-CLEAN/TEST-OTHER versus Random-Subset 4.62/12.65; speed-up 2.64 versus 2.89.",
+      "anchor": {
+        "page": 7,
+        "line": 10,
+        "quote": "Random-Subset 4.62",
+        "paraphrase_zh": "表 2 的 30% 行显示 PGM 只小幅降低两个测试集的 WER，同时速度提升低于随机子集。"
+      }
+    },
+    {
+      "claim": "加噪实验并非每个单元格都支持 PGM 优于随机；低比例设置中存在反向结果。",
+      "locator": "page 7, Table 3",
+      "value": "Examples include 100H at 10% subset and 10% noise: PGM 11.86 versus random 11.79, and 960H at 10% subset and 20% noise: PGM 6.54 versus random 6.44.",
+      "anchor": {
+        "page": 7,
+        "line": 19,
+        "quote": "10% 11.79 11.86",
+        "paraphrase_zh": "表 3 的具体单元格直接显示 PGM 在部分低比例加噪设置中高于随机 WER，构成反向证据。"
+      }
+    },
+    {
+      "claim": "PGM 的连续选择集合重叠更低，但它与随机选择到的噪声比例几乎相同。",
+      "locator": "page 8, Table 4",
+      "value": "Overlap index is 6.37% for PGM versus 20.2% for Random-Subset; noise overlap is 0.83% versus 0.82%.",
+      "anchor": {
+        "page": 8,
+        "line": 2,
+        "quote": "Overlap Index 20.2% 6.37%",
+        "paraphrase_zh": "连续轮次重叠率表明 PGM 选择集合变化更大，但噪声样本占比与随机几乎一致。"
+      }
+    },
+    {
+      "claim": "作者报告 PGM 相对随机子集的 WER 降低通过匹配对检验。",
+      "locator": "page 9, Statistical Significance paragraph",
+      "value": "p < 0.001, but the test is not a paired unseen-training-seed analysis and seed-level outcomes are not shown.",
+      "anchor": {
+        "page": 9,
+        "line": 30,
+        "quote": "Statistical Significance",
+        "paraphrase_zh": "论文给出匹配对显著性检验，但未把三次训练种子逐一配对展示，不能替代 Stage1 seed 稳定性检验。"
+      }
+    }
+  ],
+  "ablations": [
+    "one versus two GPUs and learning rate 1.0 versus 2.0",
+    "two versus three full-data warm-start epochs on LibriSpeech 960H",
+    "consecutive subset overlap and noisy-example overlap",
+    "partitioned PGM versus non-partitioned GradMatch-PerBatch on TIMIT",
+    "10%, 20%, and 30% subset fractions across clean and noisy datasets"
+  ],
+  "negative_results": [
+    "At 10% of LibriSpeech 960H, both PGM and random subsets have large relative test error, and PGM sacrifices speed to reduce only part of that error.",
+    "Several noisy-data cells are worse for PGM than uniform random despite the paper's aggregate consistency language.",
+    "PGM is slightly worse than non-partitioned GradMatch-PerBatch on all reported TIMIT subset fractions.",
+    "Random-Subset is consistently better than the LargeOnly and LargeSmall heuristics, reinforcing the need for a strict random control."
+  ],
+  "failure_conditions": [
+    "The full-data warm start is too short for gradients to represent useful state-dependent direction.",
+    "Distributed training changes the number of updates but the learning rate is copied without retuning.",
+    "Gradient extraction and matching overhead dominates saved training time at industrial data scale.",
+    "Partition-local matching omits globally complementary examples or produces an upper-bound gap relative to full matching.",
+    "Averages hide training-seed reversals or a worst seed that loses to matched random."
+  ],
+  "limitations": [
+    "The explicit limitations section restricts evidence to RNN-T and warns that full-gradient matching may not scale to roughly 40,000 hours of audio.",
+    "The study performs subset training rather than additive replay over a fixed base-training stream.",
+    "Warm-start, subset fraction, refresh frequency, optimizer-visible steps, and cumulative example exposure are not jointly matched against random.",
+    "The target is average ASR WER, not an independent FN95 safety frontier or two-ended operational constraint.",
+    "Three-run means are reported without per-seed paired outcomes or worst-seed tables."
+  ],
+  "transfer_class": "MECHANISM_ONLY",
+  "stage1_mechanism_zh": "该文支持把 A 设计为当前 checkpoint 下的目标梯度方向门控，并把 D 作为分区后集合覆盖问题；它还提供了周期刷新、全量 warm-start、严格同规模随机子集以及连续集合重叠的可施工字段。",
+  "stage1_non_inference_zh": "论文研究的是删减训练集的 ASR 训练，不是固定基础流上的额外 replay；它没有匹配累计 replay 曝光、optimizer steps、FN95 局部目标和未见训练种子的最差情形，因此不能证明 PGM 或梯度匹配会提高 Stage1 utility。",
+  "exclusion_reason": "NOT_APPLICABLE_WITH_REASON:eligible as a state-dependent gradient-direction and strict-random-control mechanism paper"
+}

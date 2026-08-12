@@ -1,0 +1,186 @@
+{
+  "schema_version": "3.0",
+  "paper_id": "P0197",
+  "canonical_work_id": "CW1ECA2D0D8F67549BD4E1",
+  "title": "Deep Learning on a Data Diet: Finding Important Examples Early in\\n Training",
+  "decision": "SCREENED_ELIGIBLE",
+  "reviewed_at": "2026-08-10T08:45:00+08:00",
+  "reviewer": "codex_primary_fulltext_review",
+  "method_source": {
+    "path": "staging/broad_freeze_canonical_repaired_v4/sources/P0197.pdf",
+    "bytes": 2241745,
+    "sha256": "842B7D259D98E6C900D87F730D08B689F347DF70D764BF72E4A503DACA213058"
+  },
+  "text_source": {
+    "path": "staging/screened_text_canonical_repaired_v4/text/P0197.txt",
+    "bytes": 95945,
+    "sha256": "277D90028499B3B5941FB60FCA318C96FC840EE739A1C2E77E3DC04CC41E31E6"
+  },
+  "rq_ids": [
+    "RQ1",
+    "RQ2",
+    "RQ4",
+    "RQ5",
+    "RQ7",
+    "RQ8"
+  ],
+  "section_evidence": {
+    "METHODS": {
+      "status": "READ",
+      "pages": "3-4",
+      "anchors": [
+        {
+          "page": 3,
+          "line": 37,
+          "quote": "The GraNd score of a training example",
+          "paraphrase_zh": "GraNd 定义为给定训练时点上单样本损失梯度范数对初始化和训练随机性的期望。"
+        }
+      ]
+    },
+    "EXPERIMENTS": {
+      "status": "READ",
+      "pages": "5-10 and appendices",
+      "anchors": [
+        {
+          "page": 5,
+          "line": 61,
+          "quote": "Data pruning experiments. We train convolutional neural networks",
+          "paraphrase_zh": "作者在三个视觉数据集上先多次估分，再用独立初始化对冻结子集从头重训。"
+        }
+      ]
+    },
+    "ABLATIONS": {
+      "status": "READ",
+      "pages": "5-8 and appendices E-G",
+      "anchors": [
+        {
+          "page": 6,
+          "line": 10,
+          "quote": "at extreme levels of pruning with either EL2N or GraNd scores",
+          "paraphrase_zh": "极高剪枝率下只保留最高分样本会因覆盖不足出现陡降，作者据此检验预算窗口与噪声尾部。"
+        }
+      ]
+    },
+    "LIMITATIONS": {
+      "status": "READ",
+      "pages": "4, 6, 9-10",
+      "anchors": [
+        {
+          "page": 4,
+          "line": 61,
+          "quote": "The opposite is not necessarily true",
+          "paraphrase_zh": "梯度范数给出的是影响上界；大分数梯度可能互相抵消，因此不能由大范数推出真实效用。"
+        }
+      ]
+    }
+  },
+  "formulas": [
+    "GraNd chi_t(x,y) = E_wt ||gradient_w loss(p(w_t,x),y)||_2",
+    "EL2N(x,y) = E ||p(w_t,x)-y||_2",
+    "the one-step effect of removing a sample is upper-bounded by a constant times its gradient norm"
+  ],
+  "algorithm_steps": [
+    "在训练早期的冻结 epoch，用多个独立训练运行计算每个样本的 GraNd 或 EL2N 并求均值。",
+    "按分数排序，在固定保留比例下删除最低分样本，或用滑动窗口同时排除最低和最高分尾部。",
+    "使用与评分运行不同的随机初始化，从头训练所选子集并与相同大小随机子集和全数据比较。"
+  ],
+  "variables": [
+    "per-example gradient norm",
+    "prediction error-vector norm",
+    "score-computation epoch",
+    "pruning fraction",
+    "window offset"
+  ],
+  "selection_timing": "得分在初始化或训练前 1-20 个 epoch 计算后离线冻结；正式子集模型从新的随机初始化重训。",
+  "refresh_rule": "主数据剪枝实验不在重训中刷新；论文另比较不同早期评分 epoch 和多初始化平均。",
+  "budget": {
+    "unit": "unique examples retained after pruning",
+    "denominator": "full training-set cardinality",
+    "unique_sample_definition": "每个数据身份在冻结训练子集中至多出现一次。",
+    "repeat_definition": "保留样本随普通 epoch 重复，论文没有独立匹配每个身份的重复次数。",
+    "cumulative_exposure_definition": "保留子集大小乘训练 epoch；全数据、随机子集和目标子集的总样本曝光并不相等。",
+    "compute_cost": "默认用十次独立评分运行求分数均值，再为每种子集和预算从头重训四次。"
+  },
+  "random_baselines": [
+    "same-size uniformly random retained subset",
+    "full dataset without pruning",
+    "forgetting-score subset and multiple existing coreset methods in appendices"
+  ],
+  "datasets": [
+    "CIFAR-10",
+    "CINIC-10",
+    "CIFAR-100"
+  ],
+  "models": [
+    "ResNet18",
+    "ResNet50",
+    "proxy architectures in transfer experiments"
+  ],
+  "seed_count": {
+    "counts": [
+      "10 independent scoring runs averaged for GraNd and EL2N",
+      "4 independent retraining runs for final subset accuracy"
+    ],
+    "scope": "page 5 data-pruning protocol",
+    "aggregation": "Scores are averaged over ten runs; final accuracy reports a four-run mean with a 16th-84th percentile band."
+  },
+  "checkpoint_selection": "Subset models are compared by final test accuracy under a fixed training schedule; scoring epoch is an explicit experimental factor rather than a test-selected checkpoint.",
+  "results": [
+    {
+      "claim": "早期 EL2N/GraNd 能在中等剪枝率保留接近全数据的准确率，并优于同规模随机子集。",
+      "locator": "page 5, Figure 1",
+      "value": "fixed retained fractions are 50% for CIFAR-10, 60% for CINIC-10, and 75% for CIFAR-100",
+      "anchor": {
+        "page": 5,
+        "line": 43,
+        "quote": "Columns correspond to three different dataset and network combinations",
+        "paraphrase_zh": "图一同时比较评分时点、固定子集大小、随机子集和完整数据训练。"
+      }
+    },
+    {
+      "claim": "论文修正了早期版本在初始化剪枝上的错误结论。",
+      "locator": "page 6, pruning at initialization",
+      "value": "initialization pruning does not perform well; prior positive result came from a Flax v0.3.3 bug",
+      "anchor": {
+        "page": 6,
+        "line": 1,
+        "quote": "these results were found to be erroneous due to a bug",
+        "paraphrase_zh": "初始化阶段的正结果被后续复核推翻，说明训练状态与实现核验不可省略。"
+      }
+    }
+  ],
+  "ablations": [
+    "改变评分 epoch，比较初始化、早期和训练结束的排序。",
+    "改变剪枝比例，并用滑动窗口排除极高分尾部。",
+    "加入 10% 随机标签噪声，比较最高分尾部和覆盖效应。",
+    "比较单模型分数与多初始化平均、跨架构和超参数迁移。"
+  ],
+  "negative_results": [
+    "初始化时的 GraNd 剪枝效果差，旧版正结论由框架 bug 导致。",
+    "极高剪枝率下最高分 Top-K 因分布覆盖不足而陡降。",
+    "极最高分样本可能是错标或离群点，排除它们反而改善结果。",
+    "大 GraNd 只是单步影响上界，梯度抵消会使真实贡献很小。"
+  ],
+  "failure_conditions": [
+    "只保留最高困难度样本会丢失重要子群覆盖。",
+    "单次初始化的早期分数不如跨初始化平均稳定。",
+    "噪声比例升高时极端高分尾部更可能不可学习。"
+  ],
+  "limitations": [
+    "论文研究数据剪枝而非固定基础训练上的额外 replay，累计曝光与 optimizer steps 不匹配。",
+    "任务集中在标准视觉分类，指标不是 FN95 局部安全前沿。",
+    "滑动窗口边界需要验证集调参，不能直接从论文迁移到 Stage1。"
+  ],
+  "transfer_class": "MECHANISM_ONLY",
+  "stage1_mechanism_zh": "这篇论文为 Q/R/D 提供关键机制：大梯度只代表潜在影响，极端高分可能不可学习；中高难度窗口和多初始化平均可作为可证伪候选，而高预算或高剪枝率必须加入覆盖约束和噪声门控。",
+  "stage1_non_inference_zh": "GraNd、EL2N 或滑动窗口都未在固定基础训练、相同累计 replay 曝光和 FN95 指标下验证；尤其不能把大梯度当充分条件，也不能用剪枝保持普通准确率替代跨 seed 优于随机回流的干预证据。",
+  "exclusion_reason": "NOT_APPLICABLE_WITH_REASON:eligible for SCREENED evidence tier",
+  "migration_provenance": {
+    "source_review": "discovery/screened_fulltext_reviews_v3/P0197.json",
+    "source_paper_id": "P0197",
+    "migration_basis": "CANONICAL_WORK_ID_AND_BYTE_IDENTICAL_EVIDENCE",
+    "content_review_reused": true,
+    "evidence_provenance_class": "USER_ACCEPTED_INHERITED_EVIDENCE",
+    "independent_content_rereview_performed": false
+  }
+}

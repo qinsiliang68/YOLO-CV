@@ -22,12 +22,26 @@ from .deep_mechanisms import (
     summarize_selected_score_signs,
 )
 from .deep_reporting import build_deep_report
+from .deep_patterns import (
+    build_analysis_capabilities,
+    build_condition_value_effects,
+    build_paired_epoch_differences,
+    build_pattern_evidence_registry,
+    build_pattern_narrative_sections,
+    build_raw_calibrated_operational_sensitivity,
+    build_selection_value_summary,
+    build_value_effect_associations,
+    summarize_paired_epoch_differences,
+)
 from .deep_statistics import (
     build_a02_summaries,
+    build_budget_comparison_detail,
     build_budget_comparisons,
     build_condition_summaries,
+    build_cross_method_comparison_detail,
     build_cross_method_comparisons,
     build_direct_treatment_comparisons,
+    build_guard_comparison_detail,
     build_guard_comparisons,
     build_sensitivity_summaries,
     build_triad_deltas,
@@ -1159,6 +1173,7 @@ def run_deep_analysis(
 ) -> Path:
     """Execute the frozen 240-run deep analysis and atomically build its report."""
 
+    analysis_id = "stage1_gapvalue240_pattern_analysis_v2"
     extracted = Path(extracted_root).resolve()
     output = Path(output_dir).resolve()
     if output == extracted or output.is_relative_to(extracted):
@@ -1200,13 +1215,36 @@ def run_deep_analysis(
     runs = ingestion.runs
     matrix = pd.read_csv(matrix_file, keep_default_na=False)
     deltas = build_triad_deltas(runs)
+    if recompute_predictions:
+        raw_deltas = build_triad_deltas(
+            runs,
+            metric_columns=(
+                "raw_TN_at_FN95",
+                "raw_FN_at_TN68253",
+                "raw_gap_q68_q050",
+                "raw_tail_gap_q90_q05",
+                "raw_normal_q68",
+                "raw_normal_q90",
+                "raw_defect_q50",
+                "raw_defect_q05",
+            ),
+        )
+        raw_calibrated_sensitivity = (
+            build_raw_calibrated_operational_sensitivity(deltas, raw_deltas)
+        )
+    else:
+        raw_deltas = pd.DataFrame()
+        raw_calibrated_sensitivity = pd.DataFrame()
     condition_summaries = build_condition_summaries(deltas)
     a02_summaries = build_a02_summaries(deltas)
     sensitivity = build_sensitivity_summaries(deltas)
     cross_method = build_cross_method_comparisons(deltas)
+    cross_method_detail = build_cross_method_comparison_detail(deltas)
     direct_treatment = build_direct_treatment_comparisons(runs)
     budget = build_budget_comparisons(deltas)
+    budget_detail = build_budget_comparison_detail(deltas)
     guard = build_guard_comparisons(deltas)
+    guard_detail = build_guard_comparison_detail(deltas)
     guard_vs_normal_only = build_direct_treatment_comparisons(
         runs,
         specs=tuple((f"B{index:02d}", "A02") for index in range(1, 7)),
@@ -1245,6 +1283,20 @@ def run_deep_analysis(
                 score_column="gap_critical_score",
             )
         ]
+    )
+    selection_value_summary = build_selection_value_summary(
+        matrix, selection_path, value_path
+    )
+    selection_value_effects = build_condition_value_effects(
+        selection_value_summary, deltas
+    )
+    selection_value_associations = build_value_effect_associations(
+        selection_value_effects
+    )
+    capability_registry = build_analysis_capabilities(
+        matrix,
+        overlap_decisions_path=matrix_file.parent / "overlap_decisions.json",
+        value_table_path=value_path,
     )
 
     output.parent.mkdir(parents=True, exist_ok=True)
@@ -1330,6 +1382,10 @@ def run_deep_analysis(
             raise CanonicalInputError(
                 f"Expected 48,000 epoch curve rows, found {len(epoch_curves)}"
             )
+        paired_epoch_detail = build_paired_epoch_differences(epoch_curves, deltas)
+        paired_epoch_summary = summarize_paired_epoch_differences(
+            paired_epoch_detail
+        )
         frontier_detail = build_threshold_frontier(runs)
         frontier = _a02_frontier_summary(frontier_detail)
         a02_curves = _a02_training_curves(epoch_curves)
@@ -1340,11 +1396,15 @@ def run_deep_analysis(
         reliability = _reliability_tables(
             runs, ingestion.training_summaries, completeness
         )
-        hypotheses = build_hypothesis_registry(
+        hypotheses = build_pattern_evidence_registry(
             a02_summaries=a02_summaries,
             condition_summaries=condition_summaries,
+            cross_method_comparisons=cross_method,
             budget_comparisons=budget,
             guard_comparisons=guard,
+            sensitivity_summaries=sensitivity,
+            tail_detail=tail_summary,
+            capability_registry=capability_registry,
             r2_overlap=r2_overlap,
         )
         pooled_a02 = a02_summaries[
@@ -1382,14 +1442,21 @@ def run_deep_analysis(
             "metric_recompute_audit": ingestion.metric_audit,
             "training_curve_summary": ingestion.training_summaries,
             "epoch_training_curves": epoch_curves,
+            "paired_epoch_differences": paired_epoch_detail,
+            "paired_epoch_effect_summary": paired_epoch_summary,
             "triad_control_deltas": deltas,
+            "raw_score_triad_deltas": raw_deltas,
+            "raw_calibrated_operational_sensitivity": raw_calibrated_sensitivity,
             "condition_control_summaries": condition_summaries,
             "a02_discovery_confirmation_combined": a02_summaries,
             "sensitivity_results": sensitivity,
             "cross_method_seed_paired": cross_method,
+            "cross_method_seed_detail": cross_method_detail,
             "direct_treatment_comparisons": direct_treatment,
             "budget_response": budget,
+            "budget_seed_detail": budget_detail,
             "guard_policy_contrasts": guard,
+            "guard_seed_detail": guard_detail,
             "guard_vs_a02_normal_only_direct": guard_vs_normal_only,
             "a02_extended_sensitivity": a02_extended,
             "a02_leave_one_seed_out": a02_leave_one_out,
@@ -1400,6 +1467,9 @@ def run_deep_analysis(
             "selection_method_overlap": selections["method_overlap"],
             "selection_identity_quality": selection_quality,
             "selection_feature_smd": selection_smd,
+            "selection_value_summary": selection_value_summary,
+            "selection_value_effects": selection_value_effects,
+            "selection_value_effect_associations": selection_value_associations,
             "r2_overlap_power_audit": r2_overlap,
             "bottom_gap_signs": bottom_gap,
             "control_consensus": consensus,
@@ -1415,9 +1485,11 @@ def run_deep_analysis(
             "a02_threshold_frontier_detail": frontier_detail,
             "a02_training_curves": a02_curves,
             "training_contract_audit": training_contract,
+            "analysis_capability_registry": capability_registry,
             **reliability,
         }
         metadata = {
+            "analysis_id": analysis_id,
             "validated_runs": len(runs),
             "triads": runs["triad_id"].nunique(),
             "paired_comparisons": len(deltas),
@@ -1433,6 +1505,9 @@ def run_deep_analysis(
             "input_snapshots": runs["input_snapshot_id"].nunique(),
             "resumed_runs": int((runs["resume_count"] > 0).sum()),
             "full_val_op_recompute": bool(recompute_predictions),
+            "raw_calibrated_pairs": len(raw_calibrated_sensitivity),
+            "paired_epoch_effect_rows": len(paired_epoch_detail),
+            "capability_records": len(capability_registry),
             "semantic_snapshot_exception_authorized": completeness[
                 "semantic_snapshot_exception_authorized"
             ],
@@ -1444,7 +1519,8 @@ def run_deep_analysis(
             ),
         }
         analysis_contract = {
-            "analysis_id": "stage1_gapvalue240_full_analysis_v1",
+            "analysis_id": analysis_id,
+            "analysis_generation": "v2 pattern-oriented evidence",
             "source_policy": "canonical inventory attempts only; extracted root read-only",
             "expected_runs": 240,
             "expected_triads": 80,
@@ -1468,18 +1544,36 @@ def run_deep_analysis(
                 "score_raw": "model-output mechanism analysis",
                 "score": "Platt-calibrated deployment probability",
             },
+            "raw_calibrated_rule": (
+                "formal recomputation requires identical tie-safe operational "
+                "integer effects before and after monotone Platt calibration"
+            ),
+            "epoch_effect_rule": (
+                "epochs are dependent trajectory observations; paired epoch "
+                "summaries are descriptive and never treated as independent seeds"
+            ),
+            "pattern_registry_rule": (
+                "separately report numerical direction, registered contract, "
+                "mechanism support, and causal-claim permission"
+            ),
             "tie_rule": "score >= threshold; whole equal-score group moves together",
             "steps_per_epoch_by_budget": {600: 943, 3000: 961, 6000: 985},
             "three_seed_conditions": "exploratory; never labelled confirmed",
             "conclusion_boundary": metadata["conclusion_boundary"],
         }
         audits = {
+            "analysis_identity": {
+                "analysis_id": analysis_id,
+                "analysis_generation": "v2",
+                "full_val_op_recompute": bool(recompute_predictions),
+            },
             "completeness": completeness,
             "metric_recompute": ingestion.metric_audit,
             "selection_sha": selection_sha,
             "prediction_identity": prediction_identity,
             "training_contract": training_contract,
             "subgroup_field_availability": subgroup_availability,
+            "analysis_capabilities": capability_registry,
             "source_boundaries": {
                 "extracted_root": str(extracted),
                 "inventory": str(Path(inventory_path).resolve()),
@@ -1493,7 +1587,23 @@ def run_deep_analysis(
                 "output_outside_extracted_root": True,
             },
         }
+        pattern_narrative = build_pattern_narrative_sections(
+            condition_summaries=condition_summaries,
+            cross_method_comparisons=cross_method,
+            selection_value_associations=selection_value_associations,
+            tail_detail=tail_summary,
+            raw_calibrated_sensitivity=raw_calibrated_sensitivity,
+            training_summaries=ingestion.training_summaries,
+            paired_epoch_summary=paired_epoch_summary,
+            training_contract=training_contract,
+            selection_value_summary=selection_value_summary,
+            selection_composition=selections["composition"],
+        )
         narrative = {
+            "Analysis ID": (
+                f"{analysis_id}. This is the v2 pattern-oriented evidence "
+                "analysis; v1 helper functions remain compatibility-only."
+            ),
             "核心结论": primary_result,
             "三层 A02 结果": (
                 "Discovery-3："
@@ -1533,6 +1643,7 @@ def run_deep_analysis(
                 "primary_defect_class 缺失时明确标记不可用，不作推断。"
             ),
         }
+        narrative.update(pattern_narrative)
         return build_deep_report(
             output,
             tables=tables,
@@ -1541,4 +1652,5 @@ def run_deep_analysis(
             analysis_contract=analysis_contract,
             audits=audits,
             narrative=narrative,
+            title="Stage1 GapValue 240-Run 规律分析 v2",
         )

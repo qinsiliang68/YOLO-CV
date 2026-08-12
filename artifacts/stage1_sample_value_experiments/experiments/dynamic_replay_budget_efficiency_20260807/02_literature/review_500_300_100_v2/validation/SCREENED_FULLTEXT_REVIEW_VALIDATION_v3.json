@@ -1,0 +1,187 @@
+{
+  "schema_version": "3.0",
+  "status": "PASS",
+  "reviewed_count": 24,
+  "eligible_count": 24,
+  "excluded_count": 0,
+  "reviewed_paper_ids": [
+    "P0008",
+    "P0020",
+    "P0039",
+    "P0057",
+    "P0075",
+    "P0082",
+    "P0104",
+    "P0137",
+    "P0145",
+    "P0173",
+    "P0197",
+    "P0245",
+    "P0255",
+    "P0289",
+    "P0290",
+    "P0339",
+    "P0340",
+    "P0346",
+    "P0364",
+    "P0389",
+    "P0399",
+    "P0422",
+    "P0430",
+    "P0471"
+  ],
+  "screening_queue_sha256": "04FDC4DEFFAEC42C3CD06D4A500BECEC25AECF56EAB1562B569AFFFCE87A7C32",
+  "extraction_ledger_sha256": "2E7AE121902A8BF3BE8936B6FFDC59770AC6F71750F4A61D21E8E2953C860187",
+  "review_files": [
+    {
+      "path": "P0008.json",
+      "sha256": "A566780C404F548E9BA4A30AA9E9D78710D5803E64D6CDA6BF5EC289F4A670A3",
+      "bytes": 9315,
+      "record_count": 1
+    },
+    {
+      "path": "P0020.json",
+      "sha256": "2986879D960D444E84B11C49CA33E82A6274943599378D9D584AC8D185B4118D",
+      "bytes": 9278,
+      "record_count": 1
+    },
+    {
+      "path": "P0039.json",
+      "sha256": "52ED8899298FCEF4A090B95B768AC19A2A97B298DCE2640A6A62868A6F4E2E01",
+      "bytes": 8836,
+      "record_count": 1
+    },
+    {
+      "path": "P0057.json",
+      "sha256": "3F2B78134609A38F9BF768168C6E3B33A8A7538E454FD7CA97A3956640C31CB0",
+      "bytes": 8012,
+      "record_count": 1
+    },
+    {
+      "path": "P0075.json",
+      "sha256": "5F599574ACFF944EFF332E9313918633426CAAAA5977A6FC025EB6DF88AFF7D3",
+      "bytes": 11128,
+      "record_count": 1
+    },
+    {
+      "path": "P0082.json",
+      "sha256": "50864AEF027CE02C1C642407EF3FEB7F3C48D99B428ED403D85592410B0ED1B8",
+      "bytes": 10750,
+      "record_count": 1
+    },
+    {
+      "path": "P0104.json",
+      "sha256": "C568E0D91E19AF54EE8BDD1FF656A2B46C9848524B52A4F26ABD93EA14D48CEC",
+      "bytes": 8177,
+      "record_count": 1
+    },
+    {
+      "path": "P0137.json",
+      "sha256": "888CD7819DE0522154469EB1DA88CA8BCDADA30A179F08636EA5906BD1A39C4C",
+      "bytes": 13123,
+      "record_count": 1
+    },
+    {
+      "path": "P0145.json",
+      "sha256": "04448D429C723057667D44E5311CDC6E4F652857B53B5D3581594B4E70DF5B23",
+      "bytes": 9053,
+      "record_count": 1
+    },
+    {
+      "path": "P0173.json",
+      "sha256": "36F9821AAAB7B218F95240BB34983459A3025541E11CE64CF5497EC1E3542068",
+      "bytes": 9799,
+      "record_count": 1
+    },
+    {
+      "path": "P0197.json",
+      "sha256": "133CE8CE03C83ED92C0D8D453C7411432AA64E35E19571341E79C61948D60720",
+      "bytes": 7947,
+      "record_count": 1
+    },
+    {
+      "path": "P0245.json",
+      "sha256": "818BDABA66AA2049BA01BFA69A74B4B4D334C439510D56F490BE9AE4CB91B24C",
+      "bytes": 9288,
+      "record_count": 1
+    },
+    {
+      "path": "P0255.json",
+      "sha256": "B9AEAD667B31207E4213AAEC34FC076E939FC36A30BEE323268B43E3B9D16D71",
+      "bytes": 12281,
+      "record_count": 1
+    },
+    {
+      "path": "P0289.json",
+      "sha256": "DE86C93176876A6483708F9C886DD0D24D27C5AC571391EDA4C7EDE684901ABA",
+      "bytes": 8733,
+      "record_count": 1
+    },
+    {
+      "path": "P0290.json",
+      "sha256": "68AC37BBF0A61DF2402128B8BE55E6CB6A3C41DC10BE8787A1A56C45B7373C5E",
+      "bytes": 11155,
+      "record_count": 1
+    },
+    {
+      "path": "P0339.json",
+      "sha256": "17C1E01FC24B615FC1F4472E2BED15DAE64D0DCB5451280D67F2F8688FF31304",
+      "bytes": 7917,
+      "record_count": 1
+    },
+    {
+      "path": "P0340.json",
+      "sha256": "93EC6DAE7585DA97ACCDAEF5BA61648CCAAB526BF5DC18A060C36945FE136ED9",
+      "bytes": 11762,
+      "record_count": 1
+    },
+    {
+      "path": "P0346.json",
+      "sha256": "3CA626D4F88DA5EB4780B56EBD621BE3A285FA97ED994D4AD39BC84E7C6CBBE9",
+      "bytes": 13116,
+      "record_count": 1
+    },
+    {
+      "path": "P0364.json",
+      "sha256": "6FC8FB804DDA55AB01809C4CBF4BD17BC0232048355D61F25DBC580CFE30BA57",
+      "bytes": 7961,
+      "record_count": 1
+    },
+    {
+      "path": "P0389.json",
+      "sha256": "C274B29C65AD7330245D98BE341E7E85DB043C9176646506723932D82E351239",
+      "bytes": 8577,
+      "record_count": 1
+    },
+    {
+      "path": "P0399.json",
+      "sha256": "97E59993DC821D42BE547FEA4527E6A3F0396AA5E0557CFD55426BB353DB76A9",
+      "bytes": 9422,
+      "record_count": 1
+    },
+    {
+      "path": "P0422.json",
+      "sha256": "8A977D11DBDC45E7A20D03453C6DF436456DAD61D21CDE398875B13FB630AD0F",
+      "bytes": 9750,
+      "record_count": 1
+    },
+    {
+      "path": "P0430.json",
+      "sha256": "5FF77D2EF5EC3A2B376FD70AFF02325FDF0C87D876AE35386F98FF007B9D9502",
+      "bytes": 9610,
+      "record_count": 1
+    },
+    {
+      "path": "P0471.json",
+      "sha256": "D98D0FB73B086D50D478FB5C834150124F45F270BC96DF9AE7A2AE47C44C45E0",
+      "bytes": 9865,
+      "record_count": 1
+    }
+  ],
+  "full_queue_coverage_required": false,
+  "formal_screened_increment": 0,
+  "reading_credit_note": "This receipt validates full-text screening evidence, but formal SCREENED credit requires promotion into the exact nested 500/300/100 corpus and full corpus audit.",
+  "formal_training_started": false,
+  "engineering_gate_generated": false,
+  "blind_holdout_opened": false
+}

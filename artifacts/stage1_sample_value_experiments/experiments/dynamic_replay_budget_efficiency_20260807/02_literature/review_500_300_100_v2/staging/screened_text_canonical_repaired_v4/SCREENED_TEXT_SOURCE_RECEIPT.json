@@ -1,0 +1,8 @@
+{
+  "schema_version": "2.0",
+  "status": "PASS",
+  "source_count": 320,
+  "screening_queue_sha256": "B8B0845665AC9488B436DFBAA371EAA0285C91D0D469B55210A5DCC25E58DBB7",
+  "text_source_ledger_sha256": "7D6FB691C1B251030C47AC2537E14C80B5FCA7B4BE1457E64A93823A49C44B58",
+  "reading_credit_granted": false
+}

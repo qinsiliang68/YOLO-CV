@@ -1,0 +1,11 @@
+{
+  "schema_version": "4.0",
+  "status": "PASS",
+  "created_at": "2026-08-10T17:28:04.160893+08:00",
+  "migrated_count": 24,
+  "renamed_count": 10,
+  "content_review_reused": true,
+  "evidence_provenance_class": "USER_ACCEPTED_INHERITED_EVIDENCE",
+  "independent_content_rereview_performed": false,
+  "mapping_sha256": "2073325E61F7F56CC2A046315E26181D21F1414D5F817825440F6327A11F4329"
+}

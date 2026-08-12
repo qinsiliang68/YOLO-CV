@@ -1,0 +1,194 @@
+{
+  "schema_version": "3.0",
+  "paper_id": "P0341",
+  "canonical_work_id": "CW60DE20FF6EBD0732725C",
+  "title": "A Structural SVM Based Approach for Optimizing Partial AUC",
+  "decision": "SCREENED_ELIGIBLE",
+  "reviewed_at": "2026-08-10T16:19:00+08:00",
+  "reviewer": "codex_primary_fulltext_review",
+  "method_source": {
+    "path": "staging/broad_freeze_canonical_repaired_v4/sources/P0341.pdf",
+    "bytes": 258814,
+    "sha256": "3181AD0BD445DEB002F3F3D6C4A415E5FA008F61219A79DE6078856DB84DF51B"
+  },
+  "text_source": {
+    "path": "staging/screened_text_canonical_repaired_v4/text/P0341.txt",
+    "bytes": 72610,
+    "sha256": "A59B7414212A90F1C4377D5F3259541A80D443F2CD540F5F23B4BC6B187FECCC"
+  },
+  "rq_ids": [
+    "RQ8"
+  ],
+  "section_evidence": {
+    "METHODS": {
+      "status": "READ",
+      "pages": "2-6, equations 1-7, optimization problems OP1-OP6, and Algorithm 1",
+      "anchors": [
+        {
+          "page": 5,
+          "line": 63,
+          "quote": "However it turns out that by working with a restricted search space",
+          "paraphrase_zh": "方法把 pAUC 损失嵌入结构 SVM 的 cutting-plane 约束，通过限制排序矩阵搜索空间，把指数规模的最违约约束搜索化为按负样本排序后的可处理子问题。"
+        }
+      ]
+    },
+    "EXPERIMENTS": {
+      "status": "READ",
+      "pages": "7-8, Tables 2-5 and Figure 4",
+      "anchors": [
+        {
+          "page": 7,
+          "line": 26,
+          "quote": "For each data set, we used random",
+          "paraphrase_zh": "信息检索实验用查询级随机切分分离训练、验证和测试，并在十次切分上汇总；其他任务也使用多次随机切分，但并未报告独立优化随机种子。"
+        }
+      ]
+    },
+    "ABLATIONS": {
+      "status": "NOT_REPORTED_BY_PAPER",
+      "pages": "1-9 including all experiments and conclusion",
+      "anchors": [],
+      "absence_reason_zh": "全文没有移除结构 SVM 组件、改变约束求解器或在相同目标下做方法组件消融；Figure 4 仅改变 FPR 区间并记录运行时间和调用次数，属于计算敏感性分析而非组件消融。"
+    },
+    "LIMITATIONS": {
+      "status": "NOT_REPORTED_BY_PAPER",
+      "pages": "1-9 including discussion embedded in methods, all experiments, and conclusion",
+      "anchors": [],
+      "absence_reason_zh": "论文没有独立局限章节，也没有系统讨论线性模型限制、切分与训练随机性的混合、测试尾部样本量、阈值不确定性、回流曝光公平性或对 FN95 任务的外推边界。"
+    }
+  },
+  "formulas": [
+    "Normalized pAUC_f(alpha,beta) is the integral of TPR_f(FPR_f^{-1}(u)) over u in [alpha,beta], divided by beta-alpha.",
+    "Empirical pAUC risk is 1 minus empirical pAUC and depends on positives paired with score-ranked negatives in the selected FPR band.",
+    "The structural SVM objective minimizes 0.5||w||^2 + C xi subject to a margin constraint for every positive-negative ordering matrix.",
+    "The partial-AUC loss Delta_pAUC compares the ground-truth ordering matrix with candidate orderings only over the target negative ranks.",
+    "The most-violated constraint maximizes the partial-AUC loss minus the model's joint-feature margin over the restricted ordering space."
+  ],
+  "algorithm_steps": [
+    "Freeze the operational FPR interval [alpha,beta], form positive and negative training sets, and represent their pairwise ranking by a binary ordering matrix.",
+    "Initialize a cutting-plane structural SVM and repeatedly score negatives under the current linear parameter w.",
+    "Find the most-violated ordering constraint: use an elementwise solution for [0,beta] or Algorithm 1's per-positive three-group search for general [alpha,beta].",
+    "Add the constraint to the quadratic program and update w until the cutting-plane accuracy condition is met."
+  ],
+  "variables": [
+    "m and n: positive and negative training counts",
+    "alpha and beta: frozen lower and upper false-positive rates",
+    "j_alpha and j_beta: negative-rank boundaries induced by alpha and beta",
+    "pi: positive-versus-negative ordering matrix",
+    "w: linear scoring parameter",
+    "C and xi: structural-SVM regularization and slack",
+    "Delta_pAUC and phi(S,pi): partial-AUC loss and joint feature map"
+  ],
+  "selection_timing": "At every cutting-plane iteration, negatives are re-ranked by the current w and the target FPR band determines which pairwise order errors enter the most-violated constraint. This is model-state-dependent loss construction, not an added replay set.",
+  "refresh_rule": "The active ordering constraint refreshes on each cutting-plane iteration until convergence. The operational [alpha,beta] interval remains frozen; there is no epoch-level replay schedule or persistent selected-ID pool.",
+  "budget": {
+    "unit": "positive-negative ranking comparisons contributing to the empirical partial-AUC loss",
+    "denominator": "m times n times (beta-alpha), with boundary corrections for non-integer negative ranks",
+    "unique_sample_definition": "Unique identities are the positive and negative training instances, but the paper does not report the union of negative IDs active across cutting-plane iterations.",
+    "repeat_definition": "A positive or high-ranked negative can participate in many pairwise constraints and be revisited after each re-ranking; no per-ID repeat ledger is reported.",
+    "cumulative_exposure_definition": "There is no optimizer-visible replay exposure ledger. Pairwise constraint participation changes with w and is not made comparable to uniform sampling exposure.",
+    "compute_cost": "The most-violated-constraint search is O((m+n) log(m+n)) with compact orderings, matching the stated complexity of full-AUC optimization; total cost also depends on cutting-plane calls, which increase as beta shrinks."
+  },
+  "random_baselines": [
+    "SVMAUC optimizing full AUC",
+    "ASVM for [0,beta]",
+    "pAUCBoost for partial AUC",
+    "a greedy partial-AUC heuristic",
+    "No global-random or method-matched-random replay selection baseline is included."
+  ],
+  "datasets": [
+    "virtual-screening cheminformatics data with five targets",
+    "LETOR TD2004",
+    "TREC10",
+    "Yeast protein-protein interaction data",
+    "KDD Cup 2008 breast-cancer detection data"
+  ],
+  "models": [
+    "linear SVMpAUC scoring functions",
+    "linear SVMAUC",
+    "asymmetric SVM",
+    "pAUCBoost",
+    "greedy partial-AUC heuristic"
+  ],
+  "seed_count": {
+    "counts": [
+      "5 therapeutic targets times 10 random train-test splits for the cheminformatics table",
+      "10 random query-level train-validation-test splits for each information-retrieval dataset",
+      "10 random train-validation-test splits for PPI",
+      "10 random train-test splits for KDD Cup 2008"
+    ],
+    "scope": "pages 7-8, Tables 2-5",
+    "aggregation": "Means over random data splits are reported; optimization initialization seeds, per-split values, dispersion, direction counts, and worst split are not reported."
+  },
+  "checkpoint_selection": "The experiments learn linear structural-SVM solutions rather than selecting neural checkpoints. Hyperparameters and preprocessing are said to use supplementary details, and validation splits are present for IR and PPI; no test-selected checkpoint is described.",
+  "results": [
+    {
+      "claim": "在化学虚拟筛选的目标 FPR 区间内，SVMpAUC 的平均局部指标高于列出的基线。",
+      "locator": "page 7, Table 2",
+      "value": "pAUC(0,0.1): SVMpAUC 65.25, SVMAUC 62.64, ASVM 63.80, pAUCBoost 43.89, greedy heuristic 8.33.",
+      "anchor": {
+        "page": 7,
+        "line": 6,
+        "quote": "SVMpAUC [0,0.1]             65.25",
+        "paraphrase_zh": "该表支持直接优化冻结局部区间会改变该区间表现，但它没有给出训练种子稳定性或固定回流曝光对照。"
+      }
+    },
+    {
+      "claim": "PPI 实验中局部目标方法在十次随机切分的平均 pAUC 上高于全 AUC 和其他局部基线。",
+      "locator": "page 8, Table 4",
+      "value": "pAUC(0,0.1): SVMpAUC 51.79 versus SVMAUC 39.72, ASVM 44.51, pAUCBoost 48.65, and greedy heuristic 47.33.",
+      "anchor": {
+        "page": 8,
+        "line": 15,
+        "quote": "SVMpAUC [0,0.1]           51.79",
+        "paraphrase_zh": "结果只适用于论文的局部排序目标和数据切分，不能外推成对 FN95 有利的回流样本效用。"
+      }
+    },
+    {
+      "claim": "优化局部区间可能改善最左端排名而不改善较宽区间或全 AUC，呈现目标区间价值反转。",
+      "locator": "page 8, Table 3, TREC10 rows",
+      "value": "SVMpAUC versus SVMAUC is 4.58 versus 3.85 at pAUC(0,1/n_test), but 49.07 versus 50.69 at pAUC(0,0.1) and 89.23 versus 89.51 for full AUC.",
+      "anchor": {
+        "page": 8,
+        "line": 9,
+        "quote": "SVMpAUC [0,0.1]       4.58                7.47",
+        "paraphrase_zh": "同一方法在更窄尾部占优而在较宽 pAUC 与全 AUC 不占优，说明 A 必须绑定预注册局部目标，不能用全局指标替代。"
+      }
+    }
+  ],
+  "ablations": [
+    "No component-removal ablation is reported; Figure 4 varies beta only to analyze most-violated-constraint time and call counts."
+  ],
+  "negative_results": [
+    "On TREC10, SVMpAUC optimized for [0,0.1] is lower than SVMAUC on pAUC(0,0.1) and full AUC even though it is higher at the extreme top ranks.",
+    "The number of cutting-plane constraint calls increases as beta becomes smaller.",
+    "Dispersion, worst split, and independent optimization-seed stability are absent.",
+    "The study does not evaluate a fixed cumulative replay exposure or no-replay arm."
+  ],
+  "failure_conditions": [
+    "The FPR interval is chosen after examining test behavior rather than frozen from an independent target role.",
+    "The local tail contains too few negative examples for a stable empirical rank interval.",
+    "Pairwise constraint participation is treated as if it were matched optimizer-visible replay exposure.",
+    "A local pAUC gain is generalized to full AUC, FN95, or a different operating region.",
+    "Random split averages conceal direction reversals across splits or training initializations."
+  ],
+  "limitations": [
+    "All learned scoring functions are linear.",
+    "The paper reports split averages but not variance, per-split results, independent optimization seeds, or worst-case behavior.",
+    "No component ablation isolates the structural formulation from the constraint-search algorithm.",
+    "No replay denominator, unique-ID union, repeats, cumulative exposure, optimizer steps, or no-replay control is defined.",
+    "Partial AUC over an FPR interval is not the same estimand as the Stage1 FN=0..95 raw safety-frontier normalized AUC."
+  ],
+  "transfer_class": "MECHANISM_ONLY",
+  "stage1_mechanism_zh": "该论文直接说明局部 ROC 目标需要冻结区间并用与该区间一致的训练或选择方向；TREC10 中窄尾部、较宽 pAUC 与全 AUC 的相对排序并不一致，支持把 A 定义为相对独立 FN95 局部目标的方向，而不是相对全局损失或全 AUC 的方向。",
+  "stage1_non_inference_zh": "结构 SVM 优化的是主训练目标中的成对排序约束，不是固定基础训练后的有限预算 replay。论文没有 Q/R/D 顺序门控、严格匹配随机回流、current-loss、R1/R2、no-replay、相同累计实际曝光或未见 training seed 配对。因此 pAUC 表格不能当作候选样本 utility evidence，也不能证明该方法会改善 Stage1 FN95。",
+  "exclusion_reason": "NOT_APPLICABLE_WITH_REASON:eligible as a local-target optimization and value-reversal mechanism paper",
+  "migration_provenance": {
+    "source_review": "discovery/screened_fulltext_reviews_v3/P0340.json",
+    "source_paper_id": "P0340",
+    "migration_basis": "CANONICAL_WORK_ID_AND_BYTE_IDENTICAL_EVIDENCE",
+    "content_review_reused": true,
+    "evidence_provenance_class": "USER_ACCEPTED_INHERITED_EVIDENCE",
+    "independent_content_rereview_performed": false
+  }
+}

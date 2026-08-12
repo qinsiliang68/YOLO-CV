@@ -1,0 +1,4 @@
+hypothesis_id,cycle_id,statement,falsifier
+H1_LATE_REPLAY_HARM,CYCLE_1,"At high pressure, stopping replay after a taper reduces weak-defect harm.",Same-peak taper is not safer or is worse than continuous replay across paired seeds.
+H2_TIMING_NOT_JUST_DOSE,CYCLE_2,Replay timing contributes information beyond cumulative exposure.,Dose-matched taper does not improve over continuous replay while same-peak taper does.
+H3_RATIO_TRANSFER,CYCLE_2,A timing effect has a coherent response across preregistered replay ratios.,Direction changes without a dose-response or tail-risk explanation.

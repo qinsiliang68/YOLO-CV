@@ -1,0 +1,188 @@
+{
+  "schema_version": "3.0",
+  "paper_id": "P0145",
+  "canonical_work_id": "CWBEC6D4B8418EE862A458",
+  "title": "Identifying Mislabeled Data using the Area Under the Margin Ranking",
+  "decision": "SCREENED_ELIGIBLE",
+  "reviewed_at": "2026-08-10T07:15:39+08:00",
+  "reviewer": "codex_primary_fulltext_review",
+  "method_source": {
+    "path": "staging/broad_freeze_canonical_repaired_v4/sources/P0145.pdf",
+    "bytes": 2500129,
+    "sha256": "18884DA0DFDD63F625C3E45FF3E5C7907180045FB8D16C333D379880F37C3E83"
+  },
+  "text_source": {
+    "path": "staging/screened_text_canonical_repaired_v4/text/P0145.txt",
+    "bytes": 81346,
+    "sha256": "FA1435B76486AB0B44BBEDF470FA041B1E3E4CABACC612FCE772E1F22D7E8E87"
+  },
+  "rq_ids": [
+    "RQ1",
+    "RQ4",
+    "RQ7"
+  ],
+  "section_evidence": {
+    "METHODS": {
+      "status": "READ",
+      "pages": "3-5",
+      "anchors": [
+        {
+          "page": 4,
+          "line": 6,
+          "quote": "area under the margin (AUM)",
+          "paraphrase_zh": "AUM 是指定标签 logit 与最大非指定标签 logit 之差在整个观测训练阶段的平均值。"
+        }
+      ]
+    },
+    "EXPERIMENTS": {
+      "status": "READ",
+      "pages": "5-9 and 14-15",
+      "anchors": [
+        {
+          "page": 5,
+          "line": 23,
+          "quote": "We test the efficacy of AUM and threshold samples in two ways",
+          "paraphrase_zh": "论文既检查合成噪声上的识别精确率和召回率，也删除识别样本后从头训练，以测试泛化影响。"
+        }
+      ]
+    },
+    "ABLATIONS": {
+      "status": "READ",
+      "pages": "8 and 15",
+      "anchors": [
+        {
+          "page": 8,
+          "line": 51,
+          "quote": "Removing data according to the AUM ranking",
+          "paraphrase_zh": "作者沿 AUM 排名改变删除比例，并与随机删除曲线比较，观察到存在非单调最优删除点。"
+        }
+      ]
+    },
+    "LIMITATIONS": {
+      "status": "READ",
+      "pages": "8-9",
+      "anchors": [
+        {
+          "page": 8,
+          "line": 75,
+          "quote": "we can construct challenging synthetic scenarios for our method",
+          "paraphrase_zh": "作者明确展示高度系统性的非对称标签噪声会破坏阈值样本与真实错标样本之间的可比性。"
+        }
+      ]
+    }
+  },
+  "formulas": [
+    "M_t(x,y) = z_y^t(x) - max_{i != y} z_i^t(x)",
+    "AUM(x,y) = (1/T) * sum_t M_t(x,y)",
+    "alpha is the 99th percentile AUM of purposefully mislabeled threshold samples"
+  ],
+  "algorithm_steps": [
+    "随机抽取约 N/(c+1) 个训练样本，并把它们改标为新增的第 c+1 类，形成已知必错的 threshold samples。",
+    "训练到第一次学习率下降前，逐 epoch 记录所有样本的 logits，并计算每个样本的 AUM。",
+    "用 threshold samples 的第 99 百分位 AUM 作为数据依赖阈值，标记 AUM 不高于阈值的原训练样本。",
+    "更换 threshold sample 集合再运行一次以覆盖第一次未能判定的样本，随后删除标记样本并从头训练最终模型。"
+  ],
+  "variables": [
+    "per-epoch assigned-class logit",
+    "largest non-assigned-class logit",
+    "per-epoch margin",
+    "trajectory-averaged AUM",
+    "threshold-sample AUM percentile",
+    "fraction of data removed"
+  ],
+  "selection_timing": "离线两阶段流程；AUM 在最终模型训练前通过额外训练运行采集，并在第一次学习率下降前停止，以减少对困难或错标样本的记忆。",
+  "refresh_rule": "最终清洗集合在重训练前冻结；论文不在最终训练过程中动态刷新选择，但为覆盖 threshold samples 本身而更换其集合重复一次识别流程。",
+  "budget": {
+    "unit": "unique training examples removed before final retraining",
+    "denominator": "original noisy training-set cardinality",
+    "unique_sample_definition": "每个被标记训练 identity 在清洗集合中只计一次；实际删除比例由数据依赖阈值决定。",
+    "repeat_definition": "论文研究删除而非 replay，没有定义每样本额外重复强度。",
+    "cumulative_exposure_definition": "作者通过调整清洗后 batch size 保持与完整数据训练近似相同的迭代次数，但没有匹配样本级累计曝光。",
+    "compute_cost": "识别阶段需要两次训练到第一次学习率下降，作者称总成本约等于一次常规完整训练，之后还需清洗后重训练。"
+  },
+  "random_baselines": [
+    "random removal at the same retained-data sizes in the CIFAR100 removal curve",
+    "standard training on the full noisy dataset",
+    "oracle training on only truly clean samples for synthetic-noise experiments"
+  ],
+  "datasets": [
+    "CIFAR-10",
+    "CIFAR-100",
+    "Tiny ImageNet",
+    "WebVision50",
+    "Clothing1M",
+    "ImageNet"
+  ],
+  "models": [
+    "ResNet-32",
+    "ResNet-50",
+    "ResNet and DenseNet families in ranking-consistency ablations"
+  ],
+  "seed_count": {
+    "counts": [
+      "4 trials with different random seeds for tables with confidence intervals",
+      "1 trial for larger datasets whose results have no confidence interval"
+    ],
+    "scope": "Supplementary experiment details and Tables 1-4",
+    "aggregation": "Mean and standard deviation over four trials where shown; large datasets use one run."
+  },
+  "checkpoint_selection": "No early stopping is used for final models; test error is recorded at the final epoch. AUM collection stops at the first scheduled learning-rate drop.",
+  "results": [
+    {
+      "claim": "在 WebVision50 上，删除 AUM 标记的 17.8% 样本后测试错误率下降，但这是清洗干预而不是有限预算回流。",
+      "locator": "page 7, Table 3 and Section 4.3",
+      "value": "test error 21.4 to 19.8 after removing 17.8%",
+      "anchor": {
+        "page": 7,
+        "line": 34,
+        "quote": "we flag 17.8% of the data as mislabeled",
+        "paraphrase_zh": "真实弱标签数据上的定向删除优于完整数据训练，但没有构造 Stage1 式同曝光随机 replay 对照。"
+      }
+    },
+    {
+      "claim": "在高度系统性的 40% 非对称噪声下，AUM 的召回下降且最终结果不再具有竞争力。",
+      "locator": "page 9, Section 4.5 and Table 4",
+      "value": "AUM is not competitive with the best method at 40% asymmetric noise",
+      "anchor": {
+        "page": 9,
+        "line": 40,
+        "quote": "recall struggles in the 30% and 40% noise settings",
+        "paraphrase_zh": "当错标结构与阈值样本构造不匹配时，动态 margin 信号也会失效，说明可靠性规则依赖噪声机制。"
+      }
+    }
+  ],
+  "ablations": [
+    "比较累计 AUM、单 epoch margin、训练 loss 和验证 loss 的跨架构排名一致性。",
+    "沿 AUM 排名和随机排列分别改变删除比例，验证定向删除曲线存在最优点而随机删除持续恶化。",
+    "改变 threshold-sample percentile，报告 90% 到 99% 阈值的敏感性。",
+    "有无标准图像增强时重复清洗干预。"
+  ],
+  "negative_results": [
+    "ImageNet 仅标记约 2% 样本，删除后 top-1 error 从 24.2 变为 24.4，没有改善。",
+    "40% 系统性非对称噪声下，threshold samples 的 margin 与真实错标机制不匹配，识别召回和最终性能明显下降。",
+    "删除量超过数据依赖最优点会损失有益训练样本，AUM 排名不支持无限向最难尾部推进。"
+  ],
+  "failure_conditions": [
+    "标签噪声高度系统性且新增人工类别不能模拟真实错标动态时，阈值会过低并漏掉错标样本。",
+    "在已有记忆发生后才统计轨迹会削弱干净与错标样本的分离，因此作者在第一次学习率下降前停止识别训练。",
+    "把低 AUM 直接解释为应回流样本会反转原论文干预方向；原方法对这些样本执行删除。"
+  ],
+  "limitations": [
+    "任务目标是识别并删除疑似错标数据，不是证明哪些样本增加曝光后能提升高召回工作点。",
+    "大规模真实数据集仅运行一次，不能支持跨训练 seed 的稳定性结论。",
+    "保持迭代次数并不等于匹配每个样本的实际曝光、优化器路径或 replay 预算。",
+    "人工新增类别阈值依赖多分类结构，迁移到二分类 Stage1 时需独立验证。"
+  ],
+  "transfer_class": "MECHANISM_ONLY",
+  "stage1_mechanism_zh": "AUM 支持把完整训练轨迹用于 Q 可靠性门控：长期低 assigned-vs-alternative margin 且接近已知风险参照的样本，应与普通 hard-clean 分开。它还证明单时点 margin/loss 比运行平均更不稳定，并提示选择阈值必须有参照分布和失败诊断。",
+  "stage1_non_inference_zh": "AUM 没有证明低 AUM 样本值得 replay；恰恰相反，原论文删除它们。它也没有匹配 Stage1 的累计额外曝光、T/R1/R2、FN95 局部目标或 10 至 14 个未见训练 seed，因此不能把 AUM 直接变成高价值排序或成功率结论。",
+  "exclusion_reason": "NOT_APPLICABLE_WITH_REASON:eligible as reliability-gating and trajectory evidence",
+  "migration_provenance": {
+    "source_review": "discovery/screened_fulltext_reviews_v3/P0145.json",
+    "source_paper_id": "P0145",
+    "migration_basis": "CANONICAL_WORK_ID_AND_BYTE_IDENTICAL_EVIDENCE",
+    "content_review_reused": true,
+    "evidence_provenance_class": "USER_ACCEPTED_INHERITED_EVIDENCE",
+    "independent_content_rereview_performed": false
+  }
+}

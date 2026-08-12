@@ -1,0 +1,182 @@
+{
+  "schema_version": "3.0",
+  "paper_id": "P0340",
+  "canonical_work_id": "CW2058BFE8C66EA619873D",
+  "title": "An Empirical Study of Example Forgetting during Deep Neural Network Learning",
+  "decision": "SCREENED_ELIGIBLE",
+  "reviewed_at": "2026-08-10T08:32:00+08:00",
+  "reviewer": "codex_primary_fulltext_review",
+  "method_source": {
+    "path": "staging/broad_freeze_canonical_repaired_v4/sources/P0340.pdf",
+    "bytes": 1731989,
+    "sha256": "0CEEF9C602D22B977BAF61E1E62897EE0D3D1A043E93D34129B3A448A9120C89"
+  },
+  "text_source": {
+    "path": "staging/screened_text_canonical_repaired_v4/text/P0340.txt",
+    "bytes": 83138,
+    "sha256": "1B0024B95D6E0BAE7A905A0C13D2A43C7772EE080EAF70F0180483CC57A5B83F"
+  },
+  "rq_ids": [
+    "RQ1",
+    "RQ4",
+    "RQ6",
+    "RQ8"
+  ],
+  "section_evidence": {
+    "METHODS": {
+      "status": "READ",
+      "pages": "3-4",
+      "anchors": [
+        {
+          "page": 3,
+          "line": 25,
+          "quote": "Example i undergoes a forgetting event",
+          "paraphrase_zh": "当样本从上一次呈现时分类正确变为下一次呈现时分类错误，计为一次遗忘事件。"
+        }
+      ]
+    },
+    "EXPERIMENTS": {
+      "status": "READ",
+      "pages": "4-9 and supplementary sections",
+      "anchors": [
+        {
+          "page": 4,
+          "line": 45,
+          "quote": "across 5 random seeds.",
+          "paraphrase_zh": "主数据集的遗忘分布先在五个随机种子上计算，并进一步用更多种子检查排序稳定性。"
+        }
+      ]
+    },
+    "ABLATIONS": {
+      "status": "READ",
+      "pages": "6-9",
+      "anchors": [
+        {
+          "page": 7,
+          "line": 46,
+          "quote": "evolution of the generalization performance in CIFAR-10",
+          "paraphrase_zh": "作者按遗忘次数顺序逐步移除训练样本并从头重训，与同移除比例的随机组比较泛化。"
+        }
+      ]
+    },
+    "LIMITATIONS": {
+      "status": "READ",
+      "pages": "7-9",
+      "anchors": [
+        {
+          "page": 8,
+          "line": 67,
+          "quote": "A limitation of our method is that it requires computing the ordering from",
+          "paraphrase_zh": "遗忘排序需要先跑一条训练轨迹，且排序仍依赖架构、优化器和训练时长。"
+        }
+      ]
+    }
+  },
+  "formulas": [
+    "acc_i^t is one when the predicted class at SGD step t equals the label",
+    "a forgetting event occurs when acc_i^t is greater than acc_i^(t+1)",
+    "the classification margin is the correct-class logit minus the largest competing logit"
+  ],
+  "algorithm_steps": [
+    "训练时只在样本进入当前 mini-batch 时记录其正确性，近似相邻两次呈现之间的遗忘。",
+    "累加每个样本从正确到错误的转变次数；从未学会的样本在排序时视为无限遗忘。",
+    "按遗忘次数构造移除或保留子集，从新初始化重训并比较相同规模随机移除。"
+  ],
+  "variables": [
+    "per-presentation correctness",
+    "forgetting count",
+    "first learning event",
+    "classification margin"
+  ],
+  "selection_timing": "遗忘统计在一条监控训练轨迹中累计，主移除实验使用轨迹结束后的离线排序；早期排序稳定性另做检查。",
+  "refresh_rule": "重训子集固定不刷新；原排序在 200 epoch 得到，并比较 25、75 等较早 epoch 与最终排序的相关性。",
+  "budget": {
+    "unit": "unique training examples removed or retained",
+    "denominator": "full training-set cardinality",
+    "unique_sample_definition": "每个训练样本身份在冻结子集中只计一次。",
+    "repeat_definition": "所保留样本按普通 epoch 重复训练，论文未把重复次数独立于子集大小控制。",
+    "cumulative_exposure_definition": "冻结子集大小乘训练轮数所形成的访问量；与 full-data 和随机组的 optimizer steps 并未另行匹配。",
+    "compute_cost": "需要一次记录逐样本呈现状态的评分训练，再为每个移除比例从头训练模型。"
+  },
+  "random_baselines": [
+    "same-size random subset removal",
+    "random partition in the synthetic continual-learning experiment",
+    "full dataset with no samples removed"
+  ],
+  "datasets": [
+    "MNIST",
+    "permuted MNIST",
+    "CIFAR-10"
+  ],
+  "models": [
+    "two-convolution-layer MNIST network",
+    "ResNet18",
+    "WideResNet",
+    "smaller convolutional proxy"
+  ],
+  "seed_count": {
+    "counts": [
+      "5 seeds for main forgetting histograms and removal experiments",
+      "10 seeds for pairwise ordering correlations",
+      "100 seeds for confidence bounds on five-seed averages"
+    ],
+    "scope": "pages 4 and 7 plus supplementary confidence analysis",
+    "aggregation": "Main curves use mean and standard error over five seeds; stability uses correlations and resampled five-seed averages."
+  },
+  "checkpoint_selection": "The ranking is normally taken from the fixed end of a 200-epoch scoring run; retraining uses the same fixed schedule rather than a test-selected best checkpoint.",
+  "results": [
+    {
+      "claim": "按低遗忘样本优先移除时，CIFAR-10 可删除约 30% 数据而维持可比泛化，随机删除则更快下降。",
+      "locator": "page 7, Figure 5",
+      "value": "30% removal with comparable performance; up to 35% removal with less than 0.2% degradation",
+      "anchor": {
+        "page": 7,
+        "line": 28,
+        "quote": "Generalization performance on CIFAR-10 of ResNet18",
+        "paraphrase_zh": "图五把相同移除比例下的遗忘排序和随机移除进行五种子比较。"
+      }
+    },
+    {
+      "claim": "遗忘排序对随机初始化相对稳定，但不是完美不变。",
+      "locator": "page 4, stability across seeds",
+      "value": "average pairwise Pearson correlation 89.2%; correlation between two five-seed aggregates 97.6%",
+      "anchor": {
+        "page": 4,
+        "line": 59,
+        "quote": "Stability across seeds To test the stability of our metric",
+        "paraphrase_zh": "作者显式用十个种子和百种子置信界检验遗忘排序的随机性。"
+      }
+    }
+  ],
+  "ablations": [
+    "逐步改变移除比例，并比较遗忘排序移除与随机移除。",
+    "把样本按遗忘与否分成两个任务，改变交替训练顺序。",
+    "用较小网络估分后将排序迁移到 WideResNet，检查架构转移。"
+  ],
+  "negative_results": [
+    "最右端极高遗忘样本被移除后反而可能改善结果，提示其中混有离群或错标样本。",
+    "遗忘统计必须先训练才能得到，且作者只观察到约 25 epoch 后才有可用早期相关性。"
+  ],
+  "failure_conditions": [
+    "把最高遗忘直接解释为最高价值会把噪声和真正边界支撑样本混在一起。",
+    "改变模型、优化器、训练时长或数据呈现频率会改变遗忘计数。",
+    "剪枝保持准确率不等价于有限预算额外 replay 改善 FN95。"
+  ],
+  "limitations": [
+    "任务仅覆盖三个图像分类数据集，主结论是移除数据而非额外回流。",
+    "排序统计按样本进入 mini-batch 时抽样，是真实遗忘次数的下界。",
+    "最难尾部同时含高信息样本与有害噪声，论文未给出可靠分离器。"
+  ],
+  "transfer_class": "MECHANISM_ONLY",
+  "stage1_mechanism_zh": "Stage1 可以把 forgetting、first-learn epoch、relearning 和跨 seed 一致性作为 Q/R 分型字段，并显式保留“最高遗忘尾部可能有害”的负对照；真正选择仍需与 current-loss、随机回流及 FN95 方向共同验证。",
+  "stage1_non_inference_zh": "遗忘次数不是样本价值的充分条件：原文最高遗忘尾部可能损害泛化，且其干预是删除而非回流。不能据此认定梯度小或从不遗忘的样本必然无用，也不能声称相同照片跨 seed 具有固定价值。",
+  "exclusion_reason": "NOT_APPLICABLE_WITH_REASON:eligible for SCREENED evidence tier",
+  "migration_provenance": {
+    "source_review": "discovery/screened_fulltext_reviews_v3/P0339.json",
+    "source_paper_id": "P0339",
+    "migration_basis": "CANONICAL_WORK_ID_AND_BYTE_IDENTICAL_EVIDENCE",
+    "content_review_reused": true,
+    "evidence_provenance_class": "USER_ACCEPTED_INHERITED_EVIDENCE",
+    "independent_content_rereview_performed": false
+  }
+}

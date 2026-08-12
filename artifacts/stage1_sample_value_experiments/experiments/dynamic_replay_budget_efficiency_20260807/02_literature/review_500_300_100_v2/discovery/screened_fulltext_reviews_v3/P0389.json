@@ -1,0 +1,157 @@
+{
+  "schema_version": "3.0",
+  "paper_id": "P0389",
+  "canonical_work_id": "CW6B828EA30AEEF829012E",
+  "title": "DivideMix: Learning with Noisy Labels as Semi-Supervised Learning",
+  "decision": "SCREENED_ELIGIBLE",
+  "reviewed_at": "2026-08-10T07:15:39+08:00",
+  "reviewer": "codex_primary_fulltext_review",
+  "method_source": {
+    "path": "staging/broad_freeze_anchor_complete_v3/sources/P0389.pdf",
+    "bytes": 771769,
+    "sha256": "1FF51BF883305E7601E5D7126077F6FFC35247D9D1367F57CF93D312807161AA"
+  },
+  "text_source": {
+    "path": "staging/screened_text_anchor_complete_v3/text/P0389.txt",
+    "bytes": 60027,
+    "sha256": "5329D60B9B5B5840A5D1C5186036A88B7C97326767EAFBFC6AAB063320CDD8AF"
+  },
+  "rq_ids": ["RQ1", "RQ4", "RQ6"],
+  "section_evidence": {
+    "METHODS": {
+      "status": "READ",
+      "pages": "3-6",
+      "anchors": [
+        {
+          "page": 3,
+          "line": 46,
+          "quote": "Deep networks tend to learn clean samples faster than noisy samples",
+          "paraphrase_zh": "每轮用双高斯混合拟合样本 loss，低均值分量后验作为干净概率，再由另一网络使用该划分。"
+        }
+      ]
+    },
+    "EXPERIMENTS": {
+      "status": "READ",
+      "pages": "6-8 and 12-14",
+      "anchors": [
+        {
+          "page": 6,
+          "line": 35,
+          "quote": "4     E XPERIMENTS",
+          "paraphrase_zh": "实验覆盖 CIFAR 合成噪声和 Clothing1M、WebVision 真实噪声，并公开 warm-up、epoch 和超参数。"
+        }
+      ]
+    },
+    "ABLATIONS": {
+      "status": "READ",
+      "pages": "8-9 and 13",
+      "anchors": [
+        {
+          "page": 8,
+          "line": 35,
+          "quote": "4.3     A BLATION S TUDY",
+          "paraphrase_zh": "作者分别移除双网络互教、标签修正和增强，并比较单网络测试与完整双网络集成。"
+        }
+      ]
+    },
+    "LIMITATIONS": {
+      "status": "NOT_REPORTED_BY_PAPER",
+      "pages": "No explicit limitations section in the bound 14-page paper",
+      "anchors": [],
+      "absence_reason_zh": "结论只列未来跨域方向，没有系统陈述 checkpoint 选择、随机种子和有限预算因果识别局限。"
+    }
+  },
+  "formulas": [
+    "per-sample cross entropy l_i = -sum_c y_ic log p_c(x_i;theta)",
+    "w_i = posterior probability that l_i belongs to the lower-mean component of a two-component GMM",
+    "refined label y_bar = w_i y_i + (1-w_i) p_i",
+    "total loss L = L_X + lambda_u L_U + lambda_r L_reg"
+  ],
+  "algorithm_steps": [
+    "先用全部数据 warm up 两个不同初始化网络；非对称噪声时加入 confidence penalty 防止 loss 分布过早塌缩。",
+    "每个 epoch 用一个网络的样本 loss 拟合两分量 GMM，并把干净概率高低划分交给另一网络。",
+    "疑似干净样本保留 noisy label 与当前预测的加权修正，疑似噪声样本丢弃标签但保留图像作为 unlabeled data。",
+    "在每个 mini-batch 中通过增强、co-guessing、sharpening 和 MixMatch 联合训练两个网络。"
+  ],
+  "variables": [
+    "per-sample normalized cross-entropy loss",
+    "two-component GMM parameters",
+    "clean posterior probability w_i",
+    "clean threshold tau",
+    "warm-up duration",
+    "unsupervised loss weight lambda_u",
+    "augmentation and sharpening parameters"
+  ],
+  "selection_timing": "warm-up 后每个 epoch 重新拟合 loss mixture 并重划分全部训练样本；mini-batch 内继续使用互教标签处理。",
+  "refresh_rule": "每轮刷新 clean/noisy 身份，且网络 A 的划分供网络 B 使用、网络 B 的划分供网络 A 使用。",
+  "budget": {
+    "unit": "full training data partitioned into labeled and unlabeled roles each epoch",
+    "denominator": "all noisy training examples",
+    "unique_sample_definition": "没有固定 replay 子集；所有样本保留图像身份，只改变当轮标签角色。",
+    "repeat_definition": "样本按常规训练多 epoch 使用，论文未定义额外 replay repeat cap。",
+    "cumulative_exposure_definition": "所有样本继续参与监督或无监督损失，未按 T/R1/R2 对齐每样本实际优化器曝光。",
+    "compute_cost": "两个网络、每轮全数据 loss 建模和多重增强使计算高于 Co-teaching；作者报告 CIFAR-10 总训练约 5.2 小时。"
+  },
+  "random_baselines": [
+    "No matched random clean/noisy partition or replay baseline is reported",
+    "cross-entropy full-data training",
+    "Co-teaching+, Mixup, M-correction, Meta-Learning and other noisy-label methods"
+  ],
+  "datasets": ["CIFAR-10", "CIFAR-100", "Clothing1M", "WebVision", "ILSVRC12 validation"],
+  "models": ["18-layer PreAct ResNet", "ImageNet-pretrained ResNet-50", "Inception-ResNet v2"],
+  "seed_count": "NOT_REPORTED_BY_PAPER",
+  "checkpoint_selection": "CIFAR tables report both best test accuracy over all epochs and average test accuracy over the last ten epochs; this uses test observations during model comparison rather than a frozen independent selection set.",
+  "results": [
+    {
+      "claim": "DivideMix 在论文列出的 CIFAR 合成噪声表中高于比较方法，且 best 与 last 的差距通常较小。",
+      "locator": "page 7, Table 1",
+      "value": "CIFAR-100 symmetric 80% noise: DivideMix best 60.2 and last 59.6 versus M-correction best 48.2 and last 47.6",
+      "anchor": {
+        "page": 7,
+        "line": 25,
+        "quote": "Best     96.1    94.6       93.2",
+        "paraphrase_zh": "完整组合在合成高噪声上报告明显提升，但没有严格随机划分或有限 replay 预算对照。"
+      }
+    },
+    {
+      "claim": "单网络 self-divide、移除 label refinement 或移除 augmentation 均降低结果，说明 loss 划分不是独立充分组件。",
+      "locator": "page 8, Table 5",
+      "value": "CIFAR-100 symmetric 90% best: full 31.5, self-divide 27.7, no label refinement 26.9, no augmentation 26.9",
+      "anchor": {
+        "page": 8,
+        "line": 47,
+        "quote": "DivideMix w/o co-training",
+        "paraphrase_zh": "收益来自可靠性划分、双网络、标签处理和增强的组合，不能归因于单个 current loss 指标。"
+      }
+    }
+  ],
+  "ablations": [
+    "双网络测试集成改为单网络预测。",
+    "co-divide 改为单网络 self-divide。",
+    "移除 label co-refinement。",
+    "移除输入增强。",
+    "只保留 Divide 与原始 MixMatch 的朴素组合。"
+  ],
+  "negative_results": [
+    "作者指出不同既有方法在数据集和噪声类型间没有一种始终占优。",
+    "非对称噪声 warm-up 会快速过拟合并使 normalized loss 接近零，导致 GMM 无法分离。",
+    "移除任一关键组件都会下降，说明 loss mixture 本身不足以解释完整收益。",
+    "论文未报告训练 seed 数，且 best test epoch 会造成开发阶段 test oracle 风险。"
+  ],
+  "failure_conditions": [
+    "当前网络过早对噪声过度自信时，loss 分布塌缩使两分量模型不可辨识。",
+    "单网络用自身 loss 划分自身数据会形成 confirmation bias。",
+    "把被判 noisy 的图像彻底丢弃会失去其无标签正则信息，原方法特意保留这些图像。",
+    "将 GMM clean posterior 直接当 replay utility 会混淆标签可靠性与增加曝光的边际收益。"
+  ],
+  "limitations": [
+    "缺少同预算随机样本角色分配，无法判断复杂方法相对随机覆盖的增益。",
+    "没有报告主实验独立训练 seed 数，跨 seed 稳定性证据不足。",
+    "部分结果按训练期间最佳测试准确率汇报，不符合 Stage1 冻结 checkpoint 和 blind holdout 合同。",
+    "方法同时改变样本角色、标签、增强、网络数量和损失，不能作为单一选样信号的纯消融。"
+  ],
+  "transfer_class": "MECHANISM_ONLY",
+  "stage1_mechanism_zh": "DivideMix 强化了 Q 的正确定位：可靠性应是随 epoch 更新的概率门控，而不是永久 hard/easy 标签；疑似有问题的样本也未必无信息，可以改变训练角色而非简单加权或删除。它还说明 current loss 的可解释性依赖 warm-up、校准和双模型独立性。",
+  "stage1_non_inference_zh": "DivideMix 没有证明低 loss 或高 clean posterior 的样本在 Stage1 中值得额外 replay，也没有 T/R1/R2、固定额外曝光、FN95 局部目标或足够 seed。完整方法的优势不能拆成某个静态样本价值公式。",
+  "exclusion_reason": "NOT_APPLICABLE_WITH_REASON:eligible as dynamic reliability and role-assignment evidence"
+}

@@ -1,0 +1,3184 @@
+{
+  "budgeted_source_missing": true,
+  "contract": {
+    "allowed_statuses": [
+      "CONFIRMED_PRESENT",
+      "CONFIRMED_ABSENT",
+      "PARTIALLY_MITIGATED",
+      "CONTRADICTED_BY_EVIDENCE",
+      "NOT_TESTABLE_SOURCE_MISSING",
+      "NOT_APPLICABLE"
+    ],
+    "reproduction_command_policy": "exact uv run pytest node or exact rg -n query; validation never executes it",
+    "required_fields": [
+      "requirement_id",
+      "overall_status",
+      "expert_source_status",
+      "expert_claim_refs",
+      "expert_source_refs",
+      "v3_status",
+      "v3_source_refs",
+      "reproduction_command",
+      "exit_code",
+      "result_artifact_sha",
+      "observed_result",
+      "remaining_risk",
+      "required_action"
+    ],
+    "result_artifact_sha_policy": "64 hexadecimal characters",
+    "source_missing_reference": "NOT_APPLICABLE_SOURCE_MISSING"
+  },
+  "error_count": 441,
+  "errors": [
+    {
+      "code": "SCHEMA_FIELDS_MISMATCH",
+      "field": "header",
+      "matrix_role": "budgeted",
+      "message": "expected exact fields ['requirement_id', 'overall_status', 'expert_source_status', 'expert_claim_refs', 'expert_source_refs', 'v3_status', 'v3_source_refs', 'reproduction_command', 'exit_code', 'result_artifact_sha', 'observed_result', 'remaining_risk', 'required_action']; observed ['finding_id', 'severity', 'title', 'expert_locations', 'impact', 'impact_supplied', 'expert_evidence', 'expert_evidence_supplied', 'expert_required_fix', 'source_json', 'source_line', 'v3_status', 'v3_source_refs', 'local_reproduction', 'observed_result', 'remaining_risk', 'required_action']",
+      "requirement_id": "N/A"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "requirement_id",
+      "matrix_role": "budgeted",
+      "message": "row 2 has no non-empty requirement_id",
+      "requirement_id": "P0-01"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "overall_status",
+      "matrix_role": "budgeted",
+      "message": "row 2 has no non-empty overall_status",
+      "requirement_id": "P0-01"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "expert_source_status",
+      "matrix_role": "budgeted",
+      "message": "row 2 has no non-empty expert_source_status",
+      "requirement_id": "P0-01"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "expert_claim_refs",
+      "matrix_role": "budgeted",
+      "message": "row 2 has no non-empty expert_claim_refs",
+      "requirement_id": "P0-01"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "expert_source_refs",
+      "matrix_role": "budgeted",
+      "message": "row 2 has no non-empty expert_source_refs",
+      "requirement_id": "P0-01"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "reproduction_command",
+      "matrix_role": "budgeted",
+      "message": "row 2 has no non-empty reproduction_command",
+      "requirement_id": "P0-01"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "exit_code",
+      "matrix_role": "budgeted",
+      "message": "row 2 has no non-empty exit_code",
+      "requirement_id": "P0-01"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "result_artifact_sha",
+      "matrix_role": "budgeted",
+      "message": "row 2 has no non-empty result_artifact_sha",
+      "requirement_id": "P0-01"
+    },
+    {
+      "code": "BUDGETED_SOURCE_MISSING_STATUS_REQUIRED",
+      "field": "expert_source_status",
+      "matrix_role": "budgeted",
+      "message": "BudgetedReplay source carrier is report-only missing; expert_source_status must be NOT_TESTABLE_SOURCE_MISSING",
+      "requirement_id": "P0-01"
+    },
+    {
+      "code": "SOURCE_MISSING_REFERENCE_REQUIRED",
+      "field": "expert_source_refs",
+      "matrix_role": "budgeted",
+      "message": "missing source must use the exact token 'NOT_APPLICABLE_SOURCE_MISSING'",
+      "requirement_id": "P0-01"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "requirement_id",
+      "matrix_role": "budgeted",
+      "message": "row 3 has no non-empty requirement_id",
+      "requirement_id": "P0-02"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "overall_status",
+      "matrix_role": "budgeted",
+      "message": "row 3 has no non-empty overall_status",
+      "requirement_id": "P0-02"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "expert_source_status",
+      "matrix_role": "budgeted",
+      "message": "row 3 has no non-empty expert_source_status",
+      "requirement_id": "P0-02"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "expert_claim_refs",
+      "matrix_role": "budgeted",
+      "message": "row 3 has no non-empty expert_claim_refs",
+      "requirement_id": "P0-02"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "expert_source_refs",
+      "matrix_role": "budgeted",
+      "message": "row 3 has no non-empty expert_source_refs",
+      "requirement_id": "P0-02"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "reproduction_command",
+      "matrix_role": "budgeted",
+      "message": "row 3 has no non-empty reproduction_command",
+      "requirement_id": "P0-02"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "exit_code",
+      "matrix_role": "budgeted",
+      "message": "row 3 has no non-empty exit_code",
+      "requirement_id": "P0-02"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "result_artifact_sha",
+      "matrix_role": "budgeted",
+      "message": "row 3 has no non-empty result_artifact_sha",
+      "requirement_id": "P0-02"
+    },
+    {
+      "code": "BUDGETED_SOURCE_MISSING_STATUS_REQUIRED",
+      "field": "expert_source_status",
+      "matrix_role": "budgeted",
+      "message": "BudgetedReplay source carrier is report-only missing; expert_source_status must be NOT_TESTABLE_SOURCE_MISSING",
+      "requirement_id": "P0-02"
+    },
+    {
+      "code": "SOURCE_MISSING_REFERENCE_REQUIRED",
+      "field": "expert_source_refs",
+      "matrix_role": "budgeted",
+      "message": "missing source must use the exact token 'NOT_APPLICABLE_SOURCE_MISSING'",
+      "requirement_id": "P0-02"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "requirement_id",
+      "matrix_role": "budgeted",
+      "message": "row 4 has no non-empty requirement_id",
+      "requirement_id": "P0-03"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "overall_status",
+      "matrix_role": "budgeted",
+      "message": "row 4 has no non-empty overall_status",
+      "requirement_id": "P0-03"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "expert_source_status",
+      "matrix_role": "budgeted",
+      "message": "row 4 has no non-empty expert_source_status",
+      "requirement_id": "P0-03"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "expert_claim_refs",
+      "matrix_role": "budgeted",
+      "message": "row 4 has no non-empty expert_claim_refs",
+      "requirement_id": "P0-03"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "expert_source_refs",
+      "matrix_role": "budgeted",
+      "message": "row 4 has no non-empty expert_source_refs",
+      "requirement_id": "P0-03"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "reproduction_command",
+      "matrix_role": "budgeted",
+      "message": "row 4 has no non-empty reproduction_command",
+      "requirement_id": "P0-03"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "exit_code",
+      "matrix_role": "budgeted",
+      "message": "row 4 has no non-empty exit_code",
+      "requirement_id": "P0-03"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "result_artifact_sha",
+      "matrix_role": "budgeted",
+      "message": "row 4 has no non-empty result_artifact_sha",
+      "requirement_id": "P0-03"
+    },
+    {
+      "code": "BUDGETED_SOURCE_MISSING_STATUS_REQUIRED",
+      "field": "expert_source_status",
+      "matrix_role": "budgeted",
+      "message": "BudgetedReplay source carrier is report-only missing; expert_source_status must be NOT_TESTABLE_SOURCE_MISSING",
+      "requirement_id": "P0-03"
+    },
+    {
+      "code": "SOURCE_MISSING_REFERENCE_REQUIRED",
+      "field": "expert_source_refs",
+      "matrix_role": "budgeted",
+      "message": "missing source must use the exact token 'NOT_APPLICABLE_SOURCE_MISSING'",
+      "requirement_id": "P0-03"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "requirement_id",
+      "matrix_role": "budgeted",
+      "message": "row 5 has no non-empty requirement_id",
+      "requirement_id": "P0-04"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "overall_status",
+      "matrix_role": "budgeted",
+      "message": "row 5 has no non-empty overall_status",
+      "requirement_id": "P0-04"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "expert_source_status",
+      "matrix_role": "budgeted",
+      "message": "row 5 has no non-empty expert_source_status",
+      "requirement_id": "P0-04"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "expert_claim_refs",
+      "matrix_role": "budgeted",
+      "message": "row 5 has no non-empty expert_claim_refs",
+      "requirement_id": "P0-04"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "expert_source_refs",
+      "matrix_role": "budgeted",
+      "message": "row 5 has no non-empty expert_source_refs",
+      "requirement_id": "P0-04"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "reproduction_command",
+      "matrix_role": "budgeted",
+      "message": "row 5 has no non-empty reproduction_command",
+      "requirement_id": "P0-04"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "exit_code",
+      "matrix_role": "budgeted",
+      "message": "row 5 has no non-empty exit_code",
+      "requirement_id": "P0-04"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "result_artifact_sha",
+      "matrix_role": "budgeted",
+      "message": "row 5 has no non-empty result_artifact_sha",
+      "requirement_id": "P0-04"
+    },
+    {
+      "code": "BUDGETED_SOURCE_MISSING_STATUS_REQUIRED",
+      "field": "expert_source_status",
+      "matrix_role": "budgeted",
+      "message": "BudgetedReplay source carrier is report-only missing; expert_source_status must be NOT_TESTABLE_SOURCE_MISSING",
+      "requirement_id": "P0-04"
+    },
+    {
+      "code": "SOURCE_MISSING_REFERENCE_REQUIRED",
+      "field": "expert_source_refs",
+      "matrix_role": "budgeted",
+      "message": "missing source must use the exact token 'NOT_APPLICABLE_SOURCE_MISSING'",
+      "requirement_id": "P0-04"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "requirement_id",
+      "matrix_role": "budgeted",
+      "message": "row 6 has no non-empty requirement_id",
+      "requirement_id": "P0-05"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "overall_status",
+      "matrix_role": "budgeted",
+      "message": "row 6 has no non-empty overall_status",
+      "requirement_id": "P0-05"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "expert_source_status",
+      "matrix_role": "budgeted",
+      "message": "row 6 has no non-empty expert_source_status",
+      "requirement_id": "P0-05"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "expert_claim_refs",
+      "matrix_role": "budgeted",
+      "message": "row 6 has no non-empty expert_claim_refs",
+      "requirement_id": "P0-05"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "expert_source_refs",
+      "matrix_role": "budgeted",
+      "message": "row 6 has no non-empty expert_source_refs",
+      "requirement_id": "P0-05"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "reproduction_command",
+      "matrix_role": "budgeted",
+      "message": "row 6 has no non-empty reproduction_command",
+      "requirement_id": "P0-05"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "exit_code",
+      "matrix_role": "budgeted",
+      "message": "row 6 has no non-empty exit_code",
+      "requirement_id": "P0-05"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "result_artifact_sha",
+      "matrix_role": "budgeted",
+      "message": "row 6 has no non-empty result_artifact_sha",
+      "requirement_id": "P0-05"
+    },
+    {
+      "code": "BUDGETED_SOURCE_MISSING_STATUS_REQUIRED",
+      "field": "expert_source_status",
+      "matrix_role": "budgeted",
+      "message": "BudgetedReplay source carrier is report-only missing; expert_source_status must be NOT_TESTABLE_SOURCE_MISSING",
+      "requirement_id": "P0-05"
+    },
+    {
+      "code": "SOURCE_MISSING_REFERENCE_REQUIRED",
+      "field": "expert_source_refs",
+      "matrix_role": "budgeted",
+      "message": "missing source must use the exact token 'NOT_APPLICABLE_SOURCE_MISSING'",
+      "requirement_id": "P0-05"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "requirement_id",
+      "matrix_role": "budgeted",
+      "message": "row 7 has no non-empty requirement_id",
+      "requirement_id": "P0-06"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "overall_status",
+      "matrix_role": "budgeted",
+      "message": "row 7 has no non-empty overall_status",
+      "requirement_id": "P0-06"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "expert_source_status",
+      "matrix_role": "budgeted",
+      "message": "row 7 has no non-empty expert_source_status",
+      "requirement_id": "P0-06"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "expert_claim_refs",
+      "matrix_role": "budgeted",
+      "message": "row 7 has no non-empty expert_claim_refs",
+      "requirement_id": "P0-06"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "expert_source_refs",
+      "matrix_role": "budgeted",
+      "message": "row 7 has no non-empty expert_source_refs",
+      "requirement_id": "P0-06"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "reproduction_command",
+      "matrix_role": "budgeted",
+      "message": "row 7 has no non-empty reproduction_command",
+      "requirement_id": "P0-06"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "exit_code",
+      "matrix_role": "budgeted",
+      "message": "row 7 has no non-empty exit_code",
+      "requirement_id": "P0-06"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "result_artifact_sha",
+      "matrix_role": "budgeted",
+      "message": "row 7 has no non-empty result_artifact_sha",
+      "requirement_id": "P0-06"
+    },
+    {
+      "code": "UNSUPPORTED_STATUS",
+      "field": "v3_status",
+      "matrix_role": "budgeted",
+      "message": "unsupported status 'NOT_APPLICABLE_CAPABILITY_ABSENT'",
+      "requirement_id": "P0-06"
+    },
+    {
+      "code": "BUDGETED_SOURCE_MISSING_STATUS_REQUIRED",
+      "field": "expert_source_status",
+      "matrix_role": "budgeted",
+      "message": "BudgetedReplay source carrier is report-only missing; expert_source_status must be NOT_TESTABLE_SOURCE_MISSING",
+      "requirement_id": "P0-06"
+    },
+    {
+      "code": "SOURCE_MISSING_REFERENCE_REQUIRED",
+      "field": "expert_source_refs",
+      "matrix_role": "budgeted",
+      "message": "missing source must use the exact token 'NOT_APPLICABLE_SOURCE_MISSING'",
+      "requirement_id": "P0-06"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "requirement_id",
+      "matrix_role": "budgeted",
+      "message": "row 8 has no non-empty requirement_id",
+      "requirement_id": "P0-07"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "overall_status",
+      "matrix_role": "budgeted",
+      "message": "row 8 has no non-empty overall_status",
+      "requirement_id": "P0-07"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "expert_source_status",
+      "matrix_role": "budgeted",
+      "message": "row 8 has no non-empty expert_source_status",
+      "requirement_id": "P0-07"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "expert_claim_refs",
+      "matrix_role": "budgeted",
+      "message": "row 8 has no non-empty expert_claim_refs",
+      "requirement_id": "P0-07"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "expert_source_refs",
+      "matrix_role": "budgeted",
+      "message": "row 8 has no non-empty expert_source_refs",
+      "requirement_id": "P0-07"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "reproduction_command",
+      "matrix_role": "budgeted",
+      "message": "row 8 has no non-empty reproduction_command",
+      "requirement_id": "P0-07"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "exit_code",
+      "matrix_role": "budgeted",
+      "message": "row 8 has no non-empty exit_code",
+      "requirement_id": "P0-07"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "result_artifact_sha",
+      "matrix_role": "budgeted",
+      "message": "row 8 has no non-empty result_artifact_sha",
+      "requirement_id": "P0-07"
+    },
+    {
+      "code": "BUDGETED_SOURCE_MISSING_STATUS_REQUIRED",
+      "field": "expert_source_status",
+      "matrix_role": "budgeted",
+      "message": "BudgetedReplay source carrier is report-only missing; expert_source_status must be NOT_TESTABLE_SOURCE_MISSING",
+      "requirement_id": "P0-07"
+    },
+    {
+      "code": "SOURCE_MISSING_REFERENCE_REQUIRED",
+      "field": "expert_source_refs",
+      "matrix_role": "budgeted",
+      "message": "missing source must use the exact token 'NOT_APPLICABLE_SOURCE_MISSING'",
+      "requirement_id": "P0-07"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "requirement_id",
+      "matrix_role": "budgeted",
+      "message": "row 9 has no non-empty requirement_id",
+      "requirement_id": "H-01"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "overall_status",
+      "matrix_role": "budgeted",
+      "message": "row 9 has no non-empty overall_status",
+      "requirement_id": "H-01"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "expert_source_status",
+      "matrix_role": "budgeted",
+      "message": "row 9 has no non-empty expert_source_status",
+      "requirement_id": "H-01"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "expert_claim_refs",
+      "matrix_role": "budgeted",
+      "message": "row 9 has no non-empty expert_claim_refs",
+      "requirement_id": "H-01"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "expert_source_refs",
+      "matrix_role": "budgeted",
+      "message": "row 9 has no non-empty expert_source_refs",
+      "requirement_id": "H-01"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "reproduction_command",
+      "matrix_role": "budgeted",
+      "message": "row 9 has no non-empty reproduction_command",
+      "requirement_id": "H-01"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "exit_code",
+      "matrix_role": "budgeted",
+      "message": "row 9 has no non-empty exit_code",
+      "requirement_id": "H-01"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "result_artifact_sha",
+      "matrix_role": "budgeted",
+      "message": "row 9 has no non-empty result_artifact_sha",
+      "requirement_id": "H-01"
+    },
+    {
+      "code": "BUDGETED_SOURCE_MISSING_STATUS_REQUIRED",
+      "field": "expert_source_status",
+      "matrix_role": "budgeted",
+      "message": "BudgetedReplay source carrier is report-only missing; expert_source_status must be NOT_TESTABLE_SOURCE_MISSING",
+      "requirement_id": "H-01"
+    },
+    {
+      "code": "SOURCE_MISSING_REFERENCE_REQUIRED",
+      "field": "expert_source_refs",
+      "matrix_role": "budgeted",
+      "message": "missing source must use the exact token 'NOT_APPLICABLE_SOURCE_MISSING'",
+      "requirement_id": "H-01"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "requirement_id",
+      "matrix_role": "budgeted",
+      "message": "row 10 has no non-empty requirement_id",
+      "requirement_id": "H-02"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "overall_status",
+      "matrix_role": "budgeted",
+      "message": "row 10 has no non-empty overall_status",
+      "requirement_id": "H-02"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "expert_source_status",
+      "matrix_role": "budgeted",
+      "message": "row 10 has no non-empty expert_source_status",
+      "requirement_id": "H-02"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "expert_claim_refs",
+      "matrix_role": "budgeted",
+      "message": "row 10 has no non-empty expert_claim_refs",
+      "requirement_id": "H-02"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "expert_source_refs",
+      "matrix_role": "budgeted",
+      "message": "row 10 has no non-empty expert_source_refs",
+      "requirement_id": "H-02"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "reproduction_command",
+      "matrix_role": "budgeted",
+      "message": "row 10 has no non-empty reproduction_command",
+      "requirement_id": "H-02"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "exit_code",
+      "matrix_role": "budgeted",
+      "message": "row 10 has no non-empty exit_code",
+      "requirement_id": "H-02"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "result_artifact_sha",
+      "matrix_role": "budgeted",
+      "message": "row 10 has no non-empty result_artifact_sha",
+      "requirement_id": "H-02"
+    },
+    {
+      "code": "BUDGETED_SOURCE_MISSING_STATUS_REQUIRED",
+      "field": "expert_source_status",
+      "matrix_role": "budgeted",
+      "message": "BudgetedReplay source carrier is report-only missing; expert_source_status must be NOT_TESTABLE_SOURCE_MISSING",
+      "requirement_id": "H-02"
+    },
+    {
+      "code": "SOURCE_MISSING_REFERENCE_REQUIRED",
+      "field": "expert_source_refs",
+      "matrix_role": "budgeted",
+      "message": "missing source must use the exact token 'NOT_APPLICABLE_SOURCE_MISSING'",
+      "requirement_id": "H-02"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "requirement_id",
+      "matrix_role": "budgeted",
+      "message": "row 11 has no non-empty requirement_id",
+      "requirement_id": "H-03"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "overall_status",
+      "matrix_role": "budgeted",
+      "message": "row 11 has no non-empty overall_status",
+      "requirement_id": "H-03"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "expert_source_status",
+      "matrix_role": "budgeted",
+      "message": "row 11 has no non-empty expert_source_status",
+      "requirement_id": "H-03"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "expert_claim_refs",
+      "matrix_role": "budgeted",
+      "message": "row 11 has no non-empty expert_claim_refs",
+      "requirement_id": "H-03"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "expert_source_refs",
+      "matrix_role": "budgeted",
+      "message": "row 11 has no non-empty expert_source_refs",
+      "requirement_id": "H-03"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "reproduction_command",
+      "matrix_role": "budgeted",
+      "message": "row 11 has no non-empty reproduction_command",
+      "requirement_id": "H-03"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "exit_code",
+      "matrix_role": "budgeted",
+      "message": "row 11 has no non-empty exit_code",
+      "requirement_id": "H-03"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "result_artifact_sha",
+      "matrix_role": "budgeted",
+      "message": "row 11 has no non-empty result_artifact_sha",
+      "requirement_id": "H-03"
+    },
+    {
+      "code": "BUDGETED_SOURCE_MISSING_STATUS_REQUIRED",
+      "field": "expert_source_status",
+      "matrix_role": "budgeted",
+      "message": "BudgetedReplay source carrier is report-only missing; expert_source_status must be NOT_TESTABLE_SOURCE_MISSING",
+      "requirement_id": "H-03"
+    },
+    {
+      "code": "SOURCE_MISSING_REFERENCE_REQUIRED",
+      "field": "expert_source_refs",
+      "matrix_role": "budgeted",
+      "message": "missing source must use the exact token 'NOT_APPLICABLE_SOURCE_MISSING'",
+      "requirement_id": "H-03"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "requirement_id",
+      "matrix_role": "budgeted",
+      "message": "row 12 has no non-empty requirement_id",
+      "requirement_id": "H-04"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "overall_status",
+      "matrix_role": "budgeted",
+      "message": "row 12 has no non-empty overall_status",
+      "requirement_id": "H-04"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "expert_source_status",
+      "matrix_role": "budgeted",
+      "message": "row 12 has no non-empty expert_source_status",
+      "requirement_id": "H-04"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "expert_claim_refs",
+      "matrix_role": "budgeted",
+      "message": "row 12 has no non-empty expert_claim_refs",
+      "requirement_id": "H-04"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "expert_source_refs",
+      "matrix_role": "budgeted",
+      "message": "row 12 has no non-empty expert_source_refs",
+      "requirement_id": "H-04"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "reproduction_command",
+      "matrix_role": "budgeted",
+      "message": "row 12 has no non-empty reproduction_command",
+      "requirement_id": "H-04"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "exit_code",
+      "matrix_role": "budgeted",
+      "message": "row 12 has no non-empty exit_code",
+      "requirement_id": "H-04"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "result_artifact_sha",
+      "matrix_role": "budgeted",
+      "message": "row 12 has no non-empty result_artifact_sha",
+      "requirement_id": "H-04"
+    },
+    {
+      "code": "BUDGETED_SOURCE_MISSING_STATUS_REQUIRED",
+      "field": "expert_source_status",
+      "matrix_role": "budgeted",
+      "message": "BudgetedReplay source carrier is report-only missing; expert_source_status must be NOT_TESTABLE_SOURCE_MISSING",
+      "requirement_id": "H-04"
+    },
+    {
+      "code": "SOURCE_MISSING_REFERENCE_REQUIRED",
+      "field": "expert_source_refs",
+      "matrix_role": "budgeted",
+      "message": "missing source must use the exact token 'NOT_APPLICABLE_SOURCE_MISSING'",
+      "requirement_id": "H-04"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "requirement_id",
+      "matrix_role": "budgeted",
+      "message": "row 13 has no non-empty requirement_id",
+      "requirement_id": "H-05"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "overall_status",
+      "matrix_role": "budgeted",
+      "message": "row 13 has no non-empty overall_status",
+      "requirement_id": "H-05"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "expert_source_status",
+      "matrix_role": "budgeted",
+      "message": "row 13 has no non-empty expert_source_status",
+      "requirement_id": "H-05"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "expert_claim_refs",
+      "matrix_role": "budgeted",
+      "message": "row 13 has no non-empty expert_claim_refs",
+      "requirement_id": "H-05"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "expert_source_refs",
+      "matrix_role": "budgeted",
+      "message": "row 13 has no non-empty expert_source_refs",
+      "requirement_id": "H-05"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "reproduction_command",
+      "matrix_role": "budgeted",
+      "message": "row 13 has no non-empty reproduction_command",
+      "requirement_id": "H-05"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "exit_code",
+      "matrix_role": "budgeted",
+      "message": "row 13 has no non-empty exit_code",
+      "requirement_id": "H-05"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "result_artifact_sha",
+      "matrix_role": "budgeted",
+      "message": "row 13 has no non-empty result_artifact_sha",
+      "requirement_id": "H-05"
+    },
+    {
+      "code": "UNSUPPORTED_STATUS",
+      "field": "v3_status",
+      "matrix_role": "budgeted",
+      "message": "unsupported status 'NOT_APPLICABLE_CAPABILITY_ABSENT'",
+      "requirement_id": "H-05"
+    },
+    {
+      "code": "BUDGETED_SOURCE_MISSING_STATUS_REQUIRED",
+      "field": "expert_source_status",
+      "matrix_role": "budgeted",
+      "message": "BudgetedReplay source carrier is report-only missing; expert_source_status must be NOT_TESTABLE_SOURCE_MISSING",
+      "requirement_id": "H-05"
+    },
+    {
+      "code": "SOURCE_MISSING_REFERENCE_REQUIRED",
+      "field": "expert_source_refs",
+      "matrix_role": "budgeted",
+      "message": "missing source must use the exact token 'NOT_APPLICABLE_SOURCE_MISSING'",
+      "requirement_id": "H-05"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "requirement_id",
+      "matrix_role": "budgeted",
+      "message": "row 14 has no non-empty requirement_id",
+      "requirement_id": "H-06"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "overall_status",
+      "matrix_role": "budgeted",
+      "message": "row 14 has no non-empty overall_status",
+      "requirement_id": "H-06"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "expert_source_status",
+      "matrix_role": "budgeted",
+      "message": "row 14 has no non-empty expert_source_status",
+      "requirement_id": "H-06"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "expert_claim_refs",
+      "matrix_role": "budgeted",
+      "message": "row 14 has no non-empty expert_claim_refs",
+      "requirement_id": "H-06"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "expert_source_refs",
+      "matrix_role": "budgeted",
+      "message": "row 14 has no non-empty expert_source_refs",
+      "requirement_id": "H-06"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "reproduction_command",
+      "matrix_role": "budgeted",
+      "message": "row 14 has no non-empty reproduction_command",
+      "requirement_id": "H-06"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "exit_code",
+      "matrix_role": "budgeted",
+      "message": "row 14 has no non-empty exit_code",
+      "requirement_id": "H-06"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "result_artifact_sha",
+      "matrix_role": "budgeted",
+      "message": "row 14 has no non-empty result_artifact_sha",
+      "requirement_id": "H-06"
+    },
+    {
+      "code": "BUDGETED_SOURCE_MISSING_STATUS_REQUIRED",
+      "field": "expert_source_status",
+      "matrix_role": "budgeted",
+      "message": "BudgetedReplay source carrier is report-only missing; expert_source_status must be NOT_TESTABLE_SOURCE_MISSING",
+      "requirement_id": "H-06"
+    },
+    {
+      "code": "SOURCE_MISSING_REFERENCE_REQUIRED",
+      "field": "expert_source_refs",
+      "matrix_role": "budgeted",
+      "message": "missing source must use the exact token 'NOT_APPLICABLE_SOURCE_MISSING'",
+      "requirement_id": "H-06"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "requirement_id",
+      "matrix_role": "budgeted",
+      "message": "row 15 has no non-empty requirement_id",
+      "requirement_id": "H-07"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "overall_status",
+      "matrix_role": "budgeted",
+      "message": "row 15 has no non-empty overall_status",
+      "requirement_id": "H-07"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "expert_source_status",
+      "matrix_role": "budgeted",
+      "message": "row 15 has no non-empty expert_source_status",
+      "requirement_id": "H-07"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "expert_claim_refs",
+      "matrix_role": "budgeted",
+      "message": "row 15 has no non-empty expert_claim_refs",
+      "requirement_id": "H-07"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "expert_source_refs",
+      "matrix_role": "budgeted",
+      "message": "row 15 has no non-empty expert_source_refs",
+      "requirement_id": "H-07"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "reproduction_command",
+      "matrix_role": "budgeted",
+      "message": "row 15 has no non-empty reproduction_command",
+      "requirement_id": "H-07"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "exit_code",
+      "matrix_role": "budgeted",
+      "message": "row 15 has no non-empty exit_code",
+      "requirement_id": "H-07"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "result_artifact_sha",
+      "matrix_role": "budgeted",
+      "message": "row 15 has no non-empty result_artifact_sha",
+      "requirement_id": "H-07"
+    },
+    {
+      "code": "UNSUPPORTED_STATUS",
+      "field": "v3_status",
+      "matrix_role": "budgeted",
+      "message": "unsupported status 'NOT_APPLICABLE_CAPABILITY_ABSENT'",
+      "requirement_id": "H-07"
+    },
+    {
+      "code": "BUDGETED_SOURCE_MISSING_STATUS_REQUIRED",
+      "field": "expert_source_status",
+      "matrix_role": "budgeted",
+      "message": "BudgetedReplay source carrier is report-only missing; expert_source_status must be NOT_TESTABLE_SOURCE_MISSING",
+      "requirement_id": "H-07"
+    },
+    {
+      "code": "SOURCE_MISSING_REFERENCE_REQUIRED",
+      "field": "expert_source_refs",
+      "matrix_role": "budgeted",
+      "message": "missing source must use the exact token 'NOT_APPLICABLE_SOURCE_MISSING'",
+      "requirement_id": "H-07"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "requirement_id",
+      "matrix_role": "budgeted",
+      "message": "row 16 has no non-empty requirement_id",
+      "requirement_id": "H-08"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "overall_status",
+      "matrix_role": "budgeted",
+      "message": "row 16 has no non-empty overall_status",
+      "requirement_id": "H-08"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "expert_source_status",
+      "matrix_role": "budgeted",
+      "message": "row 16 has no non-empty expert_source_status",
+      "requirement_id": "H-08"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "expert_claim_refs",
+      "matrix_role": "budgeted",
+      "message": "row 16 has no non-empty expert_claim_refs",
+      "requirement_id": "H-08"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "expert_source_refs",
+      "matrix_role": "budgeted",
+      "message": "row 16 has no non-empty expert_source_refs",
+      "requirement_id": "H-08"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "reproduction_command",
+      "matrix_role": "budgeted",
+      "message": "row 16 has no non-empty reproduction_command",
+      "requirement_id": "H-08"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "exit_code",
+      "matrix_role": "budgeted",
+      "message": "row 16 has no non-empty exit_code",
+      "requirement_id": "H-08"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "result_artifact_sha",
+      "matrix_role": "budgeted",
+      "message": "row 16 has no non-empty result_artifact_sha",
+      "requirement_id": "H-08"
+    },
+    {
+      "code": "BUDGETED_SOURCE_MISSING_STATUS_REQUIRED",
+      "field": "expert_source_status",
+      "matrix_role": "budgeted",
+      "message": "BudgetedReplay source carrier is report-only missing; expert_source_status must be NOT_TESTABLE_SOURCE_MISSING",
+      "requirement_id": "H-08"
+    },
+    {
+      "code": "SOURCE_MISSING_REFERENCE_REQUIRED",
+      "field": "expert_source_refs",
+      "matrix_role": "budgeted",
+      "message": "missing source must use the exact token 'NOT_APPLICABLE_SOURCE_MISSING'",
+      "requirement_id": "H-08"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "requirement_id",
+      "matrix_role": "budgeted",
+      "message": "row 17 has no non-empty requirement_id",
+      "requirement_id": "H-09"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "overall_status",
+      "matrix_role": "budgeted",
+      "message": "row 17 has no non-empty overall_status",
+      "requirement_id": "H-09"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "expert_source_status",
+      "matrix_role": "budgeted",
+      "message": "row 17 has no non-empty expert_source_status",
+      "requirement_id": "H-09"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "expert_claim_refs",
+      "matrix_role": "budgeted",
+      "message": "row 17 has no non-empty expert_claim_refs",
+      "requirement_id": "H-09"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "expert_source_refs",
+      "matrix_role": "budgeted",
+      "message": "row 17 has no non-empty expert_source_refs",
+      "requirement_id": "H-09"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "reproduction_command",
+      "matrix_role": "budgeted",
+      "message": "row 17 has no non-empty reproduction_command",
+      "requirement_id": "H-09"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "exit_code",
+      "matrix_role": "budgeted",
+      "message": "row 17 has no non-empty exit_code",
+      "requirement_id": "H-09"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "result_artifact_sha",
+      "matrix_role": "budgeted",
+      "message": "row 17 has no non-empty result_artifact_sha",
+      "requirement_id": "H-09"
+    },
+    {
+      "code": "BUDGETED_SOURCE_MISSING_STATUS_REQUIRED",
+      "field": "expert_source_status",
+      "matrix_role": "budgeted",
+      "message": "BudgetedReplay source carrier is report-only missing; expert_source_status must be NOT_TESTABLE_SOURCE_MISSING",
+      "requirement_id": "H-09"
+    },
+    {
+      "code": "SOURCE_MISSING_REFERENCE_REQUIRED",
+      "field": "expert_source_refs",
+      "matrix_role": "budgeted",
+      "message": "missing source must use the exact token 'NOT_APPLICABLE_SOURCE_MISSING'",
+      "requirement_id": "H-09"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "requirement_id",
+      "matrix_role": "budgeted",
+      "message": "row 18 has no non-empty requirement_id",
+      "requirement_id": "H-10"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "overall_status",
+      "matrix_role": "budgeted",
+      "message": "row 18 has no non-empty overall_status",
+      "requirement_id": "H-10"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "expert_source_status",
+      "matrix_role": "budgeted",
+      "message": "row 18 has no non-empty expert_source_status",
+      "requirement_id": "H-10"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "expert_claim_refs",
+      "matrix_role": "budgeted",
+      "message": "row 18 has no non-empty expert_claim_refs",
+      "requirement_id": "H-10"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "expert_source_refs",
+      "matrix_role": "budgeted",
+      "message": "row 18 has no non-empty expert_source_refs",
+      "requirement_id": "H-10"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "reproduction_command",
+      "matrix_role": "budgeted",
+      "message": "row 18 has no non-empty reproduction_command",
+      "requirement_id": "H-10"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "exit_code",
+      "matrix_role": "budgeted",
+      "message": "row 18 has no non-empty exit_code",
+      "requirement_id": "H-10"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "result_artifact_sha",
+      "matrix_role": "budgeted",
+      "message": "row 18 has no non-empty result_artifact_sha",
+      "requirement_id": "H-10"
+    },
+    {
+      "code": "BUDGETED_SOURCE_MISSING_STATUS_REQUIRED",
+      "field": "expert_source_status",
+      "matrix_role": "budgeted",
+      "message": "BudgetedReplay source carrier is report-only missing; expert_source_status must be NOT_TESTABLE_SOURCE_MISSING",
+      "requirement_id": "H-10"
+    },
+    {
+      "code": "SOURCE_MISSING_REFERENCE_REQUIRED",
+      "field": "expert_source_refs",
+      "matrix_role": "budgeted",
+      "message": "missing source must use the exact token 'NOT_APPLICABLE_SOURCE_MISSING'",
+      "requirement_id": "H-10"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "requirement_id",
+      "matrix_role": "budgeted",
+      "message": "row 19 has no non-empty requirement_id",
+      "requirement_id": "H-11"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "overall_status",
+      "matrix_role": "budgeted",
+      "message": "row 19 has no non-empty overall_status",
+      "requirement_id": "H-11"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "expert_source_status",
+      "matrix_role": "budgeted",
+      "message": "row 19 has no non-empty expert_source_status",
+      "requirement_id": "H-11"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "expert_claim_refs",
+      "matrix_role": "budgeted",
+      "message": "row 19 has no non-empty expert_claim_refs",
+      "requirement_id": "H-11"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "expert_source_refs",
+      "matrix_role": "budgeted",
+      "message": "row 19 has no non-empty expert_source_refs",
+      "requirement_id": "H-11"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "reproduction_command",
+      "matrix_role": "budgeted",
+      "message": "row 19 has no non-empty reproduction_command",
+      "requirement_id": "H-11"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "exit_code",
+      "matrix_role": "budgeted",
+      "message": "row 19 has no non-empty exit_code",
+      "requirement_id": "H-11"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "result_artifact_sha",
+      "matrix_role": "budgeted",
+      "message": "row 19 has no non-empty result_artifact_sha",
+      "requirement_id": "H-11"
+    },
+    {
+      "code": "BUDGETED_SOURCE_MISSING_STATUS_REQUIRED",
+      "field": "expert_source_status",
+      "matrix_role": "budgeted",
+      "message": "BudgetedReplay source carrier is report-only missing; expert_source_status must be NOT_TESTABLE_SOURCE_MISSING",
+      "requirement_id": "H-11"
+    },
+    {
+      "code": "SOURCE_MISSING_REFERENCE_REQUIRED",
+      "field": "expert_source_refs",
+      "matrix_role": "budgeted",
+      "message": "missing source must use the exact token 'NOT_APPLICABLE_SOURCE_MISSING'",
+      "requirement_id": "H-11"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "requirement_id",
+      "matrix_role": "budgeted",
+      "message": "row 20 has no non-empty requirement_id",
+      "requirement_id": "H-12"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "overall_status",
+      "matrix_role": "budgeted",
+      "message": "row 20 has no non-empty overall_status",
+      "requirement_id": "H-12"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "expert_source_status",
+      "matrix_role": "budgeted",
+      "message": "row 20 has no non-empty expert_source_status",
+      "requirement_id": "H-12"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "expert_claim_refs",
+      "matrix_role": "budgeted",
+      "message": "row 20 has no non-empty expert_claim_refs",
+      "requirement_id": "H-12"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "expert_source_refs",
+      "matrix_role": "budgeted",
+      "message": "row 20 has no non-empty expert_source_refs",
+      "requirement_id": "H-12"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "reproduction_command",
+      "matrix_role": "budgeted",
+      "message": "row 20 has no non-empty reproduction_command",
+      "requirement_id": "H-12"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "exit_code",
+      "matrix_role": "budgeted",
+      "message": "row 20 has no non-empty exit_code",
+      "requirement_id": "H-12"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "result_artifact_sha",
+      "matrix_role": "budgeted",
+      "message": "row 20 has no non-empty result_artifact_sha",
+      "requirement_id": "H-12"
+    },
+    {
+      "code": "BUDGETED_SOURCE_MISSING_STATUS_REQUIRED",
+      "field": "expert_source_status",
+      "matrix_role": "budgeted",
+      "message": "BudgetedReplay source carrier is report-only missing; expert_source_status must be NOT_TESTABLE_SOURCE_MISSING",
+      "requirement_id": "H-12"
+    },
+    {
+      "code": "SOURCE_MISSING_REFERENCE_REQUIRED",
+      "field": "expert_source_refs",
+      "matrix_role": "budgeted",
+      "message": "missing source must use the exact token 'NOT_APPLICABLE_SOURCE_MISSING'",
+      "requirement_id": "H-12"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "requirement_id",
+      "matrix_role": "budgeted",
+      "message": "row 21 has no non-empty requirement_id",
+      "requirement_id": "H-13"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "overall_status",
+      "matrix_role": "budgeted",
+      "message": "row 21 has no non-empty overall_status",
+      "requirement_id": "H-13"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "expert_source_status",
+      "matrix_role": "budgeted",
+      "message": "row 21 has no non-empty expert_source_status",
+      "requirement_id": "H-13"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "expert_claim_refs",
+      "matrix_role": "budgeted",
+      "message": "row 21 has no non-empty expert_claim_refs",
+      "requirement_id": "H-13"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "expert_source_refs",
+      "matrix_role": "budgeted",
+      "message": "row 21 has no non-empty expert_source_refs",
+      "requirement_id": "H-13"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "reproduction_command",
+      "matrix_role": "budgeted",
+      "message": "row 21 has no non-empty reproduction_command",
+      "requirement_id": "H-13"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "exit_code",
+      "matrix_role": "budgeted",
+      "message": "row 21 has no non-empty exit_code",
+      "requirement_id": "H-13"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "result_artifact_sha",
+      "matrix_role": "budgeted",
+      "message": "row 21 has no non-empty result_artifact_sha",
+      "requirement_id": "H-13"
+    },
+    {
+      "code": "BUDGETED_SOURCE_MISSING_STATUS_REQUIRED",
+      "field": "expert_source_status",
+      "matrix_role": "budgeted",
+      "message": "BudgetedReplay source carrier is report-only missing; expert_source_status must be NOT_TESTABLE_SOURCE_MISSING",
+      "requirement_id": "H-13"
+    },
+    {
+      "code": "SOURCE_MISSING_REFERENCE_REQUIRED",
+      "field": "expert_source_refs",
+      "matrix_role": "budgeted",
+      "message": "missing source must use the exact token 'NOT_APPLICABLE_SOURCE_MISSING'",
+      "requirement_id": "H-13"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "requirement_id",
+      "matrix_role": "budgeted",
+      "message": "row 22 has no non-empty requirement_id",
+      "requirement_id": "H-14"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "overall_status",
+      "matrix_role": "budgeted",
+      "message": "row 22 has no non-empty overall_status",
+      "requirement_id": "H-14"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "expert_source_status",
+      "matrix_role": "budgeted",
+      "message": "row 22 has no non-empty expert_source_status",
+      "requirement_id": "H-14"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "expert_claim_refs",
+      "matrix_role": "budgeted",
+      "message": "row 22 has no non-empty expert_claim_refs",
+      "requirement_id": "H-14"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "expert_source_refs",
+      "matrix_role": "budgeted",
+      "message": "row 22 has no non-empty expert_source_refs",
+      "requirement_id": "H-14"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "reproduction_command",
+      "matrix_role": "budgeted",
+      "message": "row 22 has no non-empty reproduction_command",
+      "requirement_id": "H-14"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "exit_code",
+      "matrix_role": "budgeted",
+      "message": "row 22 has no non-empty exit_code",
+      "requirement_id": "H-14"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "result_artifact_sha",
+      "matrix_role": "budgeted",
+      "message": "row 22 has no non-empty result_artifact_sha",
+      "requirement_id": "H-14"
+    },
+    {
+      "code": "BUDGETED_SOURCE_MISSING_STATUS_REQUIRED",
+      "field": "expert_source_status",
+      "matrix_role": "budgeted",
+      "message": "BudgetedReplay source carrier is report-only missing; expert_source_status must be NOT_TESTABLE_SOURCE_MISSING",
+      "requirement_id": "H-14"
+    },
+    {
+      "code": "SOURCE_MISSING_REFERENCE_REQUIRED",
+      "field": "expert_source_refs",
+      "matrix_role": "budgeted",
+      "message": "missing source must use the exact token 'NOT_APPLICABLE_SOURCE_MISSING'",
+      "requirement_id": "H-14"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "requirement_id",
+      "matrix_role": "budgeted",
+      "message": "row 23 has no non-empty requirement_id",
+      "requirement_id": "H-15"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "overall_status",
+      "matrix_role": "budgeted",
+      "message": "row 23 has no non-empty overall_status",
+      "requirement_id": "H-15"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "expert_source_status",
+      "matrix_role": "budgeted",
+      "message": "row 23 has no non-empty expert_source_status",
+      "requirement_id": "H-15"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "expert_claim_refs",
+      "matrix_role": "budgeted",
+      "message": "row 23 has no non-empty expert_claim_refs",
+      "requirement_id": "H-15"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "expert_source_refs",
+      "matrix_role": "budgeted",
+      "message": "row 23 has no non-empty expert_source_refs",
+      "requirement_id": "H-15"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "reproduction_command",
+      "matrix_role": "budgeted",
+      "message": "row 23 has no non-empty reproduction_command",
+      "requirement_id": "H-15"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "exit_code",
+      "matrix_role": "budgeted",
+      "message": "row 23 has no non-empty exit_code",
+      "requirement_id": "H-15"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "result_artifact_sha",
+      "matrix_role": "budgeted",
+      "message": "row 23 has no non-empty result_artifact_sha",
+      "requirement_id": "H-15"
+    },
+    {
+      "code": "BUDGETED_SOURCE_MISSING_STATUS_REQUIRED",
+      "field": "expert_source_status",
+      "matrix_role": "budgeted",
+      "message": "BudgetedReplay source carrier is report-only missing; expert_source_status must be NOT_TESTABLE_SOURCE_MISSING",
+      "requirement_id": "H-15"
+    },
+    {
+      "code": "SOURCE_MISSING_REFERENCE_REQUIRED",
+      "field": "expert_source_refs",
+      "matrix_role": "budgeted",
+      "message": "missing source must use the exact token 'NOT_APPLICABLE_SOURCE_MISSING'",
+      "requirement_id": "H-15"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "requirement_id",
+      "matrix_role": "budgeted",
+      "message": "row 24 has no non-empty requirement_id",
+      "requirement_id": "H-16"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "overall_status",
+      "matrix_role": "budgeted",
+      "message": "row 24 has no non-empty overall_status",
+      "requirement_id": "H-16"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "expert_source_status",
+      "matrix_role": "budgeted",
+      "message": "row 24 has no non-empty expert_source_status",
+      "requirement_id": "H-16"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "expert_claim_refs",
+      "matrix_role": "budgeted",
+      "message": "row 24 has no non-empty expert_claim_refs",
+      "requirement_id": "H-16"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "expert_source_refs",
+      "matrix_role": "budgeted",
+      "message": "row 24 has no non-empty expert_source_refs",
+      "requirement_id": "H-16"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "reproduction_command",
+      "matrix_role": "budgeted",
+      "message": "row 24 has no non-empty reproduction_command",
+      "requirement_id": "H-16"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "exit_code",
+      "matrix_role": "budgeted",
+      "message": "row 24 has no non-empty exit_code",
+      "requirement_id": "H-16"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "result_artifact_sha",
+      "matrix_role": "budgeted",
+      "message": "row 24 has no non-empty result_artifact_sha",
+      "requirement_id": "H-16"
+    },
+    {
+      "code": "BUDGETED_SOURCE_MISSING_STATUS_REQUIRED",
+      "field": "expert_source_status",
+      "matrix_role": "budgeted",
+      "message": "BudgetedReplay source carrier is report-only missing; expert_source_status must be NOT_TESTABLE_SOURCE_MISSING",
+      "requirement_id": "H-16"
+    },
+    {
+      "code": "SOURCE_MISSING_REFERENCE_REQUIRED",
+      "field": "expert_source_refs",
+      "matrix_role": "budgeted",
+      "message": "missing source must use the exact token 'NOT_APPLICABLE_SOURCE_MISSING'",
+      "requirement_id": "H-16"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "requirement_id",
+      "matrix_role": "budgeted",
+      "message": "row 25 has no non-empty requirement_id",
+      "requirement_id": "M-01"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "overall_status",
+      "matrix_role": "budgeted",
+      "message": "row 25 has no non-empty overall_status",
+      "requirement_id": "M-01"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "expert_source_status",
+      "matrix_role": "budgeted",
+      "message": "row 25 has no non-empty expert_source_status",
+      "requirement_id": "M-01"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "expert_claim_refs",
+      "matrix_role": "budgeted",
+      "message": "row 25 has no non-empty expert_claim_refs",
+      "requirement_id": "M-01"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "expert_source_refs",
+      "matrix_role": "budgeted",
+      "message": "row 25 has no non-empty expert_source_refs",
+      "requirement_id": "M-01"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "reproduction_command",
+      "matrix_role": "budgeted",
+      "message": "row 25 has no non-empty reproduction_command",
+      "requirement_id": "M-01"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "exit_code",
+      "matrix_role": "budgeted",
+      "message": "row 25 has no non-empty exit_code",
+      "requirement_id": "M-01"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "result_artifact_sha",
+      "matrix_role": "budgeted",
+      "message": "row 25 has no non-empty result_artifact_sha",
+      "requirement_id": "M-01"
+    },
+    {
+      "code": "BUDGETED_SOURCE_MISSING_STATUS_REQUIRED",
+      "field": "expert_source_status",
+      "matrix_role": "budgeted",
+      "message": "BudgetedReplay source carrier is report-only missing; expert_source_status must be NOT_TESTABLE_SOURCE_MISSING",
+      "requirement_id": "M-01"
+    },
+    {
+      "code": "SOURCE_MISSING_REFERENCE_REQUIRED",
+      "field": "expert_source_refs",
+      "matrix_role": "budgeted",
+      "message": "missing source must use the exact token 'NOT_APPLICABLE_SOURCE_MISSING'",
+      "requirement_id": "M-01"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "requirement_id",
+      "matrix_role": "budgeted",
+      "message": "row 26 has no non-empty requirement_id",
+      "requirement_id": "M-02"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "overall_status",
+      "matrix_role": "budgeted",
+      "message": "row 26 has no non-empty overall_status",
+      "requirement_id": "M-02"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "expert_source_status",
+      "matrix_role": "budgeted",
+      "message": "row 26 has no non-empty expert_source_status",
+      "requirement_id": "M-02"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "expert_claim_refs",
+      "matrix_role": "budgeted",
+      "message": "row 26 has no non-empty expert_claim_refs",
+      "requirement_id": "M-02"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "expert_source_refs",
+      "matrix_role": "budgeted",
+      "message": "row 26 has no non-empty expert_source_refs",
+      "requirement_id": "M-02"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "reproduction_command",
+      "matrix_role": "budgeted",
+      "message": "row 26 has no non-empty reproduction_command",
+      "requirement_id": "M-02"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "exit_code",
+      "matrix_role": "budgeted",
+      "message": "row 26 has no non-empty exit_code",
+      "requirement_id": "M-02"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "result_artifact_sha",
+      "matrix_role": "budgeted",
+      "message": "row 26 has no non-empty result_artifact_sha",
+      "requirement_id": "M-02"
+    },
+    {
+      "code": "BUDGETED_SOURCE_MISSING_STATUS_REQUIRED",
+      "field": "expert_source_status",
+      "matrix_role": "budgeted",
+      "message": "BudgetedReplay source carrier is report-only missing; expert_source_status must be NOT_TESTABLE_SOURCE_MISSING",
+      "requirement_id": "M-02"
+    },
+    {
+      "code": "SOURCE_MISSING_REFERENCE_REQUIRED",
+      "field": "expert_source_refs",
+      "matrix_role": "budgeted",
+      "message": "missing source must use the exact token 'NOT_APPLICABLE_SOURCE_MISSING'",
+      "requirement_id": "M-02"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "requirement_id",
+      "matrix_role": "budgeted",
+      "message": "row 27 has no non-empty requirement_id",
+      "requirement_id": "M-03"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "overall_status",
+      "matrix_role": "budgeted",
+      "message": "row 27 has no non-empty overall_status",
+      "requirement_id": "M-03"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "expert_source_status",
+      "matrix_role": "budgeted",
+      "message": "row 27 has no non-empty expert_source_status",
+      "requirement_id": "M-03"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "expert_claim_refs",
+      "matrix_role": "budgeted",
+      "message": "row 27 has no non-empty expert_claim_refs",
+      "requirement_id": "M-03"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "expert_source_refs",
+      "matrix_role": "budgeted",
+      "message": "row 27 has no non-empty expert_source_refs",
+      "requirement_id": "M-03"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "reproduction_command",
+      "matrix_role": "budgeted",
+      "message": "row 27 has no non-empty reproduction_command",
+      "requirement_id": "M-03"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "exit_code",
+      "matrix_role": "budgeted",
+      "message": "row 27 has no non-empty exit_code",
+      "requirement_id": "M-03"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "result_artifact_sha",
+      "matrix_role": "budgeted",
+      "message": "row 27 has no non-empty result_artifact_sha",
+      "requirement_id": "M-03"
+    },
+    {
+      "code": "UNSUPPORTED_STATUS",
+      "field": "v3_status",
+      "matrix_role": "budgeted",
+      "message": "unsupported status 'NOT_APPLICABLE_CAPABILITY_ABSENT'",
+      "requirement_id": "M-03"
+    },
+    {
+      "code": "BUDGETED_SOURCE_MISSING_STATUS_REQUIRED",
+      "field": "expert_source_status",
+      "matrix_role": "budgeted",
+      "message": "BudgetedReplay source carrier is report-only missing; expert_source_status must be NOT_TESTABLE_SOURCE_MISSING",
+      "requirement_id": "M-03"
+    },
+    {
+      "code": "SOURCE_MISSING_REFERENCE_REQUIRED",
+      "field": "expert_source_refs",
+      "matrix_role": "budgeted",
+      "message": "missing source must use the exact token 'NOT_APPLICABLE_SOURCE_MISSING'",
+      "requirement_id": "M-03"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "requirement_id",
+      "matrix_role": "budgeted",
+      "message": "row 28 has no non-empty requirement_id",
+      "requirement_id": "M-04"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "overall_status",
+      "matrix_role": "budgeted",
+      "message": "row 28 has no non-empty overall_status",
+      "requirement_id": "M-04"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "expert_source_status",
+      "matrix_role": "budgeted",
+      "message": "row 28 has no non-empty expert_source_status",
+      "requirement_id": "M-04"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "expert_claim_refs",
+      "matrix_role": "budgeted",
+      "message": "row 28 has no non-empty expert_claim_refs",
+      "requirement_id": "M-04"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "expert_source_refs",
+      "matrix_role": "budgeted",
+      "message": "row 28 has no non-empty expert_source_refs",
+      "requirement_id": "M-04"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "reproduction_command",
+      "matrix_role": "budgeted",
+      "message": "row 28 has no non-empty reproduction_command",
+      "requirement_id": "M-04"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "exit_code",
+      "matrix_role": "budgeted",
+      "message": "row 28 has no non-empty exit_code",
+      "requirement_id": "M-04"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "result_artifact_sha",
+      "matrix_role": "budgeted",
+      "message": "row 28 has no non-empty result_artifact_sha",
+      "requirement_id": "M-04"
+    },
+    {
+      "code": "BUDGETED_SOURCE_MISSING_STATUS_REQUIRED",
+      "field": "expert_source_status",
+      "matrix_role": "budgeted",
+      "message": "BudgetedReplay source carrier is report-only missing; expert_source_status must be NOT_TESTABLE_SOURCE_MISSING",
+      "requirement_id": "M-04"
+    },
+    {
+      "code": "SOURCE_MISSING_REFERENCE_REQUIRED",
+      "field": "expert_source_refs",
+      "matrix_role": "budgeted",
+      "message": "missing source must use the exact token 'NOT_APPLICABLE_SOURCE_MISSING'",
+      "requirement_id": "M-04"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "requirement_id",
+      "matrix_role": "budgeted",
+      "message": "row 29 has no non-empty requirement_id",
+      "requirement_id": "M-05"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "overall_status",
+      "matrix_role": "budgeted",
+      "message": "row 29 has no non-empty overall_status",
+      "requirement_id": "M-05"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "expert_source_status",
+      "matrix_role": "budgeted",
+      "message": "row 29 has no non-empty expert_source_status",
+      "requirement_id": "M-05"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "expert_claim_refs",
+      "matrix_role": "budgeted",
+      "message": "row 29 has no non-empty expert_claim_refs",
+      "requirement_id": "M-05"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "expert_source_refs",
+      "matrix_role": "budgeted",
+      "message": "row 29 has no non-empty expert_source_refs",
+      "requirement_id": "M-05"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "reproduction_command",
+      "matrix_role": "budgeted",
+      "message": "row 29 has no non-empty reproduction_command",
+      "requirement_id": "M-05"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "exit_code",
+      "matrix_role": "budgeted",
+      "message": "row 29 has no non-empty exit_code",
+      "requirement_id": "M-05"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "result_artifact_sha",
+      "matrix_role": "budgeted",
+      "message": "row 29 has no non-empty result_artifact_sha",
+      "requirement_id": "M-05"
+    },
+    {
+      "code": "UNSUPPORTED_STATUS",
+      "field": "v3_status",
+      "matrix_role": "budgeted",
+      "message": "unsupported status 'NOT_APPLICABLE_CAPABILITY_ABSENT'",
+      "requirement_id": "M-05"
+    },
+    {
+      "code": "BUDGETED_SOURCE_MISSING_STATUS_REQUIRED",
+      "field": "expert_source_status",
+      "matrix_role": "budgeted",
+      "message": "BudgetedReplay source carrier is report-only missing; expert_source_status must be NOT_TESTABLE_SOURCE_MISSING",
+      "requirement_id": "M-05"
+    },
+    {
+      "code": "SOURCE_MISSING_REFERENCE_REQUIRED",
+      "field": "expert_source_refs",
+      "matrix_role": "budgeted",
+      "message": "missing source must use the exact token 'NOT_APPLICABLE_SOURCE_MISSING'",
+      "requirement_id": "M-05"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "requirement_id",
+      "matrix_role": "budgeted",
+      "message": "row 30 has no non-empty requirement_id",
+      "requirement_id": "M-06"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "overall_status",
+      "matrix_role": "budgeted",
+      "message": "row 30 has no non-empty overall_status",
+      "requirement_id": "M-06"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "expert_source_status",
+      "matrix_role": "budgeted",
+      "message": "row 30 has no non-empty expert_source_status",
+      "requirement_id": "M-06"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "expert_claim_refs",
+      "matrix_role": "budgeted",
+      "message": "row 30 has no non-empty expert_claim_refs",
+      "requirement_id": "M-06"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "expert_source_refs",
+      "matrix_role": "budgeted",
+      "message": "row 30 has no non-empty expert_source_refs",
+      "requirement_id": "M-06"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "reproduction_command",
+      "matrix_role": "budgeted",
+      "message": "row 30 has no non-empty reproduction_command",
+      "requirement_id": "M-06"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "exit_code",
+      "matrix_role": "budgeted",
+      "message": "row 30 has no non-empty exit_code",
+      "requirement_id": "M-06"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "result_artifact_sha",
+      "matrix_role": "budgeted",
+      "message": "row 30 has no non-empty result_artifact_sha",
+      "requirement_id": "M-06"
+    },
+    {
+      "code": "UNSUPPORTED_STATUS",
+      "field": "v3_status",
+      "matrix_role": "budgeted",
+      "message": "unsupported status 'NOT_APPLICABLE_CAPABILITY_ABSENT'",
+      "requirement_id": "M-06"
+    },
+    {
+      "code": "BUDGETED_SOURCE_MISSING_STATUS_REQUIRED",
+      "field": "expert_source_status",
+      "matrix_role": "budgeted",
+      "message": "BudgetedReplay source carrier is report-only missing; expert_source_status must be NOT_TESTABLE_SOURCE_MISSING",
+      "requirement_id": "M-06"
+    },
+    {
+      "code": "SOURCE_MISSING_REFERENCE_REQUIRED",
+      "field": "expert_source_refs",
+      "matrix_role": "budgeted",
+      "message": "missing source must use the exact token 'NOT_APPLICABLE_SOURCE_MISSING'",
+      "requirement_id": "M-06"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "requirement_id",
+      "matrix_role": "budgeted",
+      "message": "row 31 has no non-empty requirement_id",
+      "requirement_id": "M-07"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "overall_status",
+      "matrix_role": "budgeted",
+      "message": "row 31 has no non-empty overall_status",
+      "requirement_id": "M-07"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "expert_source_status",
+      "matrix_role": "budgeted",
+      "message": "row 31 has no non-empty expert_source_status",
+      "requirement_id": "M-07"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "expert_claim_refs",
+      "matrix_role": "budgeted",
+      "message": "row 31 has no non-empty expert_claim_refs",
+      "requirement_id": "M-07"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "expert_source_refs",
+      "matrix_role": "budgeted",
+      "message": "row 31 has no non-empty expert_source_refs",
+      "requirement_id": "M-07"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "reproduction_command",
+      "matrix_role": "budgeted",
+      "message": "row 31 has no non-empty reproduction_command",
+      "requirement_id": "M-07"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "exit_code",
+      "matrix_role": "budgeted",
+      "message": "row 31 has no non-empty exit_code",
+      "requirement_id": "M-07"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "result_artifact_sha",
+      "matrix_role": "budgeted",
+      "message": "row 31 has no non-empty result_artifact_sha",
+      "requirement_id": "M-07"
+    },
+    {
+      "code": "UNSUPPORTED_STATUS",
+      "field": "v3_status",
+      "matrix_role": "budgeted",
+      "message": "unsupported status 'NOT_APPLICABLE_CAPABILITY_ABSENT'",
+      "requirement_id": "M-07"
+    },
+    {
+      "code": "BUDGETED_SOURCE_MISSING_STATUS_REQUIRED",
+      "field": "expert_source_status",
+      "matrix_role": "budgeted",
+      "message": "BudgetedReplay source carrier is report-only missing; expert_source_status must be NOT_TESTABLE_SOURCE_MISSING",
+      "requirement_id": "M-07"
+    },
+    {
+      "code": "SOURCE_MISSING_REFERENCE_REQUIRED",
+      "field": "expert_source_refs",
+      "matrix_role": "budgeted",
+      "message": "missing source must use the exact token 'NOT_APPLICABLE_SOURCE_MISSING'",
+      "requirement_id": "M-07"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "requirement_id",
+      "matrix_role": "budgeted",
+      "message": "row 32 has no non-empty requirement_id",
+      "requirement_id": "M-08"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "overall_status",
+      "matrix_role": "budgeted",
+      "message": "row 32 has no non-empty overall_status",
+      "requirement_id": "M-08"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "expert_source_status",
+      "matrix_role": "budgeted",
+      "message": "row 32 has no non-empty expert_source_status",
+      "requirement_id": "M-08"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "expert_claim_refs",
+      "matrix_role": "budgeted",
+      "message": "row 32 has no non-empty expert_claim_refs",
+      "requirement_id": "M-08"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "expert_source_refs",
+      "matrix_role": "budgeted",
+      "message": "row 32 has no non-empty expert_source_refs",
+      "requirement_id": "M-08"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "reproduction_command",
+      "matrix_role": "budgeted",
+      "message": "row 32 has no non-empty reproduction_command",
+      "requirement_id": "M-08"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "exit_code",
+      "matrix_role": "budgeted",
+      "message": "row 32 has no non-empty exit_code",
+      "requirement_id": "M-08"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "result_artifact_sha",
+      "matrix_role": "budgeted",
+      "message": "row 32 has no non-empty result_artifact_sha",
+      "requirement_id": "M-08"
+    },
+    {
+      "code": "BUDGETED_SOURCE_MISSING_STATUS_REQUIRED",
+      "field": "expert_source_status",
+      "matrix_role": "budgeted",
+      "message": "BudgetedReplay source carrier is report-only missing; expert_source_status must be NOT_TESTABLE_SOURCE_MISSING",
+      "requirement_id": "M-08"
+    },
+    {
+      "code": "SOURCE_MISSING_REFERENCE_REQUIRED",
+      "field": "expert_source_refs",
+      "matrix_role": "budgeted",
+      "message": "missing source must use the exact token 'NOT_APPLICABLE_SOURCE_MISSING'",
+      "requirement_id": "M-08"
+    },
+    {
+      "code": "SCHEMA_FIELDS_MISMATCH",
+      "field": "header",
+      "matrix_role": "dynamic",
+      "message": "expected exact fields ['requirement_id', 'overall_status', 'expert_source_status', 'expert_claim_refs', 'expert_source_refs', 'v3_status', 'v3_source_refs', 'reproduction_command', 'exit_code', 'result_artifact_sha', 'observed_result', 'remaining_risk', 'required_action']; observed ['finding_id', 'status', 'expert_review_ref', 'expert_source_refs', 'v3_source_refs', 'local_reproduction', 'observed_result', 'remaining_risk', 'required_action']",
+      "requirement_id": "N/A"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "requirement_id",
+      "matrix_role": "dynamic",
+      "message": "row 2 has no non-empty requirement_id",
+      "requirement_id": "F01"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "overall_status",
+      "matrix_role": "dynamic",
+      "message": "row 2 has no non-empty overall_status",
+      "requirement_id": "F01"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "expert_source_status",
+      "matrix_role": "dynamic",
+      "message": "row 2 has no non-empty expert_source_status",
+      "requirement_id": "F01"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "expert_claim_refs",
+      "matrix_role": "dynamic",
+      "message": "row 2 has no non-empty expert_claim_refs",
+      "requirement_id": "F01"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "v3_status",
+      "matrix_role": "dynamic",
+      "message": "row 2 has no non-empty v3_status",
+      "requirement_id": "F01"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "reproduction_command",
+      "matrix_role": "dynamic",
+      "message": "row 2 has no non-empty reproduction_command",
+      "requirement_id": "F01"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "exit_code",
+      "matrix_role": "dynamic",
+      "message": "row 2 has no non-empty exit_code",
+      "requirement_id": "F01"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "result_artifact_sha",
+      "matrix_role": "dynamic",
+      "message": "row 2 has no non-empty result_artifact_sha",
+      "requirement_id": "F01"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "requirement_id",
+      "matrix_role": "dynamic",
+      "message": "row 3 has no non-empty requirement_id",
+      "requirement_id": "F02"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "overall_status",
+      "matrix_role": "dynamic",
+      "message": "row 3 has no non-empty overall_status",
+      "requirement_id": "F02"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "expert_source_status",
+      "matrix_role": "dynamic",
+      "message": "row 3 has no non-empty expert_source_status",
+      "requirement_id": "F02"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "expert_claim_refs",
+      "matrix_role": "dynamic",
+      "message": "row 3 has no non-empty expert_claim_refs",
+      "requirement_id": "F02"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "v3_status",
+      "matrix_role": "dynamic",
+      "message": "row 3 has no non-empty v3_status",
+      "requirement_id": "F02"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "reproduction_command",
+      "matrix_role": "dynamic",
+      "message": "row 3 has no non-empty reproduction_command",
+      "requirement_id": "F02"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "exit_code",
+      "matrix_role": "dynamic",
+      "message": "row 3 has no non-empty exit_code",
+      "requirement_id": "F02"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "result_artifact_sha",
+      "matrix_role": "dynamic",
+      "message": "row 3 has no non-empty result_artifact_sha",
+      "requirement_id": "F02"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "requirement_id",
+      "matrix_role": "dynamic",
+      "message": "row 4 has no non-empty requirement_id",
+      "requirement_id": "F03"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "overall_status",
+      "matrix_role": "dynamic",
+      "message": "row 4 has no non-empty overall_status",
+      "requirement_id": "F03"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "expert_source_status",
+      "matrix_role": "dynamic",
+      "message": "row 4 has no non-empty expert_source_status",
+      "requirement_id": "F03"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "expert_claim_refs",
+      "matrix_role": "dynamic",
+      "message": "row 4 has no non-empty expert_claim_refs",
+      "requirement_id": "F03"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "v3_status",
+      "matrix_role": "dynamic",
+      "message": "row 4 has no non-empty v3_status",
+      "requirement_id": "F03"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "reproduction_command",
+      "matrix_role": "dynamic",
+      "message": "row 4 has no non-empty reproduction_command",
+      "requirement_id": "F03"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "exit_code",
+      "matrix_role": "dynamic",
+      "message": "row 4 has no non-empty exit_code",
+      "requirement_id": "F03"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "result_artifact_sha",
+      "matrix_role": "dynamic",
+      "message": "row 4 has no non-empty result_artifact_sha",
+      "requirement_id": "F03"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "requirement_id",
+      "matrix_role": "dynamic",
+      "message": "row 5 has no non-empty requirement_id",
+      "requirement_id": "F04"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "overall_status",
+      "matrix_role": "dynamic",
+      "message": "row 5 has no non-empty overall_status",
+      "requirement_id": "F04"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "expert_source_status",
+      "matrix_role": "dynamic",
+      "message": "row 5 has no non-empty expert_source_status",
+      "requirement_id": "F04"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "expert_claim_refs",
+      "matrix_role": "dynamic",
+      "message": "row 5 has no non-empty expert_claim_refs",
+      "requirement_id": "F04"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "v3_status",
+      "matrix_role": "dynamic",
+      "message": "row 5 has no non-empty v3_status",
+      "requirement_id": "F04"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "reproduction_command",
+      "matrix_role": "dynamic",
+      "message": "row 5 has no non-empty reproduction_command",
+      "requirement_id": "F04"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "exit_code",
+      "matrix_role": "dynamic",
+      "message": "row 5 has no non-empty exit_code",
+      "requirement_id": "F04"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "result_artifact_sha",
+      "matrix_role": "dynamic",
+      "message": "row 5 has no non-empty result_artifact_sha",
+      "requirement_id": "F04"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "requirement_id",
+      "matrix_role": "dynamic",
+      "message": "row 6 has no non-empty requirement_id",
+      "requirement_id": "F05"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "overall_status",
+      "matrix_role": "dynamic",
+      "message": "row 6 has no non-empty overall_status",
+      "requirement_id": "F05"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "expert_source_status",
+      "matrix_role": "dynamic",
+      "message": "row 6 has no non-empty expert_source_status",
+      "requirement_id": "F05"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "expert_claim_refs",
+      "matrix_role": "dynamic",
+      "message": "row 6 has no non-empty expert_claim_refs",
+      "requirement_id": "F05"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "v3_status",
+      "matrix_role": "dynamic",
+      "message": "row 6 has no non-empty v3_status",
+      "requirement_id": "F05"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "reproduction_command",
+      "matrix_role": "dynamic",
+      "message": "row 6 has no non-empty reproduction_command",
+      "requirement_id": "F05"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "exit_code",
+      "matrix_role": "dynamic",
+      "message": "row 6 has no non-empty exit_code",
+      "requirement_id": "F05"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "result_artifact_sha",
+      "matrix_role": "dynamic",
+      "message": "row 6 has no non-empty result_artifact_sha",
+      "requirement_id": "F05"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "requirement_id",
+      "matrix_role": "dynamic",
+      "message": "row 7 has no non-empty requirement_id",
+      "requirement_id": "F06"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "overall_status",
+      "matrix_role": "dynamic",
+      "message": "row 7 has no non-empty overall_status",
+      "requirement_id": "F06"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "expert_source_status",
+      "matrix_role": "dynamic",
+      "message": "row 7 has no non-empty expert_source_status",
+      "requirement_id": "F06"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "expert_claim_refs",
+      "matrix_role": "dynamic",
+      "message": "row 7 has no non-empty expert_claim_refs",
+      "requirement_id": "F06"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "v3_status",
+      "matrix_role": "dynamic",
+      "message": "row 7 has no non-empty v3_status",
+      "requirement_id": "F06"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "reproduction_command",
+      "matrix_role": "dynamic",
+      "message": "row 7 has no non-empty reproduction_command",
+      "requirement_id": "F06"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "exit_code",
+      "matrix_role": "dynamic",
+      "message": "row 7 has no non-empty exit_code",
+      "requirement_id": "F06"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "result_artifact_sha",
+      "matrix_role": "dynamic",
+      "message": "row 7 has no non-empty result_artifact_sha",
+      "requirement_id": "F06"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "requirement_id",
+      "matrix_role": "dynamic",
+      "message": "row 8 has no non-empty requirement_id",
+      "requirement_id": "F07"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "overall_status",
+      "matrix_role": "dynamic",
+      "message": "row 8 has no non-empty overall_status",
+      "requirement_id": "F07"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "expert_source_status",
+      "matrix_role": "dynamic",
+      "message": "row 8 has no non-empty expert_source_status",
+      "requirement_id": "F07"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "expert_claim_refs",
+      "matrix_role": "dynamic",
+      "message": "row 8 has no non-empty expert_claim_refs",
+      "requirement_id": "F07"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "v3_status",
+      "matrix_role": "dynamic",
+      "message": "row 8 has no non-empty v3_status",
+      "requirement_id": "F07"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "reproduction_command",
+      "matrix_role": "dynamic",
+      "message": "row 8 has no non-empty reproduction_command",
+      "requirement_id": "F07"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "exit_code",
+      "matrix_role": "dynamic",
+      "message": "row 8 has no non-empty exit_code",
+      "requirement_id": "F07"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "result_artifact_sha",
+      "matrix_role": "dynamic",
+      "message": "row 8 has no non-empty result_artifact_sha",
+      "requirement_id": "F07"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "requirement_id",
+      "matrix_role": "dynamic",
+      "message": "row 9 has no non-empty requirement_id",
+      "requirement_id": "F08"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "overall_status",
+      "matrix_role": "dynamic",
+      "message": "row 9 has no non-empty overall_status",
+      "requirement_id": "F08"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "expert_source_status",
+      "matrix_role": "dynamic",
+      "message": "row 9 has no non-empty expert_source_status",
+      "requirement_id": "F08"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "expert_claim_refs",
+      "matrix_role": "dynamic",
+      "message": "row 9 has no non-empty expert_claim_refs",
+      "requirement_id": "F08"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "v3_status",
+      "matrix_role": "dynamic",
+      "message": "row 9 has no non-empty v3_status",
+      "requirement_id": "F08"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "reproduction_command",
+      "matrix_role": "dynamic",
+      "message": "row 9 has no non-empty reproduction_command",
+      "requirement_id": "F08"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "exit_code",
+      "matrix_role": "dynamic",
+      "message": "row 9 has no non-empty exit_code",
+      "requirement_id": "F08"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "result_artifact_sha",
+      "matrix_role": "dynamic",
+      "message": "row 9 has no non-empty result_artifact_sha",
+      "requirement_id": "F08"
+    },
+    {
+      "code": "UNSUPPORTED_STATUS",
+      "field": "status",
+      "matrix_role": "dynamic",
+      "message": "unsupported legacy status 'NOT_APPLICABLE_CAPABILITY_ABSENT'",
+      "requirement_id": "F08"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "requirement_id",
+      "matrix_role": "dynamic",
+      "message": "row 10 has no non-empty requirement_id",
+      "requirement_id": "F09"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "overall_status",
+      "matrix_role": "dynamic",
+      "message": "row 10 has no non-empty overall_status",
+      "requirement_id": "F09"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "expert_source_status",
+      "matrix_role": "dynamic",
+      "message": "row 10 has no non-empty expert_source_status",
+      "requirement_id": "F09"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "expert_claim_refs",
+      "matrix_role": "dynamic",
+      "message": "row 10 has no non-empty expert_claim_refs",
+      "requirement_id": "F09"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "v3_status",
+      "matrix_role": "dynamic",
+      "message": "row 10 has no non-empty v3_status",
+      "requirement_id": "F09"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "reproduction_command",
+      "matrix_role": "dynamic",
+      "message": "row 10 has no non-empty reproduction_command",
+      "requirement_id": "F09"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "exit_code",
+      "matrix_role": "dynamic",
+      "message": "row 10 has no non-empty exit_code",
+      "requirement_id": "F09"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "result_artifact_sha",
+      "matrix_role": "dynamic",
+      "message": "row 10 has no non-empty result_artifact_sha",
+      "requirement_id": "F09"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "requirement_id",
+      "matrix_role": "dynamic",
+      "message": "row 11 has no non-empty requirement_id",
+      "requirement_id": "F10"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "overall_status",
+      "matrix_role": "dynamic",
+      "message": "row 11 has no non-empty overall_status",
+      "requirement_id": "F10"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "expert_source_status",
+      "matrix_role": "dynamic",
+      "message": "row 11 has no non-empty expert_source_status",
+      "requirement_id": "F10"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "expert_claim_refs",
+      "matrix_role": "dynamic",
+      "message": "row 11 has no non-empty expert_claim_refs",
+      "requirement_id": "F10"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "v3_status",
+      "matrix_role": "dynamic",
+      "message": "row 11 has no non-empty v3_status",
+      "requirement_id": "F10"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "reproduction_command",
+      "matrix_role": "dynamic",
+      "message": "row 11 has no non-empty reproduction_command",
+      "requirement_id": "F10"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "exit_code",
+      "matrix_role": "dynamic",
+      "message": "row 11 has no non-empty exit_code",
+      "requirement_id": "F10"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "result_artifact_sha",
+      "matrix_role": "dynamic",
+      "message": "row 11 has no non-empty result_artifact_sha",
+      "requirement_id": "F10"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "requirement_id",
+      "matrix_role": "dynamic",
+      "message": "row 12 has no non-empty requirement_id",
+      "requirement_id": "F11"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "overall_status",
+      "matrix_role": "dynamic",
+      "message": "row 12 has no non-empty overall_status",
+      "requirement_id": "F11"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "expert_source_status",
+      "matrix_role": "dynamic",
+      "message": "row 12 has no non-empty expert_source_status",
+      "requirement_id": "F11"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "expert_claim_refs",
+      "matrix_role": "dynamic",
+      "message": "row 12 has no non-empty expert_claim_refs",
+      "requirement_id": "F11"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "v3_status",
+      "matrix_role": "dynamic",
+      "message": "row 12 has no non-empty v3_status",
+      "requirement_id": "F11"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "reproduction_command",
+      "matrix_role": "dynamic",
+      "message": "row 12 has no non-empty reproduction_command",
+      "requirement_id": "F11"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "exit_code",
+      "matrix_role": "dynamic",
+      "message": "row 12 has no non-empty exit_code",
+      "requirement_id": "F11"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "result_artifact_sha",
+      "matrix_role": "dynamic",
+      "message": "row 12 has no non-empty result_artifact_sha",
+      "requirement_id": "F11"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "requirement_id",
+      "matrix_role": "dynamic",
+      "message": "row 13 has no non-empty requirement_id",
+      "requirement_id": "F12"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "overall_status",
+      "matrix_role": "dynamic",
+      "message": "row 13 has no non-empty overall_status",
+      "requirement_id": "F12"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "expert_source_status",
+      "matrix_role": "dynamic",
+      "message": "row 13 has no non-empty expert_source_status",
+      "requirement_id": "F12"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "expert_claim_refs",
+      "matrix_role": "dynamic",
+      "message": "row 13 has no non-empty expert_claim_refs",
+      "requirement_id": "F12"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "v3_status",
+      "matrix_role": "dynamic",
+      "message": "row 13 has no non-empty v3_status",
+      "requirement_id": "F12"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "reproduction_command",
+      "matrix_role": "dynamic",
+      "message": "row 13 has no non-empty reproduction_command",
+      "requirement_id": "F12"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "exit_code",
+      "matrix_role": "dynamic",
+      "message": "row 13 has no non-empty exit_code",
+      "requirement_id": "F12"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "result_artifact_sha",
+      "matrix_role": "dynamic",
+      "message": "row 13 has no non-empty result_artifact_sha",
+      "requirement_id": "F12"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "requirement_id",
+      "matrix_role": "dynamic",
+      "message": "row 14 has no non-empty requirement_id",
+      "requirement_id": "F13"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "overall_status",
+      "matrix_role": "dynamic",
+      "message": "row 14 has no non-empty overall_status",
+      "requirement_id": "F13"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "expert_source_status",
+      "matrix_role": "dynamic",
+      "message": "row 14 has no non-empty expert_source_status",
+      "requirement_id": "F13"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "expert_claim_refs",
+      "matrix_role": "dynamic",
+      "message": "row 14 has no non-empty expert_claim_refs",
+      "requirement_id": "F13"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "v3_status",
+      "matrix_role": "dynamic",
+      "message": "row 14 has no non-empty v3_status",
+      "requirement_id": "F13"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "reproduction_command",
+      "matrix_role": "dynamic",
+      "message": "row 14 has no non-empty reproduction_command",
+      "requirement_id": "F13"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "exit_code",
+      "matrix_role": "dynamic",
+      "message": "row 14 has no non-empty exit_code",
+      "requirement_id": "F13"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "result_artifact_sha",
+      "matrix_role": "dynamic",
+      "message": "row 14 has no non-empty result_artifact_sha",
+      "requirement_id": "F13"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "requirement_id",
+      "matrix_role": "dynamic",
+      "message": "row 15 has no non-empty requirement_id",
+      "requirement_id": "F14"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "overall_status",
+      "matrix_role": "dynamic",
+      "message": "row 15 has no non-empty overall_status",
+      "requirement_id": "F14"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "expert_source_status",
+      "matrix_role": "dynamic",
+      "message": "row 15 has no non-empty expert_source_status",
+      "requirement_id": "F14"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "expert_claim_refs",
+      "matrix_role": "dynamic",
+      "message": "row 15 has no non-empty expert_claim_refs",
+      "requirement_id": "F14"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "v3_status",
+      "matrix_role": "dynamic",
+      "message": "row 15 has no non-empty v3_status",
+      "requirement_id": "F14"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "reproduction_command",
+      "matrix_role": "dynamic",
+      "message": "row 15 has no non-empty reproduction_command",
+      "requirement_id": "F14"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "exit_code",
+      "matrix_role": "dynamic",
+      "message": "row 15 has no non-empty exit_code",
+      "requirement_id": "F14"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "result_artifact_sha",
+      "matrix_role": "dynamic",
+      "message": "row 15 has no non-empty result_artifact_sha",
+      "requirement_id": "F14"
+    },
+    {
+      "code": "UNSUPPORTED_STATUS",
+      "field": "status",
+      "matrix_role": "dynamic",
+      "message": "unsupported legacy status 'NOT_APPLICABLE_CAPABILITY_ABSENT'",
+      "requirement_id": "F14"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "requirement_id",
+      "matrix_role": "dynamic",
+      "message": "row 16 has no non-empty requirement_id",
+      "requirement_id": "F15"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "overall_status",
+      "matrix_role": "dynamic",
+      "message": "row 16 has no non-empty overall_status",
+      "requirement_id": "F15"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "expert_source_status",
+      "matrix_role": "dynamic",
+      "message": "row 16 has no non-empty expert_source_status",
+      "requirement_id": "F15"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "expert_claim_refs",
+      "matrix_role": "dynamic",
+      "message": "row 16 has no non-empty expert_claim_refs",
+      "requirement_id": "F15"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "v3_status",
+      "matrix_role": "dynamic",
+      "message": "row 16 has no non-empty v3_status",
+      "requirement_id": "F15"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "reproduction_command",
+      "matrix_role": "dynamic",
+      "message": "row 16 has no non-empty reproduction_command",
+      "requirement_id": "F15"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "exit_code",
+      "matrix_role": "dynamic",
+      "message": "row 16 has no non-empty exit_code",
+      "requirement_id": "F15"
+    },
+    {
+      "code": "MISSING_FIELD",
+      "field": "result_artifact_sha",
+      "matrix_role": "dynamic",
+      "message": "row 16 has no non-empty result_artifact_sha",
+      "requirement_id": "F15"
+    }
+  ],
+  "expected_total_rows": 46,
+  "expert_inventory": {
+    "budgeted_required_source_rows": 3,
+    "budgeted_source_statuses": [
+      "REPORT_ONLY_SOURCE_MISSING"
+    ],
+    "path": "C:\\GitHub\\YOLO-CV\\artifacts\\stage1_sample_value_experiments\\experiments\\dynamic_replay_budget_efficiency_20260807\\01_field_audit\\expert_delivery_audit_v3\\expert_v1_inventory.csv",
+    "row_count": 19,
+    "sha256": "14F2D92AE0DBC18C21A18E99760DD7331B930F1E62A774A741486CE402CCE8BA"
+  },
+  "input_matrices": [
+    {
+      "expected_rows": 31,
+      "headers": [
+        "finding_id",
+        "severity",
+        "title",
+        "expert_locations",
+        "impact",
+        "impact_supplied",
+        "expert_evidence",
+        "expert_evidence_supplied",
+        "expert_required_fix",
+        "source_json",
+        "source_line",
+        "v3_status",
+        "v3_source_refs",
+        "local_reproduction",
+        "observed_result",
+        "remaining_risk",
+        "required_action"
+      ],
+      "matrix_role": "budgeted",
+      "path": "C:\\GitHub\\YOLO-CV\\artifacts\\stage1_sample_value_experiments\\experiments\\dynamic_replay_budget_efficiency_20260807\\01_field_audit\\expert_review_reproductions\\expert_vs_v3_full_matrix_v1.csv",
+      "row_count": 31,
+      "sha256": "DE9C8A0918A2D787E28EC9E3DE0D8EEFD734D75C54640F4FFB3A69C798108019"
+    },
+    {
+      "expected_rows": 15,
+      "headers": [
+        "finding_id",
+        "status",
+        "expert_review_ref",
+        "expert_source_refs",
+        "v3_source_refs",
+        "local_reproduction",
+        "observed_result",
+        "remaining_risk",
+        "required_action"
+      ],
+      "matrix_role": "dynamic",
+      "path": "C:\\GitHub\\YOLO-CV\\artifacts\\stage1_sample_value_experiments\\experiments\\dynamic_replay_budget_efficiency_20260807\\01_field_audit\\expert_review_reproductions\\dynamic_review_vs_v3_matrix_v1.csv",
+      "row_count": 15,
+      "sha256": "7BC2E95839C41C5C963E515E80014299EB683A40463337601B9DDF3433600287"
+    }
+  ],
+  "repo_root": "C:\\GitHub\\YOLO-CV",
+  "reproduction_commands_executed": false,
+  "schema_version": "stage1.tripartite_crosswalk_validation.v1",
+  "scientific_result": false,
+  "status": "FAIL",
+  "total_rows": 46,
+  "validation_scope": "TRIPARTITE_CROSSWALK_ONLY"
+}

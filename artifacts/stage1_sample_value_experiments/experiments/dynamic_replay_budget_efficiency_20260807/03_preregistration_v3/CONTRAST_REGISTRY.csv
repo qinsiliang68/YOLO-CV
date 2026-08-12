@@ -1,0 +1,10 @@
+contrast_id,phase,treatment_arm,comparator_arm,estimand,multiplicity_family,claim_scope,seed_scope,status
+D_Q_VS_R1,DISCOVERY,T_Q,R1_GLOBAL_RANDOM,increment of Q eligibility over global random at fixed replay trace,DISCOVERY_DESCRIPTIVE,mechanism screening only,DISCOVERY,PREREGISTERED_NOT_RUN
+D_R_VS_R2,DISCOVERY,T_QR,R2_METHOD_MATCHED_RANDOM,increment of R after matching the Q universe and replay trace,DISCOVERY_DESCRIPTIVE,mechanism screening only,RANKING_ABLATION,PREREGISTERED_NOT_RUN
+D_R_VS_LOSS,DISCOVERY,T_QR,CURRENT_LOSS,increment of residual signal relative to current loss at fixed Q universe and replay trace,DISCOVERY_DESCRIPTIVE,mechanism screening only,RANKING_ABLATION,PREREGISTERED_NOT_RUN
+D_A_VS_R2,DISCOVERY,T_QRA,R2_METHOD_MATCHED_RANDOM,increment of independent target direction after Q and R,DISCOVERY_DESCRIPTIVE,mechanism screening only,RANKING_ABLATION,PREREGISTERED_NOT_RUN
+D_D_VS_R2,DISCOVERY,T_QRAD,R2_METHOD_MATCHED_RANDOM,increment of set-conditioned coverage after Q R and A,DISCOVERY_DESCRIPTIVE,mechanism screening only,RANKING_ABLATION,PREREGISTERED_NOT_RUN
+C_FULL_VS_R1,CONFIRMATION,T_QRAD,R1_GLOBAL_RANDOM,full QRAD policy versus global random at fixed base process and replay trace,CONFIRMATORY_FAMILY,unseen-seed policy claim,UNSEEN_CONFIRMATION,PREREGISTERED_NOT_RUN
+C_FULL_VS_R2,CONFIRMATION,T_QRAD,R2_METHOD_MATCHED_RANDOM,full QRAD policy versus method-matched random at fixed base process and replay trace,CONFIRMATORY_FAMILY,unseen-seed policy claim,UNSEEN_CONFIRMATION,PREREGISTERED_NOT_RUN
+C_FULL_VS_LOSS,CONFIRMATION,T_QRAD,CURRENT_LOSS,full QRAD policy versus current loss at fixed base process and replay trace,CONFIRMATORY_FAMILY,unseen-seed policy claim,UNSEEN_CONFIRMATION,PREREGISTERED_NOT_RUN
+C_FULL_VS_NR,CONFIRMATION,T_QRAD,NO_REPLAY,replay package versus canonical no replay with zero replay exposure,CONFIRMATORY_FAMILY,unseen-seed replay-presence claim,UNSEEN_CONFIRMATION,PREREGISTERED_NOT_RUN

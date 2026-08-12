@@ -1,0 +1,169 @@
+{
+  "blind_holdout_authorized": false,
+  "budget_contract": {
+    "base_batch_size": 128,
+    "base_exposure": "exact canonical base draw trace for every arm",
+    "base_optimizer_steps_per_epoch": 938,
+    "base_samples_per_epoch": 120000,
+    "canonical_training_lock_path": "configs/stage1_gapvalue240/CANONICAL_TRAINING_LOCK_v1.json",
+    "canonical_training_lock_sha256": "7AFD96784F4994903892BD5BA8477396AAF5EFFBFF158A1C57225428BF01F74E",
+    "cumulative_optimizer_visible_replay_exposure_planned": 119400,
+    "cumulative_repeat_occurrences_planned": 95400,
+    "cumulative_unique_replay_ids_planned": 24000,
+    "first_replay_epoch": 2,
+    "logical_epochs": 200,
+    "no_replay_exception": "NO_REPLAY has zero replay exposure while retaining the same canonical base optimizer steps",
+    "optimizer_step_lock": "replay gradients accumulate into the same base optimizer steps; replay never adds optimizer steps",
+    "optimizer_steps_total": 187600,
+    "replay_fraction_of_base": 0.005,
+    "replay_arm_parity": [
+      "per_epoch_slots_planned",
+      "per_epoch_slots_actual",
+      "unique_replay_ids_epoch",
+      "unique_replay_ids_cumulative",
+      "repeat_occurrences_epoch",
+      "cumulative_repeat_occurrences_actual",
+      "cumulative_optimizer_visible_replay_exposure_actual",
+      "optimizer_steps_actual"
+    ],
+    "replay_slots_per_epoch": 600,
+    "required_accounting": [
+      "unique_replay_ids_epoch",
+      "unique_replay_ids_cumulative",
+      "repeat_occurrences_epoch",
+      "cumulative_repeat_occurrences_actual"
+    ],
+    "selection_block_count": 40,
+    "selection_refresh_interval_epochs": 5,
+    "within_epoch_repeat_occurrences_planned": 0,
+    "within_epoch_unique_replay_ids_planned": 600
+  },
+  "candidate_effectiveness_claim": "NOT_EVALUATED",
+  "causal_lag": {
+    "decision_publication": "after source epoch atomic completion",
+    "future_information_allowed": false,
+    "selection_source_epoch": "logical_epoch - 1"
+  },
+  "composition_contract": {
+    "allowed_modes": [
+      "ORDERED_GATING",
+      "STRATIFICATION",
+      "FACTORIAL_ABLATION"
+    ],
+    "arbitrary_weighted_composite_allowed": false,
+    "sequence": [
+      "Q",
+      "R",
+      "A",
+      "D"
+    ]
+  },
+  "concepts": {
+    "A": {
+      "kind": "independent FN95 local-objective direction",
+      "operational_role": "ordered gate, sign stratum, or factorial factor using val_target only"
+    },
+    "D": {
+      "kind": "set-conditioned coverage",
+      "operational_role": "set-level source, video, feature, and gradient coverage after Q/R/A"
+    },
+    "Q": {
+      "kind": "reliability",
+      "operational_role": "first eligibility gate or preregistered reliability stratum"
+    },
+    "R": {
+      "kind": "residual/reducible learnability",
+      "operational_role": "post-Q ordered gate, stratum, or factorial factor"
+    }
+  },
+  "data_roles": {
+    "OOF": {
+      "allowed_use": "training-only out-of-fold reference and historical trajectory features",
+      "identity_frozen": true,
+      "prohibited_use": "fold member prediction from a model trained on that member"
+    },
+    "test": {
+      "allowed_use": "single final external reporting only after all methods, checkpoints, and thresholds are frozen",
+      "identity_frozen": true,
+      "prohibited_use": "method, signal, checkpoint, threshold, seed, stopping, or release selection"
+    },
+    "train": {
+      "allowed_use": "canonical base optimization and replay candidates",
+      "identity_frozen": true,
+      "prohibited_use": "membership in validation or test roles"
+    },
+    "val_cal": {
+      "allowed_use": "freeze an operational threshold when a single threshold is required",
+      "identity_frozen": true,
+      "prohibited_use": "candidate ranking or model selection"
+    },
+    "val_model": {
+      "allowed_use": "discovery-only model and mechanism study",
+      "identity_frozen": true,
+      "prohibited_use": "confirmatory endpoint reporting"
+    },
+    "val_op": {
+      "allowed_use": "fixed-checkpoint confirmatory FN=0..95 frontier and secondary endpoints",
+      "identity_frozen": true,
+      "prohibited_use": "method, checkpoint, threshold, or stopping selection"
+    },
+    "val_target": {
+      "allowed_use": "independent local FN95 target direction for A",
+      "identity_frozen": true,
+      "prohibited_use": "val_op endpoint reuse or test access"
+    }
+  },
+  "engineering_gate_authorized": false,
+  "evidence_types": [
+    "PAPER",
+    "EXPERT_CLAIM",
+    "CODE",
+    "SYNTHETIC",
+    "STAGE1_OBSERVATION",
+    "FUTURE_INTERVENTION"
+  ],
+  "formal_training_authorized": false,
+  "schema_version": "stage1.dynamic_replay.preregistration.v3",
+  "scientific_status": "PREREGISTERED_NOT_RUN",
+  "signals": {
+    "AUM": {
+      "classification": "CANDIDATE_SIGNAL_NOT_UTILITY",
+      "utility_evidence": false
+    },
+    "RHO": {
+      "classification": "CANDIDATE_SIGNAL_NOT_UTILITY",
+      "utility_evidence": false
+    },
+    "confidence": {
+      "classification": "CANDIDATE_SIGNAL_NOT_UTILITY",
+      "utility_evidence": false
+    },
+    "coverage": {
+      "classification": "CANDIDATE_SIGNAL_NOT_UTILITY",
+      "utility_evidence": false
+    },
+    "forgetting": {
+      "classification": "CANDIDATE_SIGNAL_NOT_UTILITY",
+      "utility_evidence": false
+    },
+    "gradient": {
+      "classification": "CANDIDATE_SIGNAL_NOT_UTILITY",
+      "utility_evidence": false
+    },
+    "loss": {
+      "classification": "CANDIDATE_SIGNAL_NOT_UTILITY",
+      "utility_evidence": false
+    }
+  },
+  "utility_evidence_contract": {
+    "canary_mock_synthetic_are_scientific_results": false,
+    "only_qualifying_evidence": "PAIRED_REAL_REPLAY_INTERVENTION",
+    "required_controls": [
+      "NO_REPLAY",
+      "R1_GLOBAL_RANDOM",
+      "R2_METHOD_MATCHED_RANDOM",
+      "CURRENT_LOSS"
+    ],
+    "required_scope": "disjoint unseen confirmation training seeds"
+  }
+}

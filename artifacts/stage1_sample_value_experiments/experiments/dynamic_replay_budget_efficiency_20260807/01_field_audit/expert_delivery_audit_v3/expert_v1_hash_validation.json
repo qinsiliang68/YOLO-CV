@@ -1,0 +1,47 @@
+{
+  "archive_errors": {},
+  "archive_member_rows": 1863,
+  "archive_summaries": {
+    "Stage1_BudgetedReplay_v1.0.0_Review_Evidence.zip": {
+      "archive_integrity": "PASS",
+      "archive_member_count": 19,
+      "extraction_result": "FULL_EXTRACT_PASS",
+      "manifest_member_count": 5,
+      "regular_file_count": 19,
+      "status": "PASS"
+    },
+    "Stage1_DynamicReplay_ExpertReturn_20260808_144555.tar.gz": {
+      "archive_integrity": "PASS",
+      "archive_member_count": 1844,
+      "extraction_result": "FULL_EXTRACT_PASS",
+      "manifest_member_count": 1842,
+      "manifested_bytes": 228559378,
+      "regular_file_count": 1844,
+      "status": "PASS"
+    }
+  },
+  "created_at_utc": "2026-08-09T13:47:16.070106+00:00",
+  "downloads_dir": "C:\\Users\\28898\\Downloads",
+  "executed_delivered_code": false,
+  "expected_artifact_count": 17,
+  "hash_or_archive_failure_count": 0,
+  "missing_required_source_count": 3,
+  "missing_required_sources": [
+    "Stage1_BudgetedReplay_Learnability_20260809_v1.0.0.tar.gz",
+    "Stage1_BudgetedReplay_Learnability_20260809_v1.0.0.zip",
+    "stage1_budgeted_replay-1.0.0-py3-none-any.whl"
+  ],
+  "observed_inventory_rows": 19,
+  "output_dir": "C:\\GitHub\\YOLO-CV\\artifacts\\stage1_sample_value_experiments\\experiments\\dynamic_replay_budget_efficiency_20260807\\01_field_audit\\expert_delivery_audit_v3",
+  "outputs": [
+    "expert_v1_inventory.csv",
+    "expert_archive_member_manifest.csv",
+    "expert_v1_hash_validation.json",
+    "README.md",
+    "expert_audit_output_manifest.csv"
+  ],
+  "schema_version": "stage1.expert_delivery_audit.v1",
+  "source_level_audit_ready": false,
+  "status": "INCOMPLETE_SOURCE_MISSING",
+  "temporary_extractions_retained": false
+}

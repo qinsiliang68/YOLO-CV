@@ -9,6 +9,7 @@ import pytest
 
 from stage1_gapvalue240.deep_analysis import (
     CanonicalInputError,
+    _training_summary,
     ingest_canonical_runs,
 )
 from stage1_gapvalue240.metrics import operational_metrics
@@ -261,7 +262,17 @@ def test_ingests_only_inventory_attempts_and_builds_training_summary(
     assert result.training_summaries["completed_epochs"].eq(3).all()
     assert result.training_summaries["best_top1_epoch"].eq(2).all()
     assert result.training_summaries["final_top1"].eq(0.75).all()
+    assert result.training_summaries["best_val_loss_epoch"].eq(2).all()
+    assert result.training_summaries["best_val_loss"].eq(0.2).all()
+    assert result.training_summaries["best_final_top1_gap"].tolist() == pytest.approx(
+        [0.05] * 3
+    )
+    assert result.training_summaries[
+        "final_minus_best_val_loss"
+    ].tolist() == pytest.approx([0.05] * 3)
     assert result.training_summaries["last_window_epochs"].eq(3).all()
+    assert result.training_summaries["overfit_flag"].eq(False).all()
+    assert result.training_summaries["oscillation_flag"].eq(False).all()
     assert result.metric_audit["recomputed"].eq(False).all()
 
 
@@ -285,9 +296,134 @@ def test_full_recompute_matches_saved_tie_safe_metrics(canonical_fixture: dict) 
     assert result.metric_audit["recomputed"].all()
     assert result.metric_audit["exact_match"].all()
     assert result.metric_audit["integer_fields_exact"].all()
+    assert result.metric_audit["raw_calibrated_integer_metrics_exact"].all()
     assert result.metric_audit["max_float_abs_error"].max() < 1e-12
     assert result.runs["TN_at_FN95"].notna().all()
     assert result.runs["FN_at_TN68253"].notna().all()
+    assert result.runs["raw_TN_at_FN95"].equals(result.runs["TN_at_FN95"])
+    assert result.runs["raw_FN_at_TN68253"].equals(
+        result.runs["FN_at_TN68253"]
+    )
+    assert result.runs["raw_gap_q68_q050"].notna().all()
+    assert result.runs["raw_tail_gap_q90_q05"].notna().all()
+
+
+def test_full_recompute_rejects_raw_calibrated_operational_count_drift(
+    canonical_fixture: dict,
+) -> None:
+    row = canonical_fixture["inventory_rows"][0]
+    attempt = (
+        canonical_fixture["root"]
+        / f"stage1_gapvalue240_{row['package']}_upload"
+        / "runs"
+        / row["run_slot"]
+        / row["attempt_id"]
+    )
+    prediction_path = attempt / "04_predictions/val_op_predictions.csv"
+    predictions = pd.read_csv(prediction_path)
+    # Keep calibrated scores unchanged, but invert raw ordering to make the
+    # raw operational counts disagree with the monotonic calibrated result.
+    predictions["score_raw"] = -predictions["score_raw"]
+    predictions.to_csv(prediction_path, index=False)
+    manifest_path = attempt / "07_validation/artifact_manifest.csv"
+    manifest = pd.read_csv(manifest_path)
+    match = manifest["relative_path"] == "04_predictions/val_op_predictions.csv"
+    manifest.loc[match, "size_bytes"] = prediction_path.stat().st_size
+    manifest.loc[match, "sha256"] = _sha256(prediction_path)
+    manifest.to_csv(manifest_path, index=False)
+
+    with pytest.raises(
+        CanonicalInputError,
+        match="raw/calibrated operational integer metrics differ",
+    ):
+        ingest_canonical_runs(
+            canonical_fixture["root"],
+            canonical_fixture["inventory"],
+            canonical_fixture["matrix"],
+            expected_runs=3,
+            expected_triads=1,
+            expected_comparisons=2,
+            expected_epochs=3,
+            expected_prediction_rows=5,
+            expected_normal_count=3,
+            expected_defect_count=2,
+            recompute_predictions=True,
+            fn_limit=1,
+            tn_target=2,
+        )
+
+
+def test_training_summary_flags_only_strong_overfit_and_oscillation(
+    tmp_path: Path,
+) -> None:
+    def write_attempt(
+        name: str,
+        *,
+        val_loss: list[float],
+        top1: list[float],
+    ) -> Path:
+        attempt = tmp_path / name
+        epoch_count = len(val_loss)
+        (attempt / "02_logs").mkdir(parents=True, exist_ok=True)
+        pd.DataFrame(
+            {
+                "epoch": range(1, epoch_count + 1),
+                "time": [float(index) for index in range(1, epoch_count + 1)],
+                "train/loss": [
+                    0.8 - 0.5 * index / max(epoch_count - 1, 1)
+                    for index in range(epoch_count)
+                ],
+                "metrics/accuracy_top1": top1,
+                "val/loss": val_loss,
+            }
+        ).to_csv(
+            attempt / "02_logs/epoch_training_metrics.csv",
+            index=False,
+        )
+        _write_json(
+            attempt / "02_logs/training_execution_audit.json",
+            {
+                "completed_epochs": epoch_count,
+                "expected_steps_per_epoch": 5,
+                "optimizer_steps_total": epoch_count * 5,
+                "loss_finite": True,
+            },
+        )
+        return attempt
+
+    decline = [0.5 - 0.4 * index / 19 for index in range(20)]
+    rise = [0.12 + 0.28 * index / 19 for index in range(20)]
+    top1_up = [0.7 + 0.2 * index / 19 for index in range(20)]
+    top1_down = [0.895 - 0.095 * index / 19 for index in range(20)]
+    overfit_attempt = write_attempt(
+        "overfit",
+        val_loss=decline + rise,
+        top1=top1_up + top1_down,
+    )
+    overfit = _training_summary(
+        overfit_attempt,
+        run_slot="RUN_OVERFIT",
+        expected_epochs=40,
+    )
+    assert overfit["overfit_flag"] is True
+    assert overfit["oscillation_flag"] is False
+    assert overfit["best_val_loss_epoch"] == 20
+    assert overfit["final_minus_best_val_loss"] > 0.25
+
+    oscillating_attempt = write_attempt(
+        "oscillating",
+        val_loss=[0.2 if index % 2 == 0 else 0.4 for index in range(20)],
+        top1=[0.75 if index % 2 == 0 else 0.85 for index in range(20)],
+    )
+    oscillating = _training_summary(
+        oscillating_attempt,
+        run_slot="RUN_OSCILLATING",
+        expected_epochs=20,
+    )
+    assert oscillating["oscillation_flag"] is True
+    assert oscillating["overfit_flag"] is False
+    assert oscillating["last_window_val_loss_direction_changes"] >= 10
+    assert oscillating["last_window_top1_direction_changes"] >= 10
 
 
 def test_selection_tamper_is_blocked(canonical_fixture: dict) -> None:

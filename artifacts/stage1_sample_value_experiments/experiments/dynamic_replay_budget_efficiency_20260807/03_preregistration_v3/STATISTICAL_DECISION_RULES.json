@@ -1,0 +1,75 @@
+{
+  "checkpoint_contract": {
+    "best_pt_allowed": false,
+    "checkpoint_policy": "FIXED_EPOCH_200",
+    "test_oracle_allowed": false,
+    "threshold_source": "val_cal_only_for_single_operating_threshold",
+    "val_op_selection_allowed": false
+  },
+  "multiplicity": {
+    "confirmatory_comparators": [
+      "NO_REPLAY",
+      "R1_GLOBAL_RANDOM",
+      "R2_METHOD_MATCHED_RANDOM",
+      "CURRENT_LOSS"
+    ],
+    "familywise_alpha": 0.05,
+    "method": "HOLM",
+    "paired_test": "EXACT_PAIRED_SIGN_FLIP_MEAN",
+    "sidedness": "ONE_SIDED"
+  },
+  "primary_endpoint": {
+    "direction": "HIGHER_IS_BETTER",
+    "fn_max": 95,
+    "fn_min": 0,
+    "name": "raw_safety_frontier_normalized_auc",
+    "normalization": "trapezoidal mean of TN divided by frozen normal count over integer FN budgets 0 through 95",
+    "split_role": "val_op"
+  },
+  "schema_version": "stage1.dynamic_replay.statistics.v3",
+  "secondary_endpoints": [
+    {
+      "direction": "HIGHER_IS_BETTER",
+      "name": "TN_at_FN95"
+    },
+    {
+      "direction": "LOWER_IS_BETTER",
+      "name": "FN_at_TN68253"
+    },
+    {
+      "direction": "LOWER_IS_BETTER",
+      "name": "dual_end_degradation_rate"
+    },
+    {
+      "direction": "HIGHER_IS_BETTER",
+      "name": "seed_win_rate"
+    },
+    {
+      "direction": "HIGHER_IS_BETTER",
+      "name": "worst_seed_delta"
+    }
+  ],
+  "seed_design": {
+    "confirmation_count": 14,
+    "derivation": "SHA256 contract-id scope and ordinal leading 31 bits with historical and v2 exclusions",
+    "discovery_count": 10,
+    "ranking_ablation_count": 10,
+    "sets_pairwise_disjoint": true,
+    "unseen_until_confirmation": true
+  },
+  "stability_gate": {
+    "all_four_holm_rejections_required": true,
+    "confirmation_seed_denominator": 14,
+    "maximum_dual_end_degradation_count": 0,
+    "minimum_positive_seed_wins": 12,
+    "minimum_worst_seed_primary_delta": 0.0
+  },
+  "stopping_rules": {
+    "discovery_elimination_allowed": "feasibility or safety only; never a benefit claim",
+    "efficacy_early_stop_allowed": false,
+    "missing_confirmation_pair_result": "confirmatory claim fails closed",
+    "safety_stop_can_claim_benefit": false,
+    "safety_stop_outcome": "NOT_EVALUATED_OR_HARM",
+    "scheduled_confirmation_pairs": 14
+  }
+}

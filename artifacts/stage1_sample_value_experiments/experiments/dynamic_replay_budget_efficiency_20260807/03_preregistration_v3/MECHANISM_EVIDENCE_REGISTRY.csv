@@ -1,0 +1,6 @@
+mechanism_id,component,mechanism,status,evidence_basis,stage1_boundary
+M_Q_RELIABILITY,Q,reliability gating excludes mislabeled or identity-inconsistent candidates,UNKNOWN_IN_STAGE1,FUTURE_INTERVENTION,requires paired T_Q versus R1 on real replay
+M_R_REDUCIBLE,R,residual signal adds learnability information beyond current loss and confidence,UNKNOWN_IN_STAGE1,FUTURE_INTERVENTION,requires paired T_QR versus R2 and CURRENT_LOSS on unseen seeds
+M_A_DIRECTION,A,independent target alignment improves the FN95 local objective direction,UNKNOWN_IN_STAGE1,FUTURE_INTERVENTION,requires val_target-separated T_QRA intervention and cannot use val_op or test for selection
+M_D_COVERAGE,D,set-conditioned source video feature and gradient coverage reduces redundancy,UNKNOWN_IN_STAGE1,FUTURE_INTERVENTION,requires T_QRAD versus method-matched random with exact exposure parity
+M_QRAD_POLICY,QRAD,the ordered Q then R then A then D policy is stable across unseen training seeds,UNKNOWN_IN_STAGE1,FUTURE_INTERVENTION,requires all four confirmatory contrasts and every stability gate

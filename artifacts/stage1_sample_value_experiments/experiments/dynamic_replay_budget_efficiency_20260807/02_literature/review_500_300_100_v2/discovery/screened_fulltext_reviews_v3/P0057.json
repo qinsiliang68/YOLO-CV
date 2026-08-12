@@ -1,0 +1,160 @@
+{
+  "schema_version": "3.0",
+  "paper_id": "P0057",
+  "canonical_work_id": "CWE157D064AB0EE690BCEA",
+  "title": "Dataset Cartography: Mapping and Diagnosing Datasets with Training Dynamics",
+  "decision": "SCREENED_ELIGIBLE",
+  "reviewed_at": "2026-08-10T08:20:00+08:00",
+  "reviewer": "codex_primary_fulltext_review",
+  "method_source": {
+    "path": "staging/broad_freeze_anchor_complete_v3/sources/P0057.pdf",
+    "bytes": 12910878,
+    "sha256": "E3D807F0E007FF03A22F6B80176F4BBC9F734E7804061C61792C6FF1B97C550F"
+  },
+  "text_source": {
+    "path": "staging/screened_text_anchor_complete_v3/text/P0057.txt",
+    "bytes": 133050,
+    "sha256": "1EFFF214ADE8635FF648EB2E4E1FA94E08ECD62694AEB0A129127788125AFE8F"
+  },
+  "rq_ids": ["RQ1", "RQ4", "RQ5", "RQ7"],
+  "section_evidence": {
+    "METHODS": {
+      "status": "READ",
+      "pages": "2-4",
+      "anchors": [
+        {
+          "page": 2,
+          "line": 7,
+          "quote": "behavior of a model as training progresses.",
+          "paraphrase_zh": "作者把单样本跨 epoch 的真实标签概率轨迹定义为训练动态的观测基础。"
+        }
+      ]
+    },
+    "EXPERIMENTS": {
+      "status": "READ",
+      "pages": "4-8 and appendices",
+      "anchors": [
+        {
+          "page": 5,
+          "line": 35,
+          "quote": "subsets considered contain 33% of the training data",
+          "paraphrase_zh": "核心子集比较固定为训练集的三分之一，并与同规模随机子集及多种已有选择法比较。"
+        }
+      ]
+    },
+    "ABLATIONS": {
+      "status": "READ",
+      "pages": "6-7",
+      "anchors": [
+        {
+          "page": 6,
+          "line": 43,
+          "quote": "performance with increasing % of ambiguous",
+          "paraphrase_zh": "作者改变 ambiguous 子集比例，并进一步用 easy-to-learn 样本替换一部分候选以观察优化和泛化变化。"
+        }
+      ]
+    },
+    "LIMITATIONS": {
+      "status": "READ",
+      "pages": "6-9",
+      "anchors": [
+        {
+          "page": 7,
+          "line": 50,
+          "quote": "Selection of the optimal",
+          "paraphrase_zh": "作者明确把低数据预算下 easy 与 ambiguous 的最优配比留作开放问题，不能据此冻结通用比例。"
+        }
+      ]
+    }
+  },
+  "formulas": [
+    "confidence mu_i is the mean gold-label probability over E epochs",
+    "variability sigma_i is the standard deviation of the same gold-label probability trajectory",
+    "correctness is the fraction of epochs in which the example is classified correctly"
+  ],
+  "algorithm_steps": [
+    "用指定模型和随机梯度训练过程记录每个样本在每个 epoch 的真实标签概率。",
+    "对每个样本计算 confidence、variability 与 correctness，并按坐标区域划分 easy、ambiguous、hard-to-learn。",
+    "从各区域按冻结比例构造唯一训练子集，再从头训练模型并与同规模随机子集比较 ID/OOD 表现。"
+  ],
+  "variables": [
+    "gold-label probability by epoch",
+    "mean confidence",
+    "probability variability",
+    "correctness fraction",
+    "subset fraction"
+  ],
+  "selection_timing": "先完成一条训练轨迹并统计跨 epoch 概率，再离线构造子集；不是在同一训练步骤内动态重排。",
+  "refresh_rule": "主实验的区域身份在重训前冻结，不在重训过程中刷新；不同随机初始化用于检查坐标稳定性。",
+  "budget": {
+    "unit": "unique training examples retained",
+    "denominator": "full training-set cardinality",
+    "unique_sample_definition": "每个训练 identity 在所选子集中至多计一次。",
+    "repeat_definition": "论文按普通 epoch 反复遍历冻结子集，没有把重复曝光作为独立干预变量。",
+    "cumulative_exposure_definition": "子集大小乘以训练 epoch 所产生的样本访问量，但论文没有与全数据组匹配累计曝光。",
+    "compute_cost": "选择前需先在完整数据上训练模型并保存逐 epoch 概率，随后还需对每个子集从头重训。"
+  },
+  "random_baselines": [
+    "33% uniform random training subset",
+    "100% full-data training",
+    "同规模 forgetting、AFLite、active-learning uncertainty 与 greedy-k baselines"
+  ],
+  "datasets": ["WinoGrande", "SNLI", "MultiNLI", "QNLI"],
+  "models": ["RoBERTa-large classifiers", "additional weaker architectures in appendices"],
+  "seed_count": {
+    "counts": [
+      "3 random seeds averaged with standard deviation for WinoGrande and QNLI",
+      "best performance over 3 random seeds for the Table 3 SNLI and MultiNLI comparison"
+    ],
+    "scope": "Tables 2-4 and Figure 3",
+    "aggregation": "Most tables report means, while Table 3 reports the best of three; the aggregation is not uniform."
+  },
+  "checkpoint_selection": "The paper uses task development sets for hyperparameter choice and does not define one uniform business-metric checkpoint rule across all tables.",
+  "results": [
+    {
+      "claim": "在 WinoGrande 的 33% 子集实验中，ambiguous 区域取得最高 OOD 表现，并高于同规模随机子集。",
+      "locator": "page 5, Table 2",
+      "value": "WSC OOD accuracy 87.6 for ambiguous versus 85.6 for random; WinoGrande ID 78.7 versus 73.3",
+      "anchor": {
+        "page": 5,
+        "line": 24,
+        "quote": "Reported values are averaged over 3 random seeds",
+        "paraphrase_zh": "表二按三个随机种子汇总固定三分之一预算的区域选择与随机选择。"
+      }
+    },
+    {
+      "claim": "只保留很小的 ambiguous 子集会导致优化失败，加入少量 easy 样本能够恢复训练，但过量替换又会损害结果。",
+      "locator": "pages 6-7, Figure 3",
+      "value": "ambiguous-only subsets below 25% fail; replacing one tenth of the 17% subset restores optimization",
+      "anchor": {
+        "page": 6,
+        "line": 44,
+        "quote": "optimization fails when trained on small amounts (< 25%) of the most",
+        "paraphrase_zh": "极端聚焦 ambiguous 会失去支撑优化的 easy 样本，说明价值取决于集合组成和预算。"
+      }
+    }
+  ],
+  "ablations": [
+    "把 ambiguous 子集比例从 50% 逐步降至 1%，检验预算变化。",
+    "在 17% ambiguous 子集中逐步替换 easy-to-learn 样本，检验混合构成。"
+  ],
+  "negative_results": [
+    "forgetting 选择在 WinoGrande 低于同规模随机基线。",
+    "ambiguous-only 在 25% 以下无法可靠优化，且过多 easy 替换会再次降低性能。",
+    "预实验删除少量检测出的噪声并未带来明显性能变化。"
+  ],
+  "failure_conditions": [
+    "预算过低且候选过度集中于 ambiguous 区域时，训练缺少易样本支撑而不收敛。",
+    "训练动态坐标依赖模型、优化器与数据顺序，并需先支付完整轨迹训练成本。",
+    "用 OOD 泛化收益推断 Stage1 FN95 replay 收益会改变目标函数。"
+  ],
+  "limitations": [
+    "主要任务是 NLP 分类与 OOD 泛化，不是已训练样本的有限预算额外回流。",
+    "部分表采用均值、部分表采用三个 seed 中最佳结果，不能直接支持跨 seed 稳定性结论。",
+    "区域选择同时改变子集规模、累计曝光和训练步数，未隔离 replay 条件效应。"
+  ],
+  "transfer_class": "MECHANISM_ONLY",
+  "stage1_mechanism_zh": "可迁移的核心不是把 variability 直接当价值，而是用全 epoch 轨迹把样本分成已学、摇摆和长期低置信类型，再通过固定预算干预检验；低预算失败和 easy 样本补救还提示 D 应约束集合覆盖与难度混合。",
+  "stage1_non_inference_zh": "该论文没有证明 ambiguous 或高 variability 样本在 Stage1 回流中必然优于随机，也没有匹配累计额外曝光、FN95 目标或未见训练 seed；因此这些动态只能作为分层信号和机制假设，不能成为最终效用公式。",
+  "exclusion_reason": "NOT_APPLICABLE_WITH_REASON:eligible for SCREENED evidence tier"
+}

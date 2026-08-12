@@ -1,0 +1,176 @@
+{
+  "schema_version": "3.0",
+  "paper_id": "P0075",
+  "canonical_work_id": "CW6C0BF6537DFBB5C10C15",
+  "title": "A Neyman-Pearson Approach to Statistical Learning",
+  "decision": "SCREENED_ELIGIBLE",
+  "reviewed_at": "2026-08-10T16:18:30+08:00",
+  "reviewer": "codex_primary_fulltext_review",
+  "method_source": {
+    "path": "staging/broad_freeze_anchor_complete_v3/sources/P0075.pdf",
+    "bytes": 298304,
+    "sha256": "E0336648125BB19F29C5E7C2FE3A19184D1E30107F3BB593B86CFBDA65866EB3"
+  },
+  "text_source": {
+    "path": "staging/screened_text_anchor_complete_v3/text/P0075.txt",
+    "bytes": 98012,
+    "sha256": "0EA6BDF939798FDC3A06CFA8B04F2DF4DC8CAD3ED7502D0A172E0FCD13CD095B"
+  },
+  "rq_ids": [
+    "RQ8"
+  ],
+  "section_evidence": {
+    "METHODS": {
+      "status": "READ",
+      "pages": "4-18 and algorithm appendices on pages 24-27",
+      "anchors": [
+        {
+          "page": 6,
+          "line": 31,
+          "quote": "Cannon et al. propose the classifier",
+          "paraphrase_zh": "论文从类条件误报率与漏报率出发，把经验漏报最小化置于经验误报上界约束之下，并进一步用随样本量和模型复杂度变化的容差构造 NP-ERM 与 NP-SRM。"
+        }
+      ]
+    },
+    "EXPERIMENTS": {
+      "status": "READ",
+      "pages": "9-11 numerical bound comparisons and Figure 1; no benchmark learning experiment is reported",
+      "anchors": [
+        {
+          "page": 11,
+          "line": 9,
+          "quote": "A simple numerical experiment, using",
+          "paraphrase_zh": "经验部分是对理论容差和所需样本量的数值代入，而不是在真实数据集上训练并比较分类器；因此它只验证界的数量级示例。"
+        }
+      ]
+    },
+    "ABLATIONS": {
+      "status": "NOT_REPORTED_BY_PAPER",
+      "pages": "1-30 including theorem comparisons, conclusion, proofs, and implementation appendices",
+      "anchors": [],
+      "absence_reason_zh": "全文比较了不同理论界和不同分类器层级，但没有在固定数据、固定算法与固定随机性下做组件移除、超参数敏感性或选择策略消融；数值例子不能冒充消融实验。"
+    },
+    "LIMITATIONS": {
+      "status": "READ",
+      "pages": "11, 18, and 26",
+      "anchors": [
+        {
+          "page": 26,
+          "line": 33,
+          "quote": "Unfortunately the computational complexity has an exponential dependence on d.",
+          "paraphrase_zh": "作者明确指出一般 dyadic decision tree 实现对维度呈指数依赖，计算和内存约束把适用范围限制在很低维度。"
+        }
+      ]
+    }
+  },
+  "formulas": [
+    "The Neyman-Pearson target minimizes class-1 miss risk R1(h) subject to class-0 false-alarm risk R0(h) <= alpha.",
+    "NP-ERM minimizes empirical R1 over H subject to empirical R0 <= alpha + epsilon0/2.",
+    "The VC tolerance is epsilon_j(n_j, delta_j, H) = sqrt(128(V log n_j + log(8/delta_j))/n_j).",
+    "NP-SRM selects among class-specific NP-ERM candidates by empirical miss risk plus a complexity penalty epsilon1/2.",
+    "The oracle inequality separately bounds excess false alarm and miss risk with probability at least 1-(delta0+delta1)."
+  ],
+  "algorithm_steps": [
+    "Split the IID labeled sample by class and compute empirical class-conditional false-alarm and miss risks.",
+    "For every permitted classifier class H_k, solve NP-ERM under the sample-size-dependent empirical false-alarm constraint.",
+    "Select the class-specific candidate minimizing empirical miss risk plus the prescribed complexity penalty.",
+    "For histograms or dyadic decision trees, use the recursive dynamic-programming procedures in Figures 3-5 to obtain the exact constrained empirical-risk solution."
+  ],
+  "variables": [
+    "R0 and R1: population false-alarm and miss probabilities",
+    "Rhat0 and Rhat1: class-conditional empirical risks",
+    "alpha: user-specified false-alarm ceiling",
+    "n0 and n1: observed class-specific sample counts",
+    "delta0 and delta1: confidence parameters",
+    "epsilon0 and epsilon1: sample-size and complexity dependent tolerances",
+    "H_k, V_k, K(n), and L: classifier hierarchy, VC complexity, maximum class index, and tree depth"
+  ],
+  "selection_timing": "Classifier selection occurs once after the complete labeled training sample is available: first within each H_k under the false-alarm constraint, then across classes by structural-risk penalization. This is not online replay-sample selection.",
+  "refresh_rule": "There is no epoch-wise sample refresh. A new classifier would be recomputed only when the labeled sample, confidence parameters, false-alarm level, or classifier hierarchy changes.",
+  "budget": {
+    "unit": "class-conditional labeled observations used to estimate R0 and R1",
+    "denominator": "the full IID training sample n, with realized class counts n0 and n1",
+    "unique_sample_definition": "Each IID labeled observation is one training identity; the paper does not define a replay pool or a cross-epoch union of selected IDs.",
+    "repeat_definition": "No replay repetition is specified; the same finite sample is used by empirical-risk optimization and complexity selection.",
+    "cumulative_exposure_definition": "Optimizer-visible cumulative example exposure is not reported because the analyzed estimators are defined as constrained empirical-risk solutions rather than an epoch ledger.",
+    "compute_cost": "Histogram NP-ERM is O(k^d l0); the general dyadic-tree algorithm is O(n^2 n0 d^2 L^(d+1) log(n L^d)), while the cyclic alternative is O(n0 n^2 d^2 L^2)."
+  },
+  "random_baselines": [
+    "No global-random or method-matched-random sample-selection baseline is evaluated.",
+    "The paper explicitly omits randomized Neyman-Pearson tests and analyzes non-randomized classifiers.",
+    "The main comparison is between older and tighter probability bounds, not between paired stochastic training interventions."
+  ],
+  "datasets": [
+    "No empirical benchmark dataset is trained; the paper uses an abstract IID binary-classification distribution and numerical examples for finite or VC classes."
+  ],
+  "models": [
+    "finite classifier classes",
+    "VC classifier classes",
+    "histogram classifiers",
+    "dyadic decision trees"
+  ],
+  "seed_count": "NOT_REPORTED_BY_PAPER",
+  "checkpoint_selection": "There is no iterative neural-network checkpoint. The estimator is the exact or theoretical constrained empirical-risk solution; no validation-selected or test-selected training endpoint is studied.",
+  "results": [
+    {
+      "claim": "新的 IID VC 界在给定示例参数下需要的样本量远小于先前界。",
+      "locator": "page 9, Example 1 and Figure 1",
+      "value": "n >= 97,104 for Theorem 3 versus n >= 2,887,079 for Theorem 2 when V=1, balanced classes, delta0=delta1=0.1, and epsilon0=epsilon1=0.2.",
+      "anchor": {
+        "page": 9,
+        "line": 32,
+        "quote": "which implies n ≥ 97104. In contrast, Theorem 2 requires",
+        "paraphrase_zh": "该数值例只说明新界在指定参数下更紧，不是对分类性能、随机种子稳定性或回流效用的实证。"
+      }
+    },
+    {
+      "claim": "有限分类器示例给出了把学习器期望误报率约束到目标水平的具体容差换算。",
+      "locator": "page 11, Example 3",
+      "value": "For |H|=2^8 and n0=1000, the minimum tolerance term is 0.157; targeting learner false-alarm probability 0.2 yields an NP-ERM constraint level alpha=0.043.",
+      "anchor": {
+        "page": 11,
+        "line": 9,
+        "quote": "Suppose H is finite, |H| = 28 , and n0 = 1000.",
+        "paraphrase_zh": "例子展示了误报约束和置信容差的统计关系，但没有给出 FN95 阈值、测试集操作点或真实训练干预。"
+      }
+    },
+    {
+      "claim": "一般 dyadic decision tree 的精确实现存在明显高维计算失败条件。",
+      "locator": "page 26, Proposition 5 discussion",
+      "value": "The implementation is stated to be limited by computation and memory to d < 15; a cyclic-tree restriction reduces the polynomial factors and removes L^(d+1).",
+      "anchor": {
+        "page": 26,
+        "line": 33,
+        "quote": "computational complexity has an exponential dependence on d.",
+        "paraphrase_zh": "该限制使原算法不能直接作为高维视觉模型回流选择器，最多能提供局部风险约束的统计机制。"
+      }
+    }
+  ],
+  "ablations": [
+    "The paper reports no component-removal or matched-budget empirical ablation; theorem-bound comparisons and numerical substitutions are not counted as ablations."
+  ],
+  "negative_results": [
+    "NP-ERM over a fixed classifier class cannot approximate many optimal rules and is not universally consistent.",
+    "The paper derives no oracle inequality for false-alarm error analogous to the miss-risk oracle inequality.",
+    "The general dyadic-tree implementation has exponential dependence on dimension and is impractical beyond low-dimensional settings.",
+    "Practical effects on boosting, support-vector machines, and real asymmetric-error applications are explicitly left for future work."
+  ],
+  "failure_conditions": [
+    "Class-conditional sample counts are too small for the selected confidence tolerance.",
+    "The classifier hierarchy cannot approximate the constrained Bayes rule.",
+    "The operational false-alarm target is chosen after inspecting test outcomes rather than fixed independently.",
+    "High-dimensional features make the exact tree implementation computationally infeasible.",
+    "A high-probability population bound is mistaken for evidence that a replay-selected sample set causes utility."
+  ],
+  "limitations": [
+    "The contribution is predominantly theoretical and lacks a real benchmark training comparison.",
+    "Randomized tests are not treated explicitly.",
+    "No training seed, order, checkpoint, random selection, or no-replay comparison is reported.",
+    "The method controls class-conditional false alarm and miss risk, but does not define the Stage1 FN=0..95 raw safety-frontier normalized AUC.",
+    "The exact dyadic-tree solver scales poorly with feature dimension."
+  ],
+  "transfer_class": "MECHANISM_ONLY",
+  "stage1_mechanism_zh": "该文可迁移的是目标与数据角色合同：先在独立且预先冻结的操作/校准数据上定义一端错误约束，再优化另一端错误，并把有限样本容差和多模型选择复杂度显式计入。它支持把 FN95 视为局部约束目标而非任意总分，也提醒训练、校准和测试必须分离。",
+  "stage1_non_inference_zh": "该文没有选择回流样本、没有固定 replay slots 与累计 optimizer-visible exposure、没有 R1/R2/current-loss/no-replay 配对干预，也没有跨训练种子的 FN95 结果。因此 NP 风险界和数值样本量例子不能证明任何 Q/R/A/D 候选集合具有 Stage1 utility，更不能把 pAUC 或 NP 约束本身当作 utility evidence。",
+  "exclusion_reason": "NOT_APPLICABLE_WITH_REASON:eligible as a target-risk and inference-control mechanism paper"
+}
