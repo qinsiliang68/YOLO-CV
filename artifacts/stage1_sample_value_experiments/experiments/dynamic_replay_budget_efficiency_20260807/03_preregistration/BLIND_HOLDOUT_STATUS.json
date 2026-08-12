@@ -1,0 +1,5 @@
+{
+  "access_rule": "Bind by hash before protocol freeze; open once after winner and analysis are frozen.",
+  "claim_gate": "EXTERNAL_GENERALIZATION_BLOCKED",
+  "status": "UNBOUND"
+}
