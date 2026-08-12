@@ -1,0 +1,27 @@
+{
+  "schema_version": "2.0",
+  "status": "INCOMPLETE",
+  "gates": {
+    "corpus": "FAIL",
+    "discovery": "BLOCKED_BY_CORPUS",
+    "source_acquisition": "BLOCKED_BY_CORPUS",
+    "random_audit": "BLOCKED_BY_CORPUS",
+    "second_pass": "BLOCKED_BY_CORPUS"
+  },
+  "counts": {
+    "broad": 0,
+    "screened": 0,
+    "deep": 0
+  },
+  "errors": [
+    "count.broad: expected exactly 500, observed 0",
+    "count.screened: expected exactly 300, observed 0",
+    "count.deep: expected exactly 100, observed 0",
+    "paper_id sequence must be exactly P0001..P0500 in registry order"
+  ],
+  "formal_training_started": false,
+  "engineering_gate_generated": false,
+  "blind_holdout_opened": false,
+  "corpus_root": "C:\\GitHub\\YOLO-CV\\artifacts\\stage1_sample_value_experiments\\experiments\\dynamic_replay_budget_efficiency_20260807\\02_literature\\review_500_300_100_v2",
+  "pdf_page_inspection": true
+}
