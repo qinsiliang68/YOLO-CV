@@ -1,0 +1,17 @@
+{
+  "argv": [
+    "rg",
+    "-n",
+    "_untracked_importable_source",
+    "stage1_dynamic_replay_v3/provenance.py"
+  ],
+  "command": "rg -n _untracked_importable_source stage1_dynamic_replay_v3/provenance.py",
+  "exit_code": 0,
+  "requirement_id": "DYNAMIC:F01",
+  "schema_version": "stage1.tripartite_static_reproduction.v2",
+  "scientific_result": false,
+  "source_reference": "stage1_dynamic_replay_v3/provenance.py:91-117",
+  "stderr": "",
+  "stdout": "78:def _untracked_importable_source(repo: Path) -> list[str]:\n109:    untracked = _untracked_importable_source(root)\n",
+  "validation_scope": "STATIC_SOURCE_REPRODUCTION_ONLY"
+}

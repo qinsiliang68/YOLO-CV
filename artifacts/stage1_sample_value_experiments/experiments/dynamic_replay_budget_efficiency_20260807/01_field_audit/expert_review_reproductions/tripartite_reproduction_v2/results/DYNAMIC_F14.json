@@ -1,0 +1,17 @@
+{
+  "argv": [
+    "rg",
+    "-n",
+    "LINEAR_TAPER_E141_E160",
+    "stage1_dynamic_replay_v3/matrix.py"
+  ],
+  "command": "rg -n LINEAR_TAPER_E141_E160 stage1_dynamic_replay_v3/matrix.py",
+  "exit_code": 0,
+  "requirement_id": "DYNAMIC:F14",
+  "schema_version": "stage1.tripartite_static_reproduction.v2",
+  "scientific_result": false,
+  "source_reference": "stage1_dynamic_replay_v3/matrix.py:10-11",
+  "stderr": "",
+  "stdout": "12:ENVELOPES = (\"CONTINUOUS\", \"LINEAR_TAPER_E141_E160\")\n",
+  "validation_scope": "STATIC_SOURCE_REPRODUCTION_ONLY"
+}

@@ -1,0 +1,17 @@
+{
+  "argv": [
+    "rg",
+    "-n",
+    "_normal_observations",
+    "stage1_dynamic_replay_v3/controller.py"
+  ],
+  "command": "rg -n _normal_observations stage1_dynamic_replay_v3/controller.py",
+  "exit_code": 0,
+  "requirement_id": "DYNAMIC:F12",
+  "schema_version": "stage1.tripartite_static_reproduction.v2",
+  "scientific_result": false,
+  "source_reference": "stage1_dynamic_replay_v3/controller.py:154-160",
+  "stderr": "",
+  "stdout": "125:def _normal_observations(observations: Iterable[BaseObservation]) -> list[BaseObservation]:\n154:    risk = [row for row in _normal_observations(observations) if row.p_defect >= threshold.threshold]\n182:    normal = sorted(_normal_observations(observations), key=lambda row: (-row.current_ce, row.sample_id))\n",
+  "validation_scope": "STATIC_SOURCE_REPRODUCTION_ONLY"
+}

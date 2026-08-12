@@ -1,0 +1,17 @@
+{
+  "argv": [
+    "rg",
+    "-n",
+    "optimizer_step_before",
+    "stage1_dynamic_replay_v3/trajectory.py"
+  ],
+  "command": "rg -n optimizer_step_before stage1_dynamic_replay_v3/trajectory.py",
+  "exit_code": 0,
+  "requirement_id": "BUDGETED:H-02",
+  "schema_version": "stage1.tripartite_static_reproduction.v2",
+  "scientific_result": false,
+  "source_reference": "stage1_dynamic_replay_v3/trajectory.py:79-188",
+  "stderr": "",
+  "stdout": "76:        self.optimizer_step_before: int | None = None\n79:    def start_batch(self, *, batch_index: int, optimizer_step_before: int) -> None:\n83:        self.optimizer_step_before = int(optimizer_step_before)\n89:        if self.batch_index is None or self.optimizer_step_before is None:\n137:                \"optimizer_step_before\": self.optimizer_step_before,\n138:                \"optimizer_step_after\": self.optimizer_step_before + 1,\n174:        self.optimizer_step_before = None\n177:        if self.batch_index is not None or self.optimizer_step_before is not None:\n",
+  "validation_scope": "STATIC_SOURCE_REPRODUCTION_ONLY"
+}

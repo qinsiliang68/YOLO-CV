@@ -1,0 +1,17 @@
+{
+  "argv": [
+    "rg",
+    "-n",
+    "UNKNOWN_IN_STAGE1",
+    "artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/02_literature/GOAL_EXECUTION_CONTRACT_500_300_100_v2.md"
+  ],
+  "command": "rg -n UNKNOWN_IN_STAGE1 artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/02_literature/GOAL_EXECUTION_CONTRACT_500_300_100_v2.md",
+  "exit_code": 0,
+  "requirement_id": "BUDGETED:M-07",
+  "schema_version": "stage1.tripartite_static_reproduction.v2",
+  "scientific_result": false,
+  "source_reference": "artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/02_literature/GOAL_EXECUTION_CONTRACT_500_300_100_v2.md:259-266",
+  "stderr": "",
+  "stdout": "260:2. 机制优先级，分别标注 `SUPPORTED`、`CONTRADICTED`、`MIXED`、`UNKNOWN_IN_STAGE1`；\n",
+  "validation_scope": "STATIC_SOURCE_REPRODUCTION_ONLY"
+}

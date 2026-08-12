@@ -1,0 +1,17 @@
+{
+  "argv": [
+    "rg",
+    "-n",
+    "get_dataloader",
+    "stage1_dynamic_replay_v3/ultralytics_overlay.py"
+  ],
+  "command": "rg -n get_dataloader stage1_dynamic_replay_v3/ultralytics_overlay.py",
+  "exit_code": 0,
+  "requirement_id": "BUDGETED:P0-04",
+  "schema_version": "stage1.tripartite_static_reproduction.v2",
+  "scientific_result": false,
+  "source_reference": "stage1_dynamic_replay_v3/ultralytics_overlay.py:131-140",
+  "stderr": "",
+  "stdout": "142:    def get_dataloader(\n",
+  "validation_scope": "STATIC_SOURCE_REPRODUCTION_ONLY"
+}

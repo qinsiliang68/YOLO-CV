@@ -1,0 +1,17 @@
+{
+  "argv": [
+    "rg",
+    "-n",
+    "binary_cross_entropy",
+    "stage1_dynamic_replay_v3/controller.py"
+  ],
+  "command": "rg -n binary_cross_entropy stage1_dynamic_replay_v3/controller.py",
+  "exit_code": 0,
+  "requirement_id": "BUDGETED:H-04",
+  "schema_version": "stage1.tripartite_static_reproduction.v2",
+  "scientific_result": false,
+  "source_reference": "stage1_dynamic_replay_v3/controller.py:42-57",
+  "stderr": "",
+  "stdout": "22:def binary_cross_entropy(y_true: int, p_defect: float) -> float:\n54:        current_ce = binary_cross_entropy(y_true, current)\n55:        oof_ce = binary_cross_entropy(y_true, reference)\n236:    \"binary_cross_entropy\",\n",
+  "validation_scope": "STATIC_SOURCE_REPRODUCTION_ONLY"
+}

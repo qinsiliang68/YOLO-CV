@@ -1,0 +1,17 @@
+{
+  "argv": [
+    "rg",
+    "-n",
+    "compute_raw_safety_frontier",
+    "stage1_dynamic_replay_v3/evaluation.py"
+  ],
+  "command": "rg -n compute_raw_safety_frontier stage1_dynamic_replay_v3/evaluation.py",
+  "exit_code": 0,
+  "requirement_id": "BUDGETED:H-08",
+  "schema_version": "stage1.tripartite_static_reproduction.v2",
+  "scientific_result": false,
+  "source_reference": "stage1_dynamic_replay_v3/evaluation.py:101-165",
+  "stderr": "",
+  "stdout": "118:def compute_raw_safety_frontier(\n300:    \"compute_raw_safety_frontier\",\n",
+  "validation_scope": "STATIC_SOURCE_REPRODUCTION_ONLY"
+}

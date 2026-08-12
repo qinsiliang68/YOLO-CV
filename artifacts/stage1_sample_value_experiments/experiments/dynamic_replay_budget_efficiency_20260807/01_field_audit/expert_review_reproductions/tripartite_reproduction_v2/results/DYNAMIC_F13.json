@@ -1,0 +1,17 @@
+{
+  "argv": [
+    "rg",
+    "-n",
+    "SUPPORTED_ENVELOPES",
+    "stage1_dynamic_replay_v3/controller.py"
+  ],
+  "command": "rg -n SUPPORTED_ENVELOPES stage1_dynamic_replay_v3/controller.py",
+  "exit_code": 0,
+  "requirement_id": "DYNAMIC:F13",
+  "schema_version": "stage1.tripartite_static_reproduction.v2",
+  "scientific_result": false,
+  "source_reference": "stage1_dynamic_replay_v3/controller.py:108-122",
+  "stderr": "",
+  "stdout": "12:SUPPORTED_ENVELOPES = {\"CONTINUOUS\", \"LINEAR_TAPER_E141_E160\"}\n112:    if envelope_name not in SUPPORTED_ENVELOPES:\n",
+  "validation_scope": "STATIC_SOURCE_REPRODUCTION_ONLY"
+}

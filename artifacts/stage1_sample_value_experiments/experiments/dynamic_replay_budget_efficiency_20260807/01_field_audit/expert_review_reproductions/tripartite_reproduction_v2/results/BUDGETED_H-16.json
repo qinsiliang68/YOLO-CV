@@ -1,0 +1,17 @@
+{
+  "argv": [
+    "rg",
+    "-n",
+    "deterministic_augmentation",
+    "stage1_dynamic_replay_v3/dynamic_dataset.py"
+  ],
+  "command": "rg -n deterministic_augmentation stage1_dynamic_replay_v3/dynamic_dataset.py",
+  "exit_code": 0,
+  "requirement_id": "BUDGETED:H-16",
+  "schema_version": "stage1.tripartite_static_reproduction.v2",
+  "scientific_result": false,
+  "source_reference": "stage1_dynamic_replay_v3/dynamic_dataset.py:63-84",
+  "stderr": "",
+  "stdout": "63:def deterministic_augmentation(seed: int) -> Iterator[None]:\n125:        with deterministic_augmentation(record.augmentation_seed):\n149:    \"deterministic_augmentation\",\n",
+  "validation_scope": "STATIC_SOURCE_REPRODUCTION_ONLY"
+}

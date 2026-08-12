@@ -1,0 +1,17 @@
+{
+  "argv": [
+    "rg",
+    "-n",
+    "HISTORICAL_AND_V2_RESERVED_SEEDS",
+    "stage1_dynamic_replay_v3/seeds.py"
+  ],
+  "command": "rg -n HISTORICAL_AND_V2_RESERVED_SEEDS stage1_dynamic_replay_v3/seeds.py",
+  "exit_code": 0,
+  "requirement_id": "BUDGETED:H-09",
+  "schema_version": "stage1.tripartite_static_reproduction.v2",
+  "scientific_result": false,
+  "source_reference": "stage1_dynamic_replay_v3/seeds.py:50-55",
+  "stderr": "",
+  "stdout": "21:HISTORICAL_AND_V2_RESERVED_SEEDS = HISTORICAL_SEEDS | V2_RESERVED_SEEDS\n51:    used = set(HISTORICAL_AND_V2_RESERVED_SEEDS)\n62:    \"HISTORICAL_AND_V2_RESERVED_SEEDS\",\n",
+  "validation_scope": "STATIC_SOURCE_REPRODUCTION_ONLY"
+}

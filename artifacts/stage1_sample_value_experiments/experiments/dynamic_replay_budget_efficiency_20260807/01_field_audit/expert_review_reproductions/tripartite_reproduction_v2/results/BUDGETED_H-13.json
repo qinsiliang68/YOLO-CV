@@ -1,0 +1,17 @@
+{
+  "argv": [
+    "rg",
+    "-n",
+    "build_current_loss_decision",
+    "stage1_dynamic_replay_v3/runtime_controller.py"
+  ],
+  "command": "rg -n build_current_loss_decision stage1_dynamic_replay_v3/runtime_controller.py",
+  "exit_code": 0,
+  "requirement_id": "BUDGETED:H-13",
+  "schema_version": "stage1.tripartite_static_reproduction.v2",
+  "scientific_result": false,
+  "source_reference": "stage1_dynamic_replay_v3/runtime_controller.py:198-255",
+  "stderr": "",
+  "stdout": "17:    build_current_loss_decision,\n233:            decision = build_current_loss_decision(\n",
+  "validation_scope": "STATIC_SOURCE_REPRODUCTION_ONLY"
+}

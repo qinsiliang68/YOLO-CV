@@ -1,0 +1,17 @@
+{
+  "argv": [
+    "rg",
+    "-n",
+    "cross_fitted_reference_loss_i",
+    "artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/02_literature/FULL_TEXT_EVIDENCE_NOTES/P009_RHO_LOSS_2022.md"
+  ],
+  "command": "rg -n cross_fitted_reference_loss_i artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/02_literature/FULL_TEXT_EVIDENCE_NOTES/P009_RHO_LOSS_2022.md",
+  "exit_code": 0,
+  "requirement_id": "BUDGETED:H-06",
+  "schema_version": "stage1.tripartite_static_reproduction.v2",
+  "scientific_result": false,
+  "source_reference": "artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/02_literature/FULL_TEXT_EVIDENCE_NOTES/P009_RHO_LOSS_2022.md:103-134",
+  "stderr": "",
+  "stdout": "129:learnable_residual_i(t) = current_loss_i(t) - cross_fitted_reference_loss_i\n",
+  "validation_scope": "STATIC_SOURCE_REPRODUCTION_ONLY"
+}

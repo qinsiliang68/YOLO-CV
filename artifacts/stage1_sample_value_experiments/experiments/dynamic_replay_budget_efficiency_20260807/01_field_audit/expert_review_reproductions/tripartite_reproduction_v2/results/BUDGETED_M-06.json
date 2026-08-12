@@ -1,0 +1,17 @@
+{
+  "argv": [
+    "rg",
+    "-n",
+    "TRACE_MATCHED_CURRENT_LOSS",
+    "stage1_dynamic_replay_v3/matrix.py"
+  ],
+  "command": "rg -n TRACE_MATCHED_CURRENT_LOSS stage1_dynamic_replay_v3/matrix.py",
+  "exit_code": 0,
+  "requirement_id": "BUDGETED:M-06",
+  "schema_version": "stage1.tripartite_static_reproduction.v2",
+  "scientific_result": false,
+  "source_reference": "stage1_dynamic_replay_v3/matrix.py:52-109",
+  "stderr": "",
+  "stdout": "84:                           seed.seed_scope, seed.training_seed, \"TRACE_MATCHED_CURRENT_LOSS\",\n104:                           seed.seed_scope, seed.training_seed, \"TRACE_MATCHED_CURRENT_LOSS\",\n",
+  "validation_scope": "STATIC_SOURCE_REPRODUCTION_ONLY"
+}

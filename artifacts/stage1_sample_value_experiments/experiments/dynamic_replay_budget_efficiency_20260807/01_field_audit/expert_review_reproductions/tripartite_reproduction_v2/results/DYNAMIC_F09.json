@@ -1,0 +1,17 @@
+{
+  "argv": [
+    "rg",
+    "-n",
+    "write_controller_decision",
+    "stage1_dynamic_replay_v3/training_runtime.py"
+  ],
+  "command": "rg -n write_controller_decision stage1_dynamic_replay_v3/training_runtime.py",
+  "exit_code": 0,
+  "requirement_id": "DYNAMIC:F09",
+  "schema_version": "stage1.tripartite_static_reproduction.v2",
+  "scientific_result": false,
+  "source_reference": "stage1_dynamic_replay_v3/training_runtime.py:211-253",
+  "stderr": "",
+  "stdout": "229:            transaction.write_controller_decision(self.current_decision_payload),\n",
+  "validation_scope": "STATIC_SOURCE_REPRODUCTION_ONLY"
+}

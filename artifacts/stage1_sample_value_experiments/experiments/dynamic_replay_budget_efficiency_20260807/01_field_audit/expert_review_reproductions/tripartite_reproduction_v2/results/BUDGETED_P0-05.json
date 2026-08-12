@@ -1,0 +1,17 @@
+{
+  "argv": [
+    "rg",
+    "-n",
+    "target_tn_reachable",
+    "stage1_dynamic_replay_v3/evaluation.py"
+  ],
+  "command": "rg -n target_tn_reachable stage1_dynamic_replay_v3/evaluation.py",
+  "exit_code": 0,
+  "requirement_id": "BUDGETED:P0-05",
+  "schema_version": "stage1.tripartite_static_reproduction.v2",
+  "scientific_result": false,
+  "source_reference": "stage1_dynamic_replay_v3/evaluation.py:141-165",
+  "stderr": "",
+  "stdout": "54:    target_tn_reachable: bool\n166:        target_tn_reachable=fn_at_target is not None,\n",
+  "validation_scope": "STATIC_SOURCE_REPRODUCTION_ONLY"
+}

@@ -1,0 +1,96 @@
+{
+  "budgeted_source_missing": true,
+  "contract": {
+    "allowed_statuses": [
+      "CONFIRMED_PRESENT",
+      "CONFIRMED_ABSENT",
+      "PARTIALLY_MITIGATED",
+      "CONTRADICTED_BY_EVIDENCE",
+      "NOT_TESTABLE_SOURCE_MISSING",
+      "NOT_APPLICABLE"
+    ],
+    "reproduction_command_policy": "exact uv run pytest node or exact rg -n query; validation never executes it",
+    "required_fields": [
+      "requirement_id",
+      "overall_status",
+      "expert_source_status",
+      "expert_claim_refs",
+      "expert_source_refs",
+      "v3_status",
+      "v3_source_refs",
+      "reproduction_command",
+      "exit_code",
+      "result_artifact_sha",
+      "observed_result",
+      "remaining_risk",
+      "required_action"
+    ],
+    "result_artifact_sha_policy": "64 hexadecimal characters",
+    "source_missing_reference": "NOT_APPLICABLE_SOURCE_MISSING"
+  },
+  "error_count": 0,
+  "errors": [],
+  "expected_total_rows": 46,
+  "expert_inventory": {
+    "budgeted_required_source_rows": 3,
+    "budgeted_source_statuses": [
+      "REPORT_ONLY_SOURCE_MISSING"
+    ],
+    "path": "C:\\GitHub\\YOLO-CV\\artifacts\\stage1_sample_value_experiments\\experiments\\dynamic_replay_budget_efficiency_20260807\\01_field_audit\\expert_delivery_audit_v3\\expert_v1_inventory.csv",
+    "row_count": 19,
+    "sha256": "14F2D92AE0DBC18C21A18E99760DD7331B930F1E62A774A741486CE402CCE8BA"
+  },
+  "input_matrices": [
+    {
+      "expected_rows": 31,
+      "headers": [
+        "requirement_id",
+        "overall_status",
+        "expert_source_status",
+        "expert_claim_refs",
+        "expert_source_refs",
+        "v3_status",
+        "v3_source_refs",
+        "reproduction_command",
+        "exit_code",
+        "result_artifact_sha",
+        "observed_result",
+        "remaining_risk",
+        "required_action"
+      ],
+      "matrix_role": "budgeted",
+      "path": "C:\\GitHub\\YOLO-CV\\artifacts\\stage1_sample_value_experiments\\experiments\\dynamic_replay_budget_efficiency_20260807\\01_field_audit\\expert_review_reproductions\\expert_vs_v3_tripartite_v2.csv",
+      "row_count": 31,
+      "sha256": "B0EB425126EFEADC3EF2AF65228E622C0D40917A47F0107AA27C5D46E25C6191"
+    },
+    {
+      "expected_rows": 15,
+      "headers": [
+        "requirement_id",
+        "overall_status",
+        "expert_source_status",
+        "expert_claim_refs",
+        "expert_source_refs",
+        "v3_status",
+        "v3_source_refs",
+        "reproduction_command",
+        "exit_code",
+        "result_artifact_sha",
+        "observed_result",
+        "remaining_risk",
+        "required_action"
+      ],
+      "matrix_role": "dynamic",
+      "path": "C:\\GitHub\\YOLO-CV\\artifacts\\stage1_sample_value_experiments\\experiments\\dynamic_replay_budget_efficiency_20260807\\01_field_audit\\expert_review_reproductions\\dynamic_review_vs_v3_tripartite_v2.csv",
+      "row_count": 15,
+      "sha256": "ACAE0529B0484B12203F21D238E417049C0C6914A9B508B0CC6F696B0243BDB2"
+    }
+  ],
+  "repo_root": "C:\\GitHub\\YOLO-CV",
+  "reproduction_commands_executed": false,
+  "schema_version": "stage1.tripartite_crosswalk_validation.v1",
+  "scientific_result": false,
+  "status": "PASS",
+  "total_rows": 46,
+  "validation_scope": "TRIPARTITE_CROSSWALK_ONLY"
+}

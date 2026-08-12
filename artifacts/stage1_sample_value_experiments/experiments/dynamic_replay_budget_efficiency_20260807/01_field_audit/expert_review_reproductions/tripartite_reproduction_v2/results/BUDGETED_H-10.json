@@ -1,0 +1,17 @@
+{
+  "argv": [
+    "rg",
+    "-n",
+    "canonical_image_relpath",
+    "stage1_dynamic_replay_v3/asset_identity.py"
+  ],
+  "command": "rg -n canonical_image_relpath stage1_dynamic_replay_v3/asset_identity.py",
+  "exit_code": 0,
+  "requirement_id": "BUDGETED:H-10",
+  "schema_version": "stage1.tripartite_static_reproduction.v2",
+  "scientific_result": false,
+  "source_reference": "stage1_dynamic_replay_v3/asset_identity.py:57-82",
+  "stderr": "",
+  "stdout": "57:        required = {\"canonical_image_relpath\", \"Filename\", \"Defect\"}\n61:            sample_id = str(row[\"canonical_image_relpath\"]).strip().replace(\"\\\\\", \"/\")\n",
+  "validation_scope": "STATIC_SOURCE_REPRODUCTION_ONLY"
+}

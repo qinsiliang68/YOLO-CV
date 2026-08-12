@@ -1,0 +1,17 @@
+{
+  "argv": [
+    "rg",
+    "-n",
+    "validate_prediction_identity",
+    "stage1_dynamic_replay_v3/evaluation.py"
+  ],
+  "command": "rg -n validate_prediction_identity stage1_dynamic_replay_v3/evaluation.py",
+  "exit_code": 0,
+  "requirement_id": "BUDGETED:P0-03",
+  "schema_version": "stage1.tripartite_static_reproduction.v2",
+  "scientific_result": false,
+  "source_reference": "stage1_dynamic_replay_v3/evaluation.py:21-23",
+  "stderr": "",
+  "stdout": "19:    validate_prediction_identity,\n185:        identity = validate_prediction_identity(expected_identity, observed_identity)\n281:        identity = validate_prediction_identity(expected_identity, observed_identity)\n",
+  "validation_scope": "STATIC_SOURCE_REPRODUCTION_ONLY"
+}

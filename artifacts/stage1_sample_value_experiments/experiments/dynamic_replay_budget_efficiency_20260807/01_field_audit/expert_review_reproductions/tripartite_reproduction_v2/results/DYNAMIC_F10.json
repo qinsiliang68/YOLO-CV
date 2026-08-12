@@ -1,0 +1,17 @@
+{
+  "argv": [
+    "rg",
+    "-n",
+    "dataloader_wait_seconds",
+    "stage1_dynamic_replay_v3/epoch_transaction.py"
+  ],
+  "command": "rg -n dataloader_wait_seconds stage1_dynamic_replay_v3/epoch_transaction.py",
+  "exit_code": 0,
+  "requirement_id": "DYNAMIC:F10",
+  "schema_version": "stage1.tripartite_static_reproduction.v2",
+  "scientific_result": false,
+  "source_reference": "stage1_dynamic_replay_v3/epoch_transaction.py:211-240",
+  "stderr": "",
+  "stdout": "42:    \"dataloader_wait_seconds\",\n218:        for key in (\"write_seconds\", \"dataloader_wait_seconds\", \"disk_write_bytes\"):\n",
+  "validation_scope": "STATIC_SOURCE_REPRODUCTION_ONLY"
+}

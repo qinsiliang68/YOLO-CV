@@ -1,0 +1,17 @@
+{
+  "argv": [
+    "rg",
+    "-n",
+    "key_prediction_epochs",
+    "stage1_dynamic_replay_v3/matrix.py"
+  ],
+  "command": "rg -n key_prediction_epochs stage1_dynamic_replay_v3/matrix.py",
+  "exit_code": 0,
+  "requirement_id": "DYNAMIC:F15",
+  "schema_version": "stage1.tripartite_static_reproduction.v2",
+  "scientific_result": false,
+  "source_reference": "stage1_dynamic_replay_v3/matrix.py:30-31",
+  "stderr": "",
+  "stdout": "29:    key_prediction_epochs: tuple[int, ...] = (120, 140, 150, 160, 180, 200)\n",
+  "validation_scope": "STATIC_SOURCE_REPRODUCTION_ONLY"
+}

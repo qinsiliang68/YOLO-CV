@@ -1,0 +1,17 @@
+{
+  "argv": [
+    "rg",
+    "-n",
+    "validate_closeout",
+    "stage1_dynamic_replay_v3/completion.py"
+  ],
+  "command": "rg -n validate_closeout stage1_dynamic_replay_v3/completion.py",
+  "exit_code": 0,
+  "requirement_id": "DYNAMIC:F04",
+  "schema_version": "stage1.tripartite_static_reproduction.v2",
+  "scientific_result": false,
+  "source_reference": "stage1_dynamic_replay_v3/completion.py:88-102",
+  "stderr": "",
+  "stdout": "88:def validate_closeout(\n105:__all__ = [\"COMPLETION_SCHEMA\", \"CloseoutReport\", \"CompletionError\", \"CompletionPublication\", \"publish_completion\", \"validate_closeout\"]\n",
+  "validation_scope": "STATIC_SOURCE_REPRODUCTION_ONLY"
+}

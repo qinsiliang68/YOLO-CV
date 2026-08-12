@@ -1,0 +1,17 @@
+{
+  "argv": [
+    "rg",
+    "-n",
+    "idempotent_events",
+    "stage1_dynamic_replay_v3/completion.py"
+  ],
+  "command": "rg -n idempotent_events stage1_dynamic_replay_v3/completion.py",
+  "exit_code": 0,
+  "requirement_id": "DYNAMIC:F06",
+  "schema_version": "stage1.tripartite_static_reproduction.v2",
+  "scientific_result": false,
+  "source_reference": "stage1_dynamic_replay_v3/completion.py:77-83",
+  "stderr": "",
+  "stdout": "79:            event = root / \"idempotent_events\" / f\"{receipt['job_id']}__{receipt['attempt_id']}__{digest[:12]}.json\"\n",
+  "validation_scope": "STATIC_SOURCE_REPRODUCTION_ONLY"
+}

@@ -1,0 +1,393 @@
+{
+  "budgeted_output": {
+    "path": "artifacts\\stage1_sample_value_experiments\\experiments\\dynamic_replay_budget_efficiency_20260807\\01_field_audit\\expert_review_reproductions\\expert_vs_v3_tripartite_v2.csv",
+    "rows": 31,
+    "sha256": "B0EB425126EFEADC3EF2AF65228E622C0D40917A47F0107AA27C5D46E25C6191"
+  },
+  "commands_executed": true,
+  "dynamic_output": {
+    "path": "artifacts\\stage1_sample_value_experiments\\experiments\\dynamic_replay_budget_efficiency_20260807\\01_field_audit\\expert_review_reproductions\\dynamic_review_vs_v3_tripartite_v2.csv",
+    "rows": 15,
+    "sha256": "ACAE0529B0484B12203F21D238E417049C0C6914A9B508B0CC6F696B0243BDB2"
+  },
+  "input_sha256": {
+    "budgeted": "DE9C8A0918A2D787E28EC9E3DE0D8EEFD734D75C54640F4FFB3A69C798108019",
+    "dynamic": "7BC2E95839C41C5C963E515E80014299EB683A40463337601B9DDF3433600287"
+  },
+  "nonzero_exit_count": 0,
+  "results": [
+    {
+      "command": "rg -n source_prediction_relpath stage1_dynamic_replay_v3/oof_reference.py",
+      "exit_code": 0,
+      "path": "artifacts\\stage1_sample_value_experiments\\experiments\\dynamic_replay_budget_efficiency_20260807\\01_field_audit\\expert_review_reproductions\\tripartite_reproduction_v2\\results\\BUDGETED_P0-01.json",
+      "requirement_id": "BUDGETED:P0-01",
+      "sha256": "9ECE38171295AE8E4C0F92C4F48DB41AD0B70867D05415CBDD0ACFBCCE909967",
+      "stdout_line_count": 1
+    },
+    {
+      "command": "rg -n trace_dependency_job_id stage1_dynamic_replay_v3/matrix.py",
+      "exit_code": 0,
+      "path": "artifacts\\stage1_sample_value_experiments\\experiments\\dynamic_replay_budget_efficiency_20260807\\01_field_audit\\expert_review_reproductions\\tripartite_reproduction_v2\\results\\BUDGETED_P0-02.json",
+      "requirement_id": "BUDGETED:P0-02",
+      "sha256": "4F2667229ED80613DCB5DF964CAE03F4BF1C30A47C7AC1B8DEA381F642A70D64",
+      "stdout_line_count": 2
+    },
+    {
+      "command": "rg -n validate_prediction_identity stage1_dynamic_replay_v3/evaluation.py",
+      "exit_code": 0,
+      "path": "artifacts\\stage1_sample_value_experiments\\experiments\\dynamic_replay_budget_efficiency_20260807\\01_field_audit\\expert_review_reproductions\\tripartite_reproduction_v2\\results\\BUDGETED_P0-03.json",
+      "requirement_id": "BUDGETED:P0-03",
+      "sha256": "436E58016B691B510F3CE2191F27F7B8BCFF3F57998000F55260A48CD33A3DFF",
+      "stdout_line_count": 3
+    },
+    {
+      "command": "rg -n get_dataloader stage1_dynamic_replay_v3/ultralytics_overlay.py",
+      "exit_code": 0,
+      "path": "artifacts\\stage1_sample_value_experiments\\experiments\\dynamic_replay_budget_efficiency_20260807\\01_field_audit\\expert_review_reproductions\\tripartite_reproduction_v2\\results\\BUDGETED_P0-04.json",
+      "requirement_id": "BUDGETED:P0-04",
+      "sha256": "385D3AE5431B9479F09A62775B0F3900724D9EEEA59784DAF3F2FCB6B5906956",
+      "stdout_line_count": 1
+    },
+    {
+      "command": "rg -n target_tn_reachable stage1_dynamic_replay_v3/evaluation.py",
+      "exit_code": 0,
+      "path": "artifacts\\stage1_sample_value_experiments\\experiments\\dynamic_replay_budget_efficiency_20260807\\01_field_audit\\expert_review_reproductions\\tripartite_reproduction_v2\\results\\BUDGETED_P0-05.json",
+      "requirement_id": "BUDGETED:P0-05",
+      "sha256": "D6989A957E52B4473C95F931CA8BF06EC5E3CFA1405571B5DFD1371C0684648C",
+      "stdout_line_count": 2
+    },
+    {
+      "command": "rg -n TRACE_MATCHED_CURRENT_LOSS stage1_dynamic_replay_v3/matrix.py",
+      "exit_code": 0,
+      "path": "artifacts\\stage1_sample_value_experiments\\experiments\\dynamic_replay_budget_efficiency_20260807\\01_field_audit\\expert_review_reproductions\\tripartite_reproduction_v2\\results\\BUDGETED_P0-06.json",
+      "requirement_id": "BUDGETED:P0-06",
+      "sha256": "E4E52F883D717FE3C66755D7D59D78C746DCE8D4723E463D8542ED3DDF45ED5F",
+      "stdout_line_count": 2
+    },
+    {
+      "command": "rg -n defect_guard_fraction stage1_dynamic_replay_v3/matrix.py",
+      "exit_code": 0,
+      "path": "artifacts\\stage1_sample_value_experiments\\experiments\\dynamic_replay_budget_efficiency_20260807\\01_field_audit\\expert_review_reproductions\\tripartite_reproduction_v2\\results\\BUDGETED_P0-07.json",
+      "requirement_id": "BUDGETED:P0-07",
+      "sha256": "26A6ECF0CDE6D930F393BA434532A658A340C160E5EDB17C69146E5C58B09689",
+      "stdout_line_count": 2
+    },
+    {
+      "command": "rg -n build_current_loss_decision stage1_dynamic_replay_v3/runtime_controller.py",
+      "exit_code": 0,
+      "path": "artifacts\\stage1_sample_value_experiments\\experiments\\dynamic_replay_budget_efficiency_20260807\\01_field_audit\\expert_review_reproductions\\tripartite_reproduction_v2\\results\\BUDGETED_H-01.json",
+      "requirement_id": "BUDGETED:H-01",
+      "sha256": "FC1ED84364540ED6A739813C9651859E9A8BDB26A34CD72CD6CB20A023435722",
+      "stdout_line_count": 2
+    },
+    {
+      "command": "rg -n optimizer_step_before stage1_dynamic_replay_v3/trajectory.py",
+      "exit_code": 0,
+      "path": "artifacts\\stage1_sample_value_experiments\\experiments\\dynamic_replay_budget_efficiency_20260807\\01_field_audit\\expert_review_reproductions\\tripartite_reproduction_v2\\results\\BUDGETED_H-02.json",
+      "requirement_id": "BUDGETED:H-02",
+      "sha256": "D51A15C380263EFEF48BB6EA8EEC62203ADFCCCBA6D6B7D4013AC2224A525D2A",
+      "stdout_line_count": 8
+    },
+    {
+      "command": "rg -n albumentations pyproject.toml",
+      "exit_code": 0,
+      "path": "artifacts\\stage1_sample_value_experiments\\experiments\\dynamic_replay_budget_efficiency_20260807\\01_field_audit\\expert_review_reproductions\\tripartite_reproduction_v2\\results\\BUDGETED_H-03.json",
+      "requirement_id": "BUDGETED:H-03",
+      "sha256": "8F738CE186C9F32CA7EC37430964277E129562C9CC4282EF536D4D6EA3806401",
+      "stdout_line_count": 1
+    },
+    {
+      "command": "rg -n binary_cross_entropy stage1_dynamic_replay_v3/controller.py",
+      "exit_code": 0,
+      "path": "artifacts\\stage1_sample_value_experiments\\experiments\\dynamic_replay_budget_efficiency_20260807\\01_field_audit\\expert_review_reproductions\\tripartite_reproduction_v2\\results\\BUDGETED_H-04.json",
+      "requirement_id": "BUDGETED:H-04",
+      "sha256": "E585D3A47AD270E8E47AD75344745886094DAA8DBEA5AEA852991F8EEB188F63",
+      "stdout_line_count": 4
+    },
+    {
+      "command": "rg -n key_prediction_epochs stage1_dynamic_replay_v3/matrix.py",
+      "exit_code": 0,
+      "path": "artifacts\\stage1_sample_value_experiments\\experiments\\dynamic_replay_budget_efficiency_20260807\\01_field_audit\\expert_review_reproductions\\tripartite_reproduction_v2\\results\\BUDGETED_H-05.json",
+      "requirement_id": "BUDGETED:H-05",
+      "sha256": "9582EDCCBD1785157C7C3D121BE0956B8A454E736E8141E548BD85D0A6DF6EC2",
+      "stdout_line_count": 1
+    },
+    {
+      "command": "rg -n cross_fitted_reference_loss_i artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/02_literature/FULL_TEXT_EVIDENCE_NOTES/P009_RHO_LOSS_2022.md",
+      "exit_code": 0,
+      "path": "artifacts\\stage1_sample_value_experiments\\experiments\\dynamic_replay_budget_efficiency_20260807\\01_field_audit\\expert_review_reproductions\\tripartite_reproduction_v2\\results\\BUDGETED_H-06.json",
+      "requirement_id": "BUDGETED:H-06",
+      "sha256": "7C4105B2A50F2749146BCF97FD690539E1C1598ABF7F8147ED0A7FA09AFC9FB2",
+      "stdout_line_count": 1
+    },
+    {
+      "command": "rg -n key_prediction_epochs stage1_dynamic_replay_v3/matrix.py",
+      "exit_code": 0,
+      "path": "artifacts\\stage1_sample_value_experiments\\experiments\\dynamic_replay_budget_efficiency_20260807\\01_field_audit\\expert_review_reproductions\\tripartite_reproduction_v2\\results\\BUDGETED_H-07.json",
+      "requirement_id": "BUDGETED:H-07",
+      "sha256": "01369EE95C19E37031178C665A391A6BB3679321B647915D1AA1BA1CA132C102",
+      "stdout_line_count": 1
+    },
+    {
+      "command": "rg -n compute_raw_safety_frontier stage1_dynamic_replay_v3/evaluation.py",
+      "exit_code": 0,
+      "path": "artifacts\\stage1_sample_value_experiments\\experiments\\dynamic_replay_budget_efficiency_20260807\\01_field_audit\\expert_review_reproductions\\tripartite_reproduction_v2\\results\\BUDGETED_H-08.json",
+      "requirement_id": "BUDGETED:H-08",
+      "sha256": "433EEE50F24C6CEB1A5558903074715F80041A2811D822CC71EE2270A8A14240",
+      "stdout_line_count": 2
+    },
+    {
+      "command": "rg -n HISTORICAL_AND_V2_RESERVED_SEEDS stage1_dynamic_replay_v3/seeds.py",
+      "exit_code": 0,
+      "path": "artifacts\\stage1_sample_value_experiments\\experiments\\dynamic_replay_budget_efficiency_20260807\\01_field_audit\\expert_review_reproductions\\tripartite_reproduction_v2\\results\\BUDGETED_H-09.json",
+      "requirement_id": "BUDGETED:H-09",
+      "sha256": "DA7424D48F7A5B53BA8002734B8BB062C00B3B778317B9DD24931381D21D2D61",
+      "stdout_line_count": 3
+    },
+    {
+      "command": "rg -n canonical_image_relpath stage1_dynamic_replay_v3/asset_identity.py",
+      "exit_code": 0,
+      "path": "artifacts\\stage1_sample_value_experiments\\experiments\\dynamic_replay_budget_efficiency_20260807\\01_field_audit\\expert_review_reproductions\\tripartite_reproduction_v2\\results\\BUDGETED_H-10.json",
+      "requirement_id": "BUDGETED:H-10",
+      "sha256": "4D95DEEBE83D31BFFD93313847D258756476F4CBB02D3ACCEA788DD58EE22CFE",
+      "stdout_line_count": 2
+    },
+    {
+      "command": "rg -n empirical_recall_threshold stage1_dynamic_replay_v3/controller.py",
+      "exit_code": 0,
+      "path": "artifacts\\stage1_sample_value_experiments\\experiments\\dynamic_replay_budget_efficiency_20260807\\01_field_audit\\expert_review_reproductions\\tripartite_reproduction_v2\\results\\BUDGETED_H-11.json",
+      "requirement_id": "BUDGETED:H-11",
+      "sha256": "596551A820FDC3A9DAC648DF8D9E41916757A531ABDD68771CA22E5B46FF9BF5",
+      "stdout_line_count": 3
+    },
+    {
+      "command": "rg -n defect_guard_fraction stage1_dynamic_replay_v3/matrix.py",
+      "exit_code": 0,
+      "path": "artifacts\\stage1_sample_value_experiments\\experiments\\dynamic_replay_budget_efficiency_20260807\\01_field_audit\\expert_review_reproductions\\tripartite_reproduction_v2\\results\\BUDGETED_H-12.json",
+      "requirement_id": "BUDGETED:H-12",
+      "sha256": "F8663FDD995972AF35B51A9B3A4C14DBE784807E36DE6A4307497ED00F7A7BC1",
+      "stdout_line_count": 2
+    },
+    {
+      "command": "rg -n build_current_loss_decision stage1_dynamic_replay_v3/runtime_controller.py",
+      "exit_code": 0,
+      "path": "artifacts\\stage1_sample_value_experiments\\experiments\\dynamic_replay_budget_efficiency_20260807\\01_field_audit\\expert_review_reproductions\\tripartite_reproduction_v2\\results\\BUDGETED_H-13.json",
+      "requirement_id": "BUDGETED:H-13",
+      "sha256": "57EB5BC0551576B6ED05C82DB4BE93E057394415F713B2D6E46FE21391F372E5",
+      "stdout_line_count": 2
+    },
+    {
+      "command": "rg -n build_random_decision stage1_dynamic_replay_v3/controller.py",
+      "exit_code": 0,
+      "path": "artifacts\\stage1_sample_value_experiments\\experiments\\dynamic_replay_budget_efficiency_20260807\\01_field_audit\\expert_review_reproductions\\tripartite_reproduction_v2\\results\\BUDGETED_H-14.json",
+      "requirement_id": "BUDGETED:H-14",
+      "sha256": "442DBB71555745B7CB47CA2FA0400EDEBFB4B7B0576CC1CB31CC22695B16E793",
+      "stdout_line_count": 2
+    },
+    {
+      "command": "rg -n LINEAR_TAPER_E141_E160 stage1_dynamic_replay_v3/matrix.py",
+      "exit_code": 0,
+      "path": "artifacts\\stage1_sample_value_experiments\\experiments\\dynamic_replay_budget_efficiency_20260807\\01_field_audit\\expert_review_reproductions\\tripartite_reproduction_v2\\results\\BUDGETED_H-15.json",
+      "requirement_id": "BUDGETED:H-15",
+      "sha256": "124D5408FE6C9565FE56ADBFB65465C1D49E2A065C30F46A87AB43E6B39D7B49",
+      "stdout_line_count": 1
+    },
+    {
+      "command": "rg -n deterministic_augmentation stage1_dynamic_replay_v3/dynamic_dataset.py",
+      "exit_code": 0,
+      "path": "artifacts\\stage1_sample_value_experiments\\experiments\\dynamic_replay_budget_efficiency_20260807\\01_field_audit\\expert_review_reproductions\\tripartite_reproduction_v2\\results\\BUDGETED_H-16.json",
+      "requirement_id": "BUDGETED:H-16",
+      "sha256": "C97B9E3D2ABF063DFCAA2178AD0915620EA0F86B05F663DB9DD09EC443AF2B00",
+      "stdout_line_count": 3
+    },
+    {
+      "command": "rg -n binary_cross_entropy stage1_dynamic_replay_v3/controller.py",
+      "exit_code": 0,
+      "path": "artifacts\\stage1_sample_value_experiments\\experiments\\dynamic_replay_budget_efficiency_20260807\\01_field_audit\\expert_review_reproductions\\tripartite_reproduction_v2\\results\\BUDGETED_M-01.json",
+      "requirement_id": "BUDGETED:M-01",
+      "sha256": "2D38E0979D8D634791D542876002F2194D8FE7F63621C28A425752095D183F34",
+      "stdout_line_count": 4
+    },
+    {
+      "command": "rg -n empirical_recall_threshold stage1_dynamic_replay_v3/controller.py",
+      "exit_code": 0,
+      "path": "artifacts\\stage1_sample_value_experiments\\experiments\\dynamic_replay_budget_efficiency_20260807\\01_field_audit\\expert_review_reproductions\\tripartite_reproduction_v2\\results\\BUDGETED_M-02.json",
+      "requirement_id": "BUDGETED:M-02",
+      "sha256": "592FCDD7B27A9A5CBCC321260BBFB8067BB62AA2EB2E3942635825F61AE9E44A",
+      "stdout_line_count": 3
+    },
+    {
+      "command": "rg -n TRACE_MATCHED_CURRENT_LOSS stage1_dynamic_replay_v3/matrix.py",
+      "exit_code": 0,
+      "path": "artifacts\\stage1_sample_value_experiments\\experiments\\dynamic_replay_budget_efficiency_20260807\\01_field_audit\\expert_review_reproductions\\tripartite_reproduction_v2\\results\\BUDGETED_M-03.json",
+      "requirement_id": "BUDGETED:M-03",
+      "sha256": "4C632A02D745E90BB0A8B0B4C2C4FC4A428C326AECC70027DEA57DB57AF1FE9C",
+      "stdout_line_count": 2
+    },
+    {
+      "command": "rg -n expected_source_tree_sha256 stage1_dynamic_replay_v3/assignment.py",
+      "exit_code": 0,
+      "path": "artifacts\\stage1_sample_value_experiments\\experiments\\dynamic_replay_budget_efficiency_20260807\\01_field_audit\\expert_review_reproductions\\tripartite_reproduction_v2\\results\\BUDGETED_M-04.json",
+      "requirement_id": "BUDGETED:M-04",
+      "sha256": "6CD26BA269DD5EED8D8BC6BE9D1469B34F3D0A794D08D29545F3A24E8A7DD044",
+      "stdout_line_count": 1
+    },
+    {
+      "command": "rg -n TRACE_MATCHED_CURRENT_LOSS stage1_dynamic_replay_v3/matrix.py",
+      "exit_code": 0,
+      "path": "artifacts\\stage1_sample_value_experiments\\experiments\\dynamic_replay_budget_efficiency_20260807\\01_field_audit\\expert_review_reproductions\\tripartite_reproduction_v2\\results\\BUDGETED_M-05.json",
+      "requirement_id": "BUDGETED:M-05",
+      "sha256": "B5870AB3453E8FA4405C8036AE5A9E99C992CEF58978054737C3AABEB5561033",
+      "stdout_line_count": 2
+    },
+    {
+      "command": "rg -n TRACE_MATCHED_CURRENT_LOSS stage1_dynamic_replay_v3/matrix.py",
+      "exit_code": 0,
+      "path": "artifacts\\stage1_sample_value_experiments\\experiments\\dynamic_replay_budget_efficiency_20260807\\01_field_audit\\expert_review_reproductions\\tripartite_reproduction_v2\\results\\BUDGETED_M-06.json",
+      "requirement_id": "BUDGETED:M-06",
+      "sha256": "7B05DBD3A4F1FE61FB823D7C2DE468700B8C8D312D7533E909BE8B1516FC1EC1",
+      "stdout_line_count": 2
+    },
+    {
+      "command": "rg -n UNKNOWN_IN_STAGE1 artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/02_literature/GOAL_EXECUTION_CONTRACT_500_300_100_v2.md",
+      "exit_code": 0,
+      "path": "artifacts\\stage1_sample_value_experiments\\experiments\\dynamic_replay_budget_efficiency_20260807\\01_field_audit\\expert_review_reproductions\\tripartite_reproduction_v2\\results\\BUDGETED_M-07.json",
+      "requirement_id": "BUDGETED:M-07",
+      "sha256": "75209AF9EFE304F4E5DAD069DD14A0EFAFEAD036B74200E7797EB982113BC8D0",
+      "stdout_line_count": 1
+    },
+    {
+      "command": "rg -n run_local_smoke scripts/stage1_dynamic_replay_v3/run_local_smoke.py",
+      "exit_code": 0,
+      "path": "artifacts\\stage1_sample_value_experiments\\experiments\\dynamic_replay_budget_efficiency_20260807\\01_field_audit\\expert_review_reproductions\\tripartite_reproduction_v2\\results\\BUDGETED_M-08.json",
+      "requirement_id": "BUDGETED:M-08",
+      "sha256": "6FEA8EABFC66FB3160D0A370AB8C2CB53F785740F15D6C81F8A6C03665D7B4F0",
+      "stdout_line_count": 2
+    },
+    {
+      "command": "rg -n _untracked_importable_source stage1_dynamic_replay_v3/provenance.py",
+      "exit_code": 0,
+      "path": "artifacts\\stage1_sample_value_experiments\\experiments\\dynamic_replay_budget_efficiency_20260807\\01_field_audit\\expert_review_reproductions\\tripartite_reproduction_v2\\results\\DYNAMIC_F01.json",
+      "requirement_id": "DYNAMIC:F01",
+      "sha256": "FECA4E3D3B4CD853583249C9946B1893E7350EA1A00D9F342AFD5504484A3982",
+      "stdout_line_count": 2
+    },
+    {
+      "command": "rg -n expected_source_tree_sha256 stage1_dynamic_replay_v3/assignment.py",
+      "exit_code": 0,
+      "path": "artifacts\\stage1_sample_value_experiments\\experiments\\dynamic_replay_budget_efficiency_20260807\\01_field_audit\\expert_review_reproductions\\tripartite_reproduction_v2\\results\\DYNAMIC_F02.json",
+      "requirement_id": "DYNAMIC:F02",
+      "sha256": "15EBA915C873375F2A90CAFB5474C89E0461D1E28E96289E0BF94B6CB98152AB",
+      "stdout_line_count": 1
+    },
+    {
+      "command": "rg -n canonical_completions stage1_dynamic_replay_v3/completion.py",
+      "exit_code": 0,
+      "path": "artifacts\\stage1_sample_value_experiments\\experiments\\dynamic_replay_budget_efficiency_20260807\\01_field_audit\\expert_review_reproductions\\tripartite_reproduction_v2\\results\\DYNAMIC_F03.json",
+      "requirement_id": "DYNAMIC:F03",
+      "sha256": "1750F3F9D3A20224B42DF798A521557D0F386117CBC4FCB01A926AC9C7823272",
+      "stdout_line_count": 1
+    },
+    {
+      "command": "rg -n validate_closeout stage1_dynamic_replay_v3/completion.py",
+      "exit_code": 0,
+      "path": "artifacts\\stage1_sample_value_experiments\\experiments\\dynamic_replay_budget_efficiency_20260807\\01_field_audit\\expert_review_reproductions\\tripartite_reproduction_v2\\results\\DYNAMIC_F04.json",
+      "requirement_id": "DYNAMIC:F04",
+      "sha256": "2F16E50E7CBA4AA9D8CD36DD230154A605A9A21C01E625883081FE468EAC522B",
+      "stdout_line_count": 2
+    },
+    {
+      "command": "rg -n validate_prediction_identity stage1_dynamic_replay_v3/evaluation.py",
+      "exit_code": 0,
+      "path": "artifacts\\stage1_sample_value_experiments\\experiments\\dynamic_replay_budget_efficiency_20260807\\01_field_audit\\expert_review_reproductions\\tripartite_reproduction_v2\\results\\DYNAMIC_F05.json",
+      "requirement_id": "DYNAMIC:F05",
+      "sha256": "328400DEE649BFEAD558A8AD38E9DD8B6F57104B6D894D85AA4D25496B61F8B7",
+      "stdout_line_count": 3
+    },
+    {
+      "command": "rg -n idempotent_events stage1_dynamic_replay_v3/completion.py",
+      "exit_code": 0,
+      "path": "artifacts\\stage1_sample_value_experiments\\experiments\\dynamic_replay_budget_efficiency_20260807\\01_field_audit\\expert_review_reproductions\\tripartite_reproduction_v2\\results\\DYNAMIC_F06.json",
+      "requirement_id": "DYNAMIC:F06",
+      "sha256": "28986A9A7DEF750121E198C31354536854EE02C0976F9A5EDF52E6CC9A1AD10F",
+      "stdout_line_count": 1
+    },
+    {
+      "command": "rg -n optimizer_step_before stage1_dynamic_replay_v3/epoch_transaction.py",
+      "exit_code": 0,
+      "path": "artifacts\\stage1_sample_value_experiments\\experiments\\dynamic_replay_budget_efficiency_20260807\\01_field_audit\\expert_review_reproductions\\tripartite_reproduction_v2\\results\\DYNAMIC_F07.json",
+      "requirement_id": "DYNAMIC:F07",
+      "sha256": "4CAA7782D1D092A4DD99F6CDF7B7D1BB4017F1614B1B2F4603779E99B2A233A7",
+      "stdout_line_count": 1
+    },
+    {
+      "command": "rg -n TRACE_MATCHED_CURRENT_LOSS stage1_dynamic_replay_v3/matrix.py",
+      "exit_code": 0,
+      "path": "artifacts\\stage1_sample_value_experiments\\experiments\\dynamic_replay_budget_efficiency_20260807\\01_field_audit\\expert_review_reproductions\\tripartite_reproduction_v2\\results\\DYNAMIC_F08.json",
+      "requirement_id": "DYNAMIC:F08",
+      "sha256": "B48ED129C40751DD80A1F45622C7692B99566F044962FCC6821D64A828E61A5A",
+      "stdout_line_count": 2
+    },
+    {
+      "command": "rg -n write_controller_decision stage1_dynamic_replay_v3/training_runtime.py",
+      "exit_code": 0,
+      "path": "artifacts\\stage1_sample_value_experiments\\experiments\\dynamic_replay_budget_efficiency_20260807\\01_field_audit\\expert_review_reproductions\\tripartite_reproduction_v2\\results\\DYNAMIC_F09.json",
+      "requirement_id": "DYNAMIC:F09",
+      "sha256": "5C4FC6ECE0323A846AB0E95E2F13BA98E142BB208A5B622B2ED9C19243AB7E13",
+      "stdout_line_count": 1
+    },
+    {
+      "command": "rg -n dataloader_wait_seconds stage1_dynamic_replay_v3/epoch_transaction.py",
+      "exit_code": 0,
+      "path": "artifacts\\stage1_sample_value_experiments\\experiments\\dynamic_replay_budget_efficiency_20260807\\01_field_audit\\expert_review_reproductions\\tripartite_reproduction_v2\\results\\DYNAMIC_F10.json",
+      "requirement_id": "DYNAMIC:F10",
+      "sha256": "52916B96F9558E664A954384E9848C37C41D0116CFC60D55E873C468BD142ADC",
+      "stdout_line_count": 2
+    },
+    {
+      "command": "rg -n expected_source_tree_sha256 stage1_dynamic_replay_v3/assignment.py",
+      "exit_code": 0,
+      "path": "artifacts\\stage1_sample_value_experiments\\experiments\\dynamic_replay_budget_efficiency_20260807\\01_field_audit\\expert_review_reproductions\\tripartite_reproduction_v2\\results\\DYNAMIC_F11.json",
+      "requirement_id": "DYNAMIC:F11",
+      "sha256": "846E641DA90C95FEDC09D881007A94A727378AC3EEA75EF669CE6D93B147B304",
+      "stdout_line_count": 1
+    },
+    {
+      "command": "rg -n _normal_observations stage1_dynamic_replay_v3/controller.py",
+      "exit_code": 0,
+      "path": "artifacts\\stage1_sample_value_experiments\\experiments\\dynamic_replay_budget_efficiency_20260807\\01_field_audit\\expert_review_reproductions\\tripartite_reproduction_v2\\results\\DYNAMIC_F12.json",
+      "requirement_id": "DYNAMIC:F12",
+      "sha256": "82D5DB0F1792EDCF7B0FC555F70B702D17FF7D16C3468FC9C1DD9AA4F977EC4A",
+      "stdout_line_count": 3
+    },
+    {
+      "command": "rg -n SUPPORTED_ENVELOPES stage1_dynamic_replay_v3/controller.py",
+      "exit_code": 0,
+      "path": "artifacts\\stage1_sample_value_experiments\\experiments\\dynamic_replay_budget_efficiency_20260807\\01_field_audit\\expert_review_reproductions\\tripartite_reproduction_v2\\results\\DYNAMIC_F13.json",
+      "requirement_id": "DYNAMIC:F13",
+      "sha256": "7DD936F868220F4CD693E54D1CAED3F78B73913B6035437C6865888DD2944035",
+      "stdout_line_count": 2
+    },
+    {
+      "command": "rg -n LINEAR_TAPER_E141_E160 stage1_dynamic_replay_v3/matrix.py",
+      "exit_code": 0,
+      "path": "artifacts\\stage1_sample_value_experiments\\experiments\\dynamic_replay_budget_efficiency_20260807\\01_field_audit\\expert_review_reproductions\\tripartite_reproduction_v2\\results\\DYNAMIC_F14.json",
+      "requirement_id": "DYNAMIC:F14",
+      "sha256": "8C10666A6ECB5709F15877E233473EC127A5C551955A8CC6F0C48EAD774AEE97",
+      "stdout_line_count": 1
+    },
+    {
+      "command": "rg -n key_prediction_epochs stage1_dynamic_replay_v3/matrix.py",
+      "exit_code": 0,
+      "path": "artifacts\\stage1_sample_value_experiments\\experiments\\dynamic_replay_budget_efficiency_20260807\\01_field_audit\\expert_review_reproductions\\tripartite_reproduction_v2\\results\\DYNAMIC_F15.json",
+      "requirement_id": "DYNAMIC:F15",
+      "sha256": "47FD0BD6CEBA36DC80714887BEAC963233F032EB2CAB52EB6D6DDE48ED922E64",
+      "stdout_line_count": 1
+    }
+  ],
+  "row_count": 46,
+  "schema_version": "stage1.tripartite_execution_receipt.v2",
+  "scientific_result": false,
+  "status": "PASS",
+  "validation_scope": "STATIC_SOURCE_REPRODUCTIONS_ONLY"
+}

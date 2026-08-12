@@ -1,0 +1,17 @@
+{
+  "argv": [
+    "rg",
+    "-n",
+    "optimizer_step_before",
+    "stage1_dynamic_replay_v3/epoch_transaction.py"
+  ],
+  "command": "rg -n optimizer_step_before stage1_dynamic_replay_v3/epoch_transaction.py",
+  "exit_code": 0,
+  "requirement_id": "DYNAMIC:F07",
+  "schema_version": "stage1.tripartite_static_reproduction.v2",
+  "scientific_result": false,
+  "source_reference": "stage1_dynamic_replay_v3/epoch_transaction.py:20-33",
+  "stderr": "",
+  "stdout": "29:    \"optimizer_step_before\",\n",
+  "validation_scope": "STATIC_SOURCE_REPRODUCTION_ONLY"
+}

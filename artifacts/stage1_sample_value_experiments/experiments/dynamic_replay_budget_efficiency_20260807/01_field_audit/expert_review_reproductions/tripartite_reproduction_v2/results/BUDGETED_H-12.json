@@ -1,0 +1,17 @@
+{
+  "argv": [
+    "rg",
+    "-n",
+    "defect_guard_fraction",
+    "stage1_dynamic_replay_v3/matrix.py"
+  ],
+  "command": "rg -n defect_guard_fraction stage1_dynamic_replay_v3/matrix.py",
+  "exit_code": 0,
+  "requirement_id": "BUDGETED:H-12",
+  "schema_version": "stage1.tripartite_static_reproduction.v2",
+  "scientific_result": false,
+  "source_reference": "stage1_dynamic_replay_v3/matrix.py:120-128",
+  "stderr": "",
+  "stdout": "30:    defect_guard_fraction: float = 0.0\n127:    if any(row.defect_guard_fraction != 0 or row.gradient_collection for row in runs):\n",
+  "validation_scope": "STATIC_SOURCE_REPRODUCTION_ONLY"
+}
