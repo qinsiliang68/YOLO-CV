@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
+import pytest
+
 from stage1_dynamic_replay_v3.global_completion_audit_v2 import (
     build_global_completion_audit,
 )
@@ -21,6 +23,11 @@ DESKTOP_LITERATURE_MIRROR = (
 
 
 def test_current_global_audit_passes_all_controllable_gates_and_blocks_on_source() -> None:
+    if not DESKTOP_LITERATURE_MIRROR.is_dir():
+        pytest.skip(
+            "local evidence integration test requires the registered Desktop mirror"
+        )
+
     report = build_global_completion_audit(
         repo_root=REPO_ROOT,
         experiment_root=EXPERIMENT_ROOT,

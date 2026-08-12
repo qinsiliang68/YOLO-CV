@@ -26,9 +26,22 @@ def _read(path: Path) -> list[dict[str, str]]:
         return [dict(row) for row in csv.DictReader(handle)]
 
 
+def _local_anchor_source_files_available() -> bool:
+    inventory_path = CORPUS_ROOT / "discovery" / "ANCHOR_SOURCE_INVENTORY_v2.csv"
+    if not inventory_path.is_file():
+        return False
+    return all(
+        (CORPUS_ROOT / row["path"]).is_file()
+        for row in _read(inventory_path)
+    )
+
+
 def test_real_anchor_evidence_promotes_to_exact_auditable_batch_24(
     tmp_path: Path,
 ) -> None:
+    if not _local_anchor_source_files_available():
+        pytest.skip("local evidence integration test requires 21 anchor source files")
+
     result = promote_anchor_batch(
         CORPUS_ROOT,
         output_discovery_root=tmp_path / "discovery",
@@ -67,6 +80,9 @@ def test_promotion_rejects_missing_source_identity() -> None:
 
 
 def test_promotion_does_not_overwrite_existing_batch(tmp_path: Path) -> None:
+    if not _local_anchor_source_files_available():
+        pytest.skip("local evidence integration test requires 21 anchor source files")
+
     output = tmp_path / "discovery"
     first = promote_anchor_batch(
         CORPUS_ROOT,
