@@ -23,14 +23,14 @@ The content audit joins:
 
 It removes all T identities, keeps `oof_y_true=0`, and compares the remaining count in each `oof_group_id` with the T quota.
 
-Observed hard shortages:
+The full four-field joint audit observes **172 shortage strata** and **378 missing occurrences**. Two examples are:
 
-| oof_group_id | T normal quota | zero-overlap normal candidates | shortage |
+| joint stratum `(label|bucket|fold|group)` | T quota | zero-overlap candidates | shortage |
 | --- | ---: | ---: | ---: |
-| `filename_bucket_1000:382` | 8 | 4 | 4 |
-| `filename_bucket_1000:500` | 2 | 0 | 2 |
+| `0|learnable_hard|0|filename_bucket_1000:382` | 8 | 3 | 5 |
+| `0|learnable_hard|5|filename_bucket_1000:500` | 2 | 0 | 2 |
 
-Therefore even label plus group quota alone is infeasible. Adding bucket and fold cannot restore feasibility. The current implementation must raise `R2_QUOTA_INFEASIBLE`; it must not silently weaken matching.
+The machine-readable summary is `docs/stage1_sctsr_v4/tdd_receipts/commit_02/R2_INFEASIBILITY_SUMMARY.txt`. The current implementation must raise `R2_QUOTA_INFEASIBLE`; it must not silently weaken matching.
 
 ## Owner decision required
 

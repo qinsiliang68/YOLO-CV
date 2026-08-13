@@ -10,6 +10,8 @@ Current documentation:
 | `stage1_oof_gap_value_experiment_design_20260708.md` | CURRENT_SAMPLE_VALUE_DESIGN | Human handoff design for OOF gap-value sample selection, metrics, replay matrix, and success/failure criteria. |
 | `stage1_gapvalue240/DYNAMIC_REPLAY_CAMPAIGN_OPERATOR_BRIEFING_V2.md` | CURRENT_OPERATOR_BRIEFING | Scientific background, frozen experiment matrix, output interpretation, monitoring rules, and failure boundaries for the current ten-machine campaign. |
 | `stage1_gapvalue240/DYNAMIC_REPLAY_CAMPAIGN_OPERATIONS_V2.md` | CURRENT_CAMPAIGN_OPERATIONS | Formal v2 release, assignment, single-job worker, lease, recovery, and ten-machine canary procedure. |
+| `stage1_sctsr_v4/IMPLEMENTATION_GUIDE.md` | IMPLEMENTATION_ONLY_HELD | Isolated SCTSR v4 code, evidence, validation and formal-release boundaries. No formal SCTSR training has been authorized. |
+| `stage1_sctsr_v4/KNOWN_BLOCKERS.md` | CURRENT_SCTSR_BLOCKERS | R2 feasibility, v3 regression, val_target, release/seed and scientific non-claim blockers. |
 
 Top-level scope document:
 

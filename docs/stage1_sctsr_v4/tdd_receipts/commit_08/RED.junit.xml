@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="5" skipped="0" tests="5" time="12.700" timestamp="2026-08-13T18:16:13.674886+08:00" hostname="zhangdawei"><testcase classname="tests.stage1_sctsr_v4.test_cli_and_run_audit_hardening" name="test_validate_run_rejects_indexed_but_semantically_empty_shell" time="0.028"><failure message="Failed: DID NOT RAISE &lt;class 'stage1_sctsr_v4.errors.SctsrError'&gt;">tmp_path = WindowsPath('C:/Users/28898/AppData/Local/Temp/pytest-of-28898/pytest-1464/test_validate_run_rejects_inde0')
+
+    def test_validate_run_rejects_indexed_but_semantically_empty_shell(tmp_path):
+        root = tmp_path / "empty"
+        root.mkdir()
+        atomic_write_json(
+            root / "RUN_MANIFEST.json",
+            {
+                "schema_version": "stage1.sctsr.synthetic_run_manifest.v1",
+                "semantic": "SYNTHETIC_NOT_SCIENTIFIC_RESULT",
+                "scientific_result": False,
+            },
+        )
+        atomic_write_json(root / "ARTIFACT_INDEX.json", build_artifact_index(root))
+&gt;       with pytest.raises(SctsrError) as caught:
+E       Failed: DID NOT RAISE &lt;class 'stage1_sctsr_v4.errors.SctsrError'&gt;
+
+tests\stage1_sctsr_v4\test_cli_and_run_audit_hardening.py:73: Failed</failure></testcase><testcase classname="tests.stage1_sctsr_v4.test_cli_and_run_audit_hardening" name="test_validate_run_detects_missing_required_canary_partition_even_after_reindex" time="8.374"><failure message="Failed: DID NOT RAISE &lt;class 'stage1_sctsr_v4.errors.SctsrError'&gt;">tmp_path = WindowsPath('C:/Users/28898/AppData/Local/Temp/pytest-of-28898/pytest-1464/test_validate_run_detects_miss0')
+canary_root = WindowsPath('C:/Users/28898/AppData/Local/Temp/pytest-of-28898/pytest-1464/sctsr_canary0/run')
+
+    def test_validate_run_detects_missing_required_canary_partition_even_after_reindex(tmp_path, canary_root):
+        root = tmp_path / "tampered"
+        shutil.copytree(canary_root, root)
+        target = next((root / "04_ledgers" / "occurrence").rglob("*.parquet"))
+        target.unlink()
+        atomic_write_json(root / "ARTIFACT_INDEX.json", build_artifact_index(root))
+&gt;       with pytest.raises(SctsrError) as caught:
+E       Failed: DID NOT RAISE &lt;class 'stage1_sctsr_v4.errors.SctsrError'&gt;
+
+tests\stage1_sctsr_v4\test_cli_and_run_audit_hardening.py:84: Failed</failure></testcase><testcase classname="tests.stage1_sctsr_v4.test_cli_and_run_audit_hardening" name="test_evaluate_cli_rejects_arbitrary_raw_json_even_with_loadable_checkpoint" time="1.416"><failure message="AssertionError: assert 0 != 0&#10; +  where 0 = CompletedProcess(args=['C:\\GitHub\\YOLO-CV\\.venv\\Scripts\\python.exe', 'C:\\GitHub\\YOLO-CV\\scripts\\stage1_sctsr_.../Users/28898/AppData/Local/Temp/pytest-of-28898/pytest-1464/test_evaluate_cli_rejects_arbi0/receipt.json\n', stderr='').returncode">repository_root = WindowsPath('C:/GitHub/YOLO-CV')
+tmp_path = WindowsPath('C:/Users/28898/AppData/Local/Temp/pytest-of-28898/pytest-1464/test_evaluate_cli_rejects_arbi0')
+prediction_rows = (PredictionRow(run_id='R', arm_id='T_U', training_seed=1, split_role='synthetic', split_manifest_path='synthetic.json'..., source_tree_digest='CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC', prediction_generation=1), ...)
+
+    def test_evaluate_cli_rejects_arbitrary_raw_json_even_with_loadable_checkpoint(repository_root, tmp_path, prediction_rows):
+        checkpoint = tmp_path / "epoch_0200.pt"
+        checkpoint_sha = _checkpoint(checkpoint)
+        rows = tuple(
+            replace(
+                row,
+                checkpoint_sha256=checkpoint_sha,
+                source_tree_digest="D" * 64,
+            )
+            for row in prediction_rows[:8]
+        )
+        raw_predictions = tmp_path / "raw_predictions.json"
+        raw_predictions.write_text(json.dumps([asdict(row) for row in rows]), encoding="utf-8")
+        receipt = tmp_path / "receipt.json"
+        result = _run(
+            repository_root,
+            repository_root / "scripts" / "stage1_sctsr_v4" / "evaluate_checkpoint.py",
+            "--checkpoint",
+            checkpoint,
+            "--checkpoint-epoch",
+            200,
+            "--mode",
+            "synthetic",
+            "--predictions",
+            raw_predictions,
+            "--frontier-output",
+            tmp_path / "frontier.json",
+            "--output",
+            receipt,
+        )
+&gt;       assert result.returncode != 0
+E       AssertionError: assert 0 != 0
+E        +  where 0 = CompletedProcess(args=['C:\\GitHub\\YOLO-CV\\.venv\\Scripts\\python.exe', 'C:\\GitHub\\YOLO-CV\\scripts\\stage1_sctsr_.../Users/28898/AppData/Local/Temp/pytest-of-28898/pytest-1464/test_evaluate_cli_rejects_arbi0/receipt.json\n', stderr='').returncode
+
+tests\stage1_sctsr_v4\test_cli_and_run_audit_hardening.py:119: AssertionError</failure></testcase><testcase classname="tests.stage1_sctsr_v4.test_cli_and_run_audit_hardening" name="test_formal_runner_cli_exposes_trust_and_binding_arguments" time="1.363"><failure message="AssertionError: assert '--release-trust-policy' in 'usage: run_common_parent.py [-h] --repository-root REPOSITORY_ROOT\n                            --output-root OUTPUT_...nthetic,formal}\n  --release-authorization RELEASE_AUTHORIZATION\n  --output OUTPUT       Explicit JSON receipt path\n'&#10; +  where 'usage: run_common_parent.py [-h] --repository-root REPOSITORY_ROOT\n                            --output-root OUTPUT_...nthetic,formal}\n  --release-authorization RELEASE_AUTHORIZATION\n  --output OUTPUT       Explicit JSON receipt path\n' = CompletedProcess(args=['C:\\GitHub\\YOLO-CV\\.venv\\Scripts\\python.exe', 'C:\\GitHub\\YOLO-CV\\scripts\\stage1_sctsr_...al}\n  --release-authorization RELEASE_AUTHORIZATION\n  --output OUTPUT       Explicit JSON receipt path\n', stderr='').stdout">repository_root = WindowsPath('C:/GitHub/YOLO-CV')
+
+    def test_formal_runner_cli_exposes_trust_and_binding_arguments(repository_root):
+        for script in ("run_common_parent.py", "run_branch.py"):
+            result = _run(repository_root, repository_root / "scripts" / "stage1_sctsr_v4" / script, "--help")
+            assert result.returncode == 0
+&gt;           assert "--release-trust-policy" in result.stdout
+E           AssertionError: assert '--release-trust-policy' in 'usage: run_common_parent.py [-h] --repository-root REPOSITORY_ROOT\n                            --output-root OUTPUT_...nthetic,formal}\n  --release-authorization RELEASE_AUTHORIZATION\n  --output OUTPUT       Explicit JSON receipt path\n'
+E            +  where 'usage: run_common_parent.py [-h] --repository-root REPOSITORY_ROOT\n                            --output-root OUTPUT_...nthetic,formal}\n  --release-authorization RELEASE_AUTHORIZATION\n  --output OUTPUT       Explicit JSON receipt path\n' = CompletedProcess(args=['C:\\GitHub\\YOLO-CV\\.venv\\Scripts\\python.exe', 'C:\\GitHub\\YOLO-CV\\scripts\\stage1_sctsr_...al}\n  --release-authorization RELEASE_AUTHORIZATION\n  --output OUTPUT       Explicit JSON receipt path\n', stderr='').stdout
+
+tests\stage1_sctsr_v4\test_cli_and_run_audit_hardening.py:127: AssertionError</failure></testcase><testcase classname="tests.stage1_sctsr_v4.test_cli_and_run_audit_hardening" name="test_closeout_rejects_synthetic_canary_as_full_implementation_completion" time="0.325"><failure message="AssertionError: assert 0 != 0&#10; +  where 0 = CompletedProcess(args=['C:\\GitHub\\YOLO-CV\\.venv\\Scripts\\python.exe', 'C:\\GitHub\\YOLO-CV\\scripts\\stage1_sctsr_...s/28898/AppData/Local/Temp/pytest-of-28898/pytest-1464/test_closeout_rejects_syntheti0/closeout_cli.json\n', stderr='').returncode">repository_root = WindowsPath('C:/GitHub/YOLO-CV')
+tmp_path = WindowsPath('C:/Users/28898/AppData/Local/Temp/pytest-of-28898/pytest-1464/test_closeout_rejects_syntheti0')
+canary_root = WindowsPath('C:/Users/28898/AppData/Local/Temp/pytest-of-28898/pytest-1464/sctsr_canary0/run')
+
+    def test_closeout_rejects_synthetic_canary_as_full_implementation_completion(repository_root, tmp_path, canary_root):
+        receipt = tmp_path / "closeout_cli.json"
+        completion = tmp_path / "completion.json"
+        result = _run(
+            repository_root,
+            repository_root / "scripts" / "stage1_sctsr_v4" / "closeout_run.py",
+            "--run-root",
+            canary_root,
+            "--completion-output",
+            completion,
+            "--output",
+            receipt,
+        )
+&gt;       assert result.returncode != 0
+E       AssertionError: assert 0 != 0
+E        +  where 0 = CompletedProcess(args=['C:\\GitHub\\YOLO-CV\\.venv\\Scripts\\python.exe', 'C:\\GitHub\\YOLO-CV\\scripts\\stage1_sctsr_...s/28898/AppData/Local/Temp/pytest-of-28898/pytest-1464/test_closeout_rejects_syntheti0/closeout_cli.json\n', stderr='').returncode
+
+tests\stage1_sctsr_v4\test_cli_and_run_audit_hardening.py:146: AssertionError</failure></testcase></testsuite></testsuites>
