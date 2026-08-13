@@ -9,6 +9,7 @@ from stage1_sctsr_v4.implementation_self_audit import (
     LEGACY_FIELDS,
     SIDE_EFFECT_FIELDS,
     build_implementation_self_audit,
+    build_implementation_self_audit_from_plan,
     parse_taskbook_self_audit,
     validate_implementation_self_audit,
 )
@@ -118,3 +119,28 @@ def test_self_audit_rejects_log_drift(repository_root, tmp_path):
             evidence_root=tmp_path,
         )
     assert caught.value.code is ErrorCode.CLOSEOUT_NOT_VALIDATED
+
+
+def test_self_audit_builder_merges_exact_taskbook_requirements_and_repository_flags(repository_root, tmp_path):
+    audit = _audit(repository_root, tmp_path)
+    plan = {
+        "schema_version": "stage1.sctsr.self_audit_input_plan.v1",
+        "checks": [
+            {key: value for key, value in row.items() if key not in {"requirement", "taskbook_line"}}
+            for row in audit["checks"]
+        ],
+    }
+    state = {
+        "side_effects": {field: False for field in SIDE_EFFECT_FIELDS},
+        "legacy_detected": {field: True for field in LEGACY_FIELDS},
+    }
+    rebuilt = build_implementation_self_audit_from_plan(
+        taskbook_path=_taskbook(repository_root),
+        implementation_source_commit="a" * 40,
+        generated_at_utc=audit["generated_at_utc"],
+        generated_by=audit["generated_by"],
+        plan=plan,
+        repository_state=state,
+    )
+    assert rebuilt["checks"] == audit["checks"]
+    assert rebuilt["audit_digest"] == audit["audit_digest"]

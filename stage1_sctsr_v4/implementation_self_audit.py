@@ -263,3 +263,49 @@ def build_implementation_self_audit(
         "checks": [dict(row) for row in checks],
     }
     return {**core, "audit_digest": stable_digest(core)}
+
+
+def build_implementation_self_audit_from_plan(
+    *,
+    taskbook_path: str | Path,
+    implementation_source_commit: str,
+    generated_at_utc: str,
+    generated_by: str,
+    plan: Mapping[str, Any] | str | Path,
+    repository_state: Mapping[str, Any] | str | Path,
+) -> dict[str, Any]:
+    raw_plan: Any = load_json(plan) if not isinstance(plan, Mapping) else plan
+    raw_state: Any = load_json(repository_state) if not isinstance(repository_state, Mapping) else repository_state
+    if not isinstance(raw_plan, Mapping) or set(raw_plan) != {"schema_version", "checks"} or raw_plan.get("schema_version") != "stage1.sctsr.self_audit_input_plan.v1":
+        raise SctsrError(ErrorCode.CLOSEOUT_NOT_VALIDATED, "Self-audit input plan schema is invalid")
+    if not isinstance(raw_state, Mapping):
+        raise SctsrError(ErrorCode.CLOSEOUT_NOT_VALIDATED, "Repository-state audit is not an object")
+    side_effects = raw_state.get("side_effects")
+    legacy = raw_state.get("legacy_detected")
+    if not isinstance(side_effects, Mapping) or set(side_effects) != set(SIDE_EFFECT_FIELDS):
+        raise SctsrError(ErrorCode.CLOSEOUT_NOT_VALIDATED, "Repository-state side-effect fields are incomplete")
+    if not isinstance(legacy, Mapping) or set(legacy) != set(LEGACY_FIELDS):
+        raise SctsrError(ErrorCode.CLOSEOUT_NOT_VALIDATED, "Repository-state legacy fields are incomplete")
+    requirements = parse_taskbook_self_audit(taskbook_path)
+    planned = raw_plan.get("checks")
+    plan_fields = CHECK_FIELDS - {"requirement", "taskbook_line"}
+    if not isinstance(planned, list) or len(planned) != len(requirements):
+        raise SctsrError(ErrorCode.CLOSEOUT_NOT_VALIDATED, "Self-audit input plan row count differs from taskbook")
+    merged: list[dict[str, Any]] = []
+    for requirement, row in zip(requirements, planned, strict=True):
+        if not isinstance(row, Mapping) or set(row) != plan_fields or row.get("check_id") != requirement["check_id"]:
+            raise SctsrError(
+                ErrorCode.CLOSEOUT_NOT_VALIDATED,
+                "Self-audit input plan fields or ID order differ from taskbook",
+                failing_field=requirement["check_id"],
+            )
+        merged.append({**requirement, **dict(row)})
+    return build_implementation_self_audit(
+        taskbook_path=taskbook_path,
+        implementation_source_commit=implementation_source_commit,
+        generated_at_utc=generated_at_utc,
+        generated_by=generated_by,
+        checks=merged,
+        side_effects={key: bool(side_effects[key]) for key in SIDE_EFFECT_FIELDS},
+        legacy_detected={key: bool(legacy[key]) for key in LEGACY_FIELDS},
+    )

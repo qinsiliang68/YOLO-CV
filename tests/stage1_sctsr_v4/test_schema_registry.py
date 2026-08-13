@@ -24,3 +24,8 @@ def test_schema_registry_registers_formal_input_and_detailed_self_audit_schemas(
     assert REQUIRED_SCHEMAS["external_file_binding"] == "stage1.sctsr.external_file_binding.v1"
     assert REQUIRED_SCHEMAS["formal_input_snapshot"] == "stage1.sctsr.formal_input_snapshot.v1"
     assert REQUIRED_SCHEMAS["implementation_self_audit"] == "stage1.sctsr.implementation_self_audit.v1"
+    assert REQUIRED_SCHEMAS["self_audit_input_plan"] == "stage1.sctsr.self_audit_input_plan.v1"
+    assert REQUIRED_SCHEMAS["manual_line_review"] == "stage1.sctsr.manual_line_review.v1"
+    assert REQUIRED_SCHEMAS["repository_state_audit"] == "stage1.sctsr.repository_state_audit.v1"
+    assert REQUIRED_SCHEMAS["changed_file_ledger"] == "stage1.sctsr.changed_file_ledger.v1"
+    assert REQUIRED_SCHEMAS["legacy_evidence_audit"] == "stage1.sctsr.legacy_evidence_audit.v1"
