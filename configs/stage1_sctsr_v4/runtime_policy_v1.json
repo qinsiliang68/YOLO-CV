@@ -1,0 +1,38 @@
+{
+  "base_denominator": 120000,
+  "base_steps_per_epoch": 938,
+  "batchnorm_buffers_restored_after_replay": true,
+  "canonical_batch_size": 128,
+  "columnar": {
+    "canonical": "PARQUET_ZSTD",
+    "synthetic_fallback_allowed_only_with_explicit_flag": true
+  },
+  "ema_advances_on_replay": false,
+  "execution_mode_default": "synthetic",
+  "forbidden_checkpoint_names": [
+    "best.pt"
+  ],
+  "formal_data_roles_forbidden": [
+    "test",
+    "blind_holdout"
+  ],
+  "formal_endpoint_epoch": 200,
+  "formal_requires_signed_release": true,
+  "global_rng_restored_after_replay": true,
+  "oom_policy": "ABORT_FIXED_CONTRACT",
+  "optimizer_steps_locked_to_base": true,
+  "replay_gradient_retained": true,
+  "replay_in_dataset_length": false,
+  "scheduler_advances_on_replay": false,
+  "schema_version": "stage1.sctsr.runtime_policy.v1",
+  "trajectory_epochs": [
+    120,
+    140,
+    150,
+    160,
+    180,
+    200
+  ],
+  "warmup_locked_to_base_steps": true,
+  "world_size": 1
+}

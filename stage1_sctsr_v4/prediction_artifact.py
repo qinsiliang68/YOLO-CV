@@ -3,15 +3,15 @@ from __future__ import annotations
 import csv
 import json
 import math
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, fields
 from pathlib import Path
 from typing import Any, Mapping, Sequence
 
 from .checkpointing import load_checkpoint
-from .columnar import ColumnarManifest, write_zstd_parquet
+from .columnar import ColumnarManifest, read_columnar, validate_columnar_file, write_zstd_parquet
 from .errors import ErrorCode, SctsrError
 from .ledger_schema import PREDICTION_SCHEMA
-from .serialization import sha256_file, stable_digest
+from .serialization import load_json, sha256_file, stable_digest
 
 
 _HEX = frozenset("0123456789ABCDEF")
@@ -328,3 +328,95 @@ def write_prediction_artifact(
         "selection_semantic": binding.selection_semantic if binding is not None else "SYNTHETIC_NOT_SCIENTIFIC_RESULT",
     }
     return manifest, summary
+
+
+def read_registered_prediction_artifact(
+    path: str | Path,
+    *,
+    summary_path: str | Path,
+    checkpoint_path: str | Path,
+    evaluation_mode: str,
+    allow_synthetic_portable_fallback: bool = False,
+) -> tuple[tuple[PredictionRow, ...], Mapping[str, Any], PredictionArtifactBinding]:
+    """Load a published prediction partition and revalidate its whole identity.
+
+    Raw JSON/CSV rows are intentionally unsupported: evaluation may consume
+    only the immutable Parquet publication plus its small identity summary.
+    """
+
+    source = Path(path)
+    if source.suffix.lower() != ".parquet":
+        raise SctsrError(
+            ErrorCode.PREDICTION_IDENTITY_MISMATCH,
+            "Evaluation accepts only a registered Parquet prediction artifact",
+            artifact_path=str(source),
+        )
+    summary_source = Path(summary_path)
+    if not source.is_file() or not summary_source.is_file():
+        raise SctsrError(ErrorCode.PREDICTION_IDENTITY_MISMATCH, "Prediction artifact or identity summary is missing")
+    summary = load_json(summary_source)
+    if not isinstance(summary, Mapping) or summary.get("schema_version") != "stage1.sctsr.prediction_artifact_summary.v2":
+        raise SctsrError(ErrorCode.PREDICTION_IDENTITY_MISMATCH, "Prediction identity summary schema is invalid")
+    validate_columnar_file(
+        source,
+        expected_rows=int(summary.get("row_count", -1)),
+        expected_sha256=str(summary.get("prediction_artifact_sha256", "")),
+        expected_schema_version="stage1.sctsr.prediction_artifact.v2",
+        allow_synthetic_portable_fallback=allow_synthetic_portable_fallback,
+    )
+    raw_rows = read_columnar(source, allow_synthetic_portable_fallback=allow_synthetic_portable_fallback)
+    names = {field.name for field in fields(PredictionRow)}
+    expected_names = names | {"sample_label_identity_digest", "artifact_row_count"}
+    for index, raw in enumerate(raw_rows):
+        if set(raw) != expected_names:
+            raise SctsrError(
+                ErrorCode.PREDICTION_IDENTITY_MISMATCH,
+                "Prediction row schema differs from the registered publication",
+                failing_field=f"row[{index}]",
+                observed={"missing": sorted(expected_names - set(raw)), "extra": sorted(set(raw) - expected_names)},
+            )
+    rows = tuple(PredictionRow(**{name: raw[name] for name in names}) for raw in raw_rows)
+    validate_prediction_rows(rows)
+    digest = sample_label_identity_digest(rows)
+    if summary.get("sample_label_identity_digest") != digest:
+        raise SctsrError(ErrorCode.PREDICTION_IDENTITY_MISMATCH, "Prediction sample-label digest differs from its summary")
+    if any(raw["sample_label_identity_digest"] != digest or int(raw["artifact_row_count"]) != len(rows) for raw in raw_rows):
+        raise SctsrError(ErrorCode.PREDICTION_IDENTITY_MISMATCH, "Prediction rows do not carry the publication-wide identity")
+    first = rows[0]
+    expected_summary = {
+        "run_id": first.run_id,
+        "arm_id": first.arm_id,
+        "training_seed": first.training_seed,
+        "split_role": first.split_role,
+        "split_manifest_path": first.split_manifest_path,
+        "split_manifest_sha256": first.split_manifest_sha256,
+        "checkpoint_epoch": first.checkpoint_epoch,
+        "checkpoint_sha256": first.checkpoint_sha256,
+        "model_variant": first.model_variant,
+        "source_tree_digest": first.source_tree_digest,
+        "prediction_generation": first.prediction_generation,
+        "evaluation_mode": evaluation_mode,
+    }
+    mismatches = {
+        field: {"row": value, "summary": summary.get(field)}
+        for field, value in expected_summary.items()
+        if summary.get(field) != value
+    }
+    if mismatches:
+        raise SctsrError(ErrorCode.PREDICTION_IDENTITY_MISMATCH, "Prediction rows differ from their summary identity", observed=mismatches)
+    binding = PredictionArtifactBinding(
+        checkpoint_path=Path(checkpoint_path).resolve().as_posix(),
+        checkpoint_sha256=first.checkpoint_sha256,
+        checkpoint_epoch=first.checkpoint_epoch,
+        model_variant=first.model_variant,
+        source_tree_digest=first.source_tree_digest,
+        training_seed=first.training_seed,
+        split_role=first.split_role,
+        split_manifest_path=first.split_manifest_path,
+        split_manifest_sha256=first.split_manifest_sha256,
+        evaluation_mode=evaluation_mode,
+        selection_semantic=str(summary.get("selection_semantic", "")),
+    )
+    expected_labels = {row.sample_id: row.y_true for row in rows} if evaluation_mode == "synthetic" else None
+    validate_prediction_binding(rows, binding, expected_sample_labels=expected_labels)
+    return rows, summary, binding

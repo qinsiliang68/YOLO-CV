@@ -354,7 +354,13 @@ def read_columnar(path: str | Path, *, allow_synthetic_portable_fallback: bool =
         raise SctsrError(ErrorCode.COLUMNAR_ENGINE_UNAVAILABLE, "PyArrow is required to read canonical Parquet")
     _, pq = engine
     try:
-        return pq.read_table(source).to_pylist()
+        # ``pq.read_table(path)`` discovers Hive partition columns from parent
+        # directories such as ``run_id=.../epoch=0121``.  Those virtual
+        # columns are not bytes stored in the immutable file and would make a
+        # strict row-schema audit depend on where the file was mounted.  Read
+        # the physical Parquet file directly so only serialized columns are
+        # returned; partition identity is validated separately from the path.
+        return pq.ParquetFile(source).read().to_pylist()
     except Exception as exc:
         raise SctsrError(ErrorCode.SCHEMA_VALIDATION_FAILED, "Canonical Parquet cannot be read", artifact_path=str(source)) from exc
 

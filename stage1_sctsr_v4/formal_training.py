@@ -19,7 +19,7 @@ from .filesystem import windows_safe_resolved_path
 from .logical_artifact_index import LogicalArtifactEntry, LogicalArtifactIndex
 from .replay_step_plan import build_replay_step_plan
 from .rng_isolation import capture_global_rng
-from .schedule import SchedulePlan
+from .schedule import SchedulePlan, schedule_to_dict
 from .serialization import atomic_write_json, sha256_file, stable_digest
 from .ultralytics_overlay import run_ultralytics_classification_epoch
 
@@ -39,6 +39,47 @@ class FormalIdentity:
     source_tree_digest: str
     runtime_config_digest: str
     asset_registry_digest: str
+    contract_digest: str | None = None
+    seed_registry_digest: str | None = None
+
+    def validate(self, *, formal: bool) -> None:
+        if type(self.training_seed) is not int or not 0 <= self.training_seed < 2**63:
+            raise SctsrError(ErrorCode.CONFIGURATION_MISMATCH, "Formal identity training seed is invalid")
+        required = {
+            "canonical_training_lock_sha256": self.canonical_training_lock_sha256,
+            "initial_checkpoint_sha256": self.initial_checkpoint_sha256,
+            "base_manifest_sha256": self.base_manifest_sha256,
+            "source_tree_digest": self.source_tree_digest,
+            "runtime_config_digest": self.runtime_config_digest,
+            "asset_registry_digest": self.asset_registry_digest,
+        }
+        if formal:
+            required.update(
+                {
+                    "contract_digest": self.contract_digest,
+                    "seed_registry_digest": self.seed_registry_digest,
+                }
+            )
+        invalid = [
+            name
+            for name, value in required.items()
+            if not isinstance(value, str)
+            or len(value) != 64
+            or value != value.upper()
+            or any(character not in "0123456789ABCDEF" for character in value)
+        ]
+        if invalid:
+            raise SctsrError(
+                ErrorCode.CONFIGURATION_MISMATCH,
+                "Prepared run identity contains missing, placeholder, or noncanonical digests",
+                observed=invalid,
+            )
+
+    @property
+    def effective_contract_digest(self) -> str:
+        # Backward-compatible only for synthetic unit fixtures. Formal mode
+        # requires ``contract_digest`` explicitly through ``validate``.
+        return self.contract_digest or self.runtime_config_digest
 
 
 def _base_batch_sizes(trainer: Any) -> tuple[int, ...]:
@@ -103,6 +144,33 @@ def _evidence_enabled(execution_mode: str, requested: bool | None) -> bool:
     return enabled
 
 
+def _prepare_run_root_after_upstream_setup(root_value: str | Path, *, execution_mode: str) -> Path:
+    """Open one new run root without accepting pre-existing experiment data.
+
+    A formal Ultralytics trainer creates only ``<run>/trainer`` during its
+    explicitly validated setup stage.  The SCTSR runner may adopt that fresh
+    subtree, but no other pre-existing sibling is allowed.  Synthetic/unit
+    runners do not perform upstream setup and therefore create an absent root.
+    """
+
+    root = windows_safe_resolved_path(root_value)
+    if execution_mode == "formal":
+        if not root.is_dir():
+            raise SctsrError(ErrorCode.ATOMIC_TRANSACTION_INCOMPLETE, "Formal run root was not created by prepared upstream setup", artifact_path=str(root))
+        entries = list(root.iterdir())
+        if len(entries) != 1 or entries[0].name != "trainer" or not entries[0].is_dir():
+            raise SctsrError(
+                ErrorCode.ATOMIC_TRANSACTION_INCOMPLETE,
+                "Formal run root contains data outside the fresh upstream trainer subtree",
+                observed=sorted(path.name for path in entries),
+                expected=["trainer"],
+                artifact_path=str(root),
+            )
+        return root
+    root.mkdir(parents=True, exist_ok=False)
+    return root
+
+
 def _run_transactional_epoch(
     *,
     trainer: Any,
@@ -143,7 +211,7 @@ def _run_transactional_epoch(
             arm_id=arm_id,
             training_seed=identity.training_seed,
             source_tree_digest=identity.source_tree_digest,
-            contract_digest=identity.runtime_config_digest,
+            contract_digest=identity.effective_contract_digest,
             asset_registry_digest=identity.asset_registry_digest,
             rng_state_digest=capture_global_rng().digest(),
             previous_generation_digest=previous_generation_digest,
@@ -241,7 +309,13 @@ def _assert_expected_checkpoint_payload(payload: Mapping[str, Any], identity: Fo
             )
 
 
-def _validate_parent_completion_receipt(parent_checkpoint: str | Path, parent_sha: str, training_seed: int) -> dict[str, Any]:
+def _validate_parent_completion_receipt(
+    parent_checkpoint: str | Path,
+    parent_sha: str,
+    training_seed: int,
+    *,
+    require_formal: bool = False,
+) -> dict[str, Any]:
     checkpoint = Path(parent_checkpoint)
     candidates = tuple(parent / "PARENT_RECEIPT.json" for parent in checkpoint.parents[:7])
     receipt_path = next((candidate for candidate in candidates if candidate.is_file()), None)
@@ -273,6 +347,14 @@ def _validate_parent_completion_receipt(parent_checkpoint: str | Path, parent_sh
             )
     if receipt.get("status") not in {"FORMAL_PARENT_COMPLETE", "IMPLEMENTED_NOT_FORMALLY_RUN"}:
         raise SctsrError(ErrorCode.BRANCH_LINEAGE_MISMATCH, "Parent receipt is not complete", artifact_path=str(receipt_path))
+    if require_formal and receipt.get("status") != "FORMAL_PARENT_COMPLETE":
+        raise SctsrError(
+            ErrorCode.BRANCH_LINEAGE_MISMATCH,
+            "A formal branch may only descend from a formally completed common parent",
+            observed=receipt.get("status"),
+            expected="FORMAL_PARENT_COMPLETE",
+            artifact_path=str(receipt_path),
+        )
     return {**receipt, "_receipt_path": receipt_path.as_posix()}
 
 
@@ -353,8 +435,8 @@ def _publish_complete_logical_timeline(
     )
     logical = LogicalArtifactIndex(entries)
     logical.validate(require_complete_timeline=True, logical_run_id=lineage.logical_run_id)
-    index_path = child_root / "ARTIFACT_INDEX.json"
-    generation_index = load_json(index_path)
+    generation_index_path = child_root / "ARTIFACT_INDEX.json"
+    generation_index = load_json(generation_index_path)
     combined = {
         "schema_version": "stage1.sctsr.combined_artifact_index.v1",
         "epoch_generations": generation_index["epoch_generations"],
@@ -365,6 +447,7 @@ def _publish_complete_logical_timeline(
         "physical_parent_root": parent_root.as_posix(),
         "physical_child_root": child_root.as_posix(),
     }
+    index_path = child_root / "ARTIFACT_INDEX_LOGICAL.json"
     atomic_write_json(index_path, combined)
     return {
         "path": index_path.as_posix(),
@@ -374,10 +457,76 @@ def _publish_complete_logical_timeline(
     }
 
 
+def _publish_formal_run_manifest_and_indexes(
+    *,
+    root: Path,
+    identity: FormalIdentity,
+    run_role: str,
+    run_id: str,
+    arm_id: str,
+    release_authorization: str | Path | Mapping[str, Any],
+    release_expected_bindings: Mapping[str, str],
+) -> dict[str, Any]:
+    from .run_validation import build_artifact_index
+    from .serialization import load_json
+
+    generation_index_path = root / "ARTIFACT_INDEX.json"
+    if not generation_index_path.is_file():
+        raise SctsrError(ErrorCode.ARTIFACT_VALIDATION_FAILED, "Formal run lacks its epoch-generation index")
+    generation_index = load_json(generation_index_path)
+    if generation_index.get("schema_version") != "stage1.sctsr.epoch_artifact_index.v1":
+        raise SctsrError(ErrorCode.ARTIFACT_VALIDATION_FAILED, "Formal epoch-generation index schema is invalid")
+    atomic_write_json(root / "ARTIFACT_INDEX_GENERATIONS.json", generation_index)
+    release = release_authorization if isinstance(release_authorization, Mapping) else load_json(release_authorization)
+    release_sha = stable_digest(release) if isinstance(release_authorization, Mapping) else sha256_file(release_authorization)
+    manifest = {
+        "schema_version": "stage1.sctsr.formal_run_manifest.v1",
+        "execution_mode": "formal",
+        "run_role": run_role,
+        "run_id": run_id,
+        "arm_id": arm_id,
+        "training_seed": identity.training_seed,
+        "source_tree_digest": identity.source_tree_digest,
+        "contract_digest": identity.effective_contract_digest,
+        "asset_registry_digest": identity.asset_registry_digest,
+        "runtime_config_digest": identity.runtime_config_digest,
+        "seed_registry_digest": identity.seed_registry_digest,
+        "release_id": release.get("release_id"),
+        "release_key_id": release.get("key_id"),
+        "release_manifest_sha256": release_sha,
+        "release_expected_bindings": dict(release_expected_bindings),
+        "formal_training_authorized": True,
+        "formal_training_started": True,
+        "engineering_gate_generated": False,
+        "assignments_generated": False,
+        "pilot_release_generated": False,
+        "blind_holdout_opened": False,
+        "selector_trained": False,
+        "method_effectiveness_claimed": False,
+        "test_accessed": False,
+        "best_pt_used": False,
+    }
+    atomic_write_json(root / "RUN_MANIFEST.json", manifest)
+    # Replace the mutable transaction index with a final exhaustive byte index;
+    # the original generation index remains immutable under its explicit name.
+    atomic_write_json(generation_index_path, build_artifact_index(root))
+    return {
+        "run_manifest_path": (root / "RUN_MANIFEST.json").as_posix(),
+        "run_manifest_sha256": sha256_file(root / "RUN_MANIFEST.json"),
+        "artifact_index_path": generation_index_path.as_posix(),
+        "generation_index_path": (root / "ARTIFACT_INDEX_GENERATIONS.json").as_posix(),
+        "generation_index_sha256": sha256_file(root / "ARTIFACT_INDEX_GENERATIONS.json"),
+    }
+
+
 def run_prepared_common_parent(
     *, trainer: Any, identity: FormalIdentity, output_root: str | Path,
     release_authorization: str | Path | None, execution_mode: str = "formal",
     collect_epoch_evidence: bool | None = None,
+    release_trust_policy: str | Path | Mapping[str, Any] | None = None,
+    release_expected_bindings: Mapping[str, str] | None = None,
+    release_verification_secret: bytes | str | None = None,
+    prepared_trainer_binding: Mapping[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Run the formal E1-E120 no-replay common parent on a prepared trainer.
 
@@ -387,12 +536,24 @@ def run_prepared_common_parent(
     ``best.pt`` can never influence SCTSR.
     """
 
-    require_synthetic_or_authorized(execution_mode, release_authorization)
+    identity.validate(formal=execution_mode == "formal")
+    require_synthetic_or_authorized(
+        execution_mode,
+        release_authorization,
+        trust_policy=release_trust_policy,
+        expected_bindings=release_expected_bindings,
+        verification_secret=release_verification_secret,
+    )
     sizes = _base_batch_sizes(trainer)
     evidence_enabled = _evidence_enabled(execution_mode, collect_epoch_evidence)
     sample_evidence = sample_evidence_from_trainer(trainer) if evidence_enabled else {}
-    root = windows_safe_resolved_path(output_root)
-    root.mkdir(parents=True, exist_ok=False)
+    if execution_mode == "formal" and prepared_trainer_binding is None:
+        raise SctsrError(ErrorCode.UPSTREAM_BINDING_FAILED, "Formal parent lacks its prepared trainer binding")
+    root = _prepare_run_root_after_upstream_setup(output_root, execution_mode=execution_mode)
+    if execution_mode == "formal":
+        atomic_write_json(root / "FORMAL_IDENTITY.json", asdict(identity))
+        atomic_write_json(root / "FORMAL_AUTHORIZATION_BINDING.json", dict(release_expected_bindings or {}))
+        atomic_write_json(root / "PREPARED_TRAINER_BINDING.json", dict(prepared_trainer_binding or {}))
     global_step = 0
     epoch_receipts = []
     history = ReplayHistoryState()
@@ -476,8 +637,25 @@ def run_prepared_common_parent(
         "epoch_receipt_digest": stable_digest(epoch_receipts), "best_pt_used": False,
         "epoch_evidence_enabled": evidence_enabled,
         "recovery_pointer_path": (root / "ROLLING_RECOVERY_POINTER.json").as_posix() if evidence_enabled else None,
+        "prepared_trainer_binding_digest": None if prepared_trainer_binding is None else prepared_trainer_binding.get("binding_digest"),
     }
     atomic_write_json(root / "PARENT_RECEIPT.json", receipt)
+    if execution_mode == "formal":
+        if release_expected_bindings is None or release_authorization is None:
+            raise SctsrError(ErrorCode.FORMAL_RELEASE_NOT_AUTHORIZED, "Formal parent finalization lacks release bindings")
+        final_indexes = _publish_formal_run_manifest_and_indexes(
+            root=root,
+            identity=identity,
+            run_role="COMMON_PARENT",
+            run_id=f"PARENT_{identity.training_seed}",
+            arm_id="COMMON_PARENT_NR",
+            release_authorization=release_authorization,
+            release_expected_bindings=release_expected_bindings,
+        )
+        receipt = {**receipt, "final_indexes": final_indexes}
+        atomic_write_json(root / "PARENT_RECEIPT.json", receipt)
+        from .run_validation import build_artifact_index
+        atomic_write_json(root / "ARTIFACT_INDEX.json", build_artifact_index(root))
     return receipt
 
 
@@ -487,13 +665,32 @@ def run_prepared_branch(
     replay_batch_provider: Callable[[Sequence[str], int, int, int], Mapping[str, Any]],
     output_root: str | Path, release_authorization: str | Path,
     execution_mode: str = "formal", collect_epoch_evidence: bool | None = None,
+    release_trust_policy: str | Path | Mapping[str, Any] | None = None,
+    release_expected_bindings: Mapping[str, str] | None = None,
+    release_verification_secret: bytes | str | None = None,
+    identity_pool_binding: Mapping[str, Any] | None = None,
+    parent_artifact_index_binding: Mapping[str, Any] | None = None,
+    prepared_trainer_binding: Mapping[str, Any] | None = None,
 ) -> dict[str, Any]:
-    require_synthetic_or_authorized(execution_mode, release_authorization)
+    identity.validate(formal=execution_mode == "formal")
+    require_synthetic_or_authorized(
+        execution_mode,
+        release_authorization,
+        trust_policy=release_trust_policy,
+        expected_bindings=release_expected_bindings,
+        verification_secret=release_verification_secret,
+    )
     parent_sha = sha256_file(parent_checkpoint)
-    parent_receipt = _validate_parent_completion_receipt(parent_checkpoint, parent_sha, identity.training_seed)
+    parent_receipt = _validate_parent_completion_receipt(
+        parent_checkpoint,
+        parent_sha,
+        identity.training_seed,
+        require_formal=execution_mode == "formal",
+    )
     lineage.validate(
         parent_sha=parent_sha, training_seed=identity.training_seed, arm_id=schedule.arm_id.value,
-        source_digest=identity.source_tree_digest, contract_digest=lineage.child_contract_digest,
+        source_digest=identity.source_tree_digest,
+        contract_digest=identity.effective_contract_digest if execution_mode == "formal" else lineage.child_contract_digest,
     )
     payload = load_checkpoint(parent_checkpoint, expected_sha256=parent_sha, expected_epoch=120)
     _assert_expected_checkpoint_payload(payload, identity)
@@ -501,8 +698,20 @@ def run_prepared_branch(
     sizes = _base_batch_sizes(trainer)
     evidence_enabled = _evidence_enabled(execution_mode, collect_epoch_evidence)
     sample_evidence = sample_evidence_from_trainer(trainer) if evidence_enabled else {}
-    root = windows_safe_resolved_path(output_root)
-    root.mkdir(parents=True, exist_ok=False)
+    if execution_mode == "formal" and (identity_pool_binding is None or parent_artifact_index_binding is None or prepared_trainer_binding is None):
+        raise SctsrError(
+            ErrorCode.ARTIFACT_VALIDATION_FAILED,
+            "Formal branch lacks immutable trainer, identity-pool, or parent-index bindings",
+        )
+    root = _prepare_run_root_after_upstream_setup(output_root, execution_mode=execution_mode)
+    if execution_mode == "formal":
+        atomic_write_json(root / "FORMAL_IDENTITY.json", asdict(identity))
+        atomic_write_json(root / "FORMAL_AUTHORIZATION_BINDING.json", dict(release_expected_bindings or {}))
+        atomic_write_json(root / "BRANCH_LINEAGE.json", asdict(lineage))
+        atomic_write_json(root / "SCHEDULE.json", schedule_to_dict(schedule))
+        atomic_write_json(root / "IDENTITY_POOL_BINDING.json", dict(identity_pool_binding))
+        atomic_write_json(root / "PARENT_ARTIFACT_INDEX_BINDING.json", dict(parent_artifact_index_binding))
+        atomic_write_json(root / "PREPARED_TRAINER_BINDING.json", dict(prepared_trainer_binding))
     global_step = int(payload["global_step"])
     parent_sha_before = sha256_file(parent_checkpoint)
     epoch_receipts = []
@@ -598,6 +807,25 @@ def run_prepared_branch(
         "epoch_evidence_enabled": evidence_enabled,
         "recovery_pointer_path": (root / "ROLLING_RECOVERY_POINTER.json").as_posix() if evidence_enabled else None,
         "logical_artifact_index": logical_index,
+        "identity_pool_binding_digest": None if identity_pool_binding is None else identity_pool_binding.get("binding_digest"),
+        "parent_artifact_index_binding_digest": None if parent_artifact_index_binding is None else parent_artifact_index_binding.get("binding_digest"),
+        "prepared_trainer_binding_digest": None if prepared_trainer_binding is None else prepared_trainer_binding.get("binding_digest"),
     }
     atomic_write_json(root / "BRANCH_RECEIPT.json", receipt)
+    if execution_mode == "formal":
+        if release_expected_bindings is None:
+            raise SctsrError(ErrorCode.FORMAL_RELEASE_NOT_AUTHORIZED, "Formal branch finalization lacks release bindings")
+        final_indexes = _publish_formal_run_manifest_and_indexes(
+            root=root,
+            identity=identity,
+            run_role="BRANCH",
+            run_id=lineage.logical_run_id,
+            arm_id=schedule.arm_id.value,
+            release_authorization=release_authorization,
+            release_expected_bindings=release_expected_bindings,
+        )
+        receipt = {**receipt, "final_indexes": final_indexes}
+        atomic_write_json(root / "BRANCH_RECEIPT.json", receipt)
+        from .run_validation import build_artifact_index
+        atomic_write_json(root / "ARTIFACT_INDEX.json", build_artifact_index(root))
     return receipt

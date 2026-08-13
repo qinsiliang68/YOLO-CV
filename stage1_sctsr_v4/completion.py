@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, field
-from typing import Mapping, Sequence
+from dataclasses import dataclass, field, fields
+from typing import Any, Mapping, Sequence
 
 from .errors import ErrorCode, SctsrError
 
@@ -207,6 +207,38 @@ class CompletionAudit:
                 self.check_evidence[key].validate(status=self.checks[key])
             if not self.commit_list or self.changed_file_ledger_path == "NOT_YET_BOUND":
                 raise SctsrError(ErrorCode.CLOSEOUT_NOT_VALIDATED, "Strict completion lacks commit list or changed-file ledger binding")
+
+
+def completion_audit_from_mapping(value: Mapping[str, Any]) -> CompletionAudit:
+    """Materialize the machine closeout schema without silently dropping keys."""
+
+    expected = {item.name for item in fields(CompletionAudit)} | {"schema_version"}
+    if set(value) != expected:
+        raise SctsrError(
+            ErrorCode.CLOSEOUT_NOT_VALIDATED,
+            "Completion audit fields do not exactly match the registered schema",
+            observed={"missing": sorted(expected - set(value)), "extra": sorted(set(value) - expected)},
+        )
+    if value.get("schema_version") != "stage1.sctsr.completion_audit.v1":
+        raise SctsrError(ErrorCode.CLOSEOUT_NOT_VALIDATED, "Completion audit schema version is invalid")
+    raw_evidence = value.get("check_evidence")
+    if not isinstance(raw_evidence, Mapping):
+        raise SctsrError(ErrorCode.CLOSEOUT_NOT_VALIDATED, "Completion check evidence must be a mapping")
+    evidence: dict[str, CompletionCheckEvidence] = {}
+    evidence_fields = {item.name for item in fields(CompletionCheckEvidence)}
+    for name, raw in raw_evidence.items():
+        if not isinstance(raw, Mapping) or set(raw) != evidence_fields:
+            raise SctsrError(ErrorCode.CLOSEOUT_NOT_VALIDATED, "Completion check evidence schema is invalid", failing_field=str(name))
+        payload = dict(raw)
+        payload["reviewed_source_files"] = tuple(payload["reviewed_source_files"])
+        payload["reviewed_test_files"] = tuple(payload["reviewed_test_files"])
+        evidence[str(name)] = CompletionCheckEvidence(**payload)
+    payload = {key: item for key, item in value.items() if key not in {"schema_version", "check_evidence"}}
+    payload["checks"] = dict(payload["checks"])
+    payload["blocker_reasons"] = dict(payload["blocker_reasons"])
+    payload["check_evidence"] = evidence
+    payload["commit_list"] = tuple(payload["commit_list"])
+    return CompletionAudit(**payload)
 
 
 def completion_check_template(*, r2_formal_asset_feasible: bool = False) -> dict[str, str]:
