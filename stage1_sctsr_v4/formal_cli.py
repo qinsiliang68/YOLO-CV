@@ -29,6 +29,205 @@ from .source_identity import validate_source_tree_manifest
 from .training_system import UpstreamBinding, bind_upstream, prepare_classification_overrides
 
 
+FORMAL_AUTHORIZATION_INPUT_ROLES = (
+    "release_authorization",
+    "release_trust_policy",
+    "source_tree_manifest",
+    "contract",
+    "arms",
+    "asset_registry",
+    "runtime_config",
+    "seed_registry",
+)
+
+
+def build_external_file_binding(
+    paths: Mapping[str, str | Path],
+    *,
+    required_roles: tuple[str, ...] | list[str],
+) -> dict[str, Any]:
+    """Bind every external formal input by absolute path, size and SHA-256."""
+
+    required = tuple(required_roles)
+    if len(required) != len(set(required)) or set(paths) != set(required):
+        raise SctsrError(
+            ErrorCode.ARTIFACT_VALIDATION_FAILED,
+            "External formal-input roles do not exactly match the registered set",
+            observed=sorted(paths),
+            expected=sorted(required),
+        )
+    rows: dict[str, dict[str, Any]] = {}
+    for role in sorted(required):
+        path = Path(paths[role]).resolve()
+        if not path.is_file():
+            raise SctsrError(
+                ErrorCode.ARTIFACT_VALIDATION_FAILED,
+                "External formal input is missing",
+                failing_field=role,
+                artifact_path=str(path),
+            )
+        rows[role] = {
+            "path": path.as_posix(),
+            "bytes": path.stat().st_size,
+            "sha256": sha256_file(path),
+        }
+    core = {
+        "schema_version": "stage1.sctsr.external_file_binding.v1",
+        "required_roles": sorted(required),
+        "files": rows,
+    }
+    return {**core, "binding_digest": stable_digest(core)}
+
+
+def validate_external_file_binding(
+    binding: Mapping[str, Any],
+    *,
+    required_roles: tuple[str, ...] | list[str],
+) -> dict[str, Any]:
+    required = sorted(required_roles)
+    if set(binding) != {"schema_version", "required_roles", "files", "binding_digest"}:
+        raise SctsrError(ErrorCode.ARTIFACT_VALIDATION_FAILED, "External formal-input binding schema is invalid")
+    core = {key: value for key, value in binding.items() if key != "binding_digest"}
+    if (
+        binding.get("schema_version") != "stage1.sctsr.external_file_binding.v1"
+        or binding.get("required_roles") != required
+        or binding.get("binding_digest") != stable_digest(core)
+    ):
+        raise SctsrError(ErrorCode.ARTIFACT_VALIDATION_FAILED, "External formal-input binding identity is invalid")
+    rows = binding.get("files")
+    if not isinstance(rows, Mapping) or set(rows) != set(required):
+        raise SctsrError(ErrorCode.ARTIFACT_VALIDATION_FAILED, "External formal-input file roles are incomplete")
+    checked: dict[str, dict[str, Any]] = {}
+    for role in required:
+        row = rows[role]
+        if not isinstance(row, Mapping) or set(row) != {"path", "bytes", "sha256"}:
+            raise SctsrError(ErrorCode.ARTIFACT_VALIDATION_FAILED, "External formal-input file row is invalid", failing_field=role)
+        path = Path(str(row["path"])).resolve()
+        if (
+            not path.is_file()
+            or path.stat().st_size != row["bytes"]
+            or sha256_file(path) != row["sha256"]
+        ):
+            raise SctsrError(
+                ErrorCode.ARTIFACT_VALIDATION_FAILED,
+                "External formal-input bytes changed after validation",
+                failing_field=role,
+                artifact_path=str(path),
+            )
+        checked[role] = dict(row)
+    return {"status": "PASS", "binding_digest": binding["binding_digest"], "files": checked}
+
+
+def validate_prepared_trainer_external_files(binding: Mapping[str, Any]) -> dict[str, Any]:
+    """Re-hash trainer-facing lock, model, overrides and identity bytes."""
+
+    if not isinstance(binding, Mapping):
+        raise SctsrError(ErrorCode.ARTIFACT_VALIDATION_FAILED, "Prepared trainer binding is not an object")
+    core = {key: value for key, value in binding.items() if key != "binding_digest"}
+    if binding.get("binding_digest") != stable_digest(core):
+        raise SctsrError(ErrorCode.ARTIFACT_VALIDATION_FAILED, "Prepared trainer binding digest is invalid")
+    identity = binding.get("identity_manifest_binding")
+    if not isinstance(identity, Mapping):
+        raise SctsrError(ErrorCode.ARTIFACT_VALIDATION_FAILED, "Prepared trainer identity-manifest binding is missing")
+    identity_core = {key: value for key, value in identity.items() if key != "binding_digest"}
+    if identity.get("binding_digest") != stable_digest(identity_core):
+        raise SctsrError(ErrorCode.ARTIFACT_VALIDATION_FAILED, "Training identity-manifest binding digest is invalid")
+    file_specs = {
+        "canonical_training_lock": (
+            binding.get("canonical_training_lock_path"),
+            binding.get("canonical_training_lock_sha256"),
+            None,
+        ),
+        "initial_checkpoint": (
+            binding.get("initial_checkpoint_path"),
+            binding.get("initial_checkpoint_sha256"),
+            None,
+        ),
+        "trainer_overrides": (
+            binding.get("trainer_overrides_path"),
+            binding.get("trainer_overrides_sha256"),
+            None,
+        ),
+        "identity_manifest": (
+            identity.get("path"),
+            identity.get("sha256"),
+            identity.get("bytes"),
+        ),
+    }
+    checked: dict[str, dict[str, Any]] = {}
+    for role, (path_value, expected_sha, expected_bytes) in file_specs.items():
+        path = Path(str(path_value)).resolve()
+        if (
+            not path.is_file()
+            or not isinstance(expected_sha, str)
+            or sha256_file(path) != expected_sha
+            or (expected_bytes is not None and path.stat().st_size != expected_bytes)
+        ):
+            raise SctsrError(
+                ErrorCode.ARTIFACT_VALIDATION_FAILED,
+                "Prepared trainer external bytes changed after setup",
+                failing_field=role,
+                artifact_path=str(path),
+            )
+        checked[role] = {"path": path.as_posix(), "bytes": path.stat().st_size, "sha256": expected_sha}
+    return {"status": "PASS", "files": checked, "binding_digest": binding["binding_digest"]}
+
+
+def validate_formal_authorization_inputs_at_closeout(
+    external_binding: Mapping[str, Any],
+    *,
+    repository_root: str | Path,
+    expected_bindings: Mapping[str, Any],
+) -> dict[str, Any]:
+    """Recompute every scientific authorization digest without renewing it.
+
+    Signature time/nonce policy is evaluated immediately before training.
+    Closeout instead proves that the exact already-authorized bytes, source
+    checkout, assets, contract, runtime and seed registry still exist and
+    still derive the signed identities.
+    """
+
+    checked = validate_external_file_binding(
+        external_binding,
+        required_roles=FORMAL_AUTHORIZATION_INPUT_ROLES,
+    )
+    paths = {role: Path(row["path"]) for role, row in checked["files"].items()}
+    root = Path(repository_root).resolve()
+    source = validate_source_tree_manifest(paths["source_tree_manifest"], root, require_clean=True)
+    contract = validate_contract_files(paths["contract"], paths["arms"])
+    registry = load_asset_registry(paths["asset_registry"])
+    assets = validate_asset_registry(registry, root, verify_large_files=True)
+    runtime_raw = load_json(paths["runtime_config"])
+    if not isinstance(runtime_raw, Mapping):
+        raise SctsrError(ErrorCode.CONFIGURATION_MISMATCH, "Runtime policy must be a JSON object")
+    runtime_digest = _validate_runtime_policy(runtime_raw)
+    seed_raw = load_json(paths["seed_registry"])
+    if not isinstance(seed_raw, Mapping):
+        raise SctsrError(ErrorCode.SEED_REGISTRY_INVALID, "Seed registry must be a JSON object")
+    seed_digest = SeedRegistry.from_mapping(seed_raw).digest
+    recomputed = {
+        "baseline_main_commit": MAIN_COMMIT.upper(),
+        "taskbook_blob_sha": TASKBOOK_BLOB_SHA.upper(),
+        "source_tree_digest": str(source["source_tree_digest"]).upper(),
+        "contract_digest": contract.contract_digest.upper(),
+        "asset_registry_digest": str(assets["registry_digest"]).upper(),
+        "runtime_config_digest": runtime_digest.upper(),
+        "seed_registry_digest": seed_digest.upper(),
+    }
+    if dict(expected_bindings) != recomputed:
+        raise SctsrError(
+            ErrorCode.ARTIFACT_VALIDATION_FAILED,
+            "Closeout scientific inputs no longer derive the signed release bindings",
+            observed=dict(expected_bindings),
+            expected=recomputed,
+        )
+    return {
+        "status": "PASS",
+        "external_binding_digest": checked["binding_digest"],
+        "recomputed_bindings": recomputed,
+        "asset_registry": registry,
+    }
+
 _FORMAL_IDENTITY_FIELDS = {
     "schema_version",
     "training_seed",
@@ -572,6 +771,9 @@ def _validate_runtime_policy(raw: Mapping[str, Any]) -> str:
         "oom_policy": "ABORT_FIXED_CONTRACT",
         "world_size": 1,
         "formal_endpoint_epoch": 200,
+        "formal_endpoint_split_role": "val_op",
+        "formal_endpoint_model_variant": "EMA",
+        "formal_endpoint_batch_size": 128,
         "execution_mode_default": "synthetic",
     }
     mismatch = {key: {"observed": raw.get(key), "expected": value} for key, value in expected.items() if raw.get(key) != value}
@@ -684,6 +886,19 @@ def prepare_formal_authorization(
             observed=identity.training_seed,
         )
     release = load_json(release_authorization)
+    formal_input_binding = build_external_file_binding(
+        {
+            "release_authorization": release_authorization,
+            "release_trust_policy": release_trust_policy,
+            "source_tree_manifest": source_tree_manifest,
+            "contract": contract_path,
+            "arms": arms_path,
+            "asset_registry": asset_registry_path,
+            "runtime_config": runtime_config_path,
+            "seed_registry": seed_registry_path,
+        },
+        required_roles=FORMAL_AUTHORIZATION_INPUT_ROLES,
+    )
     return {
         "status": "PASS",
         "expected_bindings": expected_bindings,
@@ -700,6 +915,7 @@ def prepare_formal_authorization(
         "base_manifest_sha256": formal_pool_inputs.base_manifest_sha256,
         "runtime_config_path": Path(runtime_config_path).resolve().as_posix(),
         "seed_registry_path": Path(seed_registry_path).resolve().as_posix(),
+        "formal_input_binding": formal_input_binding,
     }
 
 

@@ -178,6 +178,7 @@ def main() -> int:
             identity_pool_binding=pool_binding,
             parent_artifact_index_binding=parent_binding,
             prepared_trainer_binding=trainer_binding,
+            formal_input_binding=authorization["formal_input_binding"],
             resume_context=resume_context,
             execution_mode="formal",
         )

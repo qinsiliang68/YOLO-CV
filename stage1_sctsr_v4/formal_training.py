@@ -22,7 +22,7 @@ from .recovery import FormalResumeContext
 from .replay_step_plan import build_replay_step_plan
 from .rng_isolation import capture_global_rng
 from .schedule import SchedulePlan, schedule_to_dict
-from .serialization import _fsync_directory, atomic_write_json, canonical_json_bytes, load_json, sha256_file, stable_digest
+from .serialization import _fsync_directory, atomic_write_bytes, atomic_write_json, canonical_json_bytes, load_json, sha256_file, stable_digest
 from .ultralytics_overlay import run_ultralytics_classification_epoch
 
 
@@ -30,6 +30,113 @@ CANONICAL_BATCH_SIZE = 128
 CANONICAL_BASE_DENOMINATOR = 120_000
 CANONICAL_BASE_STEPS = 938
 KEEP_CHECKPOINTS = {120, 140, 150, 160, 180, 200}
+
+
+def publish_formal_input_snapshot(
+    run_root: str | Path,
+    external_binding: Mapping[str, Any],
+) -> dict[str, Any]:
+    """Copy every authorization input into the fresh run before epoch one.
+
+    The snapshot is intentionally small: datasets and checkpoints remain in
+    the asset registry and are re-hashed separately.  This directory contains
+    the exact control-plane bytes that authorized the run, while retaining the
+    external paths needed to detect post-start replacement at closeout.
+    """
+
+    from .formal_cli import FORMAL_AUTHORIZATION_INPUT_ROLES, validate_external_file_binding
+
+    root = Path(run_root).resolve()
+    validated = validate_external_file_binding(
+        external_binding,
+        required_roles=FORMAL_AUTHORIZATION_INPUT_ROLES,
+    )
+    files: dict[str, dict[str, Any]] = {}
+    for role in FORMAL_AUTHORIZATION_INPUT_ROLES:
+        external = Path(validated["files"][role]["path"])
+        suffix = external.suffix.lower() if external.suffix.lower() in {".json", ".csv", ".md", ".yaml", ".yml", ".toml"} else ".bin"
+        folder = "01_assets" if role == "asset_registry" else "00_contract"
+        relative = Path(folder) / f"{role}{suffix}"
+        destination = root / relative
+        if destination.exists():
+            raise SctsrError(
+                ErrorCode.ATOMIC_TRANSACTION_INCOMPLETE,
+                "Formal input snapshot destination already exists",
+                artifact_path=str(destination),
+            )
+        atomic_write_bytes(destination, external.read_bytes())
+        files[role] = {
+            "external_path": external.resolve().as_posix(),
+            "snapshot_relative_path": relative.as_posix(),
+            "bytes": destination.stat().st_size,
+            "sha256": sha256_file(destination),
+        }
+    core = {
+        "schema_version": "stage1.sctsr.formal_input_snapshot.v1",
+        "external_binding": dict(external_binding),
+        "files": files,
+    }
+    snapshot = {**core, "snapshot_digest": stable_digest(core)}
+    atomic_write_json(root / "00_contract" / "FORMAL_INPUT_SNAPSHOT.json", snapshot)
+    return snapshot
+
+
+def validate_formal_input_snapshot(
+    run_root: str | Path,
+    *,
+    expected_external_binding: Mapping[str, Any] | None = None,
+) -> dict[str, Any]:
+    """Re-hash both frozen copies and still-referenced external inputs."""
+
+    from .formal_cli import FORMAL_AUTHORIZATION_INPUT_ROLES, validate_external_file_binding
+
+    root = Path(run_root).resolve()
+    path = root / "00_contract" / "FORMAL_INPUT_SNAPSHOT.json"
+    if not path.is_file():
+        raise SctsrError(ErrorCode.ARTIFACT_VALIDATION_FAILED, "Formal input snapshot manifest is missing")
+    raw = load_json(path)
+    if not isinstance(raw, Mapping) or set(raw) != {"schema_version", "external_binding", "files", "snapshot_digest"}:
+        raise SctsrError(ErrorCode.ARTIFACT_VALIDATION_FAILED, "Formal input snapshot schema is invalid")
+    core = {key: value for key, value in raw.items() if key != "snapshot_digest"}
+    if raw.get("schema_version") != "stage1.sctsr.formal_input_snapshot.v1" or raw.get("snapshot_digest") != stable_digest(core):
+        raise SctsrError(ErrorCode.ARTIFACT_VALIDATION_FAILED, "Formal input snapshot digest is invalid")
+    external = raw.get("external_binding")
+    if not isinstance(external, Mapping) or (expected_external_binding is not None and dict(external) != dict(expected_external_binding)):
+        raise SctsrError(ErrorCode.ARTIFACT_VALIDATION_FAILED, "Formal input snapshot references a different authorization binding")
+    validated = validate_external_file_binding(external, required_roles=FORMAL_AUTHORIZATION_INPUT_ROLES)
+    rows = raw.get("files")
+    if not isinstance(rows, Mapping) or set(rows) != set(FORMAL_AUTHORIZATION_INPUT_ROLES):
+        raise SctsrError(ErrorCode.ARTIFACT_VALIDATION_FAILED, "Formal input snapshot file set is incomplete")
+    for role in FORMAL_AUTHORIZATION_INPUT_ROLES:
+        row = rows[role]
+        if not isinstance(row, Mapping) or set(row) != {"external_path", "snapshot_relative_path", "bytes", "sha256"}:
+            raise SctsrError(ErrorCode.ARTIFACT_VALIDATION_FAILED, "Formal input snapshot row is invalid", failing_field=role)
+        relative = Path(str(row["snapshot_relative_path"]))
+        snapshot_file = (root / relative).resolve()
+        try:
+            snapshot_file.relative_to(root)
+        except ValueError as exc:
+            raise SctsrError(ErrorCode.ARTIFACT_VALIDATION_FAILED, "Formal input snapshot path escapes its run root") from exc
+        expected = validated["files"][role]
+        if (
+            str(row["external_path"]) != expected["path"]
+            or not snapshot_file.is_file()
+            or snapshot_file.stat().st_size != row["bytes"]
+            or row["bytes"] != expected["bytes"]
+            or sha256_file(snapshot_file) != row["sha256"]
+            or row["sha256"] != expected["sha256"]
+        ):
+            raise SctsrError(
+                ErrorCode.ARTIFACT_VALIDATION_FAILED,
+                "Formal input snapshot bytes differ from the authorization input",
+                failing_field=role,
+            )
+    return {
+        "status": "PASS",
+        "snapshot_digest": raw["snapshot_digest"],
+        "external_binding_digest": external["binding_digest"],
+        "manifest_sha256": sha256_file(path),
+    }
 
 
 @dataclass(frozen=True, slots=True)
@@ -605,6 +712,7 @@ def _publish_formal_run_manifest_and_indexes(
     atomic_write_json(root / "ARTIFACT_INDEX_GENERATIONS.json", generation_index)
     release = release_authorization if isinstance(release_authorization, Mapping) else load_json(release_authorization)
     release_sha = stable_digest(release) if isinstance(release_authorization, Mapping) else sha256_file(release_authorization)
+    formal_input_snapshot = validate_formal_input_snapshot(root)
     manifest = {
         "schema_version": "stage1.sctsr.formal_run_manifest.v1",
         "execution_mode": "formal",
@@ -621,6 +729,8 @@ def _publish_formal_run_manifest_and_indexes(
         "release_key_id": release.get("key_id"),
         "release_manifest_sha256": release_sha,
         "release_expected_bindings": dict(release_expected_bindings),
+        "formal_input_snapshot_digest": formal_input_snapshot["snapshot_digest"],
+        "formal_input_external_binding_digest": formal_input_snapshot["external_binding_digest"],
         "formal_training_authorized": True,
         "formal_training_started": True,
         "engineering_gate_generated": False,
@@ -653,6 +763,7 @@ def run_prepared_common_parent(
     release_expected_bindings: Mapping[str, str] | None = None,
     release_verification_secret: bytes | str | None = None,
     prepared_trainer_binding: Mapping[str, Any] | None = None,
+    formal_input_binding: Mapping[str, Any] | None = None,
     resume_context: FormalResumeContext | None = None,
 ) -> dict[str, Any]:
     """Run the formal E1-E120 no-replay common parent on a prepared trainer.
@@ -676,6 +787,8 @@ def run_prepared_common_parent(
     sample_evidence = sample_evidence_from_trainer(trainer) if evidence_enabled else {}
     if execution_mode == "formal" and prepared_trainer_binding is None:
         raise SctsrError(ErrorCode.UPSTREAM_BINDING_FAILED, "Formal parent lacks its prepared trainer binding")
+    if execution_mode == "formal" and formal_input_binding is None:
+        raise SctsrError(ErrorCode.ARTIFACT_VALIDATION_FAILED, "Formal parent lacks its immutable authorization-input binding")
     if resume_context is not None and execution_mode != "formal":
         raise SctsrError(ErrorCode.RESUME_GENERATION_MISMATCH, "Only a formally authorized run may use formal resume")
     resume_binding_receipt_digest = None
@@ -704,9 +817,17 @@ def run_prepared_common_parent(
             resume_binding=dict(prepared_trainer_binding or {}),
         )
     if execution_mode == "formal" and resume_context is None:
+        formal_input_snapshot = publish_formal_input_snapshot(root, dict(formal_input_binding))
         atomic_write_json(root / "FORMAL_IDENTITY.json", asdict(identity))
         atomic_write_json(root / "FORMAL_AUTHORIZATION_BINDING.json", dict(release_expected_bindings or {}))
         atomic_write_json(root / "PREPARED_TRAINER_BINDING.json", dict(prepared_trainer_binding or {}))
+    elif execution_mode == "formal":
+        formal_input_snapshot = validate_formal_input_snapshot(
+            root,
+            expected_external_binding=formal_input_binding,
+        )
+    else:
+        formal_input_snapshot = None
     global_step = 0 if resume_context is None else resume_context.global_step
     start_epoch = 1 if resume_context is None else resume_context.resume_epoch
     epoch_receipts = []
@@ -797,6 +918,7 @@ def run_prepared_common_parent(
         "prepared_trainer_binding_digest": original_trainer_binding.get("binding_digest"),
         "resume_binding_receipt_digest": resume_binding_receipt_digest,
         "resumed_from_epoch": None if resume_context is None else resume_context.last_complete_epoch,
+        "formal_input_snapshot_digest": None if formal_input_snapshot is None else formal_input_snapshot["snapshot_digest"],
     }
     atomic_write_json(root / "PARENT_RECEIPT.json", receipt)
     if execution_mode == "formal":
@@ -830,6 +952,7 @@ def run_prepared_branch(
     identity_pool_binding: Mapping[str, Any] | None = None,
     parent_artifact_index_binding: Mapping[str, Any] | None = None,
     prepared_trainer_binding: Mapping[str, Any] | None = None,
+    formal_input_binding: Mapping[str, Any] | None = None,
     resume_context: FormalResumeContext | None = None,
 ) -> dict[str, Any]:
     identity.validate(formal=execution_mode == "formal")
@@ -858,7 +981,12 @@ def run_prepared_branch(
     sizes = _base_batch_sizes(trainer)
     evidence_enabled = _evidence_enabled(execution_mode, collect_epoch_evidence)
     sample_evidence = sample_evidence_from_trainer(trainer) if evidence_enabled else {}
-    if execution_mode == "formal" and (identity_pool_binding is None or parent_artifact_index_binding is None or prepared_trainer_binding is None):
+    if execution_mode == "formal" and (
+        identity_pool_binding is None
+        or parent_artifact_index_binding is None
+        or prepared_trainer_binding is None
+        or formal_input_binding is None
+    ):
         raise SctsrError(
             ErrorCode.ARTIFACT_VALIDATION_FAILED,
             "Formal branch lacks immutable trainer, identity-pool, or parent-index bindings",
@@ -902,6 +1030,7 @@ def run_prepared_branch(
             resume_binding=dict(prepared_trainer_binding or {}),
         )
     if execution_mode == "formal" and resume_context is None:
+        formal_input_snapshot = publish_formal_input_snapshot(root, dict(formal_input_binding))
         atomic_write_json(root / "FORMAL_IDENTITY.json", asdict(identity))
         atomic_write_json(root / "FORMAL_AUTHORIZATION_BINDING.json", dict(release_expected_bindings or {}))
         atomic_write_json(root / "BRANCH_LINEAGE.json", asdict(lineage))
@@ -909,6 +1038,13 @@ def run_prepared_branch(
         atomic_write_json(root / "IDENTITY_POOL_BINDING.json", dict(identity_pool_binding))
         atomic_write_json(root / "PARENT_ARTIFACT_INDEX_BINDING.json", dict(parent_artifact_index_binding))
         atomic_write_json(root / "PREPARED_TRAINER_BINDING.json", dict(prepared_trainer_binding))
+    elif execution_mode == "formal":
+        formal_input_snapshot = validate_formal_input_snapshot(
+            root,
+            expected_external_binding=formal_input_binding,
+        )
+    else:
+        formal_input_snapshot = None
     global_step = int(payload["global_step"]) if resume_context is None else resume_context.global_step
     start_epoch = 121 if resume_context is None else resume_context.resume_epoch
     parent_sha_before = sha256_file(parent_checkpoint)
@@ -1025,6 +1161,7 @@ def run_prepared_branch(
         "prepared_trainer_binding_digest": original_trainer_binding.get("binding_digest"),
         "resume_binding_receipt_digest": resume_binding_receipt_digest,
         "resumed_from_epoch": None if resume_context is None else resume_context.last_complete_epoch,
+        "formal_input_snapshot_digest": None if formal_input_snapshot is None else formal_input_snapshot["snapshot_digest"],
     }
     atomic_write_json(root / "BRANCH_RECEIPT.json", receipt)
     if execution_mode == "formal":

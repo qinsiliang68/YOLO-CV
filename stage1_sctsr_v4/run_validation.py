@@ -490,6 +490,33 @@ def _validate_formal_tree(root: Path, manifest: Mapping[str, Any]) -> dict[str, 
     trainer_output = Path(str(trainer_binding.get("output_root", "")))
     _require(trainer_output.exists() and trainer_output.samefile(root), "Prepared trainer output root differs from formal run root")
     _require(bindings == manifest.get("release_expected_bindings"), "Formal authorization binding differs from the run manifest")
+    lock_path = Path(str(trainer_binding.get("canonical_training_lock_path", ""))).resolve()
+    try:
+        repository_root = lock_path.parents[2]
+    except IndexError as exc:
+        raise _closeout_failure("Prepared trainer lock path cannot identify the repository root") from exc
+    _require(
+        (repository_root / "configs/stage1_gapvalue240/CANONICAL_TRAINING_LOCK_v1.json").resolve() == lock_path,
+        "Prepared trainer lock path is not rooted in the canonical repository layout",
+    )
+    from .formal_cli import (
+        validate_formal_authorization_inputs_at_closeout,
+        validate_prepared_trainer_external_files,
+    )
+    from .formal_training import validate_formal_input_snapshot
+
+    input_snapshot = validate_formal_input_snapshot(root)
+    _require(
+        manifest.get("formal_input_snapshot_digest") == input_snapshot["snapshot_digest"]
+        and manifest.get("formal_input_external_binding_digest") == input_snapshot["external_binding_digest"],
+        "Formal run manifest does not bind its immutable authorization-input snapshot",
+    )
+    validate_prepared_trainer_external_files(trainer_binding)
+    authorization_inputs = validate_formal_authorization_inputs_at_closeout(
+        load_json(root / "00_contract" / "FORMAL_INPUT_SNAPSHOT.json")["external_binding"],
+        repository_root=repository_root,
+        expected_bindings=bindings,
+    )
     identity_binding = {
         "source_tree_digest": identity.get("source_tree_digest"),
         "contract_digest": identity.get("contract_digest"),
@@ -508,6 +535,10 @@ def _validate_formal_tree(root: Path, manifest: Mapping[str, Any]) -> dict[str, 
     _require((receipt.get("epoch_start"), receipt.get("epoch_end")) == expected, "Formal receipt epoch range is incomplete", observed=(receipt.get("epoch_start"), receipt.get("epoch_end")), expected=expected)
     _require(receipt.get("epoch_evidence_enabled") is True and receipt.get("best_pt_used") is False, "Formal receipt lacks mandatory evidence or used best.pt")
     _require(receipt.get("prepared_trainer_binding_digest") == trainer_binding.get("binding_digest"), "Formal receipt does not bind prepared trainer evidence")
+    _require(
+        receipt.get("formal_input_snapshot_digest") == input_snapshot["snapshot_digest"],
+        "Formal terminal receipt does not bind its authorization-input snapshot",
+    )
     transactions = sorted((root / "03_epoch_transactions").glob("epoch_*.generation_*.complete"))
     _require(len(transactions) == expected[1] - expected[0] + 1, "Formal epoch transaction count is incomplete", observed=len(transactions), expected=expected[1] - expected[0] + 1)
     generation_index = load_json(generation_index_path)
@@ -604,6 +635,69 @@ def _validate_formal_tree(root: Path, manifest: Mapping[str, Any]) -> dict[str, 
             receipt.get("identity_pool_binding_digest") == pool_binding.get("binding_digest")
             and receipt.get("parent_artifact_index_binding_digest") == parent_binding.get("binding_digest"),
             "Formal branch receipt does not bind its pool/parent evidence",
+        )
+        from .formal_cli import (
+            load_lineage,
+            validate_identity_pool_artifacts,
+            validate_parent_artifact_index,
+            validate_training_identity_manifest,
+        )
+        from .formal_pool_inputs import load_formal_pool_inputs
+
+        pool_manifest_paths = [
+            row["manifest_path"]
+            for _role, row in sorted(pool_binding.get("artifact_bindings", {}).items())
+        ]
+        recomputed_pool = validate_identity_pool_artifacts(
+            pool_manifest_paths,
+            schedule=schedule,
+            expected_base_denominator=120_000,
+            expected_base_manifest_sha256=str(identity["base_manifest_sha256"]),
+        )
+        _require(recomputed_pool == pool_binding, "Formal identity-pool external bytes changed after branch setup")
+        recomputed_parent = validate_parent_artifact_index(
+            parent_checkpoint=parent_binding.get("parent_checkpoint_path", ""),
+            parent_artifact_index=parent_binding.get("artifact_index_path", ""),
+        )
+        _require(recomputed_parent == parent_binding, "Formal parent artifact tree changed after branch setup")
+        lineage = load_lineage(lineage_path)
+        lineage.validate(
+            parent_sha=str(receipt["parent_checkpoint_sha256"]),
+            training_seed=int(manifest["training_seed"]),
+            arm_id=str(manifest["arm_id"]),
+            source_digest=str(identity["source_tree_digest"]),
+            contract_digest=str(identity["contract_digest"]),
+        )
+        _require(lineage.lineage_digest == receipt.get("lineage_digest"), "Formal lineage digest differs from terminal receipt")
+        pool_inputs = load_formal_pool_inputs(authorization_inputs["asset_registry"], repository_root)
+        recomputed_identity_manifest = validate_training_identity_manifest(
+            trainer_binding["identity_manifest_binding"]["path"],
+            base_records=pool_inputs.base_records,
+            pool_manifest_paths=pool_manifest_paths,
+            schedule=schedule,
+            base_denominator=120_000,
+            base_manifest_sha256=pool_inputs.base_manifest_sha256,
+        )
+        _require(
+            recomputed_identity_manifest == trainer_binding["identity_manifest_binding"],
+            "Formal trainer identity manifest no longer matches registered assets and pools",
+        )
+    else:
+        from .formal_cli import validate_training_identity_manifest
+        from .formal_pool_inputs import load_formal_pool_inputs
+
+        pool_inputs = load_formal_pool_inputs(authorization_inputs["asset_registry"], repository_root)
+        recomputed_identity_manifest = validate_training_identity_manifest(
+            trainer_binding["identity_manifest_binding"]["path"],
+            base_records=pool_inputs.base_records,
+            pool_manifest_paths=(),
+            schedule=None,
+            base_denominator=120_000,
+            base_manifest_sha256=pool_inputs.base_manifest_sha256,
+        )
+        _require(
+            recomputed_identity_manifest == trainer_binding["identity_manifest_binding"],
+            "Formal parent trainer identity manifest no longer matches registered assets",
         )
     previous_checkpoint = str(identity["initial_checkpoint_sha256"]) if role == "COMMON_PARENT" else str(receipt["parent_checkpoint_sha256"])
     previous_generation = stable_digest(
@@ -792,15 +886,6 @@ def _validate_formal_tree(root: Path, manifest: Mapping[str, Any]) -> dict[str, 
             physical_root = parent_root if entry.physical_owner_type == "PARENT" else child_root
             physical = physical_root / entry.artifact_relative_path
             _require(physical.is_file() and sha256_file(physical) == entry.artifact_sha256, "Formal logical timeline physical binding failed", observed=entry.logical_epoch)
-        lock_path = Path(str(trainer_binding.get("canonical_training_lock_path", ""))).resolve()
-        try:
-            repository_root = lock_path.parents[2]
-        except IndexError as exc:
-            raise _closeout_failure("Prepared trainer lock path cannot identify the repository root") from exc
-        _require(
-            (repository_root / "configs/stage1_gapvalue240/CANONICAL_TRAINING_LOCK_v1.json").resolve() == lock_path,
-            "Prepared trainer lock path is not rooted in the canonical repository layout",
-        )
         endpoint_evidence = validate_formal_endpoint_evidence(
             root,
             manifest=manifest,

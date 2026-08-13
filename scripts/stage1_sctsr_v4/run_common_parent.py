@@ -128,6 +128,7 @@ def main() -> int:
             release_trust_policy=arguments.release_trust_policy,
             release_expected_bindings=authorization["expected_bindings"],
             prepared_trainer_binding=trainer_binding,
+            formal_input_binding=authorization["formal_input_binding"],
             resume_context=resume_context,
             execution_mode="formal",
         )

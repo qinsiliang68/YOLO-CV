@@ -408,6 +408,11 @@ def test_branch_runner_continues_at_resume_epoch_without_overwriting_completed_g
     monkeypatch.setattr(formal, "_run_transactional_epoch", fake_transactional_epoch)
     monkeypatch.setattr(formal, "_publish_complete_logical_timeline", lambda **_kwargs: {"status": "UNIT_ONLY"})
     monkeypatch.setattr(formal, "_publish_formal_run_manifest_and_indexes", lambda **_kwargs: {"status": "UNIT_ONLY"})
+    monkeypatch.setattr(
+        formal,
+        "validate_formal_input_snapshot",
+        lambda *_args, **_kwargs: {"snapshot_digest": "E" * 64},
+    )
 
     receipt = run_prepared_branch(
         trainer=FakeTrainer(),
@@ -423,6 +428,7 @@ def test_branch_runner_continues_at_resume_epoch_without_overwriting_completed_g
         identity_pool_binding=pool_binding,
         parent_artifact_index_binding=parent_binding,
         prepared_trainer_binding=resume_binding,
+        formal_input_binding={"binding_digest": "F" * 64},
         resume_context=context,
     )
 
