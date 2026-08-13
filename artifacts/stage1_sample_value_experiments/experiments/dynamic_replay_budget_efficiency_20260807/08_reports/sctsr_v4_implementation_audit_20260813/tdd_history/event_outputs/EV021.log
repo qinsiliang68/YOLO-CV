@@ -1,0 +1,87 @@
+Script failed
+Wall time 0.0 seconds
+Output:
+Script error:
+Exit code: 1
+Wall time: 2.5 seconds
+Output:
+        second.commit()
+        (second.complete / "value.json").write_text("corrupt", encoding="utf-8")
+        with pytest.raises(SctsrError):
+>           recovery.find_last_complete_epoch(root, fail_on_corrupt_latest=True)
+E           TypeError: find_last_complete_epoch() got an unexpected keyword argument 'fail_on_corrupt_latest'
+
+tests\stage1_sctsr_v4\test_evidence_transaction_hardening.py:408: TypeError
+___________ test_sa_229_resume_identity_binds_rng_and_receipt_chain ___________
+
+    def test_sa_229_resume_identity_binds_rng_and_receipt_chain():
+        fields = recovery.ResumeIdentity.__dataclass_fields__
+>       assert "rng_state_digest" in fields
+E       AssertionError: assert 'rng_state_digest' in {'arm_id': Field(name='arm_id',type='str',default=<dataclasses._MISSING_TYPE object at 0x000001CE489FBED0>,default_fac...E489FBED0>,init=True,repr=True,hash=None,compare=True,metadata=mappingproxy({}),kw_only=False,_field_type=_FIELD), ...}
+
+tests\stage1_sctsr_v4\test_evidence_transaction_hardening.py:413: AssertionError
+_____ test_sa_231_repeated_quarantine_never_overwrites_previous_evidence ______
+
+tmp_path = WindowsPath('C:/Users/28898/AppData/Local/Temp/pytest-of-28898/pytest-1425/test_sa_231_repeated_quarantin0')
+
+    def test_sa_231_repeated_quarantine_never_overwrites_previous_evidence(tmp_path: Path):
+        root = tmp_path / "04_ledgers"
+        first = EpochTransaction(root, "run-1", 121, 1).begin()
+        first.write_json("marker.json", {"attempt": 1})
+        first_path = first.abort("OOM")
+        second = EpochTransaction(root, "run-1", 121, 1).begin()
+        second.write_json("marker.json", {"attempt": 2})
+        second_path = second.abort("OOM")
+>       assert first_path != second_path
+E       AssertionError: assert WindowsPath('C:/Users/28898/AppData/Local/Temp/pytest-of-28898/pytest-1425/test_sa_231_repeated_quarantin0/09_quarantine/epoch_0121.generation_1.inprogress.quarantined') != WindowsPath('C:/Users/28898/AppData/Local/Temp/pytest-of-28898/pytest-1425/test_sa_231_repeated_quarantin0/09_quarantine/epoch_0121.generation_1.inprogress.quarantined')
+
+tests\stage1_sctsr_v4\test_evidence_transaction_hardening.py:425: AssertionError
+_____ test_sa_232_and_233_checkpoint_retention_keeps_anchors_and_last_two _____
+
+    def test_sa_232_and_233_checkpoint_retention_keeps_anchors_and_last_two():
+        function = getattr(recovery, "retained_checkpoint_epochs", None)
+>       assert callable(function)
+E       assert False
+E        +  where False = callable(None)
+
+tests\stage1_sctsr_v4\test_evidence_transaction_hardening.py:432: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/stage1_sctsr_v4/test_evidence_transaction_hardening.py::test_sa_130_to_135_occurrence_schema_rejects_every_missing_required_field[replay_count_before]
+FAILED tests/stage1_sctsr_v4/test_evidence_transaction_hardening.py::test_sa_130_to_135_occurrence_schema_rejects_every_missing_required_field[last_replay_epoch_reason]
+FAILED tests/stage1_sctsr_v4/test_evidence_transaction_hardening.py::test_sa_130_to_135_occurrence_schema_rejects_every_missing_required_field[epochs_since_last_replay_reason]
+FAILED tests/stage1_sctsr_v4/test_evidence_transaction_hardening.py::test_sa_130_to_135_occurrence_schema_rejects_every_missing_required_field[oof_reference_reason]
+FAILED tests/stage1_sctsr_v4/test_evidence_transaction_hardening.py::test_sa_130_to_135_occurrence_schema_rejects_every_missing_required_field[rho_reason]
+FAILED tests/stage1_sctsr_v4/test_evidence_transaction_hardening.py::test_sa_130_to_135_occurrence_schema_rejects_every_missing_required_field[planned_replay_epoch_reason]
+FAILED tests/stage1_sctsr_v4/test_evidence_transaction_hardening.py::test_sa_130_to_135_occurrence_schema_rejects_every_missing_required_field[cumulative_replay_count_after]
+FAILED tests/stage1_sctsr_v4/test_evidence_transaction_hardening.py::test_sa_130_to_135_occurrence_schema_rejects_every_missing_required_field[fallback_state]
+FAILED tests/stage1_sctsr_v4/test_evidence_transaction_hardening.py::test_sa_134_replay_count_and_last_exposure_are_conserved
+FAILED tests/stage1_sctsr_v4/test_evidence_transaction_hardening.py::test_sa_142_nullable_occurrence_value_requires_registered_reason
+FAILED tests/stage1_sctsr_v4/test_evidence_transaction_hardening.py::test_sa_131_and_136_step_schema_rejects_missing_required_field[replay_rate_numerator]
+FAILED tests/stage1_sctsr_v4/test_evidence_transaction_hardening.py::test_sa_131_and_136_step_schema_rejects_missing_required_field[base_loss_items]
+FAILED tests/stage1_sctsr_v4/test_evidence_transaction_hardening.py::test_sa_131_and_136_step_schema_rejects_missing_required_field[parameter_grad_norm_before_clip]
+FAILED tests/stage1_sctsr_v4/test_evidence_transaction_hardening.py::test_sa_131_and_136_step_schema_rejects_missing_required_field[learning_rates]
+FAILED tests/stage1_sctsr_v4/test_evidence_transaction_hardening.py::test_sa_131_and_136_step_schema_rejects_missing_required_field[optimizer_hyperparameters]
+FAILED tests/stage1_sctsr_v4/test_evidence_transaction_hardening.py::test_sa_131_and_136_step_schema_rejects_missing_required_field[amp_reason]
+FAILED tests/stage1_sctsr_v4/test_evidence_transaction_hardening.py::test_sa_131_and_136_step_schema_rejects_missing_required_field[bn_reason]
+FAILED tests/stage1_sctsr_v4/test_evidence_transaction_hardening.py::test_sa_131_and_136_step_schema_rejects_missing_required_field[rng_reason]
+FAILED tests/stage1_sctsr_v4/test_evidence_transaction_hardening.py::test_sa_131_and_136_step_schema_rejects_missing_required_field[base_augmentation_digest]
+FAILED tests/stage1_sctsr_v4/test_evidence_transaction_hardening.py::test_sa_131_and_136_step_schema_rejects_missing_required_field[dataloader_wait_seconds]
+FAILED tests/stage1_sctsr_v4/test_evidence_transaction_hardening.py::test_sa_131_and_136_step_schema_rejects_missing_required_field[row_generation]
+FAILED tests/stage1_sctsr_v4/test_evidence_transaction_hardening.py::test_sa_136_step_rejects_amp_skip_even_when_delta_claims_one
+FAILED tests/stage1_sctsr_v4/test_evidence_transaction_hardening.py::test_sa_137_exposure_schema_rejects_missing_cumulative_or_telemetry_sha
+FAILED tests/stage1_sctsr_v4/test_evidence_transaction_hardening.py::test_sa_144_selection_schema_requires_guard_quota_and_overlap
+FAILED tests/stage1_sctsr_v4/test_evidence_transaction_hardening.py::test_sa_138_pyarrow_is_a_locked_runtime_dependency
+FAILED tests/stage1_sctsr_v4/test_evidence_transaction_hardening.py::test_sa_138_to_140_real_parquet_has_strict_schema_zstd_and_partition_manifest
+FAILED tests/stage1_sctsr_v4/test_evidence_transaction_hardening.py::test_sa_139_ledger_writer_rejects_unpartitioned_large_table
+FAILED tests/stage1_sctsr_v4/test_evidence_transaction_hardening.py::test_sa_143_empty_and_unknown_sentinels_are_rejected
+FAILED tests/stage1_sctsr_v4/test_evidence_transaction_hardening.py::test_sa_150_two_row_bad_cadence_cannot_bypass_validator
+FAILED tests/stage1_sctsr_v4/test_evidence_transaction_hardening.py::test_sa_154_to_157_unavailable_hardware_fields_have_reason_not_fake_zero
+FAILED tests/stage1_sctsr_v4/test_evidence_transaction_hardening.py::test_sa_221_commit_detects_half_written_json_without_optional_validator
+FAILED tests/stage1_sctsr_v4/test_evidence_transaction_hardening.py::test_sa_221_commit_detects_half_written_parquet_without_optional_validator
+FAILED tests/stage1_sctsr_v4/test_evidence_transaction_hardening.py::test_sa_221_generation_manifest_binds_file_sha_and_telemetry_partition
+FAILED tests/stage1_sctsr_v4/test_evidence_transaction_hardening.py::test_sa_227_tampered_generation_manifest_is_rejected_by_recovery_pointer
+FAILED tests/stage1_sctsr_v4/test_evidence_transaction_hardening.py::test_sa_230_corrupt_latest_complete_generation_is_not_resumable
+FAILED tests/stage1_sctsr_v4/test_evidence_transaction_hardening.py::test_sa_229_resume_identity_binds_rng_and_receipt_chain
+FAILED tests/stage1_sctsr_v4/test_evidence_transaction_hardening.py::test_sa_231_repeated_quarantine_never_overwrites_previous_evidence
+FAILED tests/stage1_sctsr_v4/test_evidence_transaction_hardening.py::test_sa_232_and_233_checkpoint_retention_keeps_anchors_and_last_two
+38 failed, 1 passed in 1.68s

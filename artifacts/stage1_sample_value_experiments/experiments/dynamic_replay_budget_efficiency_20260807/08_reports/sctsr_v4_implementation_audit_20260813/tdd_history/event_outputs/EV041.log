@@ -1,0 +1,77 @@
+Script failed
+Wall time 0.8 seconds
+Output:
+Script error:
+Exit code: 1
+Wall time: 0.8 seconds
+Output:
+.FFF.F                                                                   [100%]
+================================== FAILURES ===================================
+__________ test_source_manifest_rejects_unregistered_importable_file __________
+
+tmp_path = WindowsPath('C:/Users/28898/AppData/Local/Temp/pytest-of-28898/pytest-1496/test_source_manifest_rejects_u0')
+
+    def test_source_manifest_rejects_unregistered_importable_file(tmp_path):
+        package = tmp_path / "package"
+        package.mkdir()
+        (package / "registered.py").write_text("VALUE = 1\n", encoding="utf-8")
+        manifest = build_source_tree_manifest(tmp_path, ["package"])
+        manifest["git_dirty"] = False
+    
+        assert validate_source_tree_manifest(manifest, tmp_path)["status"] == "PASS"
+    
+        (package / "unregistered.py").write_text("VALUE = 2\n", encoding="utf-8")
+>       with pytest.raises(SctsrError) as caught:
+E       Failed: DID NOT RAISE <class 'stage1_sctsr_v4.errors.SctsrError'>
+
+tests\stage1_sctsr_v4\test_source_identity.py:24: Failed
+______ test_source_manifest_rejects_missing_or_overlapping_include_paths ______
+
+tmp_path = WindowsPath('C:/Users/28898/AppData/Local/Temp/pytest-of-28898/pytest-1496/test_source_manifest_rejects_m0')
+
+    def test_source_manifest_rejects_missing_or_overlapping_include_paths(tmp_path):
+        package = tmp_path / "package"
+        package.mkdir()
+        (package / "module.py").write_text("VALUE = 1\n", encoding="utf-8")
+    
+>       with pytest.raises(SctsrError) as missing:
+E       Failed: DID NOT RAISE <class 'stage1_sctsr_v4.errors.SctsrError'>
+
+tests\stage1_sctsr_v4\test_source_identity.py:34: Failed
+_________________________ test_schema_registry_passes _________________________
+
+repository_root = WindowsPath('C:/GitHub/YOLO-CV')
+
+    def test_schema_registry_passes(repository_root):
+        r=SchemaRegistry.from_mapping(load_json(repository_root/'configs/stage1_sctsr_v4/schema_registry_v1.json'));r.validate();assert len(r.digest)==64
+>       assert dict(r.schemas) == REQUIRED_SCHEMAS
+E       AssertionError: assert {'arms': 'sta...ase2.v1', ...} == {'arms': 'sta...ase2.v1', ...}
+E         
+E         Omitting 8 identical items, use -vv to show
+E         Left contains 7 more items:
+E         {'exposure_ledger': 'stage1.sctsr.exposure_ledger.v1',
+E          'frontier': 'stage1.sctsr.frontier.v1',
+E          'occurrence_ledger': 'stage1.sctsr.occurrence_ledger.v1',
+E          'optimizer_step_ledger': 'stage1.sctsr.optimizer_step_ledger.v1',...
+E         
+E         ...Full output truncated (4 lines hidden), use '-vv' to show
+
+tests\stage1_sctsr_v4\test_schema_registry.py:8: AssertionError
+______ test_schema_registry_rejects_stale_or_unregistered_public_schema _______
+
+repository_root = WindowsPath('C:/GitHub/YOLO-CV')
+
+    def test_schema_registry_rejects_stale_or_unregistered_public_schema(repository_root):
+        raw=load_json(repository_root/'configs/stage1_sctsr_v4/schema_registry_v1.json')
+        raw['schemas']['prediction_artifact'] = 'stage1.sctsr.prediction.v1'
+        raw['schemas']['unregistered_extra'] = 'stage1.sctsr.unregistered.v1'
+>       with pytest.raises(SctsrError):
+E       Failed: DID NOT RAISE <class 'stage1_sctsr_v4.errors.SctsrError'>
+
+tests\stage1_sctsr_v4\test_schema_registry.py:19: Failed
+=========================== short test summary info ===========================
+FAILED tests/stage1_sctsr_v4/test_source_identity.py::test_source_manifest_rejects_unregistered_importable_file
+FAILED tests/stage1_sctsr_v4/test_source_identity.py::test_source_manifest_rejects_missing_or_overlapping_include_paths
+FAILED tests/stage1_sctsr_v4/test_schema_registry.py::test_schema_registry_passes
+FAILED tests/stage1_sctsr_v4/test_schema_registry.py::test_schema_registry_rejects_stale_or_unregistered_public_schema
+4 failed, 2 passed in 0.22s

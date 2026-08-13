@@ -1,0 +1,95 @@
+Script failed
+Wall time 2.1 seconds
+Output:
+Script error:
+Exit code: 1
+Wall time: 2.1 seconds
+Output:
+F                                                                        [100%]
+================================== FAILURES ===================================
+______ test_complete_synthetic_canary_normalizes_a_long_registered_root _______
+
+self = WindowsPath('C:/Users/28898/AppData/Local/Temp/pytest-of-28898/pytest-1571/test_complete_synthetic_canary0/registered_...aaaaaa/implementation_audit_bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb/canary/00_contract')
+mode = 511, parents = True, exist_ok = True
+
+    def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+        """
+        Create a new directory at this given path.
+        """
+        try:
+>           os.mkdir(self, mode)
+E           FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'C:\\Users\\28898\\AppData\\Local\\Temp\\pytest-of-28898\\pytest-1571\\test_complete_synthetic_canary0\\registered_experiment_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\\implementation_audit_bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\\canary\\00_contract'
+
+C:\Users\28898\AppData\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\pathlib.py:1116: FileNotFoundError
+
+During handling of the above exception, another exception occurred:
+
+self = WindowsPath('C:/Users/28898/AppData/Local/Temp/pytest-of-28898/pytest-1571/test_complete_synthetic_canary0/registered_...aaaaaaaaaaaaaaaaaa/implementation_audit_bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb/canary')
+mode = 511, parents = True, exist_ok = True
+
+    def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+        """
+        Create a new directory at this given path.
+        """
+        try:
+>           os.mkdir(self, mode)
+E           FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'C:\\Users\\28898\\AppData\\Local\\Temp\\pytest-of-28898\\pytest-1571\\test_complete_synthetic_canary0\\registered_experiment_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\\implementation_audit_bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\\canary'
+
+C:\Users\28898\AppData\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\pathlib.py:1116: FileNotFoundError
+
+During handling of the above exception, another exception occurred:
+
+self = WindowsPath('C:/Users/28898/AppData/Local/Temp/pytest-of-28898/pytest-1571/test_complete_synthetic_canary0/registered_...aaaaaaaaaaaaaaaaaaaaaaaaa/implementation_audit_bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb')
+mode = 511, parents = True, exist_ok = True
+
+    def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+        """
+        Create a new directory at this given path.
+        """
+        try:
+>           os.mkdir(self, mode)
+E           FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'C:\\Users\\28898\\AppData\\Local\\Temp\\pytest-of-28898\\pytest-1571\\test_complete_synthetic_canary0\\registered_experiment_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\\implementation_audit_bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb'
+
+C:\Users\28898\AppData\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\pathlib.py:1116: FileNotFoundError
+
+During handling of the above exception, another exception occurred:
+
+repository_root = WindowsPath('C:/GitHub/YOLO-CV')
+tmp_path = WindowsPath('C:/Users/28898/AppData/Local/Temp/pytest-of-28898/pytest-1571/test_complete_synthetic_canary0')
+
+    @pytest.mark.skipif(os.name != "nt", reason="Win32 extended path contract")
+    def test_complete_synthetic_canary_normalizes_a_long_registered_root(repository_root: Path, tmp_path: Path):
+        root = tmp_path / ("registered_experiment_" + "a" * 70) / ("implementation_audit_" + "b" * 70) / "canary"
+        probe = root / "04_ledgers" / "selection" / "run_id=SYNTHETIC_SELECTION" / "epoch=0000" / ".T_STRESS.parquet.inprogress"
+        assert len(str(probe)) > 260
+    
+>       receipt = run_synthetic_canary(root, repository_root=repository_root, training_seed=20260606)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\stage1_sctsr_v4\test_windows_long_paths.py:37: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+stage1_sctsr_v4\synthetic_canary.py:616: in run_synthetic_canary
+    (root / relative).mkdir(parents=True, exist_ok=True)
+C:\Users\28898\AppData\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\pathlib.py:1120: in mkdir
+    self.parent.mkdir(parents=True, exist_ok=True)
+C:\Users\28898\AppData\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\pathlib.py:1120: in mkdir
+    self.parent.mkdir(parents=True, exist_ok=True)
+C:\Users\28898\AppData\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\pathlib.py:1121: in mkdir
+    self.mkdir(mode, parents=False, exist_ok=exist_ok)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = WindowsPath('C:/Users/28898/AppData/Local/Temp/pytest-of-28898/pytest-1571/test_complete_synthetic_canary0/registered_...aaaaaaaaaaaaaaaaaaaaaaaaa/implementation_audit_bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb')
+mode = 511, parents = False, exist_ok = True
+
+    def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+        """
+        Create a new directory at this given path.
+        """
+        try:
+>           os.mkdir(self, mode)
+E           FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'C:\\Users\\28898\\AppData\\Local\\Temp\\pytest-of-28898\\pytest-1571\\test_complete_synthetic_canary0\\registered_experiment_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\\implementation_audit_bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb'
+
+C:\Users\28898\AppData\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\pathlib.py:1116: FileNotFoundError
+=========================== short test summary info ===========================
+FAILED tests/stage1_sctsr_v4/test_windows_long_paths.py::test_complete_synthetic_canary_normalizes_a_long_registered_root
+1 failed in 1.26s

@@ -1,0 +1,38 @@
+{
+  "schema_version": "stage1.sctsr.local_only_heavy_artifacts.v1",
+  "implementation_source_commit": "e9b6df61b0eb02e1d32c29175644f1c2af545afc",
+  "status": "PASS_WITH_RECONSTRUCTABLE_SPLIT_PUBLICATION",
+  "published_repository_contains_complete_generation": false,
+  "reconstructable_checkpoint_parts_published": true,
+  "reason": "The engineering checkpoint exceeds GitHub's 100 MB single-file limit. The original local bytes are retained and SHA-bound. Two raw concatenation parts below reconstruct the exact checkpoint, but the public tree does not claim a directly complete canonical generation until that explicit reassembly is performed.",
+  "artifacts": [
+    {
+      "relative_path": "real_data_canary/r8/03_epoch_transactions/epoch_0121.generation_1.complete/05_checkpoints/rolling_epoch_0121.generation_1.pt",
+      "bytes": 154740481,
+      "sha256": "50D436ECFAE3E31378048A204ABC86831E875FAA31231B8B5281BE92DD55076A",
+      "local_exists": true,
+      "published_to_git": false,
+      "published_as_split_parts": true,
+      "parts_manifest": "real_data_canary/r8/checkpoint_parts/CHECKPOINT_PARTS_MANIFEST.json",
+      "semantic": "REAL_DATA_ENGINEERING_CANARY_NOT_SCIENTIFIC_RESULT"
+    }
+  ],
+  "parts": [
+    {
+      "filename": "rolling_epoch_0121.generation_1.pt.part0001",
+      "bytes": 90000000,
+      "sha256": "E9FEC3C752162BFEBD5E1F0870CCE4BF8D36010FC24BDA85FD341AC6FC0297E6"
+    },
+    {
+      "filename": "rolling_epoch_0121.generation_1.pt.part0002",
+      "bytes": 64740481,
+      "sha256": "B220A9C42FE8D06D78BEBF4FC586026ADD0267B0D8FA6828466D4A20494B85B9"
+    }
+  ],
+  "assembly_algorithm": "RAW_BYTE_CONCATENATION_IN_ASCENDING_INDEX_ORDER",
+  "parts_manifest_digest": "0F257FA165731F03277C958B4F7D098D71B99D005864C01708B90FD0DD03CD74",
+  "split_command_receipt": "commands/split_real_data_canary_checkpoint_r8/stdout.log",
+  "parts_verification_receipt": "commands/verify_real_data_canary_checkpoint_parts_r8/stdout.log",
+  "reproduction_receipt": "commands/real_data_canary_r8_e9b6df6/stdout.log",
+  "canonical_canary_receipt": "real_data_canary/r8/REAL_DATA_ENGINEERING_CANARY_RECEIPT.json"
+}

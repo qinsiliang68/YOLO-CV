@@ -1,0 +1,15 @@
+{
+  "schema_version": "stage1.sctsr.same_id_green_manifest.v1",
+  "provenance": "BYTE_EXACT_RED_TEST_SOURCE_WITH_HISTORICAL_TEST_PATH",
+  "reviewer_independence_claim": "PRIMARY_AGENT_SELF_REVIEW_NOT_INDEPENDENT",
+  "sources": [
+    {
+      "encoded_path": "red_sources/commit_05/test_evidence_transaction_hardening.py.b64",
+      "decoded_relative_path": "tests/red_commit_05/test_evidence_transaction_hardening.py",
+      "decoded_sha256": "5FFEB73EAAC4BBD3BABD23E05F98E73CC55E0B568CE8F3C8910806D04C92AC8C"
+    }
+  ],
+  "test_ids": [
+    "tests/red_commit_05/test_evidence_transaction_hardening.py::test_sa_144_selection_schema_requires_guard_quota_and_overlap"
+  ]
+}

@@ -1,0 +1,23 @@
+Script failed
+Wall time 2.2 seconds
+Output:
+Script error:
+Exit code: 1
+Wall time: 2.2 seconds
+Output:
+
+=================================== ERRORS ====================================
+____ ERROR collecting tests/stage1_sctsr_v4/test_formal_input_snapshot.py _____
+ImportError while importing test module 'C:\GitHub\YOLO-CV\tests\stage1_sctsr_v4\test_formal_input_snapshot.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+C:\Users\28898\AppData\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\importlib\__init__.py:126: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests\stage1_sctsr_v4\test_formal_input_snapshot.py:8: in <module>
+    from stage1_sctsr_v4.formal_cli import (
+E   ImportError: cannot import name 'FORMAL_AUTHORIZATION_INPUT_ROLES' from 'stage1_sctsr_v4.formal_cli' (C:\GitHub\YOLO-CV\stage1_sctsr_v4\formal_cli.py)
+=========================== short test summary info ===========================
+ERROR tests/stage1_sctsr_v4/test_formal_input_snapshot.py
+!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!
+1 error in 1.36s

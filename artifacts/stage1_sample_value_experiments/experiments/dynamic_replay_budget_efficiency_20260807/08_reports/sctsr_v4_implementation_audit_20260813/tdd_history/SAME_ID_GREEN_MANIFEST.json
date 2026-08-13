@@ -1,0 +1,100 @@
+{
+  "schema_version": "stage1.sctsr.same_id_green_manifest.v1",
+  "provenance": "BYTE_EXACT_RED_TEST_SOURCES_FROM_EXPERT_PACKAGE_WITH_POST_CONTRACT_FIXTURE_ADAPTER",
+  "reviewer_independence_claim": "PRIMARY_AGENT_SELF_REVIEW_NOT_INDEPENDENT",
+  "sources": [
+    {
+      "encoded_path": "red_sources/commit_01/test_contract_hardening.py.b64",
+      "decoded_relative_path": "commit_01/test_contract_hardening.py",
+      "decoded_sha256": "8F4758308CEA0FD27F67F82D01792AC8A2E67EF262930EFA6339EC587D95D65E"
+    },
+    {
+      "encoded_path": "red_sources/commit_02/test_asset_hardening.py.b64",
+      "decoded_relative_path": "commit_02/test_asset_hardening.py",
+      "decoded_sha256": "F9234170A56020FB97B516B93C55F2890C90E59C475C6033BCBD14E41A523BCC"
+    },
+    {
+      "encoded_path": "red_sources/commit_02/test_schedule_hardening.py.b64",
+      "decoded_relative_path": "commit_02/test_schedule_hardening.py",
+      "decoded_sha256": "0423017C74B4911E91BF364FC98613D2DBE0D71FDC5B29FAB25D3D12ABCA8A7F"
+    },
+    {
+      "encoded_path": "red_sources/commit_03/test_parent_lineage_hardening.py.b64",
+      "decoded_relative_path": "commit_03/test_parent_lineage_hardening.py",
+      "decoded_sha256": "8F13756202C133E38FF6CA53051A699EF1E4B0000ECA6DBF0760497DEBB1448D"
+    },
+    {
+      "encoded_path": "red_sources/commit_04/test_fixed_step_hardening.py.b64",
+      "decoded_relative_path": "commit_04/test_fixed_step_hardening.py",
+      "decoded_sha256": "D4F7F1729AC7AAD8561C059D6F7A056D4EF1FA790166BCD9708D68341132F5D9"
+    },
+    {
+      "encoded_path": "red_sources/commit_05/test_evidence_transaction_hardening.py.b64",
+      "decoded_relative_path": "commit_05/test_evidence_transaction_hardening.py",
+      "decoded_sha256": "5FFEB73EAAC4BBD3BABD23E05F98E73CC55E0B568CE8F3C8910806D04C92AC8C"
+    }
+  ],
+  "test_ids": [
+    "commit_01/test_contract_hardening.py::test_sa_030_forged_nonempty_release_signature_is_rejected",
+    "commit_01/test_contract_hardening.py::test_sa_031_contract_baseline_identity_is_immutable",
+    "commit_01/test_contract_hardening.py::test_sa_032_absolute_budget_is_rejected_in_contract",
+    "commit_01/test_contract_hardening.py::test_sa_033_absolute_budget_is_rejected_in_arm",
+    "commit_02/test_asset_hardening.py::test_sa_041_asset_row_count_is_verified_from_csv",
+    "commit_02/test_asset_hardening.py::test_sa_042_asset_identity_digest_is_recomputed",
+    "commit_02/test_asset_hardening.py::test_sa_043_asset_split_role_is_verified_from_rows",
+    "commit_02/test_asset_hardening.py::test_sa_044_base_denominator_is_derived_from_registered_identity",
+    "commit_02/test_schedule_hardening.py::test_sa_070_forged_plan_digest_is_rejected",
+    "commit_02/test_schedule_hardening.py::test_sa_071_empty_treatment_schedule_is_rejected",
+    "commit_02/test_schedule_hardening.py::test_sa_072_rate_occurrence_mismatch_is_rejected",
+    "commit_03/test_parent_lineage_hardening.py::test_windows_atomic_checkpoint_write_is_durable",
+    "commit_03/test_parent_lineage_hardening.py::test_forged_tensor_content_is_rejected",
+    "commit_03/test_parent_lineage_hardening.py::test_branch_launch_validates_actual_parent_not_a_bare_path",
+    "commit_03/test_parent_lineage_hardening.py::test_logical_index_rejects_forged_child_history",
+    "commit_03/test_parent_lineage_hardening.py::test_parent_spec_requires_runtime_and_asset_identity",
+    "commit_04/test_fixed_step_hardening.py::test_plan_digest_recomputed",
+    "commit_04/test_fixed_step_hardening.py::test_counter_domain_seeds_materialized",
+    "commit_04/test_fixed_step_hardening.py::test_upstream_optimizer_step_called_once",
+    "commit_04/test_fixed_step_hardening.py::test_base_identity_required",
+    "commit_04/test_fixed_step_hardening.py::test_replay_order_required",
+    "commit_04/test_fixed_step_hardening.py::test_amp_skip_aborts",
+    "commit_05/test_evidence_transaction_hardening.py::test_sa_130_to_135_occurrence_schema_rejects_every_missing_required_field[replay_count_before]",
+    "commit_05/test_evidence_transaction_hardening.py::test_sa_130_to_135_occurrence_schema_rejects_every_missing_required_field[last_replay_epoch_reason]",
+    "commit_05/test_evidence_transaction_hardening.py::test_sa_130_to_135_occurrence_schema_rejects_every_missing_required_field[epochs_since_last_replay_reason]",
+    "commit_05/test_evidence_transaction_hardening.py::test_sa_130_to_135_occurrence_schema_rejects_every_missing_required_field[oof_reference_reason]",
+    "commit_05/test_evidence_transaction_hardening.py::test_sa_130_to_135_occurrence_schema_rejects_every_missing_required_field[rho_reason]",
+    "commit_05/test_evidence_transaction_hardening.py::test_sa_130_to_135_occurrence_schema_rejects_every_missing_required_field[planned_replay_epoch_reason]",
+    "commit_05/test_evidence_transaction_hardening.py::test_sa_130_to_135_occurrence_schema_rejects_every_missing_required_field[cumulative_replay_count_after]",
+    "commit_05/test_evidence_transaction_hardening.py::test_sa_130_to_135_occurrence_schema_rejects_every_missing_required_field[fallback_state]",
+    "commit_05/test_evidence_transaction_hardening.py::test_sa_134_replay_count_and_last_exposure_are_conserved",
+    "commit_05/test_evidence_transaction_hardening.py::test_sa_142_nullable_occurrence_value_requires_registered_reason",
+    "commit_05/test_evidence_transaction_hardening.py::test_sa_131_and_136_step_schema_rejects_missing_required_field[replay_rate_numerator]",
+    "commit_05/test_evidence_transaction_hardening.py::test_sa_131_and_136_step_schema_rejects_missing_required_field[base_loss_items]",
+    "commit_05/test_evidence_transaction_hardening.py::test_sa_131_and_136_step_schema_rejects_missing_required_field[parameter_grad_norm_before_clip]",
+    "commit_05/test_evidence_transaction_hardening.py::test_sa_131_and_136_step_schema_rejects_missing_required_field[learning_rates]",
+    "commit_05/test_evidence_transaction_hardening.py::test_sa_131_and_136_step_schema_rejects_missing_required_field[optimizer_hyperparameters]",
+    "commit_05/test_evidence_transaction_hardening.py::test_sa_131_and_136_step_schema_rejects_missing_required_field[amp_reason]",
+    "commit_05/test_evidence_transaction_hardening.py::test_sa_131_and_136_step_schema_rejects_missing_required_field[bn_reason]",
+    "commit_05/test_evidence_transaction_hardening.py::test_sa_131_and_136_step_schema_rejects_missing_required_field[rng_reason]",
+    "commit_05/test_evidence_transaction_hardening.py::test_sa_131_and_136_step_schema_rejects_missing_required_field[base_augmentation_digest]",
+    "commit_05/test_evidence_transaction_hardening.py::test_sa_131_and_136_step_schema_rejects_missing_required_field[dataloader_wait_seconds]",
+    "commit_05/test_evidence_transaction_hardening.py::test_sa_131_and_136_step_schema_rejects_missing_required_field[row_generation]",
+    "commit_05/test_evidence_transaction_hardening.py::test_sa_136_step_rejects_amp_skip_even_when_delta_claims_one",
+    "commit_05/test_evidence_transaction_hardening.py::test_sa_137_exposure_schema_rejects_missing_cumulative_or_telemetry_sha",
+    "commit_05/test_evidence_transaction_hardening.py::test_sa_144_selection_schema_requires_guard_quota_and_overlap",
+    "commit_05/test_evidence_transaction_hardening.py::test_sa_138_pyarrow_is_a_locked_runtime_dependency",
+    "commit_05/test_evidence_transaction_hardening.py::test_sa_138_to_140_real_parquet_has_strict_schema_zstd_and_partition_manifest",
+    "commit_05/test_evidence_transaction_hardening.py::test_sa_139_ledger_writer_rejects_unpartitioned_large_table",
+    "commit_05/test_evidence_transaction_hardening.py::test_sa_143_empty_and_unknown_sentinels_are_rejected",
+    "commit_05/test_evidence_transaction_hardening.py::test_sa_150_two_row_bad_cadence_cannot_bypass_validator",
+    "commit_05/test_evidence_transaction_hardening.py::test_sa_154_to_157_unavailable_hardware_fields_have_reason_not_fake_zero",
+    "commit_05/test_evidence_transaction_hardening.py::test_sa_158_all_critical_providers_unavailable_rejects_closeout",
+    "commit_05/test_evidence_transaction_hardening.py::test_sa_221_commit_detects_half_written_json_without_optional_validator",
+    "commit_05/test_evidence_transaction_hardening.py::test_sa_221_commit_detects_half_written_parquet_without_optional_validator",
+    "commit_05/test_evidence_transaction_hardening.py::test_sa_221_generation_manifest_binds_file_sha_and_telemetry_partition",
+    "commit_05/test_evidence_transaction_hardening.py::test_sa_227_tampered_generation_manifest_is_rejected_by_recovery_pointer",
+    "commit_05/test_evidence_transaction_hardening.py::test_sa_230_corrupt_latest_complete_generation_is_not_resumable",
+    "commit_05/test_evidence_transaction_hardening.py::test_sa_229_resume_identity_binds_rng_and_receipt_chain",
+    "commit_05/test_evidence_transaction_hardening.py::test_sa_231_repeated_quarantine_never_overwrites_previous_evidence",
+    "commit_05/test_evidence_transaction_hardening.py::test_sa_232_and_233_checkpoint_retention_keeps_anchors_and_last_two"
+  ]
+}

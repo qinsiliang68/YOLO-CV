@@ -1,0 +1,74 @@
+Script failed
+Wall time 2.4 seconds
+Output:
+Script error:
+Exit code: 1
+Wall time: 2.4 seconds
+Output:
+FFFF                                                                     [100%]
+================================== FAILURES ===================================
+__________ test_sa_030_forged_nonempty_release_signature_is_rejected __________
+
+tmp_path = WindowsPath('C:/Users/28898/AppData/Local/Temp/pytest-of-28898/pytest-1383/test_sa_030_forged_nonempty_re0')
+
+    def test_sa_030_forged_nonempty_release_signature_is_rejected(tmp_path):
+        release = {
+            "schema_version": "stage1.sctsr.formal_release.v1",
+            "authorization": "SIGNED_SCTSR_V4_FORMAL_RELEASE",
+            "formal_training_authorized": True,
+            "release_id": "FORGED_RELEASE",
+            "signature": "x",
+            "baseline_main_commit": "a70ba60485dd32c2f8b4268b8f28ea2d3549f42f",
+            "taskbook_blob_sha": "b201d021712e9c6614e119d35f0e14bdf405c6be",
+        }
+        path = tmp_path / "forged_release.json"
+        path.write_text(json.dumps(release), encoding="utf-8")
+    
+>       with pytest.raises(SctsrError) as exc:
+E       Failed: DID NOT RAISE <class 'stage1_sctsr_v4.errors.SctsrError'>
+
+tests\stage1_sctsr_v4\test_contract_hardening.py:36: Failed
+_____________ test_sa_031_contract_baseline_identity_is_immutable _____________
+
+repository_root = WindowsPath('C:/GitHub/YOLO-CV')
+
+    def test_sa_031_contract_baseline_identity_is_immutable(repository_root):
+        contract = _contract(repository_root)
+        contract["baseline"]["commit"] = "0" * 40
+    
+>       with pytest.raises(SctsrError) as exc:
+E       Failed: DID NOT RAISE <class 'stage1_sctsr_v4.errors.SctsrError'>
+
+tests\stage1_sctsr_v4\test_contract_hardening.py:46: Failed
+_____________ test_sa_032_absolute_budget_is_rejected_in_contract _____________
+
+repository_root = WindowsPath('C:/GitHub/YOLO-CV')
+
+    def test_sa_032_absolute_budget_is_rejected_in_contract(repository_root):
+        contract = _contract(repository_root)
+        contract["rates"]["uniform"]["absolute_count"] = 600
+    
+>       with pytest.raises(SctsrError) as exc:
+E       Failed: DID NOT RAISE <class 'stage1_sctsr_v4.errors.SctsrError'>
+
+tests\stage1_sctsr_v4\test_contract_hardening.py:56: Failed
+_______________ test_sa_033_absolute_budget_is_rejected_in_arm ________________
+
+repository_root = WindowsPath('C:/GitHub/YOLO-CV')
+
+    def test_sa_033_absolute_budget_is_rejected_in_arm(repository_root):
+        contract = _contract(repository_root)
+        arms = _arms(repository_root)
+        arms[1]["replay_count"] = 600
+    
+>       with pytest.raises(SctsrError) as exc:
+E       Failed: DID NOT RAISE <class 'stage1_sctsr_v4.errors.SctsrError'>
+
+tests\stage1_sctsr_v4\test_contract_hardening.py:67: Failed
+=========================== short test summary info ===========================
+FAILED tests/stage1_sctsr_v4/test_contract_hardening.py::test_sa_030_forged_nonempty_release_signature_is_rejected
+FAILED tests/stage1_sctsr_v4/test_contract_hardening.py::test_sa_031_contract_baseline_identity_is_immutable
+FAILED tests/stage1_sctsr_v4/test_contract_hardening.py::test_sa_032_absolute_budget_is_rejected_in_contract
+FAILED tests/stage1_sctsr_v4/test_contract_hardening.py::test_sa_033_absolute_budget_is_rejected_in_arm
+4 failed in 0.06s
+__TDD_RED_COMMIT1_EXIT__=1

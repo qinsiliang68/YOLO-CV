@@ -1,39 +1,40 @@
-# SCTSR v4 实施与自我审计最终报告
+# SCTSR v4 实施、自审计与训练容量最终报告
 
-## 1. 判定先行
+## 1. 最终判定
 
-本轮已经在冻结的 YOLO-CV 基线上完成隔离的 SCTSR v4 代码实施、测试、真实 PyArrow/Zstd synthetic canary、逐行自审和逐条 Appendix-D 机器审计。代码实现源冻结为：
+本轮已在冻结的 YOLO-CV 基线上完成隔离的 SCTSR v4 实现、失败优先测试、真实本地训练数据工程 canary、完整 synthetic canary、逐提交 TDD 历史审计、逐行自审计和 RTX 3090 十机容量估算。
+
+冻结身份如下：
 
 ```text
 repository: qinsiliang68/YOLO-CV
 baseline: a70ba60485dd32c2f8b4268b8f28ea2d3549f42f
 branch: codex/sctsr-v4-taskbook
-implementation_source_commit: 8675ebfbc25133607348f358da167d14f1a2f0eb
+implementation_source_commit: e9b6df61b0eb02e1d32c29175644f1c2af545afc
 taskbook_blob_sha: b201d021712e9c6614e119d35f0e14bdf405c6be
-source_tree_digest: 8547785D014125255BB2249A2884384D20C0D8D322E0D718F712C5D06ED3433B
+source_tree_file_count: 255
+source_tree_digest: 06279F1229235897B08A820D424AC1BFF000A2AA21C48859F98B841704F0C3CE
 ```
 
-当前严格判定不是正式放行：
+准确状态是：
 
 ```text
-implementation: IMPLEMENTED_AND_MECHANISM_TESTED
+implementation: IMPLEMENTED_AND_ENGINEERING_TESTED
 appendix_d_self_audit: SELF_AUDIT_FAIL
 formal_training_authorized: false
 formal_training_started: false
 scientific_effectiveness_known: false
 ```
 
-失败封闭的直接原因有三类：
+Appendix-D 共 206 项，当前为 205 PASS、1 FAIL。唯一失败是 `SA-266`：冻结任务书要求旧 v3 回归至少 `231 passed`，而当前冻结仓库的真实结果是 `183 passed, 1 skipped`。该差异没有被改写、填充或伪装成 PASS。
 
-1. Appendix-D 中 206 项有 201 PASS、5 FAIL。失败项为 SA-260、SA-261、SA-262、SA-263、SA-266。
-2. 现有冻结资产无法构造任务书定义的精确 R2：172 个精确分层缺少候选，合计短缺 378 个 occurrence。实现正确返回 `R2_QUOTA_INFEASIBLE`，没有放宽匹配。
-3. 没有未来签名 release、正式 seed registry 或 val_target；blind/test 仍密封，A 模块继续 `BLOCKED_BY_VAL_TARGET`。
+此外，正式 phase-1 仍有独立硬阻断：当前资产无法在零身份重叠和四维精确 quota 下构造 R2，实际有 172 个不足分层、累计短缺 378 个 occurrence，最大单层短缺 11。实现按合同返回 `R2_QUOTA_INFEASIBLE`，没有放宽匹配。
 
-这些结论不表示 SCTSR 有效或无效。没有进行正式 SCTSR 训练，因此没有任何 Stage1 utility evidence。
+这些阻断不否定 v4 实现质量，也不证明 SCTSR 有效或无效。没有正式 replay 干预，就没有 utility evidence。
 
-## 2. 实施范围
+## 2. 实施边界
 
-新增实现被隔离在以下代码域：
+新增实现严格隔离在：
 
 - `stage1_sctsr_v4/`
 - `scripts/stage1_sctsr_v4/`
@@ -42,212 +43,234 @@ scientific_effectiveness_known: false
 - `integrations/ultralytics/`
 - `docs/stage1_sctsr_v4/`
 
-受保护历史域没有被改写：
+以下历史代码和训练证据未被改写：
 
-- `stage1_gapvalue240`
-- `stage1_dynamic_replay_v3`
-- `YOLOv11/ultralytics`
-- 已运行的 v1/v2/v3 queue、release、assignment 和 training evidence
+- `stage1_gapvalue240/`
+- `stage1_dynamic_replay_v3/`
+- `YOLOv11/ultralytics/`
+- 既有 40/120/240-run 训练产物
+- 旧 queue、release、assignment、checkpoint 与审计材料
 
-仓库状态审计在实施源提交上为 PASS。tracked worktree 为 clean；大量既有 untracked 文献、审计和历史材料被登记但没有 stage。旧 gate、pilot release 和 assignments 被标记为 legacy detected，不被解释为 active SCTSR v4 状态。
+旧 gate、pilot release 和 assignment 作为 legacy evidence 保留，但不被解释为 SCTSR v4 的 active 状态。
 
-## 3. 已实现的系统合同
+## 3. 已实现的科学与工程合同
 
 ### 3.1 百分比预算和八臂
 
-- `ReplayRateSpec` 只接受整数有理数。
-- treatment identity pool 为 canonical base 的 25/1000。
-- U 为 E121-E200 每 epoch 5/1000。
-- F 为 E121-E160 每 epoch 10/1000，E161-E200 为 0。
-- 八臂顺序固定为 NR、R1_U、R2_U、T_U、R2_F、T_F、T_TO_R2_AT_160、T_TO_NR_AT_160。
-- `CURRENT_LOSS_U` 仅有 HELD 接口，不进入 phase 1。
-- 绝对 replay count、浮点 rate、缺失 denominator、不可整除 rate 均失败封闭。
+- `ReplayRateSpec` 只接受整数有理数，不接受浮点比例或方法配置中的绝对样本数。
+- treatment identity pool 固定为 canonical base 的 `25/1000`。
+- U 为 E121–E200 每 epoch `5/1000`。
+- F 为 E121–E160 每 epoch `10/1000`，E161–E200 为 0。
+- U/F 的 identity digest、累计 occurrence、逐 ID multiplicity 完全相同，只改变时间分布。
+- 八臂顺序固定为 `NR`、`R1_U`、`R2_U`、`T_U`、`R2_F`、`T_F`、`T_TO_R2_AT_160`、`T_TO_NR_AT_160`。
+- `CURRENT_LOSS_U` 仅有 HELD 接口，不进入第一阶段。
 
 ### 3.2 T、R1、R2
 
-- T 绑定 3000 行冻结 stress set，identity digest 为 `85D462C1D95F30FB8B519162BBAD762CC4E9506A185C07D719145F07FE003B4B`。
-- T 只作为历史符号反转压力集，不是 validated selector。
-- R1 从完整 eligible canonical base 做全局随机，并报告自然重叠。
-- R2 算法要求与 T 身份零重叠，并精确匹配 label、historical dynamic bucket、OOF fold、`oof_group_id`。
-- `oof_group_id` 明确是 filename-bucket surrogate，不冒充真实视频 ID。
-- R2 matcher 在匹配前做字段白名单投影，terminal fields 主动访问会抛错。
-- 不存在 nearest、relaxed 或隐式 quota fallback。
+- T 绑定 3000 行历史符号反转压力集合，identity digest 为 `85D462C1D95F30FB8B519162BBAD762CC4E9506A185C07D719145F07FE003B4B`。
+- T 不是已验证 selector，不得被描述为高价值集合。
+- R1 从完整 eligible canonical base 做全局随机，并报告与 T 的自然重叠。
+- R2 必须与 T 身份零重叠，并精确匹配 label、historical dynamic bucket、OOF fold 和 `oof_group_id` quota。
+- `oof_group_id` 明确是 filename-bucket surrogate，不冒充真实 video ID。
+- R2 在匹配前执行字段白名单投影，禁止读取 GapCritical、loss、confidence、mean/std probability、correct rate 等终端信号。
+- 任一 quota 不可满足即失败；没有 nearest、relaxed 或隐式 fallback。
 
-正式资产尝试证明当前 R2 不可行：172 个 strata、378 个 occurrence shortfall、单 strata 最大 shortfall 为 11。当前正确动作是修改冻结资产或批准科学规格变更，而不是让代码偷偷放宽 R2。
+### 3.3 common parent 与 lineage
 
-### 3.3 schedule
+- 每个 training seed 只允许一个 E1–E120 no-replay common parent。
+- checkpoint 包含 model、EMA、optimizer、scheduler、AMP scaler、Python/NumPy/Torch CPU/CUDA RNG、epoch、global step 和全部输入身份。
+- child 必须绑定 parent SHA、seed、asset、source tree 和 generation identity。
+- logical artifact index 将 E1–E120 指向 parent，E121–E200 指向 child，不复制后伪装为 child 原生产物。
+- 固定评价 checkpoint 为 E200；禁止 `best.pt`。
 
-- 五个 identity groups 互斥并覆盖 pool。
-- U 每五个 epoch 每 ID 一次，累计 multiplicity 16。
-- F 活跃阶段每五个 epoch 每 ID 两次，累计 multiplicity 16。
-- U/F 使用相同 identity digest、总 exposure 和逐 ID multiplicity vector，只改变 epoch distribution。
-- E160 stop 与 fallback 被分开记录；fallback 明确切换至 R2-U，stop 明确减少总 dose。
-- treatment/comparator 使用同 schedule 的 step-slot skeleton。
-
-### 3.4 common parent、lineage 和恢复
-
-- 每 seed 只允许一个 E1-E120 no-replay common parent。
-- checkpoint 绑定 model、EMA、optimizer、scheduler、AMP scaler、Python/NumPy/Torch CPU/CUDA RNG、epoch、global step、seed、lock、source 和 assets identity。
-- child 必须通过 parent SHA 和 lineage 启动；裸 checkpoint path 被拒绝。
-- logical E1-E120 指向 parent，E121-E200 指向 child。
-- parent 产物不可修改；伪造早期 child 产物被拒绝。
-- epoch transaction 从 inprogress generation 开始，只在 schema/count/SHA/守恒通过后原子发布。
-- kill、OOM、disk full、半写 Parquet、半写 JSON、损坏 receipt 和错误 generation/identity 均走 quarantine。
-- resume 只从最后完整 epoch，且不覆盖旧 generation；关键 E120/140/150/160/180/200 checkpoint 保留。
-
-### 3.5 fixed base-step replay runtime
+### 3.4 fixed base-step replay
 
 - base Dataset 长度、base batch 数、base order、base augmentation、optimizer steps、scheduler、warmup 和 EMA 轨迹不因 replay 增长。
 - replay 作为独立 microbatch 注入既定 base step。
 - replay microbatch 不超过实际 base batch 的 25%，包括尾 batch。
 - replay CE 为逐样本求和后除以 canonical base batch size 128。
-- base loss 仍采用冻结 upstream learner 定义。
-- base 和 replay backward 后每 base step 只发生一次 optimizer step。
-- AMP unscale、clip、scaler step 和 update 顺序固定且各一次。
-- replay forward 后恢复全部 BatchNorm running buffers 和全局 RNG。
-- replay augmentation 使用独立 counter domain。
-- OOM、隐式梯度累积和 phase-1 world_size 大于 1 均失败封闭。
+- base 与 replay backward 后，每个 base step 只调用一次 optimizer step。
+- AMP unscale、clip、scaler step/update 的顺序和调用次数固定。
+- replay forward 后恢复 BatchNorm running buffers，并恢复 Python、NumPy、Torch CPU 和全部 CUDA RNG。
+- OOM、隐式梯度累积、自动减 batch 和 phase-1 `world_size>1` 均失败封闭。
 
-### 3.6 全量证据
+### 3.5 证据、恢复与评价
 
 - occurrence ledger：每个 base/replay occurrence 一行。
-- optimizer-step ledger：每个 base step 一行。
-- exposure ledger：每 epoch 的 planned/actual denominator、numerator、unique、repeat、cumulative 和 steps。
-- selection ledger：保存候选全集、选择结果和原因，不只保存 selected IDs。
-- 大表使用真实 PyArrow Zstd Parquet，并按 run/epoch 分区。
-- 分区 receipt 绑定 schema、row count、bytes 和 SHA-256。
-- telemetry 记录 process、system、GPU、CUDA、disk 和 IO；不可用 provider 使用 reason code，不填假 0。
-- prediction artifact 绑定 split、manifest、checkpoint、sample-label identity 和每行 raw probability。
-- evaluation 生成 FN budget 0-95 的 96 个 tie-safe frontier 点，并分别保存 TN_at_FN95 和 FN_at_TN68253 的阈值。
-- discovery/confirmation seed schema 分离，支持 paired completeness、exact sign-flip、Holm、win rate、worst seed 和 dual-end degradation。
+- optimizer-step ledger：每个 base optimizer step 一行。
+- exposure ledger：每 epoch 的计划/实际 denominator、numerator、unique、repeat、累计曝光和 steps。
+- selection ledger：保存候选全集、选择结果、匹配层和选择原因。
+- 大表使用真实 PyArrow Zstd Parquet，按 run/epoch 分区。
+- telemetry 记录进程、系统、GPU、CUDA、磁盘、IO 和采样时间；不可用值带 reason code，不填伪造 0。
+- epoch 通过 in-progress generation、文件 schema/count/SHA、原子 rename、receipt chain 和 recovery pointer 发布。
+- kill、OOM、disk full、半写文件、错误 receipt、错误 RNG、错误 generation 和错误 source identity 均进入 quarantine。
+- prediction artifact 绑定 split、manifest、checkpoint、sample-label digest、raw probability 和固定 epoch。
+- evaluation 产生 FN=0..95 共 96 个 tie-safe frontier 点，分别保存 `TN_at_FN95` 与 `FN_at_TN68253` 的独立阈值。
 
-### 3.7 Q/R/A/D 和 phase 2
+### 3.6 Q/R/A/D 与 phase 2
 
-- Q/R/A/D 只允许 gate、stratum 或 factorial 语义。
-- weighted total score 被拒绝。
-- confidence、loss、RHO、gradient、forgetting、AUM 和 coverage 不可登记为 utility。
-- val_target 当前不存在，A enable 必须返回 `BLOCKED_BY_VAL_TARGET` 且不得生成 arm、assignment 或 gradient artifact。
-- short-branch、predictor 和 selector 默认 disabled。
-- phase 1 gate 未通过时 predictor training 被拒绝。
+- Q/R/A/D 只允许顺序 gate、stratum 或 factorial 语义。
+- 任意加权总分递归拒绝。
+- confidence、loss、RHO、gradient、forgetting、AUM 和 coverage 不得登记为 utility。
+- 当前无独立 `val_target`，A/gradient alignment 保持 `BLOCKED_BY_VAL_TARGET`。
+- short branch、predictor 和 selector 默认为 disabled；第一阶段通过前不可训练 predictor。
 - 没有实现或启用 RL selector。
 
-## 4. 测试与复现结果
+## 4. 最终测试结果
 
-所有命令均在 Python 3.11.14 环境执行，原始 stdout/stderr、exit code、bytes 和 SHA-256 保存在 `COMMAND_INDEX.json` 与 `commands/`。
+所有最终命令均绑定 `e9b6df6`，原始 stdout/stderr、exit code、bytes 和 SHA-256 登记在 `COMMAND_INDEX.json` 与 `commands/`。
 
 | 范围 | 结果 |
 |---|---:|
-| 完整 v4 | 331 passed |
+| 完整 SCTSR v4 | 340 passed |
 | 旧 v3 regression | 183 passed, 1 skipped |
-| contract/rate/schema | 22 passed |
-| assets/pools/R2 | 25 passed |
-| schedule | 16 passed |
-| parent/lineage | 31 passed |
-| fixed-step/YOLO | 31 passed |
-| evidence/ledgers | 58 passed |
-| telemetry | 3 passed |
-| evaluation/statistics | 49 passed |
-| Q/R/A/D/phase2 | 21 passed |
-| transaction/recovery | 16 passed |
-| CLI/side effects | 32 passed |
-| formal inputs/runtime | 17 passed |
-| audit infrastructure | 21 passed |
+| 最终审计工具 | 25 passed |
+| CLI 与禁止副作用 | 32 passed |
+| Python compileall | PASS |
+| uv lock check | PASS |
+| synthetic canary A | PASS |
+| synthetic canary B | PASS |
+| synthetic semantic determinism | 7/7 PASS |
+| 真实本地数据工程 canary | PASS |
 
-完整 v4 没有 skip/xfail。旧 v3 命令本身 exit 0，但任务书要求“至少 231 passed”，因此 SA-266 必须 FAIL。不能用 exit 0 隐藏数量不符。
+完整 v4 没有 skip/xfail。旧 v3 命令本身 exit 0，但其真实数量低于任务书的 231 下限，所以 `SA-266` 仍为 FAIL。
 
-## 5. synthetic canary
+## 5. 真实本地数据工程 canary
 
-最终两次完整 canary 均使用真实 PyArrow/Zstd 路径并通过 `validate_run`：
+最终 canary 为 `REALDATA_r8`，绑定最终源码提交与 source-tree digest。它不是 synthetic tensor-only 测试，而是实际完成：
 
-- 每次覆盖八臂。
-- 每臂 16 optimizer steps。
-- 每臂 160 prediction rows。
-- 每臂生成 96 frontier points。
-- 每次 179 个登记 artifact。
-- 每次 760 个 logical artifact index entries。
-- 每次 6 个故障注入。
-- source tree digest 相同。
-- parent checkpoint SHA 相同：`21F85E13356EF1A168699DC715A5EAD9750AE19A1236035CA02721DC34C621CC`。
-- 7 项稳定语义比较全部通过。
+- 加载真实 `yolo11l-cls.pt`，权重 SHA-256 为 `6B56513A5D8BDAE6B8F0A36DACAF01B26D5A522BA1B34197C3BAC9FA6463366C`；
+- 从 `C:\Sewer-ML\sewerml_train_images` 读取 5 张冻结的真实训练图；
+- 使用真实 YOLO11l ClassificationModel 和 ClassificationTrainer 接入层；
+- 执行 base forward、replay forward、两部分 backward 和一次 optimizer step；
+- 检查 replay 梯度贡献、BN 恢复、RNG 恢复和 optimizer-step 锁定；
+- 写出并重新读取 154,740,481-byte checkpoint；
+- 写出真实 Zstd Parquet occurrence、optimizer-step、exposure、telemetry、prediction 和 frontier 分区；
+- 产生 96 个 FN frontier 点；
+- 注入一次 partial kill，并验证 quarantine、receipt chain 和 resume pointer。
 
-两个运行目录含绝对路径、时间戳和 quarantine 名称，因此整棵目录不要求逐字节相同；稳定合同文件和语义 digest 才是确定性判据。两次 canary 均标记：
+最终 receipt：
 
 ```text
-SYNTHETIC_NOT_SCIENTIFIC_RESULT
-scientific_result=false
-formal_training_started=false
-method_effectiveness_claimed=false
+path: real_data_canary/r8/REAL_DATA_ENGINEERING_CANARY_RECEIPT.json
+sha256: 87E55393D9A594FCB8BA3097F40CE178249CE76AB6DF9366C80AA4E0B4BD0A07
+checkpoint_bytes: 154740481
+checkpoint_sha256: 50D436ECFAE3E31378048A204ABC86831E875FAA31231B8B5281BE92DD55076A
+semantic: REAL_DATA_ENGINEERING_CANARY_NOT_SCIENTIFIC_RESULT
 ```
 
-## 6. 逐行自审
+canary 在本机 RTX 4060 上执行，因此只证明真实数据、真实模型和产物链路可运行，不能用于估计 RTX 3090 正式训练时长。154.7 MB checkpoint 超过 GitHub 单文件限制，因此原文件不作为单一 blob 提交，而是发布为 90,000,000 与 64,740,481 bytes 两个原始分卷。分卷逐一绑定 SHA，并已流式验证按序拼接后的 bytes 与 SHA 完全恢复原 checkpoint。远端仍不把“尚未执行重组的目录”冒充直接完整的 canonical generation。
 
-冻结源的 reviewed snapshot 包含 160 个 source/test/config 文件，manifest digest 为：
+恢复命令：
+
+```powershell
+uv run python artifacts\stage1_sample_value_experiments\experiments\dynamic_replay_budget_efficiency_20260807\08_reports\sctsr_v4_implementation_audit_20260813\tools\checkpoint_parts.py reassemble `
+  --manifest artifacts\stage1_sample_value_experiments\experiments\dynamic_replay_budget_efficiency_20260807\08_reports\sctsr_v4_implementation_audit_20260813\real_data_canary\r8\checkpoint_parts\CHECKPOINT_PARTS_MANIFEST.json `
+  --output <目标路径>\rolling_epoch_0121.generation_1.pt
+```
+
+## 6. TDD 历史审计
+
+逐提交 TDD 审计绑定原始 Codex rollout 的不可变行前缀，结果为：
 
 ```text
-B6270057AA5E0E497E9B2ABFB513CFFB5019CA94FB5DCEA1B54F8BE26552F1F2
+commit_count: 34
+behavior_commit_count: 31
+non_behavior_commit_count: 3
+failing_first_pair_count: 33
+raw_event_count: 146
+audit_sha256: A42155B08CE6E0E985BE2ACFC1E52562B0B7E4FB28465BB402C7F416E790182C
+reviewer_identity: PRIMARY_AGENT_HISTORY_NOT_INDEPENDENT_REVIEW
 ```
 
-逐行自审覆盖 SA-280 至 SA-289 共 10 项、24 个精确行锚，包括：
+每个行为提交绑定实际 red、patch、historical green、同 test ID exact green 和 commit 输出；red 必须达到目标行为断言，不允许用 import/syntax/setup 偶然失败充数。该证据关闭了原先 `SA-260` 至 `SA-263` 的缺口，但明确不声称独立审稿人。
 
-- optimizer 调用边界；
-- replay reduction 和 denominator；
-- AMP/unscale/clip/step/update；
-- BatchNorm buffers；
-- Python/NumPy/Torch CPU/CUDA RNG；
-- R2 白名单投影；
-- 异常路径；
-- val_op/test 隔离；
-- completion 与 release 隔离；
-- public schema registry。
-
-每个行锚均与冻结 snapshot 的 bytes 和 SHA 绑定。reviewer identity 明确为 `SELF_REVIEW_NOT_INDEPENDENT_REVIEW`，不冒充独立专家审查。
-
-## 7. Appendix-D 206 项审计
-
-机器审计输出：
+## 7. Appendix-D 自审计
 
 ```text
 applicable_check_count: 206
-pass_count: 201
-fail_count: 5
+pass_count: 205
+fail_count: 1
 blocked_count: 0
 overall_status: SELF_AUDIT_FAIL
-audit_digest: 865419C8A29E575AD6ABA70BCC4D6D6718749BEDBA2D596F740EC61B28D41493
+audit_digest: C009E010B74C565E154C9608BB690E34630188664ABC82F048FDDE41B72C93C9
 validator_status: VALID_AUDIT_WITH_FAILURES
 ```
 
-失败项：
-
-### SA-260 至 SA-263
-
-初始 rollback units 有 inherited red/green receipts，但后续若干 hardening 修复只有最终 green 命令和会话历史，没有全部固化成“每个行为变更一一对应”的 canonical red/green 文件。因此无法对每个后续修复证明：
-
-- red 一定先于实现；
-- red 失败原因一定到达目标 assertion；
-- red/green 一定使用同一 pytest node ID；
-- 每对 receipt 都有 source-commit、bytes 和 SHA 绑定。
-
-这些历史事实不能事后伪造。解决方式只能是取得并注册真实原始记录，或批准新的审计规格；不能把现在补写的日志冒充当时的 failing-first evidence。
+唯一失败：
 
 ### SA-266
 
-当前旧 v3 suite 为 183 passed、1 skipped，不满足冻结任务书中的 231 passed 下限。仓库清理后删除未训练方向的死代码/测试是合理历史变化，但不能在本任务书审计里擅自改成 PASS。需要批准规格变更或恢复一个真实且不污染历史语义的 231-test 基线。
+任务书要求：
 
-## 8. 正式运行阻断
+```text
+uv run pytest tests\stage1_dynamic_replay_v3 -q
+至少 231 passed
+```
 
-在以下阻断全部解除前，不得生成 assignment、engineering gate、pilot release 或正式 seed，也不得启动正式训练：
+当前冻结树真实结果：
 
-1. 决定如何处理正式 R2 的 172 个 shortage strata；禁止静默放宽。
-2. 解决 SA-266 的旧 v3 数量基线规格冲突。
-3. 对 SA-260 至 SA-263 做真实证据补全或正式规格裁决。
-4. 进行独立代码审查并签署未来 release。
-5. 冻结正式 seed registry 和 training identity manifest。
-6. 若启用 A，先取得独立、群组隔离、SHA 冻结的 val_target；否则 A 必须继续 blocked。
-7. blind/test 在方法、代码、seed、停止规则和统计规则冻结前继续密封。
+```text
+183 passed, 1 skipped in 4.76s
+exit_code: 0
+```
 
-## 9. 当前副作用事实
+解决方式只能是：
 
-机器可读 repository-state audit 记录：
+1. 所有者批准任务书规格变更，承认仓库清理后的 183+1 是当前冻结基线；或
+2. 恢复一个经过验证、不会复活已废弃未训练方向的 231-test 历史基线。
+
+不能添加空测试、重复测试或篡改日志来获得 231。
+
+## 8. 十台 RTX 3090 训练容量
+
+用户确认正式训练资源为 10 台机器，每台 1 张 NVIDIA GeForce RTX 3090，共 10 GPU。
+
+容量估算直接读取历史 40 次真实 RTX 3090、YOLO11l、200 epochs、batch 128 训练记录：
+
+```text
+historical_run_count: 40
+minimum: 14.205 h / 200 epochs
+median: 15.507 h / 200 epochs
+mean: 15.817 h / 200 epochs
+nearest-rank p90: 17.271 h / 200 epochs
+maximum: 21.874 h / 200 epochs
+```
+
+SCTSR 物理工作量不是 22×8 个完整 200-epoch 独立任务。每个 seed 先训练一个 120-epoch parent，再运行 8 个 80-epoch child，因此每 seed 为 760 个 base epoch-equivalents。8 个 discovery seeds 与 14 个 confirmation seeds 依序通过门控，在 10 GPU 上做 dependency-aware list scheduling：
+
+| 口径 | 预计总时长 |
+|---|---:|
+| 最接近 120,600 图历史均值 | 125.51 h / 5.23 d |
+| 40-run median | 136.46 h / 5.69 d |
+| 40-run p90 | 151.98 h / 6.33 d |
+| 历史 maximum | 192.49 h / 8.02 d |
+
+SCTSR 还新增 6,402,880 次 replay microbatch 调用、全量 occurrence/step 日志、Zstd Parquet、telemetry、checkpoint hashing、原子事务和 closeout。这些开销尚未在真实 RTX 3090 上完整实测，因此容量报告在 p90 base-only 之上加 20% 运维缓冲，得到：
+
+```text
+recommended_reservation: 182.38 h
+recommended_calendar_reservation: 8 continuous days
+human discovery-review pause: excluded
+```
+
+20% 是容量缓冲，不是实测加速比、统计置信区间或训练承诺。正式 release 前应在目标 RTX 3090 上各跑一个 NR 与 replay 臂的一 epoch engineering benchmark，再替换这项不确定开销。
+
+若 discovery gate 不通过并按合同停止，p90+20% 约为 70.47 小时，不应继续消耗 confirmation 预算。
+
+## 9. 仍需解除的正式运行阻断
+
+1. 批准 R2 规格变更或提供可满足零重叠精确 quota 的新冻结资产；禁止静默放宽。
+2. 裁决 `SA-266` 的 231-vs-183+1 基线冲突。
+3. 完成独立代码审查并签署未来 release。
+4. 冻结正式 discovery/confirmation seed registry 和 training identity manifest。
+5. 在 10 台 RTX 3090 上完成 NR-vs-replay 一 epoch 工程测速。
+6. 若启用 A，先提供独立、群组隔离、SHA 冻结的 `val_target`；否则 A 继续 blocked。
+7. 在方法、代码、seed、停止规则和统计规则冻结前，继续密封 blind/test。
+
+## 10. 禁止副作用状态
+
+最终机器可读状态为：
 
 ```json
 {
@@ -263,9 +286,7 @@ validator_status: VALID_AUDIT_WITH_FAILURES
 }
 ```
 
-旧历史 gate/release/assignment 实物被分别登记为 legacy detected。它们没有被删除、覆盖或复活。
-
-## 10. 审查入口
+## 11. 专家审查入口
 
 建议按以下顺序阅读：
 
@@ -274,13 +295,16 @@ validator_status: VALID_AUDIT_WITH_FAILURES
 3. `reports/IMPLEMENTATION_SELF_AUDIT.json`
 4. `reports/FORMAL_R2_INFEASIBILITY.json`
 5. `reports/REPOSITORY_STATE_AUDIT.json`
-6. `reports/MANUAL_LINE_REVIEW.json`
-7. `reviewed/REVIEWED_FILE_SNAPSHOT_MANIFEST.json`
-8. `COMMAND_INDEX.json`
-9. `commands/*/stdout.log` 和 `commands/*/stderr.log`
+6. `real_data_canary/r8/REAL_DATA_ENGINEERING_CANARY_RECEIPT.json`
+7. `reports/rtx3090_capacity/RTX3090_CAPACITY_AUDIT.md`
+8. `tdd_history/TDD_HISTORY_AUDIT_RECEIPT.json`
+9. `reports/MANUAL_LINE_REVIEW.json`
+10. `reviewed_e9b6df6/REVIEWED_FILE_SNAPSHOT_MANIFEST.json`
+11. `COMMAND_INDEX.json`
+12. `EVIDENCE_MANIFEST.json`
 
-## 11. 科学边界
+## 12. 科学边界
 
-本轮能推出：SCTSR v4 的代码合同、失败封闭、证据收集、恢复和 synthetic mechanism path 已被实现并通过大量测试。
+本轮可以推出：SCTSR v4 的合同、固定 base-step runtime、失败封闭、证据采集、真实数据工程路径、恢复、评价和审计机制已经实现，并通过当前可执行的测试与 canary。
 
-本轮不能推出：T、R1、R2、timing、stop、fallback、Q/R/A/D 或 SCTSR 对 FN=0-95 safety frontier 有正效用，也不能推出它们跨 unseen training seed 稳定。只有未来严格匹配的正式配对 replay 干预才是 utility evidence。
+本轮不能推出：T、R1、R2、timing、stop、fallback、Q/R/A/D 或 SCTSR 对 FN=0..95 safety frontier 有正效用，也不能推出其跨 unseen training seed 稳定。只有未来严格匹配、预注册、跨 seed 的真实 replay 干预才是 utility evidence。

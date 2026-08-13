@@ -1,0 +1,72 @@
+Script failed
+Wall time 0.8 seconds
+Output:
+Script error:
+Exit code: 1
+Wall time: 0.8 seconds
+Output:
+F                                                                        [100%]
+================================== FAILURES ===================================
+______________ test_self_audit_round_trips_canonical_sorted_json ______________
+
+repository_root = WindowsPath('C:/GitHub/YOLO-CV')
+tmp_path = WindowsPath('C:/Users/28898/AppData/Local/Temp/pytest-of-28898/pytest-1533/test_self_audit_round_trips_ca0')
+
+    def test_self_audit_round_trips_canonical_sorted_json(repository_root, tmp_path):
+        audit = _audit(repository_root, tmp_path)
+        path = tmp_path / "audit.json"
+        atomic_write_json(path, audit)
+>       result = validate_implementation_self_audit(
+            path,
+            taskbook_path=_taskbook(repository_root),
+            evidence_root=tmp_path,
+        )
+
+tests\stage1_sctsr_v4\test_implementation_self_audit.py:91: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+audit = WindowsPath('C:/Users/28898/AppData/Local/Temp/pytest-of-28898/pytest-1533/test_self_audit_round_trips_ca0/audit.json')
+
+    def validate_implementation_self_audit(
+        audit: Mapping[str, Any] | str | Path,
+        *,
+        taskbook_path: str | Path,
+        evidence_root: str | Path,
+    ) -> dict[str, Any]:
+        raw: Any = load_json(audit) if not isinstance(audit, Mapping) else audit
+        if not isinstance(raw, Mapping) or set(raw) != AUDIT_FIELDS:
+            raise SctsrError(ErrorCode.CLOSEOUT_NOT_VALIDATED, "Implementation self-audit top-level schema is invalid")
+        core = {key: value for key, value in raw.items() if key != "audit_digest"}
+        if raw.get("schema_version") != SELF_AUDIT_SCHEMA or raw.get("audit_digest") != stable_digest(core):
+            raise SctsrError(ErrorCode.CLOSEOUT_NOT_VALIDATED, "Implementation self-audit digest is invalid")
+        taskbook = Path(taskbook_path).resolve()
+        if (
+            raw.get("taskbook_bytes") != taskbook.stat().st_size
+            or raw.get("taskbook_sha256") != sha256_file(taskbook)
+            or raw.get("taskbook_blob_sha") != TASKBOOK_BLOB_SHA
+        ):
+            raise SctsrError(ErrorCode.CLOSEOUT_NOT_VALIDATED, "Implementation self-audit binds a different taskbook")
+        recorded_taskbook = Path(str(raw.get("taskbook_path", ""))).resolve()
+        if recorded_taskbook != taskbook:
+            raise SctsrError(ErrorCode.CLOSEOUT_NOT_VALIDATED, "Implementation self-audit taskbook path differs")
+        commit = str(raw.get("implementation_source_commit", ""))
+        if not re.fullmatch(r"[0-9a-f]{40}", commit):
+            raise SctsrError(ErrorCode.CLOSEOUT_NOT_VALIDATED, "Implementation self-audit source commit is invalid")
+        try:
+            datetime.fromisoformat(str(raw.get("generated_at_utc", "")).replace("Z", "+00:00"))
+        except ValueError as exc:
+            raise SctsrError(ErrorCode.CLOSEOUT_NOT_VALIDATED, "Implementation self-audit timestamp is invalid") from exc
+        _require_nonempty_text(raw.get("generated_by"), field="generated_by")
+        if raw.get("reviewer_independence_claim") != SELF_REVIEW_IDENTITY:
+            raise SctsrError(ErrorCode.CLOSEOUT_NOT_VALIDATED, "Self-audit improperly claims independent review")
+        if raw.get("statuses_allowed") != list(ALLOWED_STATUSES):
+            raise SctsrError(ErrorCode.CLOSEOUT_NOT_VALIDATED, "Self-audit status registry is invalid")
+        side_effects = raw.get("side_effects")
+        if not isinstance(side_effects, Mapping) or tuple(side_effects) != SIDE_EFFECT_FIELDS or any(value is not False for value in side_effects.values()):
+>           raise SctsrError(ErrorCode.FORMAL_RELEASE_NOT_AUTHORIZED, "Self-audit detected or obscured prohibited v4 side effects")
+E           stage1_sctsr_v4.errors.SctsrError: FORMAL_RELEASE_NOT_AUTHORIZED: Self-audit detected or obscured prohibited v4 side effects
+
+stage1_sctsr_v4\implementation_self_audit.py:161: SctsrError
+=========================== short test summary info ===========================
+FAILED tests/stage1_sctsr_v4/test_implementation_self_audit.py::test_self_audit_round_trips_canonical_sorted_json
+1 failed in 0.23s

@@ -1,0 +1,157 @@
+Script failed
+Wall time 1.8 seconds
+Output:
+Script error:
+Exit code: 1
+Wall time: 1.8 seconds
+Output:
+F..                                                                      [100%]
+================================== FAILURES ===================================
+______ test_repository_audit_binds_allowed_changes_and_legacy_sha_mtime _______
+
+tmp_path = WindowsPath('C:/Users/28898/AppData/Local/Temp/pytest-of-28898/pytest-1536/test_repository_audit_binds_al0')
+
+    def test_repository_audit_binds_allowed_changes_and_legacy_sha_mtime(tmp_path):
+        base, source = _repository(tmp_path)
+        old = datetime(2000, 1, 1, tzinfo=timezone.utc).timestamp()
+        os.utime(tmp_path / "artifacts/legacy/04_run_queue_v2/queue.json", (old, old))
+>       report = audit_repository_state(
+            tmp_path,
+            baseline_commit=base,
+            implementation_start_commit=source,
+            implementation_source_commit=source,
+            allowed_prefixes=("stage1_sctsr_v4/",),
+            allowed_files=(),
+            protected_prefixes=("stage1_gapvalue240/", "stage1_dynamic_replay_v3/", "YOLOv11/ultralytics/"),
+            legacy_markers=("/04_run_queue_v2/",),
+        )
+
+tests\stage1_sctsr_v4\test_repository_state_audit.py:48: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+repository_root = WindowsPath('C:/Users/28898/AppData/Local/Temp/pytest-of-28898/pytest-1536/test_repository_audit_binds_al0')
+
+    def audit_repository_state(
+        repository_root: str | Path,
+        *,
+        baseline_commit: str,
+        implementation_start_commit: str,
+        implementation_source_commit: str,
+        allowed_prefixes: Sequence[str] = DEFAULT_ALLOWED_PREFIXES,
+        allowed_files: Sequence[str] = DEFAULT_ALLOWED_FILES,
+        protected_prefixes: Sequence[str] = DEFAULT_PROTECTED_PREFIXES,
+        legacy_markers: Sequence[str] = DEFAULT_LEGACY_MARKERS,
+    ) -> dict[str, Any]:
+        root = Path(repository_root).resolve()
+        head = str(_git(root, "rev-parse", "HEAD"))
+        if head != implementation_source_commit:
+            raise SctsrError(
+                ErrorCode.SOURCE_TREE_MISMATCH,
+                "Repository audit must run at the exact implementation source commit",
+                observed=head,
+                expected=implementation_source_commit,
+            )
+        _git(root, "merge-base", "--is-ancestor", baseline_commit, implementation_source_commit)
+        tracked_status = str(_git(root, "status", "--porcelain=v1", "--untracked-files=no"))
+        if tracked_status:
+            raise SctsrError(
+                ErrorCode.SOURCE_TREE_MISMATCH,
+                "Implementation source checkout has tracked or staged drift",
+                observed=tracked_status.splitlines(),
+            )
+    
+        changed = _changed_paths(root, baseline_commit, implementation_source_commit)
+        forbidden_changes = [path for _status, path in changed if not _is_allowed(path, allowed_prefixes, allowed_files)]
+        deleted = [path for status, path in changed if status.startswith("D")]
+        protected_changes = [
+            path
+            for _status, path in changed
+            if any(path.startswith(prefix) for prefix in protected_prefixes)
+        ]
+        if forbidden_changes or deleted or protected_changes:
+            raise SctsrError(
+                ErrorCode.SOURCE_TREE_MISMATCH,
+                "Implementation diff contains forbidden, deleted, or protected files",
+                observed={
+                    "forbidden_changes": forbidden_changes,
+                    "deleted_files": deleted,
+                    "protected_changes": protected_changes,
+                },
+            )
+    
+        untracked_output = str(_git(root, "ls-files", "--others", "--exclude-standard"))
+        untracked = [line.replace("\\", "/") for line in untracked_output.splitlines() if line]
+        untracked_source = [
+            path
+            for path in untracked
+            if _is_allowed(path, allowed_prefixes, ())
+            and path.lower().endswith(SOURCE_SUFFIXES)
+            and not path.startswith("artifacts/")
+        ]
+        if untracked_source:
+            raise SctsrError(
+                ErrorCode.SOURCE_TREE_MISMATCH,
+                "Untracked importable or contract file exists inside an implementation root",
+                observed=untracked_source,
+            )
+    
+        changed_files: list[dict[str, Any]] = []
+        for status, relative in changed:
+            path = root / relative
+            if not path.is_file():
+                raise SctsrError(ErrorCode.SOURCE_TREE_MISMATCH, "Changed-file ledger path is missing", artifact_path=str(path))
+            owner, lifecycle = _owner_lifecycle(relative)
+            changed_files.append(
+                {
+                    "relative_path": relative,
+                    "git_status": status,
+                    "bytes": path.stat().st_size,
+                    "sha256": sha256_file(path),
+                    "owner": owner,
+                    "source": f"git:{implementation_source_commit}:{relative}",
+                    "consumer": "SCTSR_V4_IMPLEMENTATION_AND_INDEPENDENT_REVIEW",
+                    "lifecycle": lifecycle,
+                    "verification": "PATH_BYTES_SHA256_AND_GIT_COMMIT",
+                }
+            )
+        changed_files.sort(key=lambda row: row["relative_path"])
+        ledger_core = {
+            "schema_version": "stage1.sctsr.changed_file_ledger.v1",
+            "baseline_commit": baseline_commit,
+            "implementation_source_commit": implementation_source_commit,
+            "file_count": len(changed_files),
+            "files": changed_files,
+        }
+        changed_file_ledger = {**ledger_core, "ledger_digest": stable_digest(ledger_core)}
+    
+        start_time = _commit_time(root, implementation_start_commit)
+        tracked_paths = str(_git(root, "ls-tree", "-r", "--name-only", implementation_source_commit)).splitlines()
+        normalized_tracked_paths = [path.replace("\\", "/") for path in tracked_paths]
+        legacy_paths = sorted(
+            path
+            for path in normalized_tracked_paths
+            if any(marker in f"/{path}" for marker in legacy_markers)
+        )
+        legacy_files: list[dict[str, Any]] = []
+        for relative in legacy_paths:
+            path = root / relative
+            if not path.is_file():
+                raise SctsrError(ErrorCode.SOURCE_TREE_MISMATCH, "Protected legacy file is missing", artifact_path=str(path))
+            baseline_bytes = _git(root, "show", f"{baseline_commit}:{relative}", binary=True)
+            assert isinstance(baseline_bytes, bytes)
+            baseline_sha = hashlib.sha256(baseline_bytes).hexdigest().upper()
+            current_sha = sha256_file(path)
+            modified = datetime.fromtimestamp(path.stat().st_mtime, tz=timezone.utc)
+            if current_sha != baseline_sha or modified > start_time:
+>               raise SctsrError(
+                    ErrorCode.SOURCE_TREE_MISMATCH,
+                    "Protected legacy SHA or mtime changed during v4 implementation",
+                    observed={"path": relative, "sha256": current_sha, "mtime_utc": modified.isoformat()},
+                    expected={"sha256": baseline_sha, "mtime_not_after_utc": start_time.isoformat()},
+                )
+E               stage1_sctsr_v4.errors.SctsrError: SOURCE_TREE_MISMATCH: Protected legacy SHA or mtime changed during v4 implementation
+
+stage1_sctsr_v4\repository_state_audit.py:215: SctsrError
+=========================== short test summary info ===========================
+FAILED tests/stage1_sctsr_v4/test_repository_state_audit.py::test_repository_audit_binds_allowed_changes_and_legacy_sha_mtime
+1 failed, 2 passed in 1.29s

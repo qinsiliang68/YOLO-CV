@@ -1,0 +1,84 @@
+Script failed
+Wall time 2.2 seconds
+Output:
+Script error:
+Exit code: 1
+Wall time: 2.2 seconds
+Output:
+F                                                                        [100%]
+================================== FAILURES ===================================
+_____ test_quarantine_accepts_unprefixed_registered_root_beyond_max_path ______
+
+self = WindowsPath('C:/Users/28898/AppData/Local/Temp/pytest-of-28898/pytest-1623/test_quarantine_accepts_unpref0/registered_...a/implementation_audit_bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb/09_quarantine')
+mode = 511, parents = True, exist_ok = True
+
+    def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+        """
+        Create a new directory at this given path.
+        """
+        try:
+>           os.mkdir(self, mode)
+E           FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'C:\\Users\\28898\\AppData\\Local\\Temp\\pytest-of-28898\\pytest-1623\\test_quarantine_accepts_unpref0\\registered_experiment_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\\implementation_audit_bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\\09_quarantine'
+
+C:\Users\28898\AppData\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\pathlib.py:1116: FileNotFoundError
+
+During handling of the above exception, another exception occurred:
+
+self = WindowsPath('C:/Users/28898/AppData/Local/Temp/pytest-of-28898/pytest-1623/test_quarantine_accepts_unpref0/registered_...aaaaaaaaaaaaaaa/implementation_audit_bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb')
+mode = 511, parents = True, exist_ok = True
+
+    def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+        """
+        Create a new directory at this given path.
+        """
+        try:
+>           os.mkdir(self, mode)
+E           FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'C:\\Users\\28898\\AppData\\Local\\Temp\\pytest-of-28898\\pytest-1623\\test_quarantine_accepts_unpref0\\registered_experiment_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\\implementation_audit_bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb'
+
+C:\Users\28898\AppData\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\pathlib.py:1116: FileNotFoundError
+
+During handling of the above exception, another exception occurred:
+
+tmp_path = WindowsPath('C:/Users/28898/AppData/Local/Temp/pytest-of-28898/pytest-1623/test_quarantine_accepts_unpref0')
+
+    @pytest.mark.skipif(os.name != "nt", reason="Win32 extended path contract")
+    def test_quarantine_accepts_unprefixed_registered_root_beyond_max_path(tmp_path: Path):
+        root = tmp_path / ("registered_experiment_" + "a" * 80) / ("implementation_audit_" + "b" * 80)
+        transaction_root = root / "03_epoch_transactions"
+        quarantine_root = root / "09_quarantine"
+        partial = windows_safe_resolved_path(transaction_root) / "epoch_0121.generation_1.inprogress"
+        try:
+            partial.mkdir(parents=True)
+            atomic_write_json(partial / "TRANSACTION_IDENTITY.json", {"status": "INPROGRESS", "generation": 1})
+    
+>           moved = quarantine_inprogress(
+                transaction_root,
+                quarantine_root,
+                reason="ACTUAL_ENGINEERING_CANARY_KILL",
+            )
+
+tests\stage1_sctsr_v4\test_windows_long_paths.py:57: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+stage1_sctsr_v4\recovery.py:194: in quarantine_inprogress
+    qroot.mkdir(parents=True, exist_ok=True)
+C:\Users\28898\AppData\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\pathlib.py:1120: in mkdir
+    self.parent.mkdir(parents=True, exist_ok=True)
+C:\Users\28898\AppData\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\pathlib.py:1121: in mkdir
+    self.mkdir(mode, parents=False, exist_ok=exist_ok)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = WindowsPath('C:/Users/28898/AppData/Local/Temp/pytest-of-28898/pytest-1623/test_quarantine_accepts_unpref0/registered_...aaaaaaaaaaaaaaa/implementation_audit_bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb')
+mode = 511, parents = False, exist_ok = True
+
+    def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+        """
+        Create a new directory at this given path.
+        """
+        try:
+>           os.mkdir(self, mode)
+E           FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'C:\\Users\\28898\\AppData\\Local\\Temp\\pytest-of-28898\\pytest-1623\\test_quarantine_accepts_unpref0\\registered_experiment_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\\implementation_audit_bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb'
+
+C:\Users\28898\AppData\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\pathlib.py:1116: FileNotFoundError
+=========================== short test summary info ===========================
+FAILED tests/stage1_sctsr_v4/test_windows_long_paths.py::test_quarantine_accepts_unprefixed_registered_root_beyond_max_path
+1 failed in 1.32s

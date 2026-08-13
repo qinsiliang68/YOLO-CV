@@ -1,0 +1,181 @@
+Script failed
+Wall time 2.1 seconds
+Output:
+Script error:
+Exit code: 1
+Wall time: 2.1 seconds
+Output:
+FF.FF                                                                    [100%]
+================================== FAILURES ===================================
+___________ test_sa_084_windows_atomic_checkpoint_write_is_durable ____________
+
+tmp_path = WindowsPath('C:/Users/28898/AppData/Local/Temp/pytest-of-28898/pytest-1400/test_sa_084_windows_atomic_che0')
+
+    def test_sa_084_windows_atomic_checkpoint_write_is_durable(tmp_path):
+        path = tmp_path / "epoch_0120.pt"
+>       digest = save_checkpoint_atomic(path, _payload())
+                                              ^^^^^^^^^^
+
+tests\stage1_sctsr_v4\test_checkpoint_hardening.py:43: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\stage1_sctsr_v4\test_checkpoint_hardening.py:37: in _payload
+    payload["checkpoint_payload_digest"] = stable_digest(payload)
+                                           ^^^^^^^^^^^^^^^^^^^^^^
+stage1_sctsr_v4\serialization.py:45: in stable_digest
+    return hashlib.sha256(canonical_json_bytes(value)).hexdigest().upper()
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+stage1_sctsr_v4\serialization.py:40: in canonical_json_bytes
+    normalized = _normalize(value)
+                 ^^^^^^^^^^^^^^^^^
+stage1_sctsr_v4\serialization.py:24: in _normalize
+    return {str(k): _normalize(v) for k, v in sorted(value.items(), key=lambda item: str(item[0]))}
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+stage1_sctsr_v4\serialization.py:24: in <dictcomp>
+    return {str(k): _normalize(v) for k, v in sorted(value.items(), key=lambda item: str(item[0]))}
+                    ^^^^^^^^^^^^^
+stage1_sctsr_v4\serialization.py:16: in _normalize
+    return _normalize(dataclasses.asdict(value))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+stage1_sctsr_v4\serialization.py:24: in _normalize
+    return {str(k): _normalize(v) for k, v in sorted(value.items(), key=lambda item: str(item[0]))}
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+stage1_sctsr_v4\serialization.py:24: in <dictcomp>
+    return {str(k): _normalize(v) for k, v in sorted(value.items(), key=lambda item: str(item[0]))}
+                    ^^^^^^^^^^^^^
+stage1_sctsr_v4\serialization.py:26: in _normalize
+    return [_normalize(v) for v in value]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+stage1_sctsr_v4\serialization.py:26: in <listcomp>
+    return [_normalize(v) for v in value]
+            ^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+value = array([2147483648, 4097647969,  312640601, 3103434402, 1655463763,
+       2862146004,  954874161, 1116226944, 24609031..., 3335862634, 3667926556,  321448915,   31470040,
+        187991755,  880709458, 1243662331,  815276656], dtype=uint32)
+
+    def _normalize(value: Any) -> Any:
+        if dataclasses.is_dataclass(value):
+            return _normalize(dataclasses.asdict(value))
+        if isinstance(value, Enum):
+            return value.value
+        if isinstance(value, Path):
+            return value.as_posix()
+        if isinstance(value, bytes):
+            return value.hex().upper()
+        if isinstance(value, Mapping):
+            return {str(k): _normalize(v) for k, v in sorted(value.items(), key=lambda item: str(item[0]))}
+        if isinstance(value, (tuple, list)):
+            return [_normalize(v) for v in value]
+        if isinstance(value, set):
+            return sorted((_normalize(v) for v in value), key=lambda v: json.dumps(v, sort_keys=True, ensure_ascii=False))
+        if isinstance(value, float):
+            if not math.isfinite(value):
+                raise ValueError("Canonical JSON forbids NaN and Infinity")
+            return value
+        # Handle NumPy scalar values without importing NumPy as a hard dependency.
+        if hasattr(value, "item") and type(value).__module__.startswith("numpy"):
+>           return _normalize(value.item())
+                              ^^^^^^^^^^^^
+E           ValueError: can only convert an array of size 1 to a Python scalar
+
+stage1_sctsr_v4\serialization.py:35: ValueError
+__________ test_sa_085_forged_checkpoint_payload_digest_is_rejected ___________
+
+tmp_path = WindowsPath('C:/Users/28898/AppData/Local/Temp/pytest-of-28898/pytest-1400/test_sa_085_forged_checkpoint_0')
+
+    def test_sa_085_forged_checkpoint_payload_digest_is_rejected(tmp_path):
+        path = tmp_path / "epoch_0120.pt"
+>       payload = _payload()
+                  ^^^^^^^^^^
+
+tests\stage1_sctsr_v4\test_checkpoint_hardening.py:52: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\stage1_sctsr_v4\test_checkpoint_hardening.py:37: in _payload
+    payload["checkpoint_payload_digest"] = stable_digest(payload)
+                                           ^^^^^^^^^^^^^^^^^^^^^^
+stage1_sctsr_v4\serialization.py:45: in stable_digest
+    return hashlib.sha256(canonical_json_bytes(value)).hexdigest().upper()
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+stage1_sctsr_v4\serialization.py:40: in canonical_json_bytes
+    normalized = _normalize(value)
+                 ^^^^^^^^^^^^^^^^^
+stage1_sctsr_v4\serialization.py:24: in _normalize
+    return {str(k): _normalize(v) for k, v in sorted(value.items(), key=lambda item: str(item[0]))}
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+stage1_sctsr_v4\serialization.py:24: in <dictcomp>
+    return {str(k): _normalize(v) for k, v in sorted(value.items(), key=lambda item: str(item[0]))}
+                    ^^^^^^^^^^^^^
+stage1_sctsr_v4\serialization.py:16: in _normalize
+    return _normalize(dataclasses.asdict(value))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+stage1_sctsr_v4\serialization.py:24: in _normalize
+    return {str(k): _normalize(v) for k, v in sorted(value.items(), key=lambda item: str(item[0]))}
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+stage1_sctsr_v4\serialization.py:24: in <dictcomp>
+    return {str(k): _normalize(v) for k, v in sorted(value.items(), key=lambda item: str(item[0]))}
+                    ^^^^^^^^^^^^^
+stage1_sctsr_v4\serialization.py:26: in _normalize
+    return [_normalize(v) for v in value]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+stage1_sctsr_v4\serialization.py:26: in <listcomp>
+    return [_normalize(v) for v in value]
+            ^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+value = array([2147483648, 4097647969,  312640601, 3103434402, 1655463763,
+       2862146004,  954874161, 1116226944, 24609031..., 3335862634, 3667926556,  321448915,   31470040,
+        187991755,  880709458, 1243662331,  815276656], dtype=uint32)
+
+    def _normalize(value: Any) -> Any:
+        if dataclasses.is_dataclass(value):
+            return _normalize(dataclasses.asdict(value))
+        if isinstance(value, Enum):
+            return value.value
+        if isinstance(value, Path):
+            return value.as_posix()
+        if isinstance(value, bytes):
+            return value.hex().upper()
+        if isinstance(value, Mapping):
+            return {str(k): _normalize(v) for k, v in sorted(value.items(), key=lambda item: str(item[0]))}
+        if isinstance(value, (tuple, list)):
+            return [_normalize(v) for v in value]
+        if isinstance(value, set):
+            return sorted((_normalize(v) for v in value), key=lambda v: json.dumps(v, sort_keys=True, ensure_ascii=False))
+        if isinstance(value, float):
+            if not math.isfinite(value):
+                raise ValueError("Canonical JSON forbids NaN and Infinity")
+            return value
+        # Handle NumPy scalar values without importing NumPy as a hard dependency.
+        if hasattr(value, "item") and type(value).__module__.startswith("numpy"):
+>           return _normalize(value.item())
+                              ^^^^^^^^^^^^
+E           ValueError: can only convert an array of size 1 to a Python scalar
+
+stage1_sctsr_v4\serialization.py:35: ValueError
+________ test_sa_087_logical_index_rejects_incomplete_e1_e200_timeline ________
+
+    def test_sa_087_logical_index_rejects_incomplete_e1_e200_timeline():
+        entry = LogicalArtifactEntry("RUN", 120, "PARENT", "PARENT", "parent/e120.pt", "A" * 64, "B" * 64, "C" * 64, "D" * 64)
+    
+        with pytest.raises(SctsrError) as exc:
+>           LogicalArtifactIndex([entry]).validate(require_complete_timeline=True, logical_run_id="RUN")
+E           TypeError: LogicalArtifactIndex.validate() got an unexpected keyword argument 'require_complete_timeline'
+
+tests\stage1_sctsr_v4\test_checkpoint_hardening.py:86: TypeError
+_______ test_sa_088_logical_index_rejects_absolute_or_unhashed_entries ________
+
+    def test_sa_088_logical_index_rejects_absolute_or_unhashed_entries():
+        entry = LogicalArtifactEntry("RUN", 121, "CHILD", "RUN", "C:/escape/e121.pt", "A", "B", "C", "D")
+    
+>       with pytest.raises(SctsrError) as exc:
+E       Failed: DID NOT RAISE <class 'stage1_sctsr_v4.errors.SctsrError'>
+
+tests\stage1_sctsr_v4\test_checkpoint_hardening.py:94: Failed
+=========================== short test summary info ===========================
+FAILED tests/stage1_sctsr_v4/test_checkpoint_hardening.py::test_sa_084_windows_atomic_checkpoint_write_is_durable
+FAILED tests/stage1_sctsr_v4/test_checkpoint_hardening.py::test_sa_085_forged_checkpoint_payload_digest_is_rejected
+FAILED tests/stage1_sctsr_v4/test_checkpoint_hardening.py::test_sa_087_logical_index_rejects_incomplete_e1_e200_timeline
+FAILED tests/stage1_sctsr_v4/test_checkpoint_hardening.py::test_sa_088_logical_index_rejects_absolute_or_unhashed_entries
+4 failed, 1 passed in 1.30s
+__TDD_RED_COMMIT3_EXIT__=1

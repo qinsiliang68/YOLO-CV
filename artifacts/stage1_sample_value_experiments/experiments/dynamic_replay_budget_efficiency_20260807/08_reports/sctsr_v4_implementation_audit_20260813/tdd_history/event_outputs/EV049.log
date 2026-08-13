@@ -1,0 +1,27 @@
+Script failed
+Wall time 0.7 seconds
+Output:
+Script error:
+Exit code: 1
+Wall time: 0.7 seconds
+Output:
+F                                                                        [100%]
+================================== FAILURES ===================================
+__________ test_source_manifest_records_runtime_dependency_identity ___________
+
+tmp_path = WindowsPath('C:/Users/28898/AppData/Local/Temp/pytest-of-28898/pytest-1504/test_source_manifest_records_r0')
+
+    def test_source_manifest_records_runtime_dependency_identity(tmp_path):
+        package = tmp_path / "package"
+        package.mkdir()
+        (package / "module.py").write_text("VALUE = 1\n", encoding="utf-8")
+        manifest = build_source_tree_manifest(tmp_path, ["package"])
+    
+>       environment = manifest["runtime_environment"]
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'runtime_environment'
+
+tests\stage1_sctsr_v4\test_source_identity.py:49: KeyError
+=========================== short test summary info ===========================
+FAILED tests/stage1_sctsr_v4/test_source_identity.py::test_source_manifest_records_runtime_dependency_identity
+1 failed in 0.12s

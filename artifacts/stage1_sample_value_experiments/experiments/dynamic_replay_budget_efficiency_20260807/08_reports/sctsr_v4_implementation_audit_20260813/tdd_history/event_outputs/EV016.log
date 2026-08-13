@@ -1,0 +1,183 @@
+Script failed
+Wall time 4.1 seconds
+Output:
+Script error:
+Exit code: 1
+Wall time: 4.1 seconds
+Output:
+FFFFFFF                                                                  [100%]
+================================== FAILURES ===================================
+___________ test_sa_075_replay_step_plan_recomputes_content_digest ____________
+
+    def test_sa_075_replay_step_plan_recomputes_content_digest():
+        plan = _plan(("R0", "R1"))
+        forged = replace(plan, plan_digest="F" * 64)
+    
+>       with pytest.raises(SctsrError) as exc:
+E       Failed: DID NOT RAISE <class 'stage1_sctsr_v4.errors.SctsrError'>
+
+tests\stage1_sctsr_v4\test_fixed_step_hardening.py:134: Failed
+_____________ test_sa_075_step_plan_records_counter_domain_seeds ______________
+
+    def test_sa_075_step_plan_records_counter_domain_seeds():
+        plan = _plan(("R0", "R1"))
+    
+>       assert plan.step_slot_seed == derive_counter_seed("replay_step_slots:U", 19, 121)
+E       AssertionError: assert 19 == 6691480203672591763
+E        +  where 19 = ReplayStepPlan(run_id='RUN', arm_id='T_U', training_seed=19, epoch=121, base_step_count=1, planned_replay_occurrences=...umerator=1, max_fraction_denominator=4, plan_digest='660763BEF3EB394FA9AAEE11556A309A2534184A0661E8822C0E75A039DED5C6').step_slot_seed
+E        +  and   6691480203672591763 = derive_counter_seed('replay_step_slots:U', 19, 121)
+
+tests\stage1_sctsr_v4\test_fixed_step_hardening.py:143: AssertionError
+_______ test_sa_108_overlay_calls_upstream_optimizer_step_exactly_once ________
+
+    def test_sa_108_overlay_calls_upstream_optimizer_step_exactly_once():
+        trainer = _Trainer()
+    
+        result = run_ultralytics_classification_epoch(
+            trainer=trainer,
+            replay_plan=_plan(("R0", "R1")),
+            replay_batch_provider=_provider,
+            training_seed=19,
+            epoch=121,
+            global_step_start=0,
+        )
+    
+>       assert trainer.optimizer_step_calls == 1
+E       assert 0 == 1
+E        +  where 0 = <test_fixed_step_hardening._Trainer object at 0x0000021A38A0BA10>.optimizer_step_calls
+
+tests\stage1_sctsr_v4\test_fixed_step_hardening.py:160: AssertionError
+_______ test_sa_106_base_identity_and_augmentation_trace_are_mandatory ________
+
+    def test_sa_106_base_identity_and_augmentation_trace_are_mandatory():
+        trainer = _Trainer(include_identity=False)
+    
+>       with pytest.raises(SctsrError) as exc:
+E       Failed: DID NOT RAISE <class 'stage1_sctsr_v4.errors.SctsrError'>
+
+tests\stage1_sctsr_v4\test_fixed_step_hardening.py:168: Failed
+____ test_sa_109_replay_provider_must_preserve_materialized_identity_order ____
+
+    def test_sa_109_replay_provider_must_preserve_materialized_identity_order():
+        trainer = _Trainer()
+    
+        def reordered(ids, epoch, step, seed):
+            result = _provider(ids, epoch, step, seed)
+            result["sample_ids"] = tuple(reversed(ids))
+            return result
+    
+>       with pytest.raises(SctsrError) as exc:
+E       Failed: DID NOT RAISE <class 'stage1_sctsr_v4.errors.SctsrError'>
+
+tests\stage1_sctsr_v4\test_fixed_step_hardening.py:189: Failed
+_________________ test_sa_108_amp_overflow_skip_aborts_epoch __________________
+
+    def test_sa_108_amp_overflow_skip_aborts_epoch():
+        trainer = _Trainer(scaler=_SkippingScaler())
+    
+>       with pytest.raises(SctsrError) as exc:
+E       Failed: DID NOT RAISE <class 'stage1_sctsr_v4.errors.SctsrError'>
+
+tests\stage1_sctsr_v4\test_fixed_step_hardening.py:205: Failed
+_________ test_sa_115_real_frozen_yolo11l_classification_trainer_step _________
+
+repository_root = WindowsPath('C:/GitHub/YOLO-CV')
+
+    def test_sa_115_real_frozen_yolo11l_classification_trainer_step(repository_root):
+        yolo_root = repository_root / "YOLOv11"
+        if str(yolo_root) not in sys.path:
+            sys.path.insert(0, str(yolo_root))
+    
+        from ultralytics.models.yolo.classify.train import ClassificationTrainer
+        from ultralytics.nn.tasks import ClassificationModel, load_checkpoint
+        from ultralytics.utils.torch_utils import ModelEMA
+    
+        weight = repository_root / "yolo11l-cls.pt"
+        assert weight.is_file()
+        assert sha256_file(weight) == EXPECTED_WEIGHT_SHA
+        model, _ = load_checkpoint(str(weight), device="cpu", inplace=False, fuse=False)
+        ClassificationModel.reshape_outputs(model, 2)
+        model.float()
+    
+        # Construct a prepared instance of the exact frozen trainer class without
+        # invoking its full filesystem/data orchestration.  The exercised model,
+        # preprocess_batch and optimizer_step methods are real YOLO-CV code.
+        trainer = object.__new__(ClassificationTrainer)
+        trainer.model = model
+        trainer.optimizer = torch.optim.SGD(model.parameters(), lr=0.001)
+        trainer.scheduler = torch.optim.lr_scheduler.LambdaLR(trainer.optimizer, lambda _: 1.0)
+        trainer.scaler = torch.amp.GradScaler("cpu", enabled=False)
+        trainer.ema = ModelEMA(model)
+        trainer.device = torch.device("cpu")
+        trainer.amp = False
+        trainer.batch_size = 128
+        trainer.world_size = 1
+        trainer.accumulate = 1
+        trainer.args = SimpleNamespace(
+            resume="",
+            warmup_epochs=0,
+            nbs=64,
+            warmup_bias_lr=0.1,
+            warmup_momentum=0.8,
+            momentum=0.937,
+            compile=False,
+        )
+        trainer.train_loader = [
+            {
+                "img": torch.zeros(128, 3, 64, 64),
+                "cls": torch.arange(128) % 2,
+                "sample_ids": [f"BASE_{index:03d}" for index in range(128)],
+                "augmentation_digests": ["A" * 64] * 128,
+            }
+        ]
+        optimizer_step = trainer.optimizer_step
+        calls = {"count": 0}
+    
+        def counted_optimizer_step():
+            calls["count"] += 1
+            return optimizer_step()
+    
+        trainer.optimizer_step = counted_optimizer_step
+        plan = build_replay_step_plan(
+            run_id="REAL_YOLO_CANARY",
+            arm_id="T_U",
+            training_seed=31,
+            epoch=121,
+            schedule_family="U",
+            sample_ids=("REPLAY_000",),
+            base_batch_sizes=(128,),
+        )
+    
+        def replay_provider(ids, epoch, step, seed):
+            del epoch, step, seed
+            return {
+                "img": torch.ones(len(ids), 3, 64, 64),
+                "cls": torch.zeros(len(ids), dtype=torch.long),
+                "sample_ids": tuple(ids),
+                "augmentation_digests": ("B" * 64,) * len(ids),
+            }
+    
+        result = run_ultralytics_classification_epoch(
+            trainer=trainer,
+            replay_plan=plan,
+            replay_batch_provider=replay_provider,
+            training_seed=31,
+            epoch=121,
+            global_step_start=112_560,
+        )
+    
+        assert type(trainer).__module__ == "ultralytics.models.yolo.classify.train"
+        assert type(trainer.model).__name__ == "ClassificationModel"
+>       assert calls["count"] == 1
+E       assert 0 == 1
+
+tests\stage1_sctsr_v4\test_real_yolo_integration.py:100: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/stage1_sctsr_v4/test_fixed_step_hardening.py::test_sa_075_replay_step_plan_recomputes_content_digest
+FAILED tests/stage1_sctsr_v4/test_fixed_step_hardening.py::test_sa_075_step_plan_records_counter_domain_seeds
+FAILED tests/stage1_sctsr_v4/test_fixed_step_hardening.py::test_sa_108_overlay_calls_upstream_optimizer_step_exactly_once
+FAILED tests/stage1_sctsr_v4/test_fixed_step_hardening.py::test_sa_106_base_identity_and_augmentation_trace_are_mandatory
+FAILED tests/stage1_sctsr_v4/test_fixed_step_hardening.py::test_sa_109_replay_provider_must_preserve_materialized_identity_order
+FAILED tests/stage1_sctsr_v4/test_fixed_step_hardening.py::test_sa_108_amp_overflow_skip_aborts_epoch
+FAILED tests/stage1_sctsr_v4/test_real_yolo_integration.py::test_sa_115_real_frozen_yolo11l_classification_trainer_step
+7 failed in 2.86s

@@ -1,0 +1,46 @@
+Script failed
+Wall time 2.0 seconds
+Output:
+Script error:
+Exit code: 1
+Wall time: 1.9 seconds
+Output:
+F                                                                        [100%]
+================================== FAILURES ===================================
+_ test_checkpoint_tensor_digest_uses_bulk_bytes_not_python_storage_iteration __
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001FACC3ED810>
+
+    def test_checkpoint_tensor_digest_uses_bulk_bytes_not_python_storage_iteration(monkeypatch):
+        original_storage = torch.Tensor.untyped_storage
+    
+        def forbidden_iteration(self):
+            raise AssertionError("checkpoint hashing must not materialize bytes from Python storage iteration")
+    
+        monkeypatch.setattr(torch.Tensor, "untyped_storage", forbidden_iteration)
+        try:
+>           assert checkpoint_state_digest({"tensor": torch.arange(16, dtype=torch.float32)})
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\stage1_sctsr_v4\test_checkpoint_hardening.py:308: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+stage1_sctsr_v4\checkpointing.py:161: in checkpoint_state_digest
+    _update_checkpoint_hash(hasher, state)
+stage1_sctsr_v4\checkpointing.py:122: in _update_checkpoint_hash
+    _update_checkpoint_hash(hasher, value[key])
+stage1_sctsr_v4\checkpointing.py:103: in _update_checkpoint_hash
+    raw = bytes(tensor.untyped_storage())
+                ^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = tensor([ 0.,  1.,  2.,  3.,  4.,  5.,  6.,  7.,  8.,  9., 10., 11., 12., 13.,
+        14., 15.])
+
+    def forbidden_iteration(self):
+>       raise AssertionError("checkpoint hashing must not materialize bytes from Python storage iteration")
+E       AssertionError: checkpoint hashing must not materialize bytes from Python storage iteration
+
+tests\stage1_sctsr_v4\test_checkpoint_hardening.py:304: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/stage1_sctsr_v4/test_checkpoint_hardening.py::test_checkpoint_tensor_digest_uses_bulk_bytes_not_python_storage_iteration
+1 failed in 1.16s

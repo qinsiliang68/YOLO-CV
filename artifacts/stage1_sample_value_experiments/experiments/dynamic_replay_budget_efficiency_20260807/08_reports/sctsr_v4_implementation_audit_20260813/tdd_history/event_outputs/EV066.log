@@ -1,0 +1,36 @@
+Script failed
+Wall time 2.3 seconds
+Output:
+Script error:
+Exit code: 1
+Wall time: 2.3 seconds
+Output:
+F                                                                        [100%]
+================================== FAILURES ===================================
+____ test_clean_source_manifest_revalidates_current_git_head_and_worktree _____
+
+tmp_path = WindowsPath('C:/Users/28898/AppData/Local/Temp/pytest-of-28898/pytest-1522/test_clean_source_manifest_rev0')
+
+    def test_clean_source_manifest_revalidates_current_git_head_and_worktree(tmp_path):
+        subprocess.run(["git", "init", "-q"], cwd=tmp_path, check=True)
+        subprocess.run(["git", "config", "user.email", "sctsr-test@example.invalid"], cwd=tmp_path, check=True)
+        subprocess.run(["git", "config", "user.name", "SCTSR Test"], cwd=tmp_path, check=True)
+        package = tmp_path / "package"
+        package.mkdir()
+        source = package / "module.py"
+        source.write_text("VALUE = 1\n", encoding="utf-8")
+        subprocess.run(["git", "add", "package/module.py"], cwd=tmp_path, check=True)
+        subprocess.run(["git", "commit", "-qm", "freeze"], cwd=tmp_path, check=True)
+    
+        manifest = build_source_tree_manifest(tmp_path, ["package"])
+        assert manifest["git_dirty"] is False
+        assert validate_source_tree_manifest(manifest, tmp_path, require_clean=True)["status"] == "PASS"
+    
+        (tmp_path / "unregistered_outside_include.txt").write_text("dirty\n", encoding="utf-8")
+>       with pytest.raises(SctsrError) as dirty:
+E       Failed: DID NOT RAISE <class 'stage1_sctsr_v4.errors.SctsrError'>
+
+tests\stage1_sctsr_v4\test_source_identity.py:76: Failed
+=========================== short test summary info ===========================
+FAILED tests/stage1_sctsr_v4/test_source_identity.py::test_clean_source_manifest_revalidates_current_git_head_and_worktree
+1 failed in 1.43s

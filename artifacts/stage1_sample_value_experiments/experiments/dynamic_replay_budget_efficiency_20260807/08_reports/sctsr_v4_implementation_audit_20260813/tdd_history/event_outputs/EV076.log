@@ -1,0 +1,20 @@
+Script failed
+Wall time 0.6 seconds
+Output:
+Script error:
+Exit code: 1
+Wall time: 0.6 seconds
+Output:
+F                                                                        [100%]
+================================== FAILURES ===================================
+_ test_schema_registry_registers_formal_input_and_detailed_self_audit_schemas _
+
+    def test_schema_registry_registers_formal_input_and_detailed_self_audit_schemas():
+>       assert REQUIRED_SCHEMAS["external_file_binding"] == "stage1.sctsr.external_file_binding.v1"
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'external_file_binding'
+
+tests\stage1_sctsr_v4\test_schema_registry.py:24: KeyError
+=========================== short test summary info ===========================
+FAILED tests/stage1_sctsr_v4/test_schema_registry.py::test_schema_registry_registers_formal_input_and_detailed_self_audit_schemas
+1 failed in 0.06s

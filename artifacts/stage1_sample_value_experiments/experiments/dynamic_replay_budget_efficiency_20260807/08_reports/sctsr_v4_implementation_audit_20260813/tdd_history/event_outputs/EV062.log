@@ -1,0 +1,23 @@
+Script failed
+Wall time 2.1 seconds
+Output:
+Script error:
+Exit code: 1
+Wall time: 2.1 seconds
+Output:
+
+=================================== ERRORS ====================================
+______ ERROR collecting tests/stage1_sctsr_v4/test_prediction_runtime.py ______
+ImportError while importing test module 'C:\GitHub\YOLO-CV\tests\stage1_sctsr_v4\test_prediction_runtime.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+C:\Users\28898\AppData\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\importlib\__init__.py:126: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests\stage1_sctsr_v4\test_prediction_runtime.py:12: in <module>
+    from stage1_sctsr_v4.prediction_runtime import PredictionBatch, infer_prediction_rows
+E   ModuleNotFoundError: No module named 'stage1_sctsr_v4.prediction_runtime'
+=========================== short test summary info ===========================
+ERROR tests/stage1_sctsr_v4/test_prediction_runtime.py
+!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!
+1 error in 1.24s

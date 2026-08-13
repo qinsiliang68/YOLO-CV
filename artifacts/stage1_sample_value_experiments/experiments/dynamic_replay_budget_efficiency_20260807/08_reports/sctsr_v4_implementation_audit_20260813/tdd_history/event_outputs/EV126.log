@@ -1,0 +1,130 @@
+Script failed
+Wall time 2.2 seconds
+Output:
+Script error:
+Exit code: 1
+Wall time: 2.2 seconds
+Output:
+F                                                                        [100%]
+================================== FAILURES ===================================
+_ test_atomic_json_and_hash_survive_transaction_identity_path_beyond_max_path _
+
+self = WindowsPath('C:/Users/28898/AppData/Local/Temp/pytest-of-28898/pytest-1618/test_atomic_json_and_hash_surv0/registered_...bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb/real_data_canary/r1/03_epoch_transactions/epoch_0121.generation_1.inprogress')
+mode = 511, parents = True, exist_ok = True
+
+    def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+        """
+        Create a new directory at this given path.
+        """
+        try:
+>           os.mkdir(self, mode)
+E           FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'C:\\Users\\28898\\AppData\\Local\\Temp\\pytest-of-28898\\pytest-1618\\test_atomic_json_and_hash_surv0\\registered_experiment_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\\implementation_audit_bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\\real_data_canary\\r1\\03_epoch_transactions\\epoch_0121.generation_1.inprogress'
+
+C:\Users\28898\AppData\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\pathlib.py:1116: FileNotFoundError
+
+During handling of the above exception, another exception occurred:
+
+self = WindowsPath('C:/Users/28898/AppData/Local/Temp/pytest-of-28898/pytest-1618/test_atomic_json_and_hash_surv0/registered_...bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb/real_data_canary/r1/03_epoch_transactions')
+mode = 511, parents = True, exist_ok = True
+
+    def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+        """
+        Create a new directory at this given path.
+        """
+        try:
+>           os.mkdir(self, mode)
+E           FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'C:\\Users\\28898\\AppData\\Local\\Temp\\pytest-of-28898\\pytest-1618\\test_atomic_json_and_hash_surv0\\registered_experiment_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\\implementation_audit_bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\\real_data_canary\\r1\\03_epoch_transactions'
+
+C:\Users\28898\AppData\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\pathlib.py:1116: FileNotFoundError
+
+During handling of the above exception, another exception occurred:
+
+self = WindowsPath('C:/Users/28898/AppData/Local/Temp/pytest-of-28898/pytest-1618/test_atomic_json_and_hash_surv0/registered_...ementation_audit_bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb/real_data_canary/r1')
+mode = 511, parents = True, exist_ok = True
+
+    def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+        """
+        Create a new directory at this given path.
+        """
+        try:
+>           os.mkdir(self, mode)
+E           FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'C:\\Users\\28898\\AppData\\Local\\Temp\\pytest-of-28898\\pytest-1618\\test_atomic_json_and_hash_surv0\\registered_experiment_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\\implementation_audit_bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\\real_data_canary\\r1'
+
+C:\Users\28898\AppData\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\pathlib.py:1116: FileNotFoundError
+
+During handling of the above exception, another exception occurred:
+
+self = WindowsPath('C:/Users/28898/AppData/Local/Temp/pytest-of-28898/pytest-1618/test_atomic_json_and_hash_surv0/registered_...mplementation_audit_bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb/real_data_canary')
+mode = 511, parents = True, exist_ok = True
+
+    def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+        """
+        Create a new directory at this given path.
+        """
+        try:
+>           os.mkdir(self, mode)
+E           FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'C:\\Users\\28898\\AppData\\Local\\Temp\\pytest-of-28898\\pytest-1618\\test_atomic_json_and_hash_surv0\\registered_experiment_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\\implementation_audit_bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\\real_data_canary'
+
+C:\Users\28898\AppData\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\pathlib.py:1116: FileNotFoundError
+
+During handling of the above exception, another exception occurred:
+
+self = WindowsPath('C:/Users/28898/AppData/Local/Temp/pytest-of-28898/pytest-1618/test_atomic_json_and_hash_surv0/registered_...aaaaaaaaaaaaaaa/implementation_audit_bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb')
+mode = 511, parents = True, exist_ok = True
+
+    def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+        """
+        Create a new directory at this given path.
+        """
+        try:
+>           os.mkdir(self, mode)
+E           FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'C:\\Users\\28898\\AppData\\Local\\Temp\\pytest-of-28898\\pytest-1618\\test_atomic_json_and_hash_surv0\\registered_experiment_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\\implementation_audit_bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb'
+
+C:\Users\28898\AppData\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\pathlib.py:1116: FileNotFoundError
+
+During handling of the above exception, another exception occurred:
+
+tmp_path = WindowsPath('C:/Users/28898/AppData/Local/Temp/pytest-of-28898/pytest-1618/test_atomic_json_and_hash_surv0')
+
+    @pytest.mark.skipif(os.name != "nt", reason="Win32 extended path contract")
+    def test_atomic_json_and_hash_survive_transaction_identity_path_beyond_max_path(tmp_path: Path):
+        root = tmp_path / ("registered_experiment_" + "a" * 80) / ("implementation_audit_" + "b" * 80)
+        destination = root / "real_data_canary" / "r1" / "03_epoch_transactions" / "epoch_0121.generation_1.inprogress" / "TRANSACTION_IDENTITY.json"
+        assert len(str(destination)) > 260
+        try:
+>           atomic_write_json(destination, {"status": "INPROGRESS", "generation": 1})
+
+tests\stage1_sctsr_v4\test_windows_long_paths.py:39: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+stage1_sctsr_v4\serialization.py:98: in atomic_write_json
+    return atomic_write_bytes(path, canonical_json_bytes(value))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+stage1_sctsr_v4\serialization.py:72: in atomic_write_bytes
+    destination.parent.mkdir(parents=True, exist_ok=True)
+C:\Users\28898\AppData\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\pathlib.py:1120: in mkdir
+    self.parent.mkdir(parents=True, exist_ok=True)
+C:\Users\28898\AppData\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\pathlib.py:1120: in mkdir
+    self.parent.mkdir(parents=True, exist_ok=True)
+C:\Users\28898\AppData\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\pathlib.py:1120: in mkdir
+    self.parent.mkdir(parents=True, exist_ok=True)
+C:\Users\28898\AppData\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\pathlib.py:1120: in mkdir
+    self.parent.mkdir(parents=True, exist_ok=True)
+C:\Users\28898\AppData\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\pathlib.py:1121: in mkdir
+    self.mkdir(mode, parents=False, exist_ok=exist_ok)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = WindowsPath('C:/Users/28898/AppData/Local/Temp/pytest-of-28898/pytest-1618/test_atomic_json_and_hash_surv0/registered_...aaaaaaaaaaaaaaa/implementation_audit_bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb')
+mode = 511, parents = False, exist_ok = True
+
+    def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+        """
+        Create a new directory at this given path.
+        """
+        try:
+>           os.mkdir(self, mode)
+E           FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'C:\\Users\\28898\\AppData\\Local\\Temp\\pytest-of-28898\\pytest-1618\\test_atomic_json_and_hash_surv0\\registered_experiment_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\\implementation_audit_bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb'
+
+C:\Users\28898\AppData\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\pathlib.py:1116: FileNotFoundError
+=========================== short test summary info ===========================
+FAILED tests/stage1_sctsr_v4/test_windows_long_paths.py::test_atomic_json_and_hash_survive_transaction_identity_path_beyond_max_path
+1 failed in 1.33s

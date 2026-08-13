@@ -1,0 +1,19 @@
+{
+  "status": "PASS",
+  "commit_count": 34,
+  "behavior_commit_count": 31,
+  "non_behavior_commit_count": 3,
+  "pair_count": 33,
+  "event_count": 146,
+  "rollout_id": "019fea7a-400b-7322-b14d-252e736f7d39",
+  "reviewer_independence_claim": "PRIMARY_AGENT_HISTORY_NOT_INDEPENDENT_REVIEW",
+  "audit_path": "tdd_history/TDD_HISTORY_AUDIT.json",
+  "audit_bytes": 282696,
+  "audit_sha256": "A42155B08CE6E0E985BE2ACFC1E52562B0B7E4FB28465BB402C7F416E790182C",
+  "selection_path": "tdd_history/TDD_EVENT_SELECTION.json",
+  "selection_bytes": 42302,
+  "selection_sha256": "760F53408860E6D13A4025A73B6012C7F89F682A8D322068E018D530445B7BE6",
+  "event_bundle_path": "tdd_history/TDD_EVENT_BUNDLE.json",
+  "event_bundle_bytes": 877559,
+  "event_bundle_sha256": "AD1F4C213B140699AEA0C91E3927ABCF8F530DE6FB5772EBAC77D62608464044"
+}

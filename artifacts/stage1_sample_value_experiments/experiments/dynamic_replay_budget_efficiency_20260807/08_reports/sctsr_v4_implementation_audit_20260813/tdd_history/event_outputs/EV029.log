@@ -1,0 +1,85 @@
+Script failed
+Wall time 0.6 seconds
+Output:
+Script error:
+Exit code: 1
+Wall time: 0.6 seconds
+Output:
+FFFFFFF                                                                  [100%]
+================================== FAILURES ===================================
+______________ test_nested_weighted_qrad_is_rejected_recursively ______________
+
+    def test_nested_weighted_qrad_is_rejected_recursively():
+>       with pytest.raises(SctsrError) as caught:
+E       Failed: DID NOT RAISE <class 'stage1_sctsr_v4.errors.SctsrError'>
+
+tests\stage1_sctsr_v4\test_qrad_scaffold_hardening.py:13: Failed
+_ test_current_baseline_cannot_enable_a_even_when_caller_claims_target_available _
+
+    def test_current_baseline_cannot_enable_a_even_when_caller_claims_target_available():
+        config = TargetAlignmentConfig(True, "A" * 64, True, True, "FN95_LOCAL", 1)
+>       with pytest.raises(SctsrError) as caught:
+E       Failed: DID NOT RAISE <class 'stage1_sctsr_v4.errors.SctsrError'>
+
+tests\stage1_sctsr_v4\test_qrad_scaffold_hardening.py:20: Failed
+_ test_candidate_signal_semantic_must_be_an_exact_registered_nonutility_token _
+
+    def test_candidate_signal_semantic_must_be_an_exact_registered_nonutility_token():
+>       with pytest.raises(SctsrError) as caught:
+E       Failed: DID NOT RAISE <class 'stage1_sctsr_v4.errors.SctsrError'>
+
+tests\stage1_sctsr_v4\test_qrad_scaffold_hardening.py:26: Failed
+______ test_short_branch_rejects_unbound_or_same_treatment_and_r2_pools _______
+
+    def test_short_branch_rejects_unbound_or_same_treatment_and_r2_pools():
+        for treatment_digest, r2_digest in (("T", "R2"), ("A" * 64, "A" * 64)):
+>           with pytest.raises(SctsrError):
+E           Failed: DID NOT RAISE <class 'stage1_sctsr_v4.errors.SctsrError'>
+
+tests\stage1_sctsr_v4\test_qrad_scaffold_hardening.py:33: Failed
+__________ test_predictor_requires_more_than_a_boolean_phase1_claim ___________
+
+    def test_predictor_requires_more_than_a_boolean_phase1_claim():
+>       with pytest.raises(SctsrError) as caught:
+E       Failed: DID NOT RAISE <class 'stage1_sctsr_v4.errors.SctsrError'>
+
+tests\stage1_sctsr_v4\test_qrad_scaffold_hardening.py:38: Failed
+________ test_blocked_seed_registry_cannot_smuggle_formal_seed_values _________
+
+    def test_blocked_seed_registry_cannot_smuggle_formal_seed_values():
+        registry = SeedRegistry(
+            "stage1.sctsr.seed_registry.v1",
+            "FORMAL_SEEDS_BLOCKED_UNTIL_RELEASE",
+            (),
+            (20260606,),
+            tuple(range(8)),
+            (),
+        )
+>       with pytest.raises(SctsrError) as caught:
+E       Failed: DID NOT RAISE <class 'stage1_sctsr_v4.errors.SctsrError'>
+
+tests\stage1_sctsr_v4\test_qrad_scaffold_hardening.py:52: Failed
+______ test_formal_seed_state_string_alone_is_not_release_authorization _______
+
+    def test_formal_seed_state_string_alone_is_not_release_authorization():
+        registry = SeedRegistry(
+            "stage1.sctsr.seed_registry.v1",
+            "FROZEN_BY_RELEASE_AUTHORITY",
+            (),
+            (),
+            tuple(range(8)),
+            tuple(range(20, 34)),
+        )
+>       with pytest.raises(SctsrError) as caught:
+E       Failed: DID NOT RAISE <class 'stage1_sctsr_v4.errors.SctsrError'>
+
+tests\stage1_sctsr_v4\test_qrad_scaffold_hardening.py:66: Failed
+=========================== short test summary info ===========================
+FAILED tests/stage1_sctsr_v4/test_qrad_scaffold_hardening.py::test_nested_weighted_qrad_is_rejected_recursively
+FAILED tests/stage1_sctsr_v4/test_qrad_scaffold_hardening.py::test_current_baseline_cannot_enable_a_even_when_caller_claims_target_available
+FAILED tests/stage1_sctsr_v4/test_qrad_scaffold_hardening.py::test_candidate_signal_semantic_must_be_an_exact_registered_nonutility_token
+FAILED tests/stage1_sctsr_v4/test_qrad_scaffold_hardening.py::test_short_branch_rejects_unbound_or_same_treatment_and_r2_pools
+FAILED tests/stage1_sctsr_v4/test_qrad_scaffold_hardening.py::test_predictor_requires_more_than_a_boolean_phase1_claim
+FAILED tests/stage1_sctsr_v4/test_qrad_scaffold_hardening.py::test_blocked_seed_registry_cannot_smuggle_formal_seed_values
+FAILED tests/stage1_sctsr_v4/test_qrad_scaffold_hardening.py::test_formal_seed_state_string_alone_is_not_release_authorization
+7 failed in 0.09s

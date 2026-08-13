@@ -1,0 +1,122 @@
+Script failed
+Wall time 1.4 seconds
+Output:
+Script error:
+Exit code: 1
+Wall time: 1.3 seconds
+Output:
+F                                                                        [100%]
+================================== FAILURES ===================================
+_________ test_repository_audit_records_changed_file_beyond_max_path __________
+
+tmp_path = WindowsPath('C:/Users/28898/AppData/Local/Temp/pytest-of-28898/pytest-1631/test_repository_audit_records_0')
+
+    @pytest.mark.skipif(os.name != "nt", reason="Win32 extended path contract")
+    def test_repository_audit_records_changed_file_beyond_max_path(tmp_path):
+        base, _source = _repository(tmp_path)
+        _git(tmp_path, "config", "core.longpaths", "true")
+        relative = (
+            "stage1_sctsr_v4/"
+            + "registered_component_" + "a" * 70 + "/"
+            + "evidence_partition_" + "b" * 70 + "/"
+            + "artifact_identity_" + "c" * 50 + ".json"
+        )
+        destination = windows_safe_resolved_path(tmp_path / relative)
+        destination.parent.mkdir(parents=True)
+        destination.write_text('{"status":"PASS"}\n', encoding="utf-8")
+        source = _commit(tmp_path, "implementation with long registered artifact")
+        old = datetime(2000, 1, 1, tzinfo=timezone.utc).timestamp()
+        os.utime(tmp_path / "artifacts/legacy/04_run_queue_v2/queue.json", (old, old))
+        assert len(str((tmp_path / relative).resolve())) > 260
+    
+>       report = audit_repository_state(
+            tmp_path,
+            baseline_commit=base,
+            implementation_start_commit=source,
+            implementation_source_commit=source,
+            allowed_prefixes=("stage1_sctsr_v4/",),
+            allowed_files=(),
+            protected_prefixes=("stage1_gapvalue240/", "stage1_dynamic_replay_v3/", "YOLOv11/ultralytics/"),
+            legacy_markers=("/04_run_queue_v2/",),
+        )
+
+tests\stage1_sctsr_v4\test_repository_state_audit.py:172: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+repository_root = WindowsPath('C:/Users/28898/AppData/Local/Temp/pytest-of-28898/pytest-1631/test_repository_audit_records_0')
+
+    def audit_repository_state(
+        repository_root: str | Path,
+        *,
+        baseline_commit: str,
+        implementation_start_commit: str,
+        implementation_source_commit: str,
+        allowed_prefixes: Sequence[str] = DEFAULT_ALLOWED_PREFIXES,
+        allowed_files: Sequence[str] = DEFAULT_ALLOWED_FILES,
+        protected_prefixes: Sequence[str] = DEFAULT_PROTECTED_PREFIXES,
+        legacy_markers: Sequence[str] = DEFAULT_LEGACY_MARKERS,
+    ) -> dict[str, Any]:
+        root = Path(repository_root).resolve()
+        head = str(_git(root, "rev-parse", "HEAD"))
+        if head != implementation_source_commit:
+            raise SctsrError(
+                ErrorCode.SOURCE_TREE_MISMATCH,
+                "Repository audit must run at the exact implementation source commit",
+                observed=head,
+                expected=implementation_source_commit,
+            )
+        _git(root, "merge-base", "--is-ancestor", baseline_commit, implementation_source_commit)
+        tracked_status = str(_git(root, "status", "--porcelain=v1", "--untracked-files=no"))
+        if tracked_status:
+            raise SctsrError(
+                ErrorCode.SOURCE_TREE_MISMATCH,
+                "Implementation source checkout has tracked or staged drift",
+                observed=tracked_status.splitlines(),
+            )
+    
+        changed = _changed_paths(root, baseline_commit, implementation_source_commit)
+        forbidden_changes = [path for _status, path in changed if not _is_allowed(path, allowed_prefixes, allowed_files)]
+        deleted = [path for status, path in changed if status.startswith("D")]
+        protected_changes = [
+            path
+            for _status, path in changed
+            if any(path.startswith(prefix) for prefix in protected_prefixes)
+        ]
+        if forbidden_changes or deleted or protected_changes:
+            raise SctsrError(
+                ErrorCode.SOURCE_TREE_MISMATCH,
+                "Implementation diff contains forbidden, deleted, or protected files",
+                observed={
+                    "forbidden_changes": forbidden_changes,
+                    "deleted_files": deleted,
+                    "protected_changes": protected_changes,
+                },
+            )
+    
+        untracked_output = str(_git(root, "ls-files", "--others", "--exclude-standard"))
+        untracked = [line.replace("\\", "/") for line in untracked_output.splitlines() if line]
+        untracked_source = [
+            path
+            for path in untracked
+            if _is_allowed(path, allowed_prefixes, ())
+            and path.lower().endswith(SOURCE_SUFFIXES)
+            and not path.startswith("artifacts/")
+        ]
+        if untracked_source:
+            raise SctsrError(
+                ErrorCode.SOURCE_TREE_MISMATCH,
+                "Untracked importable or contract file exists inside an implementation root",
+                observed=untracked_source,
+            )
+    
+        changed_files: list[dict[str, Any]] = []
+        for status, relative in changed:
+            path = root / relative
+            if not path.is_file():
+>               raise SctsrError(ErrorCode.SOURCE_TREE_MISMATCH, "Changed-file ledger path is missing", artifact_path=str(path))
+E               stage1_sctsr_v4.errors.SctsrError: SOURCE_TREE_MISMATCH: Changed-file ledger path is missing
+
+stage1_sctsr_v4\repository_state_audit.py:171: SctsrError
+=========================== short test summary info ===========================
+FAILED tests/stage1_sctsr_v4/test_repository_state_audit.py::test_repository_audit_records_changed_file_beyond_max_path
+1 failed in 0.56s

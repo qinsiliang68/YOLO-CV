@@ -1,0 +1,112 @@
+Script failed
+Wall time 2.9 seconds
+Output:
+Script error:
+Exit code: 1
+Wall time: 2.9 seconds
+Output:
+FFFFFFF                                                                  [100%]
+================================== FAILURES ===================================
+______________ test_sa_041_asset_row_count_is_verified_from_csv _______________
+
+tmp_path = WindowsPath('C:/Users/28898/AppData/Local/Temp/pytest-of-28898/pytest-1390/test_sa_041_asset_row_count_is0')
+
+    def test_sa_041_asset_row_count_is_verified_from_csv(tmp_path):
+        path = tmp_path / "base.csv"
+        _write_csv(path, [{"sample_id": "a", "y_true": 0, "split": "train"}, {"sample_id": "b", "y_true": 1, "split": "train"}])
+    
+>       with pytest.raises(SctsrError) as exc:
+E       Failed: DID NOT RAISE <class 'stage1_sctsr_v4.errors.SctsrError'>
+
+tests\stage1_sctsr_v4\test_asset_hardening.py:54: Failed
+_______________ test_sa_042_asset_identity_digest_is_recomputed _______________
+
+tmp_path = WindowsPath('C:/Users/28898/AppData/Local/Temp/pytest-of-28898/pytest-1390/test_sa_042_asset_identity_dig0')
+
+    def test_sa_042_asset_identity_digest_is_recomputed(tmp_path):
+        path = tmp_path / "base.csv"
+        _write_csv(path, [{"sample_id": "a", "y_true": 0, "split": "train"}, {"sample_id": "b", "y_true": 1, "split": "train"}])
+    
+>       with pytest.raises(SctsrError) as exc:
+E       Failed: DID NOT RAISE <class 'stage1_sctsr_v4.errors.SctsrError'>
+
+tests\stage1_sctsr_v4\test_asset_hardening.py:64: Failed
+_____________ test_sa_043_asset_split_role_is_verified_from_rows ______________
+
+tmp_path = WindowsPath('C:/Users/28898/AppData/Local/Temp/pytest-of-28898/pytest-1390/test_sa_043_asset_split_role_i0')
+
+    def test_sa_043_asset_split_role_is_verified_from_rows(tmp_path):
+        path = tmp_path / "base.csv"
+        _write_csv(path, [{"sample_id": "a", "y_true": 0, "split": "train"}, {"sample_id": "b", "y_true": 1, "split": "test"}])
+    
+>       with pytest.raises(SctsrError) as exc:
+E       Failed: DID NOT RAISE <class 'stage1_sctsr_v4.errors.SctsrError'>
+
+tests\stage1_sctsr_v4\test_asset_hardening.py:74: Failed
+______ test_sa_044_base_denominator_is_derived_from_registered_identity _______
+
+tmp_path = WindowsPath('C:/Users/28898/AppData/Local/Temp/pytest-of-28898/pytest-1390/test_sa_044_base_denominator_i0')
+
+    def test_sa_044_base_denominator_is_derived_from_registered_identity(tmp_path):
+        path = tmp_path / "base.csv"
+        _write_csv(path, [{"sample_id": "a", "y_true": 0, "split": "train"}, {"sample_id": "b", "y_true": 1, "split": "train"}])
+        registry = _registry(path)
+        object.__setattr__(registry, "base_denominator", 120_000)
+    
+>       with pytest.raises(SctsrError) as exc:
+E       Failed: DID NOT RAISE <class 'stage1_sctsr_v4.errors.SctsrError'>
+
+tests\stage1_sctsr_v4\test_asset_hardening.py:86: Failed
+_________________ test_sa_070_forged_plan_digest_is_rejected __________________
+
+synthetic_fixture = SyntheticFixture(training_seed=20260812, base_records=(IdentityRecord(sample_id='SYN_000000', y_true=0, replay_role='N...DARY', oof_fold=3, oof_group_id='bucket_02', group_source='numeric_filename_bucket', base_manifest_membership=True))}})
+
+    def test_sa_070_forged_plan_digest_is_rejected(synthetic_fixture):
+        raw = schedule_to_dict(_build_all_schedules(synthetic_fixture)[ArmId.T_U])
+        raw["plan_digest"] = "FORGED"
+    
+>       with pytest.raises(SctsrError) as exc:
+E       Failed: DID NOT RAISE <class 'stage1_sctsr_v4.errors.SctsrError'>
+
+tests\stage1_sctsr_v4\test_schedule_hardening.py:17: Failed
+______________ test_sa_071_empty_treatment_schedule_is_rejected _______________
+
+synthetic_fixture = SyntheticFixture(training_seed=20260812, base_records=(IdentityRecord(sample_id='SYN_000000', y_true=0, replay_role='N...DARY', oof_fold=3, oof_group_id='bucket_02', group_source='numeric_filename_bucket', base_manifest_membership=True))}})
+
+    def test_sa_071_empty_treatment_schedule_is_rejected(synthetic_fixture):
+        raw = schedule_to_dict(_build_all_schedules(synthetic_fixture)[ArmId.T_U])
+        for epoch in raw["epochs"]:
+            epoch["sample_ids"] = []
+    
+>       with pytest.raises(SctsrError) as exc:
+E       Failed: DID NOT RAISE <class 'stage1_sctsr_v4.errors.SctsrError'>
+
+tests\stage1_sctsr_v4\test_schedule_hardening.py:28: Failed
+______________ test_sa_072_rate_occurrence_mismatch_is_rejected _______________
+
+synthetic_fixture = SyntheticFixture(training_seed=20260812, base_records=(IdentityRecord(sample_id='SYN_000000', y_true=0, replay_role='N...DARY', oof_fold=3, oof_group_id='bucket_02', group_source='numeric_filename_bucket', base_manifest_membership=True))}})
+
+    def test_sa_072_rate_occurrence_mismatch_is_rejected(synthetic_fixture):
+        raw = deepcopy(schedule_to_dict(_build_all_schedules(synthetic_fixture)[ArmId.T_U]))
+        raw["epochs"][120]["rate"] = {
+            "numerator": 0,
+            "denominator": 1000,
+            "semantic": "PER_EPOCH_REPLAY_RATE",
+            "denominator_role": "CANONICAL_BASE_OPTIMIZER_VISIBLE_EXPOSURE",
+            "canonical_token": "0/1",
+        }
+    
+>       with pytest.raises(SctsrError) as exc:
+E       Failed: DID NOT RAISE <class 'stage1_sctsr_v4.errors.SctsrError'>
+
+tests\stage1_sctsr_v4\test_schedule_hardening.py:44: Failed
+=========================== short test summary info ===========================
+FAILED tests/stage1_sctsr_v4/test_asset_hardening.py::test_sa_041_asset_row_count_is_verified_from_csv
+FAILED tests/stage1_sctsr_v4/test_asset_hardening.py::test_sa_042_asset_identity_digest_is_recomputed
+FAILED tests/stage1_sctsr_v4/test_asset_hardening.py::test_sa_043_asset_split_role_is_verified_from_rows
+FAILED tests/stage1_sctsr_v4/test_asset_hardening.py::test_sa_044_base_denominator_is_derived_from_registered_identity
+FAILED tests/stage1_sctsr_v4/test_schedule_hardening.py::test_sa_070_forged_plan_digest_is_rejected
+FAILED tests/stage1_sctsr_v4/test_schedule_hardening.py::test_sa_071_empty_treatment_schedule_is_rejected
+FAILED tests/stage1_sctsr_v4/test_schedule_hardening.py::test_sa_072_rate_occurrence_mismatch_is_rejected
+7 failed in 2.08s
+__TDD_RED_COMMIT2_EXIT__=1

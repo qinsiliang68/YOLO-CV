@@ -1,0 +1,50 @@
+Script failed
+Wall time 0.3 seconds
+Output:
+Script error:
+Exit code: 1
+Wall time: 0.3 seconds
+Output:
+* text=auto
+
+*.py text eol=lf
+*.json text eol=lf
+*.md text eol=lf
+*.tex text eol=lf
+*.yaml text eol=lf
+*.yml text eol=lf
+
+*.ps1 text eol=crlf
+*.bat text eol=crlf
+
+*.pdf binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.bmp binary
+*.webp binary
+*.tif binary
+*.tiff binary
+*.pt binary
+*.onnx binary
+*.engine binary
+
+# GapValue v1.1 was frozen on Windows and its immutable SHA-256 contracts bind
+# the CRLF byte representation. Keep this scope narrow so historical CSVs are
+# unaffected while fresh Windows/Linux checkouts reproduce the frozen hashes.
+artifacts/stage1_sample_value_experiments/contracts/gapvalue240_v1_1/**/*.csv text eol=crlf
+
+# The lightweight analysis package carries a byte-level SHA-256 manifest.
+# Disable checkout-time newline conversion so every listed hash stays portable.
+artifacts/stage1_sample_value_experiments/experiments/oof_dynamics_gap_value_20260708/06_reports/gapvalue240_full_analysis_20260728_v1_git/** -text
+1562b80 docs(sctsr-v4): publish implementation and audit runbook
+docs/stage1_sctsr_v4/tdd_receipts/commit_08_cli_hardening/RED.junit.xml:17: trailing whitespace.
++E         
+docs/stage1_sctsr_v4/tdd_receipts/commit_08_cli_hardening/RED.junit.xml:21: trailing whitespace.
++E           
+docs/stage1_sctsr_v4/tdd_receipts/commit_08_cli_hardening/RED.junit.xml:24: trailing whitespace.
++E         
+docs/stage1_sctsr_v4/tdd_receipts/commit_08_cli_hardening/RED.junit.xml:34: trailing whitespace.
++    
+docs/stage1_sctsr_v4/tdd_receipts/commit_08_cli_hardening/RED.junit.xml:78: trailing whitespace.
++E         

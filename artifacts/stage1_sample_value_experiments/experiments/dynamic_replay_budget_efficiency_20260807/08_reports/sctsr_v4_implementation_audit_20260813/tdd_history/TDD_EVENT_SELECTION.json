@@ -1,0 +1,1293 @@
+{
+  "schema_version": "stage1.sctsr.tdd_event_selection.v1",
+  "rollout_id": "019fea7a-400b-7322-b14d-252e736f7d39",
+  "selections": [
+    {
+      "event_id": "EV001",
+      "kind": "TEST",
+      "call_line": 10898,
+      "output_line": 10899,
+      "test_ids": [
+        "tests/stage1_sctsr_v4/test_contract_hardening.py::test_sa_030_forged_nonempty_release_signature_is_rejected"
+      ],
+      "failure_phase": "EXPECTED_BEHAVIOR_ASSERTION",
+      "output_path": "tdd_history/event_outputs/EV001.log"
+    },
+    {
+      "event_id": "EV002",
+      "kind": "PATCH",
+      "call_line": 10930,
+      "output_line": 10932
+    },
+    {
+      "event_id": "EV003",
+      "kind": "TEST",
+      "call_line": 10935,
+      "output_line": 10936,
+      "test_ids": [
+        "tests/stage1_sctsr_v4/test_contract_hardening.py::test_sa_030_forged_nonempty_release_signature_is_rejected"
+      ],
+      "failure_phase": "NOT_APPLICABLE_GREEN",
+      "output_path": "tdd_history/event_outputs/EV003.log"
+    },
+    {
+      "event_id": "EV004",
+      "kind": "COMMIT",
+      "call_line": 11015,
+      "output_line": 11016,
+      "commit": "1e92350274b4b1ed1adcfcff2279efa20f0ef0fa"
+    },
+    {
+      "event_id": "EV005",
+      "kind": "TEST",
+      "call_line": 11088,
+      "output_line": 11089,
+      "test_ids": [
+        "tests/stage1_sctsr_v4/test_asset_hardening.py::test_sa_041_asset_row_count_is_verified_from_csv"
+      ],
+      "failure_phase": "EXPECTED_BEHAVIOR_ASSERTION",
+      "output_path": "tdd_history/event_outputs/EV005.log"
+    },
+    {
+      "event_id": "EV006",
+      "kind": "PATCH",
+      "call_line": 11097,
+      "output_line": 11099
+    },
+    {
+      "event_id": "EV007",
+      "kind": "PATCH",
+      "call_line": 11114,
+      "output_line": 11116
+    },
+    {
+      "event_id": "EV008",
+      "kind": "TEST",
+      "call_line": 11128,
+      "output_line": 11129,
+      "test_ids": [
+        "tests/stage1_sctsr_v4/test_asset_hardening.py::test_sa_041_asset_row_count_is_verified_from_csv"
+      ],
+      "failure_phase": "NOT_APPLICABLE_GREEN",
+      "output_path": "tdd_history/event_outputs/EV008.log"
+    },
+    {
+      "event_id": "EV009",
+      "kind": "COMMIT",
+      "call_line": 11378,
+      "output_line": 11379,
+      "commit": "4705464ed05a2add55cf7dad287bddef02a19cee"
+    },
+    {
+      "event_id": "EV010",
+      "kind": "TEST",
+      "call_line": 11414,
+      "output_line": 11415,
+      "test_ids": [
+        "tests/stage1_sctsr_v4/test_checkpoint_hardening.py::test_sa_084_windows_atomic_checkpoint_write_is_durable"
+      ],
+      "failure_phase": "EXPECTED_BEHAVIOR_ASSERTION",
+      "output_path": "tdd_history/event_outputs/EV010.log"
+    },
+    {
+      "event_id": "EV011",
+      "kind": "PATCH",
+      "call_line": 11437,
+      "output_line": 11439
+    },
+    {
+      "event_id": "EV012",
+      "kind": "PATCH",
+      "call_line": 11465,
+      "output_line": 11467
+    },
+    {
+      "event_id": "EV013",
+      "kind": "PATCH",
+      "call_line": 11541,
+      "output_line": 11543
+    },
+    {
+      "event_id": "EV014",
+      "kind": "TEST",
+      "call_line": 11546,
+      "output_line": 11547,
+      "test_ids": [
+        "tests/stage1_sctsr_v4/test_checkpoint_hardening.py::test_sa_084_windows_atomic_checkpoint_write_is_durable"
+      ],
+      "failure_phase": "NOT_APPLICABLE_GREEN",
+      "output_path": "tdd_history/event_outputs/EV014.log"
+    },
+    {
+      "event_id": "EV015",
+      "kind": "COMMIT",
+      "call_line": 11656,
+      "output_line": 11657,
+      "commit": "2195c5c8cd131d017119dcebbb178e917c02773b"
+    },
+    {
+      "event_id": "EV016",
+      "kind": "TEST",
+      "call_line": 11780,
+      "output_line": 11781,
+      "test_ids": [
+        "tests/stage1_sctsr_v4/test_fixed_step_hardening.py::test_sa_108_overlay_calls_upstream_optimizer_step_exactly_once"
+      ],
+      "failure_phase": "EXPECTED_BEHAVIOR_ASSERTION",
+      "output_path": "tdd_history/event_outputs/EV016.log"
+    },
+    {
+      "event_id": "EV017",
+      "kind": "PATCH",
+      "call_line": 11784,
+      "output_line": 11786
+    },
+    {
+      "event_id": "EV018",
+      "kind": "PATCH",
+      "call_line": 11794,
+      "output_line": 11796
+    },
+    {
+      "event_id": "EV019",
+      "kind": "TEST",
+      "call_line": 11798,
+      "output_line": 11799,
+      "test_ids": [
+        "tests/stage1_sctsr_v4/test_fixed_step_hardening.py::test_sa_108_overlay_calls_upstream_optimizer_step_exactly_once"
+      ],
+      "failure_phase": "NOT_APPLICABLE_GREEN",
+      "output_path": "tdd_history/event_outputs/EV019.log"
+    },
+    {
+      "event_id": "EV020",
+      "kind": "COMMIT",
+      "call_line": 12103,
+      "output_line": 12104,
+      "commit": "0405764c719c08344998ef36b34cfe7dfb4417bd"
+    },
+    {
+      "event_id": "EV021",
+      "kind": "TEST",
+      "call_line": 12228,
+      "output_line": 12229,
+      "test_ids": [
+        "tests/red_commit_05/test_evidence_transaction_hardening.py::test_sa_144_selection_schema_requires_guard_quota_and_overlap"
+      ],
+      "failure_phase": "EXPECTED_BEHAVIOR_ASSERTION",
+      "output_path": "tdd_history/event_outputs/EV021.log"
+    },
+    {
+      "event_id": "EV022",
+      "kind": "PATCH",
+      "call_line": 12239,
+      "output_line": 12241
+    },
+    {
+      "event_id": "EV023",
+      "kind": "TEST",
+      "call_line": 13151,
+      "output_line": 13152,
+      "test_ids": [
+        "tests/red_commit_05/test_evidence_transaction_hardening.py::test_sa_144_selection_schema_requires_guard_quota_and_overlap"
+      ],
+      "failure_phase": "NOT_APPLICABLE_GREEN",
+      "output_path": "tdd_history/event_outputs/EV023.log"
+    },
+    {
+      "event_id": "EV024",
+      "kind": "COMMIT",
+      "call_line": 13195,
+      "output_line": 13196,
+      "commit": "486c149b8c0266eb4b2a784fd39311425d7f6d0a"
+    },
+    {
+      "event_id": "EV025",
+      "kind": "TEST",
+      "call_line": 13264,
+      "output_line": 13265,
+      "test_ids": [
+        "tests/stage1_sctsr_v4/test_prediction_evaluation_hardening.py::test_frontier_rejects_unregistered_artifact_bindings"
+      ],
+      "failure_phase": "EXPECTED_BEHAVIOR_ASSERTION",
+      "output_path": "tdd_history/event_outputs/EV025.log"
+    },
+    {
+      "event_id": "EV026",
+      "kind": "PATCH",
+      "call_line": 13277,
+      "output_line": 13279
+    },
+    {
+      "event_id": "EV027",
+      "kind": "TEST",
+      "call_line": 13311,
+      "output_line": 13312,
+      "test_ids": [
+        "tests/stage1_sctsr_v4/test_prediction_evaluation_hardening.py::test_frontier_rejects_unregistered_artifact_bindings"
+      ],
+      "failure_phase": "NOT_APPLICABLE_GREEN",
+      "output_path": "tdd_history/event_outputs/EV027.log"
+    },
+    {
+      "event_id": "EV028",
+      "kind": "COMMIT",
+      "call_line": 13419,
+      "output_line": 13420,
+      "commit": "039bcb6731befa3e75752e099ee9e4ecf5c35213"
+    },
+    {
+      "event_id": "EV029",
+      "kind": "TEST",
+      "call_line": 13443,
+      "output_line": 13444,
+      "test_ids": [
+        "tests/stage1_sctsr_v4/test_qrad_scaffold_hardening.py::test_nested_weighted_qrad_is_rejected_recursively"
+      ],
+      "failure_phase": "EXPECTED_BEHAVIOR_ASSERTION",
+      "output_path": "tdd_history/event_outputs/EV029.log"
+    },
+    {
+      "event_id": "EV030",
+      "kind": "PATCH",
+      "call_line": 13448,
+      "output_line": 13450
+    },
+    {
+      "event_id": "EV031",
+      "kind": "TEST",
+      "call_line": 13473,
+      "output_line": 13474,
+      "test_ids": [
+        "tests/stage1_sctsr_v4/test_qrad_scaffold_hardening.py::test_nested_weighted_qrad_is_rejected_recursively"
+      ],
+      "failure_phase": "NOT_APPLICABLE_GREEN",
+      "output_path": "tdd_history/event_outputs/EV031.log"
+    },
+    {
+      "event_id": "EV032",
+      "kind": "COMMIT",
+      "call_line": 13510,
+      "output_line": 13511,
+      "commit": "a2fb3dd98ed0b923f6d0cab2892c299906ad9ebd"
+    },
+    {
+      "event_id": "EV033",
+      "kind": "TEST",
+      "call_line": 13955,
+      "output_line": 13956,
+      "test_ids": [
+        "tests/stage1_sctsr_v4/test_cli_contract_hardening.py::test_branch_cli_exposes_identity_pool_and_parent_artifact_index"
+      ],
+      "failure_phase": "EXPECTED_BEHAVIOR_ASSERTION",
+      "output_path": "tdd_history/event_outputs/EV033.log"
+    },
+    {
+      "event_id": "EV034",
+      "kind": "PATCH",
+      "call_line": 13960,
+      "output_line": 13962
+    },
+    {
+      "event_id": "EV035",
+      "kind": "TEST",
+      "call_line": 14156,
+      "output_line": 14157,
+      "test_ids": [
+        "tests/stage1_sctsr_v4/test_cli_contract_hardening.py::test_branch_cli_exposes_identity_pool_and_parent_artifact_index"
+      ],
+      "failure_phase": "NOT_APPLICABLE_GREEN",
+      "output_path": "tdd_history/event_outputs/EV035.log"
+    },
+    {
+      "event_id": "EV036",
+      "kind": "COMMIT",
+      "call_line": 14713,
+      "output_line": 14714,
+      "commit": "0261d778b90a442fd7d48757b79be4efc55bfae8"
+    },
+    {
+      "event_id": "EV037",
+      "kind": "TEST",
+      "call_line": 14878,
+      "output_line": 14879,
+      "test_ids": [
+        "tests/stage1_sctsr_v4/test_formal_resume.py::test_formal_resume_restores_last_complete_checkpoint_history_and_quarantines_partial"
+      ],
+      "failure_phase": "EXPECTED_BEHAVIOR_ASSERTION",
+      "output_path": "tdd_history/event_outputs/EV037.log"
+    },
+    {
+      "event_id": "EV038",
+      "kind": "PATCH",
+      "call_line": 14882,
+      "output_line": 14884
+    },
+    {
+      "event_id": "EV039",
+      "kind": "TEST",
+      "call_line": 14887,
+      "output_line": 14888,
+      "test_ids": [
+        "tests/stage1_sctsr_v4/test_formal_resume.py::test_formal_resume_restores_last_complete_checkpoint_history_and_quarantines_partial"
+      ],
+      "failure_phase": "NOT_APPLICABLE_GREEN",
+      "output_path": "tdd_history/event_outputs/EV039.log"
+    },
+    {
+      "event_id": "EV040",
+      "kind": "COMMIT",
+      "call_line": 14932,
+      "output_line": 14933,
+      "commit": "371fe031ac2a3c7b1276b75220df4fcb27ff2236"
+    },
+    {
+      "event_id": "EV041",
+      "kind": "TEST",
+      "call_line": 15070,
+      "output_line": 15071,
+      "test_ids": [
+        "tests/stage1_sctsr_v4/test_schema_registry.py::test_schema_registry_rejects_stale_or_unregistered_public_schema"
+      ],
+      "failure_phase": "EXPECTED_BEHAVIOR_ASSERTION",
+      "output_path": "tdd_history/event_outputs/EV041.log"
+    },
+    {
+      "event_id": "EV042",
+      "kind": "PATCH",
+      "call_line": 15091,
+      "output_line": 15093
+    },
+    {
+      "event_id": "EV043",
+      "kind": "TEST",
+      "call_line": 15105,
+      "output_line": 15106,
+      "test_ids": [
+        "tests/stage1_sctsr_v4/test_schema_registry.py::test_schema_registry_rejects_stale_or_unregistered_public_schema"
+      ],
+      "failure_phase": "NOT_APPLICABLE_GREEN",
+      "output_path": "tdd_history/event_outputs/EV043.log"
+    },
+    {
+      "event_id": "EV044",
+      "kind": "COMMIT",
+      "call_line": 15131,
+      "output_line": 15132,
+      "commit": "157670f49a06952d4edfd1d36e6bf5c59e1ebb60"
+    },
+    {
+      "event_id": "EV045",
+      "kind": "TEST",
+      "call_line": 15191,
+      "output_line": 15192,
+      "test_ids": [
+        "tests/stage1_sctsr_v4/test_synthetic_canary.py::test_canary_exercises_real_checkpoint_resume"
+      ],
+      "failure_phase": "EXPECTED_BEHAVIOR_ASSERTION",
+      "output_path": "tdd_history/event_outputs/EV045.log"
+    },
+    {
+      "event_id": "EV046",
+      "kind": "PATCH",
+      "call_line": 15196,
+      "output_line": 15198
+    },
+    {
+      "event_id": "EV047",
+      "kind": "TEST",
+      "call_line": 15201,
+      "output_line": 15202,
+      "test_ids": [
+        "tests/stage1_sctsr_v4/test_synthetic_canary.py::test_canary_exercises_real_checkpoint_resume"
+      ],
+      "failure_phase": "NOT_APPLICABLE_GREEN",
+      "output_path": "tdd_history/event_outputs/EV047.log"
+    },
+    {
+      "event_id": "EV048",
+      "kind": "COMMIT",
+      "call_line": 15273,
+      "output_line": 15274,
+      "commit": "700cebdc4129b79e7a8f10fc4c7c028c6c91354a"
+    },
+    {
+      "event_id": "EV049",
+      "kind": "TEST",
+      "call_line": 15323,
+      "output_line": 15324,
+      "test_ids": [
+        "tests/stage1_sctsr_v4/test_source_identity.py::test_source_manifest_records_runtime_dependency_identity"
+      ],
+      "failure_phase": "EXPECTED_BEHAVIOR_ASSERTION",
+      "output_path": "tdd_history/event_outputs/EV049.log"
+    },
+    {
+      "event_id": "EV050",
+      "kind": "PATCH",
+      "call_line": 15327,
+      "output_line": 15329
+    },
+    {
+      "event_id": "EV051",
+      "kind": "TEST",
+      "call_line": 15332,
+      "output_line": 15333,
+      "test_ids": [
+        "tests/stage1_sctsr_v4/test_source_identity.py::test_source_manifest_records_runtime_dependency_identity"
+      ],
+      "failure_phase": "NOT_APPLICABLE_GREEN",
+      "output_path": "tdd_history/event_outputs/EV051.log"
+    },
+    {
+      "event_id": "EV052",
+      "kind": "COMMIT",
+      "call_line": 15343,
+      "output_line": 15344,
+      "commit": "73a60674f41a91a918975991833796ba9ad0e373"
+    },
+    {
+      "event_id": "EV053",
+      "kind": "TEST",
+      "call_line": 15462,
+      "output_line": 15463,
+      "test_ids": [
+        "tests/stage1_sctsr_v4/test_prediction_evaluation_hardening.py::test_formal_prediction_rejects_missing_extra_or_wrong_split_rows"
+      ],
+      "failure_phase": "EXPECTED_BEHAVIOR_ASSERTION",
+      "output_path": "tdd_history/event_outputs/EV053.log"
+    },
+    {
+      "event_id": "EV054",
+      "kind": "PATCH",
+      "call_line": 15466,
+      "output_line": 15468
+    },
+    {
+      "event_id": "EV055",
+      "kind": "TEST",
+      "call_line": 15471,
+      "output_line": 15472,
+      "test_ids": [
+        "tests/stage1_sctsr_v4/test_prediction_evaluation_hardening.py::test_formal_prediction_rejects_missing_extra_or_wrong_split_rows"
+      ],
+      "failure_phase": "NOT_APPLICABLE_GREEN",
+      "output_path": "tdd_history/event_outputs/EV055.log"
+    },
+    {
+      "event_id": "EV056",
+      "kind": "COMMIT",
+      "call_line": 15620,
+      "output_line": 15621,
+      "commit": "f2792fe353f00f240dbe7384e181e6fdab26aa17"
+    },
+    {
+      "event_id": "EV057",
+      "kind": "TEST",
+      "call_line": 15722,
+      "output_line": 15723,
+      "test_ids": [
+        "tests/stage1_sctsr_v4/test_prediction_evaluation_hardening.py::test_formal_closeout_requires_recomputable_registered_e200_endpoint"
+      ],
+      "failure_phase": "EXPECTED_PUBLIC_API_ABSENCE",
+      "output_path": "tdd_history/event_outputs/EV057.log"
+    },
+    {
+      "event_id": "EV058",
+      "kind": "PATCH",
+      "call_line": 15728,
+      "output_line": 15730
+    },
+    {
+      "event_id": "EV059",
+      "kind": "PATCH",
+      "call_line": 15733,
+      "output_line": 15735
+    },
+    {
+      "event_id": "EV060",
+      "kind": "TEST",
+      "call_line": 15738,
+      "output_line": 15739,
+      "test_ids": [
+        "tests/stage1_sctsr_v4/test_prediction_evaluation_hardening.py::test_formal_closeout_requires_recomputable_registered_e200_endpoint"
+      ],
+      "failure_phase": "NOT_APPLICABLE_GREEN",
+      "output_path": "tdd_history/event_outputs/EV060.log"
+    },
+    {
+      "event_id": "EV061",
+      "kind": "COMMIT",
+      "call_line": 15752,
+      "output_line": 15753,
+      "commit": "3c2509c97e6a4279edd8f214766ce98cfd8e3108"
+    },
+    {
+      "event_id": "EV062",
+      "kind": "TEST",
+      "call_line": 15846,
+      "output_line": 15847,
+      "test_ids": [
+        "tests/stage1_sctsr_v4/test_prediction_runtime.py::test_formal_endpoint_publisher_runs_real_images_and_writes_complete_evidence"
+      ],
+      "failure_phase": "EXPECTED_PUBLIC_API_ABSENCE",
+      "output_path": "tdd_history/event_outputs/EV062.log"
+    },
+    {
+      "event_id": "EV063",
+      "kind": "PATCH",
+      "call_line": 15850,
+      "output_line": 15852
+    },
+    {
+      "event_id": "EV064",
+      "kind": "TEST",
+      "call_line": 15854,
+      "output_line": 15855,
+      "test_ids": [
+        "tests/stage1_sctsr_v4/test_prediction_runtime.py::test_formal_endpoint_publisher_runs_real_images_and_writes_complete_evidence"
+      ],
+      "failure_phase": "NOT_APPLICABLE_GREEN",
+      "output_path": "tdd_history/event_outputs/EV064.log"
+    },
+    {
+      "event_id": "EV065",
+      "kind": "COMMIT",
+      "call_line": 15968,
+      "output_line": 15969,
+      "commit": "ac26e6d671cf3f8b39b64f09d1fbf17e19caaaf1"
+    },
+    {
+      "event_id": "EV066",
+      "kind": "TEST",
+      "call_line": 16085,
+      "output_line": 16086,
+      "test_ids": [
+        "tests/stage1_sctsr_v4/test_source_identity.py::test_clean_source_manifest_revalidates_current_git_head_and_worktree"
+      ],
+      "failure_phase": "EXPECTED_BEHAVIOR_ASSERTION",
+      "output_path": "tdd_history/event_outputs/EV066.log"
+    },
+    {
+      "event_id": "EV067",
+      "kind": "PATCH",
+      "call_line": 16093,
+      "output_line": 16095
+    },
+    {
+      "event_id": "EV068",
+      "kind": "TEST",
+      "call_line": 16098,
+      "output_line": 16099,
+      "test_ids": [
+        "tests/stage1_sctsr_v4/test_source_identity.py::test_clean_source_manifest_revalidates_current_git_head_and_worktree"
+      ],
+      "failure_phase": "NOT_APPLICABLE_GREEN",
+      "output_path": "tdd_history/event_outputs/EV068.log"
+    },
+    {
+      "event_id": "EV069",
+      "kind": "TEST",
+      "call_line": 16131,
+      "output_line": 16132,
+      "test_ids": [
+        "tests/stage1_sctsr_v4/test_formal_input_snapshot.py::test_formal_input_snapshot_copies_and_binds_every_authorization_file"
+      ],
+      "failure_phase": "EXPECTED_PUBLIC_API_ABSENCE",
+      "output_path": "tdd_history/event_outputs/EV069.log"
+    },
+    {
+      "event_id": "EV070",
+      "kind": "PATCH",
+      "call_line": 16140,
+      "output_line": 16142
+    },
+    {
+      "event_id": "EV071",
+      "kind": "PATCH",
+      "call_line": 16145,
+      "output_line": 16147
+    },
+    {
+      "event_id": "EV072",
+      "kind": "TEST",
+      "call_line": 16150,
+      "output_line": 16151,
+      "test_ids": [
+        "tests/stage1_sctsr_v4/test_formal_input_snapshot.py::test_formal_input_snapshot_copies_and_binds_every_authorization_file"
+      ],
+      "failure_phase": "NOT_APPLICABLE_GREEN",
+      "output_path": "tdd_history/event_outputs/EV072.log"
+    },
+    {
+      "event_id": "EV073",
+      "kind": "COMMIT",
+      "call_line": 16210,
+      "output_line": 16211,
+      "commit": "d16e992435b54a5c56186b79856f8d48f614913b"
+    },
+    {
+      "event_id": "EV074",
+      "kind": "COMMIT",
+      "call_line": 16214,
+      "output_line": 16215,
+      "commit": "7be664c2830241104bbd11c89f27fe3a6a620c32"
+    },
+    {
+      "event_id": "EV075",
+      "kind": "COMMIT",
+      "call_line": 16224,
+      "output_line": 16225,
+      "commit": "b4d9e3c41250586143f697849650490195411891"
+    },
+    {
+      "event_id": "EV076",
+      "kind": "TEST",
+      "call_line": 16260,
+      "output_line": 16261,
+      "test_ids": [
+        "tests/stage1_sctsr_v4/test_schema_registry.py::test_schema_registry_registers_formal_input_and_detailed_self_audit_schemas"
+      ],
+      "failure_phase": "EXPECTED_BEHAVIOR_ASSERTION",
+      "output_path": "tdd_history/event_outputs/EV076.log"
+    },
+    {
+      "event_id": "EV077",
+      "kind": "PATCH",
+      "call_line": 16264,
+      "output_line": 16266
+    },
+    {
+      "event_id": "EV078",
+      "kind": "TEST",
+      "call_line": 16282,
+      "output_line": 16283,
+      "test_ids": [
+        "tests/stage1_sctsr_v4/test_schema_registry.py::test_schema_registry_registers_formal_input_and_detailed_self_audit_schemas"
+      ],
+      "failure_phase": "NOT_APPLICABLE_GREEN",
+      "output_path": "tdd_history/event_outputs/EV078.log"
+    },
+    {
+      "event_id": "EV079",
+      "kind": "COMMIT",
+      "call_line": 16320,
+      "output_line": 16321,
+      "commit": "e353c5e1167f478332e7669a6b1054d004e4bd58"
+    },
+    {
+      "event_id": "EV080",
+      "kind": "COMMIT",
+      "call_line": 16385,
+      "output_line": 16386,
+      "commit": "1562b80def1c945d7d59a7b8f392a089cff8110e"
+    },
+    {
+      "event_id": "EV081",
+      "kind": "TEST",
+      "call_line": 16389,
+      "output_line": 16390,
+      "test_ids": [
+        "COMMAND::git_diff_check_raw_receipt_bytes"
+      ],
+      "failure_phase": "EXPECTED_COMMAND_GUARD",
+      "output_path": "tdd_history/event_outputs/EV081.log"
+    },
+    {
+      "event_id": "EV082",
+      "kind": "PATCH",
+      "call_line": 16393,
+      "output_line": 16395
+    },
+    {
+      "event_id": "EV083",
+      "kind": "TEST",
+      "call_line": 16398,
+      "output_line": 16399,
+      "test_ids": [
+        "COMMAND::git_diff_check_raw_receipt_bytes"
+      ],
+      "failure_phase": "NOT_APPLICABLE_GREEN",
+      "output_path": "tdd_history/event_outputs/EV083.log"
+    },
+    {
+      "event_id": "EV084",
+      "kind": "COMMIT",
+      "call_line": 16402,
+      "output_line": 16403,
+      "commit": "73d63b2048b33517cfe95c12797a45365079f14a"
+    },
+    {
+      "event_id": "EV085",
+      "kind": "TEST",
+      "call_line": 16410,
+      "output_line": 16411,
+      "test_ids": [
+        "tests/stage1_sctsr_v4/test_implementation_self_audit.py::test_self_audit_round_trips_canonical_sorted_json"
+      ],
+      "failure_phase": "EXPECTED_BEHAVIOR_ASSERTION",
+      "output_path": "tdd_history/event_outputs/EV085.log"
+    },
+    {
+      "event_id": "EV086",
+      "kind": "PATCH",
+      "call_line": 16414,
+      "output_line": 16416
+    },
+    {
+      "event_id": "EV087",
+      "kind": "TEST",
+      "call_line": 16418,
+      "output_line": 16419,
+      "test_ids": [
+        "tests/stage1_sctsr_v4/test_implementation_self_audit.py::test_self_audit_round_trips_canonical_sorted_json"
+      ],
+      "failure_phase": "NOT_APPLICABLE_GREEN",
+      "output_path": "tdd_history/event_outputs/EV087.log"
+    },
+    {
+      "event_id": "EV088",
+      "kind": "COMMIT",
+      "call_line": 16422,
+      "output_line": 16423,
+      "commit": "a3360b293417233f23f1e8683422979419b82751"
+    },
+    {
+      "event_id": "EV089",
+      "kind": "TEST",
+      "call_line": 16513,
+      "output_line": 16514,
+      "test_ids": [
+        "tests/stage1_sctsr_v4/test_repository_state_audit.py::test_repository_audit_binds_allowed_changes_and_legacy_sha_mtime"
+      ],
+      "failure_phase": "EXPECTED_BEHAVIOR_ASSERTION",
+      "output_path": "tdd_history/event_outputs/EV089.log"
+    },
+    {
+      "event_id": "EV090",
+      "kind": "PATCH",
+      "call_line": 16525,
+      "output_line": 16527
+    },
+    {
+      "event_id": "EV091",
+      "kind": "TEST",
+      "call_line": 16529,
+      "output_line": 16530,
+      "test_ids": [
+        "tests/stage1_sctsr_v4/test_repository_state_audit.py::test_repository_audit_binds_allowed_changes_and_legacy_sha_mtime"
+      ],
+      "failure_phase": "NOT_APPLICABLE_GREEN",
+      "output_path": "tdd_history/event_outputs/EV091.log"
+    },
+    {
+      "event_id": "EV092",
+      "kind": "COMMIT",
+      "call_line": 16533,
+      "output_line": 16534,
+      "commit": "18d43f8e10c677248623bd32ebdf4405964ea2dc"
+    },
+    {
+      "event_id": "EV093",
+      "kind": "TEST",
+      "call_line": 16543,
+      "output_line": 16544,
+      "test_ids": [
+        "tests/stage1_sctsr_v4/test_cli_contract_hardening.py::test_source_manifest_cli_uses_registered_source_roots"
+      ],
+      "failure_phase": "EXPECTED_BEHAVIOR_ASSERTION",
+      "output_path": "tdd_history/event_outputs/EV093.log"
+    },
+    {
+      "event_id": "EV094",
+      "kind": "PATCH",
+      "call_line": 16546,
+      "output_line": 16548
+    },
+    {
+      "event_id": "EV095",
+      "kind": "TEST",
+      "call_line": 16550,
+      "output_line": 16551,
+      "test_ids": [
+        "tests/stage1_sctsr_v4/test_cli_contract_hardening.py::test_source_manifest_cli_uses_registered_source_roots"
+      ],
+      "failure_phase": "NOT_APPLICABLE_GREEN",
+      "output_path": "tdd_history/event_outputs/EV095.log"
+    },
+    {
+      "event_id": "EV096",
+      "kind": "TEST",
+      "call_line": 16558,
+      "output_line": 16559,
+      "test_ids": [
+        "tests/stage1_sctsr_v4/test_manual_line_review.py::test_manual_line_review_requires_exact_sa280_to_sa289_and_line_digests"
+      ],
+      "failure_phase": "EXPECTED_PUBLIC_API_ABSENCE",
+      "output_path": "tdd_history/event_outputs/EV096.log"
+    },
+    {
+      "event_id": "EV097",
+      "kind": "PATCH",
+      "call_line": 16562,
+      "output_line": 16564
+    },
+    {
+      "event_id": "EV098",
+      "kind": "TEST",
+      "call_line": 16566,
+      "output_line": 16567,
+      "test_ids": [
+        "tests/stage1_sctsr_v4/test_manual_line_review.py::test_manual_line_review_requires_exact_sa280_to_sa289_and_line_digests"
+      ],
+      "failure_phase": "NOT_APPLICABLE_GREEN",
+      "output_path": "tdd_history/event_outputs/EV098.log"
+    },
+    {
+      "event_id": "EV099",
+      "kind": "TEST",
+      "call_line": 16574,
+      "output_line": 16575,
+      "test_ids": [
+        "tests/stage1_sctsr_v4/test_implementation_self_audit.py::test_self_audit_builder_merges_exact_taskbook_requirements_and_repository_flags"
+      ],
+      "failure_phase": "EXPECTED_PUBLIC_API_ABSENCE",
+      "output_path": "tdd_history/event_outputs/EV099.log"
+    },
+    {
+      "event_id": "EV100",
+      "kind": "PATCH",
+      "call_line": 16578,
+      "output_line": 16580
+    },
+    {
+      "event_id": "EV101",
+      "kind": "TEST",
+      "call_line": 16598,
+      "output_line": 16599,
+      "test_ids": [
+        "tests/stage1_sctsr_v4/test_implementation_self_audit.py::test_self_audit_builder_merges_exact_taskbook_requirements_and_repository_flags"
+      ],
+      "failure_phase": "NOT_APPLICABLE_GREEN",
+      "output_path": "tdd_history/event_outputs/EV101.log"
+    },
+    {
+      "event_id": "EV102",
+      "kind": "TEST",
+      "call_line": 16625,
+      "output_line": 16626,
+      "test_ids": [
+        "tests/stage1_sctsr_v4/test_schema_registry.py::test_schema_registry_registers_formal_input_and_detailed_self_audit_schemas"
+      ],
+      "failure_phase": "EXPECTED_BEHAVIOR_ASSERTION",
+      "output_path": "tdd_history/event_outputs/EV102.log"
+    },
+    {
+      "event_id": "EV103",
+      "kind": "PATCH",
+      "call_line": 16629,
+      "output_line": 16631
+    },
+    {
+      "event_id": "EV104",
+      "kind": "TEST",
+      "call_line": 16634,
+      "output_line": 16635,
+      "test_ids": [
+        "tests/stage1_sctsr_v4/test_schema_registry.py::test_schema_registry_registers_formal_input_and_detailed_self_audit_schemas"
+      ],
+      "failure_phase": "NOT_APPLICABLE_GREEN",
+      "output_path": "tdd_history/event_outputs/EV104.log"
+    },
+    {
+      "event_id": "EV105",
+      "kind": "COMMIT",
+      "call_line": 16658,
+      "output_line": 16659,
+      "commit": "ffe125bc47e5677519b55c4c93be0b5a6cf11a81"
+    },
+    {
+      "event_id": "EV106",
+      "kind": "COMMIT",
+      "call_line": 16666,
+      "output_line": 16667,
+      "commit": "13b1af3c7ec380e476ca0ae70cbd90d9f6a1f518"
+    },
+    {
+      "event_id": "EV107",
+      "kind": "TEST",
+      "call_line": 16818,
+      "output_line": 16819,
+      "test_ids": [
+        "tests/stage1_sctsr_v4/test_repository_state_audit.py::test_repository_audit_uses_git_blob_identity_when_clean_worktree_line_endings_differ"
+      ],
+      "failure_phase": "EXPECTED_BEHAVIOR_ASSERTION",
+      "output_path": "tdd_history/event_outputs/EV107.log"
+    },
+    {
+      "event_id": "EV108",
+      "kind": "PATCH",
+      "call_line": 16826,
+      "output_line": 16828
+    },
+    {
+      "event_id": "EV109",
+      "kind": "TEST",
+      "call_line": 16830,
+      "output_line": 16831,
+      "test_ids": [
+        "tests/stage1_sctsr_v4/test_repository_state_audit.py::test_repository_audit_uses_git_blob_identity_when_clean_worktree_line_endings_differ"
+      ],
+      "failure_phase": "NOT_APPLICABLE_GREEN",
+      "output_path": "tdd_history/event_outputs/EV109.log"
+    },
+    {
+      "event_id": "EV110",
+      "kind": "COMMIT",
+      "call_line": 16837,
+      "output_line": 16838,
+      "commit": "a4ec9e9b32a69b69c942db1b8a41d2753ec75620"
+    },
+    {
+      "event_id": "EV111",
+      "kind": "TEST",
+      "call_line": 16864,
+      "output_line": 16865,
+      "test_ids": [
+        "tests/stage1_sctsr_v4/test_repository_state_audit.py::test_repository_audit_does_not_follow_broken_historical_directory_links"
+      ],
+      "failure_phase": "EXPECTED_BEHAVIOR_ASSERTION",
+      "output_path": "tdd_history/event_outputs/EV111.log"
+    },
+    {
+      "event_id": "EV112",
+      "kind": "PATCH",
+      "call_line": 16868,
+      "output_line": 16870
+    },
+    {
+      "event_id": "EV113",
+      "kind": "TEST",
+      "call_line": 16873,
+      "output_line": 16874,
+      "test_ids": [
+        "tests/stage1_sctsr_v4/test_repository_state_audit.py::test_repository_audit_does_not_follow_broken_historical_directory_links"
+      ],
+      "failure_phase": "NOT_APPLICABLE_GREEN",
+      "output_path": "tdd_history/event_outputs/EV113.log"
+    },
+    {
+      "event_id": "EV114",
+      "kind": "TEST",
+      "call_line": 16947,
+      "output_line": 16948,
+      "test_ids": [
+        "tests/stage1_sctsr_v4/test_windows_long_paths.py::test_complete_synthetic_canary_normalizes_a_long_registered_root"
+      ],
+      "failure_phase": "EXPECTED_BEHAVIOR_ASSERTION",
+      "output_path": "tdd_history/event_outputs/EV114.log"
+    },
+    {
+      "event_id": "EV115",
+      "kind": "PATCH",
+      "call_line": 16955,
+      "output_line": 16957
+    },
+    {
+      "event_id": "EV116",
+      "kind": "TEST",
+      "call_line": 16959,
+      "output_line": 16960,
+      "test_ids": [
+        "tests/stage1_sctsr_v4/test_windows_long_paths.py::test_complete_synthetic_canary_normalizes_a_long_registered_root"
+      ],
+      "failure_phase": "NOT_APPLICABLE_GREEN",
+      "output_path": "tdd_history/event_outputs/EV116.log"
+    },
+    {
+      "event_id": "EV117",
+      "kind": "TEST",
+      "call_line": 16981,
+      "output_line": 16982,
+      "test_ids": [
+        "tests/stage1_sctsr_v4/test_windows_long_paths.py::test_complete_synthetic_canary_normalizes_a_long_registered_root"
+      ],
+      "failure_phase": "EXPECTED_BEHAVIOR_ASSERTION",
+      "output_path": "tdd_history/event_outputs/EV117.log"
+    },
+    {
+      "event_id": "EV118",
+      "kind": "PATCH",
+      "call_line": 16985,
+      "output_line": 16987
+    },
+    {
+      "event_id": "EV119",
+      "kind": "TEST",
+      "call_line": 16992,
+      "output_line": 16993,
+      "test_ids": [
+        "tests/stage1_sctsr_v4/test_windows_long_paths.py::test_complete_synthetic_canary_normalizes_a_long_registered_root"
+      ],
+      "failure_phase": "NOT_APPLICABLE_GREEN",
+      "output_path": "tdd_history/event_outputs/EV119.log"
+    },
+    {
+      "event_id": "EV120",
+      "kind": "COMMIT",
+      "call_line": 17508,
+      "output_line": 17509,
+      "commit": "80ae2a2dfff2140253026cdd36b9abd363c09a60"
+    },
+    {
+      "event_id": "EV121",
+      "kind": "COMMIT",
+      "call_line": 18143,
+      "output_line": 18144,
+      "commit": "bbbb0b484b354d64bb17de97cc9338ab21b1f6bc"
+    },
+    {
+      "event_id": "EV122",
+      "kind": "COMMIT",
+      "call_line": 18146,
+      "output_line": 18147,
+      "commit": "709ab5d053a3773217053806fce6407e86c5a0ff"
+    },
+    {
+      "event_id": "EV123",
+      "kind": "COMMIT",
+      "call_line": 18149,
+      "output_line": 18150,
+      "commit": "8675ebfbc25133607348f358da167d14f1a2f0eb"
+    },
+    {
+      "event_id": "EV124",
+      "kind": "TEST",
+      "call_line": 18214,
+      "output_line": 18215,
+      "test_ids": [
+        "COMMAND::git_diff_check_raw_receipt_bytes"
+      ],
+      "failure_phase": "NOT_APPLICABLE_GREEN",
+      "output_path": "tdd_history/event_outputs/EV124.log"
+    },
+    {
+      "event_id": "EV125",
+      "kind": "TEST",
+      "call_line": 18316,
+      "output_line": 18317,
+      "test_ids": [
+        "tests/red_commit_05/test_evidence_transaction_hardening.py::test_sa_144_selection_schema_requires_guard_quota_and_overlap"
+      ],
+      "failure_phase": "NOT_APPLICABLE_GREEN",
+      "output_path": "tdd_history/event_outputs/EV125.log"
+    },
+    {
+      "event_id": "EV126",
+      "kind": "TEST",
+      "call_line": 18558,
+      "output_line": 18559,
+      "test_ids": [
+        "tests/stage1_sctsr_v4/test_windows_long_paths.py::test_atomic_json_and_hash_survive_transaction_identity_path_beyond_max_path"
+      ],
+      "failure_phase": "EXPECTED_BEHAVIOR_ASSERTION",
+      "output_path": "tdd_history/event_outputs/EV126.log"
+    },
+    {
+      "event_id": "EV127",
+      "kind": "PATCH",
+      "call_line": 18562,
+      "output_line": 18564
+    },
+    {
+      "event_id": "EV128",
+      "kind": "PATCH",
+      "call_line": 18567,
+      "output_line": 18569
+    },
+    {
+      "event_id": "EV129",
+      "kind": "TEST",
+      "call_line": 18572,
+      "output_line": 18573,
+      "test_ids": [
+        "tests/stage1_sctsr_v4/test_windows_long_paths.py::test_atomic_json_and_hash_survive_transaction_identity_path_beyond_max_path"
+      ],
+      "failure_phase": "NOT_APPLICABLE_GREEN",
+      "output_path": "tdd_history/event_outputs/EV129.log"
+    },
+    {
+      "event_id": "EV130",
+      "kind": "COMMIT",
+      "call_line": 18605,
+      "output_line": 18606,
+      "commit": "bf0e4cf7ebed781422ae828cbfa4133d4d91857e"
+    },
+    {
+      "event_id": "EV131",
+      "kind": "TEST",
+      "call_line": 18739,
+      "output_line": 18740,
+      "test_ids": [
+        "tests/stage1_sctsr_v4/test_checkpoint_hardening.py::test_checkpoint_tensor_digest_uses_bulk_bytes_not_python_storage_iteration"
+      ],
+      "failure_phase": "EXPECTED_BEHAVIOR_ASSERTION",
+      "output_path": "tdd_history/event_outputs/EV131.log"
+    },
+    {
+      "event_id": "EV132",
+      "kind": "PATCH",
+      "call_line": 18743,
+      "output_line": 18745
+    },
+    {
+      "event_id": "EV133",
+      "kind": "TEST",
+      "call_line": 18747,
+      "output_line": 18748,
+      "test_ids": [
+        "tests/stage1_sctsr_v4/test_checkpoint_hardening.py::test_checkpoint_tensor_digest_uses_bulk_bytes_not_python_storage_iteration"
+      ],
+      "failure_phase": "NOT_APPLICABLE_GREEN",
+      "output_path": "tdd_history/event_outputs/EV133.log"
+    },
+    {
+      "event_id": "EV134",
+      "kind": "COMMIT",
+      "call_line": 18754,
+      "output_line": 18755,
+      "commit": "f0c776cb2000f85f8779f4a009aa8fc29e1a0241"
+    },
+    {
+      "event_id": "EV135",
+      "kind": "TEST",
+      "call_line": 18856,
+      "output_line": 18857,
+      "test_ids": [
+        "tests/stage1_sctsr_v4/test_windows_long_paths.py::test_quarantine_accepts_unprefixed_registered_root_beyond_max_path"
+      ],
+      "failure_phase": "EXPECTED_BEHAVIOR_ASSERTION",
+      "output_path": "tdd_history/event_outputs/EV135.log"
+    },
+    {
+      "event_id": "EV136",
+      "kind": "PATCH",
+      "call_line": 18860,
+      "output_line": 18862
+    },
+    {
+      "event_id": "EV137",
+      "kind": "PATCH",
+      "call_line": 18889,
+      "output_line": 18891
+    },
+    {
+      "event_id": "EV138",
+      "kind": "TEST",
+      "call_line": 18897,
+      "output_line": 18898,
+      "test_ids": [
+        "tests/stage1_sctsr_v4/test_windows_long_paths.py::test_quarantine_accepts_unprefixed_registered_root_beyond_max_path"
+      ],
+      "failure_phase": "NOT_APPLICABLE_GREEN",
+      "output_path": "tdd_history/event_outputs/EV138.log"
+    },
+    {
+      "event_id": "EV139",
+      "kind": "COMMIT",
+      "call_line": 18905,
+      "output_line": 18906,
+      "commit": "cb01ff63460208da8e43aabfd9f6d23ac443e8af"
+    },
+    {
+      "event_id": "EV140",
+      "kind": "TEST",
+      "call_line": 19162,
+      "output_line": 19163,
+      "test_ids": [
+        "tests/stage1_sctsr_v4/test_asset_hardening.py::test_sa_041_asset_row_count_is_verified_from_csv",
+        "tests/stage1_sctsr_v4/test_checkpoint_hardening.py::test_checkpoint_tensor_digest_uses_bulk_bytes_not_python_storage_iteration",
+        "tests/stage1_sctsr_v4/test_checkpoint_hardening.py::test_sa_084_windows_atomic_checkpoint_write_is_durable",
+        "tests/stage1_sctsr_v4/test_cli_contract_hardening.py::test_branch_cli_exposes_identity_pool_and_parent_artifact_index",
+        "tests/stage1_sctsr_v4/test_cli_contract_hardening.py::test_source_manifest_cli_uses_registered_source_roots",
+        "tests/stage1_sctsr_v4/test_contract_hardening.py::test_sa_030_forged_nonempty_release_signature_is_rejected",
+        "tests/stage1_sctsr_v4/test_fixed_step_hardening.py::test_sa_108_overlay_calls_upstream_optimizer_step_exactly_once",
+        "tests/stage1_sctsr_v4/test_formal_input_snapshot.py::test_formal_input_snapshot_copies_and_binds_every_authorization_file",
+        "tests/stage1_sctsr_v4/test_formal_resume.py::test_formal_resume_restores_last_complete_checkpoint_history_and_quarantines_partial",
+        "tests/stage1_sctsr_v4/test_implementation_self_audit.py::test_self_audit_builder_merges_exact_taskbook_requirements_and_repository_flags",
+        "tests/stage1_sctsr_v4/test_implementation_self_audit.py::test_self_audit_round_trips_canonical_sorted_json",
+        "tests/stage1_sctsr_v4/test_manual_line_review.py::test_manual_line_review_requires_exact_sa280_to_sa289_and_line_digests",
+        "tests/stage1_sctsr_v4/test_prediction_evaluation_hardening.py::test_formal_closeout_requires_recomputable_registered_e200_endpoint",
+        "tests/stage1_sctsr_v4/test_prediction_evaluation_hardening.py::test_formal_prediction_rejects_missing_extra_or_wrong_split_rows",
+        "tests/stage1_sctsr_v4/test_prediction_evaluation_hardening.py::test_frontier_rejects_unregistered_artifact_bindings",
+        "tests/stage1_sctsr_v4/test_prediction_runtime.py::test_formal_endpoint_publisher_runs_real_images_and_writes_complete_evidence",
+        "tests/stage1_sctsr_v4/test_qrad_scaffold_hardening.py::test_nested_weighted_qrad_is_rejected_recursively",
+        "tests/stage1_sctsr_v4/test_repository_state_audit.py::test_repository_audit_binds_allowed_changes_and_legacy_sha_mtime",
+        "tests/stage1_sctsr_v4/test_repository_state_audit.py::test_repository_audit_does_not_follow_broken_historical_directory_links",
+        "tests/stage1_sctsr_v4/test_repository_state_audit.py::test_repository_audit_uses_git_blob_identity_when_clean_worktree_line_endings_differ",
+        "tests/stage1_sctsr_v4/test_schema_registry.py::test_schema_registry_registers_formal_input_and_detailed_self_audit_schemas",
+        "tests/stage1_sctsr_v4/test_schema_registry.py::test_schema_registry_rejects_stale_or_unregistered_public_schema",
+        "tests/stage1_sctsr_v4/test_source_identity.py::test_clean_source_manifest_revalidates_current_git_head_and_worktree",
+        "tests/stage1_sctsr_v4/test_source_identity.py::test_source_manifest_records_runtime_dependency_identity",
+        "tests/stage1_sctsr_v4/test_synthetic_canary.py::test_canary_exercises_real_checkpoint_resume",
+        "tests/stage1_sctsr_v4/test_windows_long_paths.py::test_atomic_json_and_hash_survive_transaction_identity_path_beyond_max_path",
+        "tests/stage1_sctsr_v4/test_windows_long_paths.py::test_complete_synthetic_canary_normalizes_a_long_registered_root",
+        "tests/stage1_sctsr_v4/test_windows_long_paths.py::test_quarantine_accepts_unprefixed_registered_root_beyond_max_path"
+      ],
+      "failure_phase": "NOT_APPLICABLE_GREEN",
+      "output_path": "tdd_history/event_outputs/EV140.log"
+    },
+    {
+      "event_id": "EV141",
+      "kind": "TEST",
+      "call_line": 19333,
+      "output_line": 19334,
+      "test_ids": [
+        "tests/stage1_sctsr_v4/test_repository_state_audit.py::test_repository_audit_records_changed_file_beyond_max_path"
+      ],
+      "failure_phase": "EXPECTED_BEHAVIOR_ASSERTION",
+      "output_path": "tdd_history/event_outputs/EV141.log"
+    },
+    {
+      "event_id": "EV142",
+      "kind": "PATCH",
+      "call_line": 19337,
+      "output_line": 19339
+    },
+    {
+      "event_id": "EV143",
+      "kind": "PATCH",
+      "call_line": 19349,
+      "output_line": 19351
+    },
+    {
+      "event_id": "EV144",
+      "kind": "TEST",
+      "call_line": 19357,
+      "output_line": 19358,
+      "test_ids": [
+        "tests/stage1_sctsr_v4/test_repository_state_audit.py::test_repository_audit_records_changed_file_beyond_max_path"
+      ],
+      "failure_phase": "NOT_APPLICABLE_GREEN",
+      "output_path": "tdd_history/event_outputs/EV144.log"
+    },
+    {
+      "event_id": "EV145",
+      "kind": "COMMIT",
+      "call_line": 19361,
+      "output_line": 19362,
+      "commit": "e9b6df61b0eb02e1d32c29175644f1c2af545afc"
+    },
+    {
+      "event_id": "EV146",
+      "kind": "TEST",
+      "call_line": 19425,
+      "output_line": 19426,
+      "test_ids": [
+        "tests/stage1_sctsr_v4/test_repository_state_audit.py::test_repository_audit_records_changed_file_beyond_max_path"
+      ],
+      "failure_phase": "NOT_APPLICABLE_GREEN",
+      "output_path": "tdd_history/event_outputs/EV146.log"
+    }
+  ]
+}

@@ -1,0 +1,7 @@
+Script completed
+Wall time 2.1 seconds
+Output:
+Exit code: 0
+Wall time: 2.1 seconds
+Output:
+{"exit_code": 0, "status": "PASS", "test_ids": ["tests/red_commit_05/test_evidence_transaction_hardening.py::test_sa_144_selection_schema_requires_guard_quota_and_overlap"]}

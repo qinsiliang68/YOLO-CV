@@ -1,0 +1,121 @@
+Script failed
+Wall time 6.4 seconds
+Output:
+Script error:
+Exit code: 1
+Wall time: 6.4 seconds
+Output:
+FFFFF                                                                    [100%]
+================================== FAILURES ===================================
+_______ test_branch_cli_exposes_identity_pool_and_parent_artifact_index _______
+
+repository_root = WindowsPath('C:/GitHub/YOLO-CV')
+
+    def test_branch_cli_exposes_identity_pool_and_parent_artifact_index(repository_root):
+        result = _run(repository_root, repository_root / "scripts" / "stage1_sctsr_v4" / "run_branch.py", "--help")
+        assert result.returncode == 0
+>       assert "--identity-pool" in result.stdout
+E       AssertionError: assert '--identity-pool' in 'usage: run_branch.py [-h] --repository-root REPOSITORY_ROOT --output-root\n                     OUTPUT_ROOT --parent-...--runtime-config RUNTIME_CONFIG\n  --seed-registry SEED_REGISTRY\n  --output OUTPUT       Explicit JSON receipt path\n'
+E        +  where 'usage: run_branch.py [-h] --repository-root REPOSITORY_ROOT --output-root\n                     OUTPUT_ROOT --parent-...--runtime-config RUNTIME_CONFIG\n  --seed-registry SEED_REGISTRY\n  --output OUTPUT       Explicit JSON receipt path\n' = CompletedProcess(args=['C:\\GitHub\\YOLO-CV\\.venv\\Scripts\\python.exe', 'C:\\GitHub\\YOLO-CV\\scripts\\stage1_sctsr_...nfig RUNTIME_CONFIG\n  --seed-registry SEED_REGISTRY\n  --output OUTPUT       Explicit JSON receipt path\n', stderr='').stdout
+
+tests\stage1_sctsr_v4\test_cli_contract_hardening.py:25: AssertionError
+___________ test_asset_cli_cannot_skip_registered_large_file_hashes ___________
+
+repository_root = WindowsPath('C:/GitHub/YOLO-CV')
+
+    def test_asset_cli_cannot_skip_registered_large_file_hashes(repository_root):
+        result = _run(repository_root, repository_root / "scripts" / "stage1_sctsr_v4" / "validate_assets.py", "--help")
+        assert result.returncode == 0
+>       assert "--skip-large-sha" not in result.stdout
+E       AssertionError: assert '--skip-large-sha' not in 'usage: vali...ceipt path\n'
+E         
+E         '--skip-large-sha' is contained here:
+E           ORY_ROOT [--skip-large-sha] --output OUTPUT
+E         ?           ++++++++++++++++
+E           
+E           Validate frozen SCTSR assets without modifying them
+E           ...
+E         
+E         ...Full output truncated (6 lines hidden), use '-vv' to show
+
+tests\stage1_sctsr_v4\test_cli_contract_hardening.py:32: AssertionError
+____________ test_validate_schedule_rejects_partial_formal_matrix _____________
+
+repository_root = WindowsPath('C:/GitHub/YOLO-CV')
+tmp_path = WindowsPath('C:/Users/28898/AppData/Local/Temp/pytest-of-28898/pytest-1474/test_validate_schedule_rejects0')
+phase1_schedules = {<ArmId.NR: 'NR'>: SchedulePlan(arm_id=<ArmId.NR: 'NR'>, epochs=(EpochReplayPlan(epoch=1, arm_id=<ArmId.NR: 'NR'>, ide...93C074E7BDACF0C4454BBB165F48949', plan_digest='FC15D03258483EA472472740792274D215D535A979E828E1F7693DA8F42D1EDA'), ...}
+
+    def test_validate_schedule_rejects_partial_formal_matrix(repository_root, tmp_path, phase1_schedules):
+        from stage1_sctsr_v4.schedule import schedule_to_dict
+        from stage1_sctsr_v4.serialization import atomic_write_json
+    
+        one_schedule = tmp_path / "t_u.json"
+        atomic_write_json(one_schedule, schedule_to_dict(phase1_schedules[next(key for key in phase1_schedules if key.value == "T_U")]))
+        receipt = tmp_path / "receipt.json"
+        result = _run(
+            repository_root,
+            repository_root / "scripts" / "stage1_sctsr_v4" / "validate_schedule.py",
+            "--schedule",
+            one_schedule,
+            "--output",
+            receipt,
+        )
+>       assert result.returncode != 0
+E       AssertionError: assert 0 != 0
+E        +  where 0 = CompletedProcess(args=['C:\\GitHub\\YOLO-CV\\.venv\\Scripts\\python.exe', 'C:\\GitHub\\YOLO-CV\\scripts\\stage1_sctsr_.../Users/28898/AppData/Local/Temp/pytest-of-28898/pytest-1474/test_validate_schedule_rejects0/receipt.json\n', stderr='').returncode
+
+tests\stage1_sctsr_v4\test_cli_contract_hardening.py:50: AssertionError
+_________ test_build_identity_pool_rejects_placeholder_formal_hashes __________
+
+repository_root = WindowsPath('C:/GitHub/YOLO-CV')
+tmp_path = WindowsPath('C:/Users/28898/AppData/Local/Temp/pytest-of-28898/pytest-1474/test_build_identity_pool_rejec0')
+
+    def test_build_identity_pool_rejects_placeholder_formal_hashes(repository_root, tmp_path):
+        fixture = json.loads((repository_root / "tests" / "stage1_sctsr_v4" / "fixtures" / "tie_predictions.json").read_text(encoding="utf-8"))
+        # The exact row values are irrelevant: trust validation must fail before
+        # formal inputs are loaded or any output directory is created.
+        rows = tmp_path / "rows.json"
+        rows.write_text(json.dumps(fixture), encoding="utf-8")
+        receipt = tmp_path / "receipt.json"
+        output_dir = tmp_path / "pool"
+        result = _run(
+            repository_root,
+            repository_root / "scripts" / "stage1_sctsr_v4" / "build_identity_pools.py",
+            "--pool",
+            "T_STRESS",
+            "--base-records",
+            rows,
+            "--t-records",
+            rows,
+            "--output-dir",
+            output_dir,
+            "--output",
+            receipt,
+        )
+        assert result.returncode != 0
+>       assert json.loads(receipt.read_text(encoding="utf-8"))["error"]["code"] == ErrorCode.IDENTITY_DIGEST_MISMATCH.value
+E       AssertionError: assert 'INTERNAL_ERROR' == 'IDENTITY_DIGEST_MISMATCH'
+E         
+E         - IDENTITY_DIGEST_MISMATCH
+E         + INTERNAL_ERROR
+
+tests\stage1_sctsr_v4\test_cli_contract_hardening.py:77: AssertionError
+__________ test_formal_identity_template_names_every_runtime_binding __________
+
+repository_root = WindowsPath('C:/GitHub/YOLO-CV')
+
+    def test_formal_identity_template_names_every_runtime_binding(repository_root):
+        template = json.loads((repository_root / "configs" / "stage1_sctsr_v4" / "trainer_overrides_template_v1.json").read_text(encoding="utf-8"))
+>       assert {"model", "data", "device", "project", "name", "seed", "exist_ok", "resume"}.issubset(template)
+E       AssertionError: assert False
+E        +  where False = <built-in method issubset of set object at 0x0000021C0BE60740>({'amp': True, 'batch': 128, 'data': 'REPLACE_WITH_CANONICAL_CLASSIFICATION_DATA_ROOT', 'deterministic': True, ...})
+E        +    where <built-in method issubset of set object at 0x0000021C0BE60740> = {'data', 'device', 'exist_ok', 'model', 'name', 'project', ...}.issubset
+
+tests\stage1_sctsr_v4\test_cli_contract_hardening.py:83: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/stage1_sctsr_v4/test_cli_contract_hardening.py::test_branch_cli_exposes_identity_pool_and_parent_artifact_index
+FAILED tests/stage1_sctsr_v4/test_cli_contract_hardening.py::test_asset_cli_cannot_skip_registered_large_file_hashes
+FAILED tests/stage1_sctsr_v4/test_cli_contract_hardening.py::test_validate_schedule_rejects_partial_formal_matrix
+FAILED tests/stage1_sctsr_v4/test_cli_contract_hardening.py::test_build_identity_pool_rejects_placeholder_formal_hashes
+FAILED tests/stage1_sctsr_v4/test_cli_contract_hardening.py::test_formal_identity_template_names_every_runtime_binding
+5 failed in 5.53s

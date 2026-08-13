@@ -1,0 +1,24 @@
+Script failed
+Wall time 0.6 seconds
+Output:
+Script error:
+Exit code: 1
+Wall time: 0.6 seconds
+Output:
+
+=================================== ERRORS ====================================
+__ ERROR collecting tests/stage1_sctsr_v4/test_implementation_self_audit.py ___
+ImportError while importing test module 'C:\GitHub\YOLO-CV\tests\stage1_sctsr_v4\test_implementation_self_audit.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+C:\Users\28898\AppData\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\importlib\__init__.py:126: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests\stage1_sctsr_v4\test_implementation_self_audit.py:8: in <module>
+    from stage1_sctsr_v4.implementation_self_audit import (
+E   ImportError: cannot import name 'build_implementation_self_audit_from_plan' from 'stage1_sctsr_v4.implementation_self_audit' (C:\GitHub\YOLO-CV\stage1_sctsr_v4\implementation_self_audit.py)
+=========================== short test summary info ===========================
+ERROR tests/stage1_sctsr_v4/test_implementation_self_audit.py
+1 error in 0.07s
+ERROR: found no collectors for C:\GitHub\YOLO-CV\tests\stage1_sctsr_v4\test_implementation_self_audit.py::test_self_audit_builder_merges_exact_taskbook_requirements_and_repository_flags
+

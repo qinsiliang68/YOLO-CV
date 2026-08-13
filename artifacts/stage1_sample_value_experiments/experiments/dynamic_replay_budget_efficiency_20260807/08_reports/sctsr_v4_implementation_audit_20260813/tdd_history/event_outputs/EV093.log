@@ -1,0 +1,23 @@
+Script failed
+Wall time 0.6 seconds
+Output:
+Script error:
+Exit code: 1
+Wall time: 0.6 seconds
+Output:
+F                                                                        [100%]
+================================== FAILURES ===================================
+____________ test_source_manifest_cli_uses_registered_source_roots ____________
+
+repository_root = WindowsPath('C:/GitHub/YOLO-CV')
+
+    def test_source_manifest_cli_uses_registered_source_roots(repository_root):
+        result = _run(repository_root, repository_root / "scripts" / "stage1_sctsr_v4" / "build_source_tree_manifest.py", "--help")
+>       assert result.returncode == 0
+E       assert 2 == 0
+E        +  where 2 = CompletedProcess(args=['C:\\GitHub\\YOLO-CV\\.venv\\Scripts\\python.exe', 'C:\\GitHub\\YOLO-CV\\scripts\\stage1_sctsr_...Hub\\\\YOLO-CV\\\\scripts\\\\stage1_sctsr_v4\\\\build_source_tree_manifest.py': [Errno 2] No such file or directory\n").returncode
+
+tests\stage1_sctsr_v4\test_cli_contract_hardening.py:54: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/stage1_sctsr_v4/test_cli_contract_hardening.py::test_source_manifest_cli_uses_registered_source_roots
+1 failed in 0.10s

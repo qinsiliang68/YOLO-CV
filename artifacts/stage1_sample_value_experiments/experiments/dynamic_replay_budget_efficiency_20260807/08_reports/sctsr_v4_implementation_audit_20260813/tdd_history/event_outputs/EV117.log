@@ -1,0 +1,42 @@
+Script failed
+Wall time 10.5 seconds
+Output:
+Script error:
+Exit code: 1
+Wall time: 10.5 seconds
+Output:
+F                                                                        [100%]
+================================== FAILURES ===================================
+______ test_complete_synthetic_canary_normalizes_a_long_registered_root _______
+
+repository_root = WindowsPath('C:/GitHub/YOLO-CV')
+tmp_path = WindowsPath('C:/Users/28898/AppData/Local/Temp/pytest-of-28898/pytest-1574/test_complete_synthetic_canary0')
+
+    @pytest.mark.skipif(os.name != "nt", reason="Win32 extended path contract")
+    def test_complete_synthetic_canary_normalizes_a_long_registered_root(repository_root: Path, tmp_path: Path):
+        root = tmp_path / ("registered_experiment_" + "a" * 70) / ("implementation_audit_" + "b" * 70) / "canary"
+        probe = root / "04_ledgers" / "selection" / "run_id=SYNTHETIC_SELECTION" / "epoch=0000" / ".T_STRESS.parquet.inprogress"
+        assert len(str(probe)) > 260
+    
+        receipt = run_synthetic_canary(root, repository_root=repository_root, training_seed=20260606)
+    
+        assert receipt["status"] == "PASS"
+        assert (windows_safe_resolved_path(root) / "RUN_MANIFEST.json").is_file()
+>       assert validate_run_tree(root)["status"] == "PASS"
+               ^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\stage1_sctsr_v4\test_windows_long_paths.py:42: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+run_root = WindowsPath('C:/Users/28898/AppData/Local/Temp/pytest-of-28898/pytest-1574/test_complete_synthetic_canary0/registered_...aaaaaaaaaaaaaaaaaa/implementation_audit_bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb/canary')
+
+    def validate_run_tree(run_root: str | Path, *, allow_synthetic_portable_fallback: bool = False) -> dict[str, Any]:
+        root = Path(run_root).resolve()
+        if not root.is_dir():
+>           raise SctsrError(ErrorCode.ARTIFACT_VALIDATION_FAILED, "Run root is missing", artifact_path=str(root))
+E           stage1_sctsr_v4.errors.SctsrError: ARTIFACT_VALIDATION_FAILED: Run root is missing
+
+stage1_sctsr_v4\run_validation.py:910: SctsrError
+=========================== short test summary info ===========================
+FAILED tests/stage1_sctsr_v4/test_windows_long_paths.py::test_complete_synthetic_canary_normalizes_a_long_registered_root
+1 failed in 9.45s

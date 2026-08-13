@@ -1,0 +1,9 @@
+Script completed
+Wall time 3.4 seconds
+Output:
+Exit code: 0
+Wall time: 3.4 seconds
+Output:
+......                                                                   [100%]
+6 passed in 1.17s
+{'seconds': 0.0094600000011269, 'digest': '83AD77A7DCD1E933BD6316DE91ED2818B10158B253515BD188C51343586B7F5D'}

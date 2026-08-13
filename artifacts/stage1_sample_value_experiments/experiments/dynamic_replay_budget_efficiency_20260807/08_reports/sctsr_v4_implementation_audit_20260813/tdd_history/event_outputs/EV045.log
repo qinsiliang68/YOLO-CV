@@ -1,0 +1,85 @@
+Script failed
+Wall time 10.0 seconds
+Output:
+Script error:
+Exit code: 1
+Wall time: 10 seconds
+Output:
+...FFF                                                                   [100%]
+================================== FAILURES ===================================
+_______________ test_synthetic_fixture_covers_taskbook_minimums _______________
+
+synthetic_fixture = SyntheticFixture(training_seed=20260812, base_records=(IdentityRecord(sample_id='SYN_000000', y_true=0, replay_role='N...DARY', oof_fold=3, oof_group_id='bucket_02', group_source='numeric_filename_bucket', base_manifest_membership=True))}})
+
+    def test_synthetic_fixture_covers_taskbook_minimums(synthetic_fixture):
+        fixture = synthetic_fixture
+        assert fixture.base_denominator % 40 == 0  # 25/1000 identity pool
+        assert fixture.base_denominator % 200 == 0  # 5/1000 U replay
+        assert fixture.base_denominator % 100 == 0  # 10/1000 F replay
+        assert {record.y_true for record in fixture.base_records} == {0, 1}
+        assert len({record.oof_fold for record in fixture.base_records}) > 1
+        assert len({record.oof_group_id for record in fixture.base_records}) > 1
+        assert all(len(groups) == 5 for groups in fixture.groups_by_pool.values())
+        assert not ({row.sample_id for row in fixture.t_pool.records} & {row.sample_id for row in fixture.r2_result.pool.records})
+>       assert torch.equal(fixture.features['SYN_000000'], fixture.features['SYN_000001'])
+E       assert False
+E        +  where False = <built-in method equal of type object at 0x00007FFE288A0DC0>(tensor([-1.1961, -1.4212, -1.3536, -1.4190]), tensor([1.6004, 1.2544, 1.2125, 1.2937]))
+E        +    where <built-in method equal of type object at 0x00007FFE288A0DC0> = torch.equal
+
+tests\stage1_sctsr_v4\test_synthetic_canary.py:28: AssertionError
+________________ test_canary_exercises_real_checkpoint_resume _________________
+
+canary_root = WindowsPath('C:/Users/28898/AppData/Local/Temp/pytest-of-28898/pytest-1499/sctsr_canary0/run')
+
+    def test_canary_exercises_real_checkpoint_resume(canary_root):
+        receipt_path = canary_root / '08_receipts' / 'CHECKPOINT_RESUME_RECEIPT.json'
+>       receipt = load_json(receipt_path)
+                  ^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\stage1_sctsr_v4\test_synthetic_canary.py:33: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+stage1_sctsr_v4\serialization.py:102: in load_json
+    with Path(path).open("r", encoding="utf-8") as handle:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = WindowsPath('C:/Users/28898/AppData/Local/Temp/pytest-of-28898/pytest-1499/sctsr_canary0/run/08_receipts/CHECKPOINT_RESUME_RECEIPT.json')
+mode = 'r', buffering = -1, encoding = 'utf-8', errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+>       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: 'C:\\Users\\28898\\AppData\\Local\\Temp\\pytest-of-28898\\pytest-1499\\sctsr_canary0\\run\\08_receipts\\CHECKPOINT_RESUME_RECEIPT.json'
+
+C:\Users\28898\AppData\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\pathlib.py:1044: FileNotFoundError
+____________ test_canary_predictions_contain_real_probability_ties ____________
+
+canary_root = WindowsPath('C:/Users/28898/AppData/Local/Temp/pytest-of-28898/pytest-1499/sctsr_canary0/run')
+
+    def test_canary_predictions_contain_real_probability_ties(canary_root):
+        manifest = load_json(canary_root / 'RUN_MANIFEST.json')
+>       tie_sizes = [summary['maximum_probability_tie_size'] for summary in manifest['branch_summaries'].values()]
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\stage1_sctsr_v4\test_synthetic_canary.py:47: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+.0 = <dict_valueiterator object at 0x0000020042BEDA30>
+
+>   tie_sizes = [summary['maximum_probability_tie_size'] for summary in manifest['branch_summaries'].values()]
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'maximum_probability_tie_size'
+
+tests\stage1_sctsr_v4\test_synthetic_canary.py:47: KeyError
+=========================== short test summary info ===========================
+FAILED tests/stage1_sctsr_v4/test_synthetic_canary.py::test_synthetic_fixture_covers_taskbook_minimums
+FAILED tests/stage1_sctsr_v4/test_synthetic_canary.py::test_canary_exercises_real_checkpoint_resume
+FAILED tests/stage1_sctsr_v4/test_synthetic_canary.py::test_canary_predictions_contain_real_probability_ties
+3 failed, 3 passed in 8.87s

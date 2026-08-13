@@ -1,0 +1,81 @@
+Script failed
+Wall time 3.2 seconds
+Output:
+Script error:
+Exit code: 1
+Wall time: 3.2 seconds
+Output:
+......FFF...                                                             [100%]
+================================== FAILURES ===================================
+__ test_formal_prediction_is_bound_to_loadable_checkpoint_and_complete_split __
+
+tmp_path = WindowsPath('C:/Users/28898/AppData/Local/Temp/pytest-of-28898/pytest-1510/test_formal_prediction_is_boun0')
+prediction_rows = (PredictionRow(run_id='R', arm_id='T_U', training_seed=1, split_role='synthetic', split_manifest_path='synthetic.json'..., source_tree_digest='CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC', prediction_generation=1), ...)
+
+    def test_formal_prediction_is_bound_to_loadable_checkpoint_and_complete_split(tmp_path, prediction_rows):
+        rows, binding, _, _ = _bound_formal_prediction(tmp_path, prediction_rows)
+        output = tmp_path / "run_id=R" / "epoch=0200" / "predictions.parquet"
+>       manifest, summary = write_prediction_artifact(
+            rows,
+            output,
+            formal_endpoint=True,
+            binding=binding,
+            expected_sample_labels={row.sample_id: row.y_true for row in rows},
+            repository_root=tmp_path,
+        )
+E       TypeError: write_prediction_artifact() got an unexpected keyword argument 'repository_root'
+
+tests\stage1_sctsr_v4\test_prediction_evaluation_hardening.py:197: TypeError
+______ test_formal_prediction_rejects_missing_extra_or_wrong_split_rows _______
+
+tmp_path = WindowsPath('C:/Users/28898/AppData/Local/Temp/pytest-of-28898/pytest-1510/test_formal_prediction_rejects0')
+prediction_rows = (PredictionRow(run_id='R', arm_id='T_U', training_seed=1, split_role='synthetic', split_manifest_path='synthetic.json'..., source_tree_digest='CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC', prediction_generation=1), ...)
+
+    def test_formal_prediction_rejects_missing_extra_or_wrong_split_rows(tmp_path, prediction_rows):
+        rows, binding, _, _ = _bound_formal_prediction(tmp_path, prediction_rows)
+        for mutated in (
+            rows[:-1],
+            rows + (replace(rows[-1], sample_id="EXTRA"),),
+            (replace(rows[0], y_true=1 - rows[0].y_true),) + rows[1:],
+        ):
+            with pytest.raises(SctsrError) as caught:
+>               write_prediction_artifact(
+                    mutated,
+                    tmp_path / "run_id=R" / "epoch=0200" / f"{len(mutated)}-{mutated[0].sample_id}.parquet",
+                    formal_endpoint=True,
+                    binding=binding,
+                    repository_root=tmp_path,
+                )
+E               TypeError: write_prediction_artifact() got an unexpected keyword argument 'repository_root'
+
+tests\stage1_sctsr_v4\test_prediction_evaluation_hardening.py:218: TypeError
+________ test_formal_prediction_rejects_arbitrary_json_claiming_val_op ________
+
+tmp_path = WindowsPath('C:/Users/28898/AppData/Local/Temp/pytest-of-28898/pytest-1510/test_formal_prediction_rejects1')
+prediction_rows = (PredictionRow(run_id='R', arm_id='T_U', training_seed=1, split_role='synthetic', split_manifest_path='synthetic.json'..., source_tree_digest='CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC', prediction_generation=1), ...)
+
+    def test_formal_prediction_rejects_arbitrary_json_claiming_val_op(tmp_path, prediction_rows):
+        rows, binding, _, _ = _bound_formal_prediction(tmp_path, prediction_rows)
+        fake = tmp_path / "fake_val_op.json"
+        fake.write_text(json.dumps({"rows": [{"sample_id": row.sample_id, "y_true": row.y_true} for row in rows]}), encoding="utf-8")
+        fake_binding = replace(binding, split_manifest_path=fake.as_posix(), split_manifest_sha256=sha256_file(fake))
+        fake_rows = tuple(
+            replace(row, split_manifest_path=fake.as_posix(), split_manifest_sha256=sha256_file(fake))
+            for row in rows
+        )
+        with pytest.raises(SctsrError) as caught:
+>           write_prediction_artifact(
+                fake_rows,
+                tmp_path / "run_id=R" / "epoch=0200" / "fake.parquet",
+                formal_endpoint=True,
+                binding=fake_binding,
+                repository_root=tmp_path,
+            )
+E           TypeError: write_prediction_artifact() got an unexpected keyword argument 'repository_root'
+
+tests\stage1_sctsr_v4\test_prediction_evaluation_hardening.py:238: TypeError
+=========================== short test summary info ===========================
+FAILED tests/stage1_sctsr_v4/test_prediction_evaluation_hardening.py::test_formal_prediction_is_bound_to_loadable_checkpoint_and_complete_split
+FAILED tests/stage1_sctsr_v4/test_prediction_evaluation_hardening.py::test_formal_prediction_rejects_missing_extra_or_wrong_split_rows
+FAILED tests/stage1_sctsr_v4/test_prediction_evaluation_hardening.py::test_formal_prediction_rejects_arbitrary_json_claiming_val_op
+3 failed, 9 passed in 2.12s

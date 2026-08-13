@@ -1,0 +1,14 @@
+{
+  "confirmation_seeds": [],
+  "discovery_seeds": [],
+  "historical_training_seeds": [],
+  "required_counts_when_formal": {
+    "confirmation": 14,
+    "discovery": 8
+  },
+  "schema_version": "stage1.sctsr.seed_registry.v1",
+  "selection_seeds": [
+    20260606
+  ],
+  "state": "FORMAL_SEEDS_BLOCKED_UNTIL_RELEASE"
+}
