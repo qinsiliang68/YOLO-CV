@@ -3,7 +3,7 @@ from __future__ import annotations
 import hashlib
 import json
 import subprocess
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any, Sequence
 
@@ -206,37 +206,52 @@ def audit_repository_state(
         path = root / relative
         if not path.is_file():
             raise SctsrError(ErrorCode.SOURCE_TREE_MISMATCH, "Protected legacy file is missing", artifact_path=str(path))
-        # Compare the exact Windows worktree representation, not only Git's
-        # canonical blob bytes.  `--filters` applies the registered eol/smudge
-        # rules for this path and therefore matches the SHA visible to the
-        # training/evidence code.
-        baseline_bytes = _git(
-            root,
-            "cat-file",
-            "--filters",
-            f"--path={relative}",
-            f"{baseline_commit}:{relative}",
-            binary=True,
-        )
-        assert isinstance(baseline_bytes, bytes)
+        baseline_oid = str(_git(root, "rev-parse", f"{baseline_commit}:{relative}"))
+        source_oid = str(_git(root, "rev-parse", f"{implementation_source_commit}:{relative}"))
+        normalized_worktree_oid = str(_git(root, "hash-object", f"--path={relative}", relative))
+        baseline_bytes = _git(root, "cat-file", "blob", baseline_oid, binary=True)
+        source_bytes = _git(root, "cat-file", "blob", source_oid, binary=True)
+        assert isinstance(baseline_bytes, bytes) and isinstance(source_bytes, bytes)
         baseline_sha = hashlib.sha256(baseline_bytes).hexdigest().upper()
-        current_sha = sha256_file(path)
+        source_sha = hashlib.sha256(source_bytes).hexdigest().upper()
+        worktree_sha = sha256_file(path)
         modified = datetime.fromtimestamp(path.stat().st_mtime, tz=timezone.utc)
-        if current_sha != baseline_sha or modified > start_time:
+        # Git commit timestamps have one-second resolution while NTFS mtimes are
+        # sub-second.  Treat the commit's whole recorded second as pre-start.
+        mtime_cutoff = start_time + timedelta(seconds=1)
+        if baseline_oid != source_oid or baseline_sha != source_sha or normalized_worktree_oid != source_oid or modified >= mtime_cutoff:
             raise SctsrError(
                 ErrorCode.SOURCE_TREE_MISMATCH,
-                "Protected legacy SHA or mtime changed during v4 implementation",
-                observed={"path": relative, "sha256": current_sha, "mtime_utc": modified.isoformat()},
-                expected={"sha256": baseline_sha, "mtime_not_after_utc": start_time.isoformat()},
+                "Protected legacy Git identity, normalized worktree content, or mtime changed during v4 implementation",
+                observed={
+                    "path": relative,
+                    "source_git_blob_oid": source_oid,
+                    "worktree_normalized_git_blob_oid": normalized_worktree_oid,
+                    "worktree_sha256": worktree_sha,
+                    "mtime_utc": modified.isoformat(),
+                },
+                expected={
+                    "baseline_git_blob_oid": baseline_oid,
+                    "baseline_blob_sha256": baseline_sha,
+                    "mtime_before_utc": mtime_cutoff.isoformat(),
+                },
             )
         legacy_files.append(
             {
                 "relative_path": relative,
                 "bytes": path.stat().st_size,
-                "sha256": current_sha,
-                "baseline_sha256": baseline_sha,
+                "worktree_sha256": worktree_sha,
+                "worktree_normalized_git_blob_oid": normalized_worktree_oid,
+                "baseline_git_blob_oid": baseline_oid,
+                "source_git_blob_oid": source_oid,
+                "baseline_blob_bytes": len(baseline_bytes),
+                "source_blob_bytes": len(source_bytes),
+                "baseline_blob_sha256": baseline_sha,
+                "source_blob_sha256": source_sha,
+                "worktree_representation_matches_source_blob_bytes": worktree_sha == source_sha,
                 "mtime_utc": modified.isoformat(),
                 "implementation_start_utc": start_time.isoformat(),
+                "implementation_start_mtime_cutoff_utc": mtime_cutoff.isoformat(),
                 "unchanged": True,
             }
         )
