@@ -1,17 +1,20 @@
 from __future__ import annotations
 
 from dataclasses import replace
+import csv
+import hashlib
 import json
 
 import pytest
 import torch
 
+from stage1_sctsr_v4.asset_registry import AssetRegistry, build_split_identity_bundle
 from stage1_sctsr_v4.checkpointing import build_checkpoint_payload, save_checkpoint_atomic
 from stage1_sctsr_v4.errors import ErrorCode, SctsrError
 from stage1_sctsr_v4.evaluation import compute_tie_safe_frontier, validate_checkpoint_for_evaluation, write_frontier_artifacts
 from stage1_sctsr_v4.fixed_step_runtime import ExponentialMovingAverage
 from stage1_sctsr_v4.prediction_artifact import PredictionArtifactBinding, validate_prediction_rows, write_prediction_artifact
-from stage1_sctsr_v4.serialization import sha256_file
+from stage1_sctsr_v4.serialization import atomic_write_json, sha256_file
 
 
 class _Scaler:
@@ -20,6 +23,70 @@ class _Scaler:
 
 
 def _bound_formal_prediction(tmp_path, prediction_rows):
+    selected = prediction_rows[:12]
+    base_manifest = tmp_path / "base.csv"
+    val_op_manifest = tmp_path / "val_op.csv"
+    for path, rows, split_role in (
+        (base_manifest, (("BASE_ONLY", 0),), "train"),
+        (val_op_manifest, tuple((row.sample_id, row.y_true) for row in selected), "val_op"),
+    ):
+        with path.open("w", encoding="utf-8", newline="") as handle:
+            writer = csv.DictWriter(handle, fieldnames=("sample_id", "y_true", "split"))
+            writer.writeheader()
+            writer.writerows({"sample_id": sample_id, "y_true": label, "split": split_role} for sample_id, label in rows)
+
+    def digest(rows):
+        hasher = hashlib.sha256()
+        for sample_id, label in sorted(rows):
+            hasher.update(f"{sample_id}|{label}\n".encode("utf-8"))
+        return hasher.hexdigest().upper()
+
+    def record(path, asset_id, role, rows, split_role, universe):
+        return {
+            "asset_id": asset_id,
+            "relative_path": path.name,
+            "sha256": sha256_file(path),
+            "bytes": path.stat().st_size,
+            "role": role,
+            "required": True,
+            "row_count": len(rows),
+            "identity_column": "sample_id",
+            "label_column": "y_true",
+            "identity_digest": digest(rows),
+            "identity_digest_algorithm": "SHA256_SORTED_SAMPLE_ID_PIPE_LABEL_LF",
+            "split_column": "split",
+            "allowed_split_values": [split_role],
+            "identity_universe": universe,
+            "mutual_exclusion_group": "TRAIN_VALIDATION_DISJOINT",
+        }
+
+    base_rows = (("BASE_ONLY", 0),)
+    val_op_rows = tuple((row.sample_id, row.y_true) for row in selected)
+    raw_registry = {
+        "schema_version": "stage1.sctsr.asset_registry.v1",
+        "base_denominator": 1,
+        "base_identity_digest": digest(base_rows),
+        "base_identity_digest_algorithm": "SHA256_SORTED_SAMPLE_ID_PIPE_LABEL_LF",
+        "base_asset_ids": ["base"],
+        "split_asset_ids": {"val_op": ["val_op"]},
+        "val_target_available": False,
+        "assets": [
+            record(base_manifest, "base", "CANONICAL_BASE_MANIFEST", base_rows, "train", "CANONICAL_BASE_FULL"),
+            record(val_op_manifest, "val_op", "VAL_OP_ENDPOINT_ONLY", val_op_rows, "val_op", "VAL_OP_COMPONENT"),
+        ],
+    }
+    registry_path = tmp_path / "asset_registry.json"
+    atomic_write_json(registry_path, raw_registry)
+    registry = AssetRegistry.from_mapping(raw_registry)
+    split = tmp_path / "VAL_OP_SPLIT_BUNDLE.json"
+    build_split_identity_bundle(
+        registry,
+        repository_root=tmp_path,
+        registry_path=registry_path,
+        split_role="val_op",
+        output_path=split,
+    )
+
     model = torch.nn.Linear(2, 2)
     optimizer = torch.optim.SGD(model.parameters(), lr=0.1)
     scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=1)
@@ -38,13 +105,10 @@ def _bound_formal_prediction(tmp_path, prediction_rows):
         training_seed=1,
         source_tree_digest="D" * 64,
         runtime_config_digest="E" * 64,
-        asset_registry_digest="F" * 64,
+        asset_registry_digest=registry.digest,
     )
     checkpoint = tmp_path / "epoch_0200.pt"
     checkpoint_sha = save_checkpoint_atomic(checkpoint, payload)
-    selected = prediction_rows[:12]
-    split = tmp_path / "val_op.json"
-    split.write_text(json.dumps({"rows": [{"sample_id": row.sample_id, "y_true": row.y_true} for row in selected]}), encoding="utf-8")
     split_sha = sha256_file(split)
     rows = tuple(
         replace(
@@ -136,6 +200,7 @@ def test_formal_prediction_is_bound_to_loadable_checkpoint_and_complete_split(tm
         formal_endpoint=True,
         binding=binding,
         expected_sample_labels={row.sample_id: row.y_true for row in rows},
+        repository_root=tmp_path,
     )
     assert manifest.canonical_parquet
     assert summary["row_count"] == len(rows)
@@ -155,8 +220,29 @@ def test_formal_prediction_rejects_missing_extra_or_wrong_split_rows(tmp_path, p
                 tmp_path / "run_id=R" / "epoch=0200" / f"{len(mutated)}-{mutated[0].sample_id}.parquet",
                 formal_endpoint=True,
                 binding=binding,
+                repository_root=tmp_path,
             )
         assert caught.value.code is ErrorCode.PREDICTION_IDENTITY_MISMATCH
+
+
+def test_formal_prediction_rejects_arbitrary_json_claiming_val_op(tmp_path, prediction_rows):
+    rows, binding, _, _ = _bound_formal_prediction(tmp_path, prediction_rows)
+    fake = tmp_path / "fake_val_op.json"
+    fake.write_text(json.dumps({"rows": [{"sample_id": row.sample_id, "y_true": row.y_true} for row in rows]}), encoding="utf-8")
+    fake_binding = replace(binding, split_manifest_path=fake.as_posix(), split_manifest_sha256=sha256_file(fake))
+    fake_rows = tuple(
+        replace(row, split_manifest_path=fake.as_posix(), split_manifest_sha256=sha256_file(fake))
+        for row in rows
+    )
+    with pytest.raises(SctsrError) as caught:
+        write_prediction_artifact(
+            fake_rows,
+            tmp_path / "run_id=R" / "epoch=0200" / "fake.parquet",
+            formal_endpoint=True,
+            binding=fake_binding,
+            repository_root=tmp_path,
+        )
+    assert caught.value.code is ErrorCode.PREDICTION_IDENTITY_MISMATCH
 
 
 def test_checkpoint_binding_rejects_wrong_sha(tmp_path, prediction_rows):

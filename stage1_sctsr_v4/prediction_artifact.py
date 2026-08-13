@@ -7,6 +7,7 @@ from dataclasses import asdict, dataclass, fields
 from pathlib import Path
 from typing import Any, Mapping, Sequence
 
+from .asset_registry import load_split_identity_bundle
 from .checkpointing import load_checkpoint
 from .columnar import ColumnarManifest, read_columnar, validate_columnar_file, write_zstd_parquet
 from .errors import ErrorCode, SctsrError
@@ -240,6 +241,7 @@ def validate_prediction_binding(
     binding: PredictionArtifactBinding,
     *,
     expected_sample_labels: Mapping[str, int] | None = None,
+    repository_root: str | Path | None = None,
 ) -> dict[str, Any]:
     payload = binding.validate()
     if binding.evaluation_mode != "synthetic":
@@ -247,7 +249,23 @@ def validate_prediction_binding(
         observed_manifest_sha = sha256_file(split_path)
         if observed_manifest_sha != binding.split_manifest_sha256:
             raise SctsrError(ErrorCode.PREDICTION_IDENTITY_MISMATCH, "Split manifest SHA does not match the binding", observed=observed_manifest_sha, expected=binding.split_manifest_sha256)
-        loaded_labels = load_split_sample_labels(split_path)
+        if repository_root is None:
+            raise SctsrError(
+                ErrorCode.PREDICTION_IDENTITY_MISMATCH,
+                "Formal and trajectory predictions require a repository-bound split identity bundle",
+            )
+        loaded_labels, split_bundle = load_split_identity_bundle(
+            split_path,
+            repository_root=repository_root,
+            expected_split_role=binding.split_role,
+        )
+        if str(payload["asset_registry_digest"]).upper() != str(split_bundle["asset_registry_digest"]).upper():
+            raise SctsrError(
+                ErrorCode.PREDICTION_IDENTITY_MISMATCH,
+                "Prediction checkpoint and split bundle bind different asset registries",
+                observed=payload["asset_registry_digest"],
+                expected=split_bundle["asset_registry_digest"],
+            )
         if expected_sample_labels is not None and dict(expected_sample_labels) != loaded_labels:
             raise SctsrError(ErrorCode.PREDICTION_IDENTITY_MISMATCH, "Caller split identity disagrees with the SHA-bound manifest")
         expected_sample_labels = loaded_labels
@@ -278,12 +296,18 @@ def write_prediction_artifact(
     formal_endpoint: bool,
     binding: PredictionArtifactBinding | None = None,
     expected_sample_labels: Mapping[str, int] | None = None,
+    repository_root: str | Path | None = None,
 ) -> tuple[ColumnarManifest, dict[str, object]]:
     validate_prediction_rows(rows, expected_sample_labels=expected_sample_labels)
     if formal_endpoint and binding is None:
         raise SctsrError(ErrorCode.PREDICTION_IDENTITY_MISMATCH, "Formal prediction publication requires a loadable checkpoint and SHA-bound split binding")
     if binding is not None:
-        validate_prediction_binding(rows, binding, expected_sample_labels=expected_sample_labels)
+        checkpoint_payload = validate_prediction_binding(
+            rows,
+            binding,
+            expected_sample_labels=expected_sample_labels,
+            repository_root=repository_root,
+        )
         if formal_endpoint and binding.evaluation_mode != "formal":
             raise SctsrError(ErrorCode.PREDICTION_IDENTITY_MISMATCH, "Formal endpoint publication requires formal evaluation mode")
     elif formal_endpoint:
@@ -326,6 +350,11 @@ def write_prediction_artifact(
         "formal_endpoint": formal_endpoint,
         "evaluation_mode": binding.evaluation_mode if binding is not None else "synthetic_unbound_compatibility",
         "selection_semantic": binding.selection_semantic if binding is not None else "SYNTHETIC_NOT_SCIENTIFIC_RESULT",
+        "asset_registry_digest": (
+            str(checkpoint_payload["asset_registry_digest"])
+            if binding is not None
+            else "NOT_BOUND_SYNTHETIC_COMPATIBILITY"
+        ),
     }
     return manifest, summary
 
@@ -337,6 +366,7 @@ def read_registered_prediction_artifact(
     checkpoint_path: str | Path,
     evaluation_mode: str,
     allow_synthetic_portable_fallback: bool = False,
+    repository_root: str | Path | None = None,
 ) -> tuple[tuple[PredictionRow, ...], Mapping[str, Any], PredictionArtifactBinding]:
     """Load a published prediction partition and revalidate its whole identity.
 
@@ -418,5 +448,10 @@ def read_registered_prediction_artifact(
         selection_semantic=str(summary.get("selection_semantic", "")),
     )
     expected_labels = {row.sample_id: row.y_true for row in rows} if evaluation_mode == "synthetic" else None
-    validate_prediction_binding(rows, binding, expected_sample_labels=expected_labels)
+    validate_prediction_binding(
+        rows,
+        binding,
+        expected_sample_labels=expected_labels,
+        repository_root=repository_root,
+    )
     return rows, summary, binding

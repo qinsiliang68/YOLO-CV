@@ -32,6 +32,13 @@ def test_asset_cli_cannot_skip_registered_large_file_hashes(repository_root):
     assert "--skip-large-sha" not in result.stdout
 
 
+def test_split_bundle_cli_only_exposes_registered_validation_roles(repository_root):
+    result = _run(repository_root, repository_root / "scripts" / "stage1_sctsr_v4" / "build_split_identity_bundle.py", "--help")
+    assert result.returncode == 0
+    assert "{val_model,val_cal,val_op}" in result.stdout
+    assert "test" not in result.stdout.lower()
+
+
 def test_pool_cli_cannot_accept_an_absolute_base_denominator(repository_root):
     result = _run(repository_root, repository_root / "scripts" / "stage1_sctsr_v4" / "build_identity_pools.py", "--help")
     assert result.returncode == 0

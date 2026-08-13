@@ -48,6 +48,7 @@
     "seed_registry": "stage1.sctsr.seed_registry.v1",
     "selection_ledger": "stage1.sctsr.selection_ledger.v1",
     "source_tree_manifest": "stage1.sctsr.source_tree_manifest.v1",
+    "split_identity_bundle": "stage1.sctsr.split_identity_bundle.v1",
     "synthetic_artifact_index": "stage1.sctsr.synthetic_artifact_index.v1",
     "synthetic_asset_registry": "stage1.sctsr.synthetic_asset_registry.v1",
     "synthetic_branch_receipt": "stage1.sctsr.synthetic_branch_receipt.v1",

@@ -8,7 +8,7 @@ from pathlib import Path
 from typing import Any, Iterable, Mapping
 
 from .errors import ErrorCode, SctsrError
-from .serialization import load_json, sha256_file, stable_digest
+from .serialization import atomic_write_json, load_json, sha256_file, stable_digest
 
 
 @dataclass(frozen=True, slots=True)
@@ -67,10 +67,20 @@ class AssetRegistry:
     base_identity_digest: str | None = None
     base_identity_digest_algorithm: str | None = None
     base_asset_ids: tuple[str, ...] = ()
+    split_asset_ids: tuple[tuple[str, tuple[str, ...]], ...] = ()
 
     @property
     def digest(self) -> str:
         return stable_digest(self)
+
+    @property
+    def split_asset_map(self) -> dict[str, tuple[str, ...]]:
+        output: dict[str, tuple[str, ...]] = {}
+        for role, asset_ids in self.split_asset_ids:
+            if role in output:
+                raise SctsrError(ErrorCode.ASSET_VALIDATION_FAILED, "Registered split role is duplicated", observed=role)
+            output[role] = asset_ids
+        return output
 
     @classmethod
     def from_mapping(cls, value: Mapping[str, Any]) -> "AssetRegistry":
@@ -82,6 +92,10 @@ class AssetRegistry:
             base_identity_digest=None if value.get("base_identity_digest") is None else str(value["base_identity_digest"]).upper(),
             base_identity_digest_algorithm=value.get("base_identity_digest_algorithm"),
             base_asset_ids=tuple(str(item) for item in value.get("base_asset_ids", ())),
+            split_asset_ids=tuple(
+                (str(role), tuple(str(item) for item in asset_ids))
+                for role, asset_ids in sorted(dict(value.get("split_asset_ids", {})).items())
+            ),
         )
 
 
@@ -255,15 +269,184 @@ def validate_asset_registry(registry: AssetRegistry, repository_root: str | Path
                 if overlap:
                     raise SctsrError(ErrorCode.ASSET_VALIDATION_FAILED, "Mutually exclusive assets overlap", failing_field=group, observed={"left": left_id, "right": right_id, "example": sorted(overlap)[:20]})
 
+    allowed_split_roles = {"val_model", "val_cal", "val_op"}
+    registered_splits: dict[str, dict[str, Any]] = {}
+    split_identities_seen: dict[str, str] = {}
+    asset_by_id = {record.asset_id: record for record in registry.assets}
+    split_map = registry.split_asset_map
+    for split_role, asset_ids in split_map.items():
+        if split_role.lower() in {"test", "blind_test", "blind_holdout", "holdout_test"}:
+            raise SctsrError(ErrorCode.TEST_ACCESS_FORBIDDEN, "Test or blind holdout may not enter the SCTSR v4 asset registry")
+        if split_role not in allowed_split_roles:
+            raise SctsrError(ErrorCode.ASSET_VALIDATION_FAILED, "Registered validation split role is unknown", observed=split_role)
+        if not asset_ids or len(asset_ids) != len(set(asset_ids)):
+            raise SctsrError(ErrorCode.ASSET_VALIDATION_FAILED, "Registered validation split components are empty or duplicated", observed={split_role: asset_ids})
+        combined: dict[str, int] = {}
+        components: list[dict[str, Any]] = []
+        for asset_id in asset_ids:
+            record = asset_by_id.get(asset_id)
+            evidence = evidence_by_id.get(asset_id)
+            if record is None or evidence is None:
+                raise SctsrError(ErrorCode.ASSET_VALIDATION_FAILED, "Registered split component lacks verified content evidence", observed={split_role: asset_id})
+            if split_role.upper() not in record.role.upper():
+                raise SctsrError(ErrorCode.ASSET_VALIDATION_FAILED, "Split component role does not match its registry split", observed=record.role, expected=split_role)
+            for sample_id, label in evidence.identities.items():
+                if sample_id in combined:
+                    raise SctsrError(ErrorCode.ASSET_VALIDATION_FAILED, "Registered split components overlap", observed={"split_role": split_role, "sample_id": sample_id})
+                prior_role = split_identities_seen.get(sample_id)
+                if prior_role is not None:
+                    raise SctsrError(ErrorCode.ASSET_VALIDATION_FAILED, "Registered validation splits are not identity-disjoint", observed={"sample_id": sample_id, "roles": [prior_role, split_role]})
+                combined[sample_id] = label
+                split_identities_seen[sample_id] = split_role
+            components.append(
+                {
+                    "asset_id": asset_id,
+                    "relative_path": record.relative_path,
+                    "sha256": record.sha256,
+                    "row_count": evidence.row_count,
+                    "identity_digest": evidence.identity_digest,
+                }
+            )
+        registered_splits[split_role] = {
+            "asset_ids": list(asset_ids),
+            "row_count": len(combined),
+            "sample_label_identity_digest": _sample_label_digest(combined),
+            "components": components,
+        }
+
     return {
         "status": "PASS",
         "registry_digest": registry.digest,
         "base_denominator": registry.base_denominator,
         "base_identity_digest": registry.base_identity_digest,
         "assets": results,
+        "registered_splits": registered_splits,
         "val_target_available": False,
     }
 
 
 def load_asset_registry(path: str | Path) -> AssetRegistry:
     return AssetRegistry.from_mapping(load_json(path))
+
+
+def load_registered_split_labels(
+    registry: AssetRegistry,
+    repository_root: str | Path,
+    split_role: str,
+) -> dict[str, int]:
+    role = str(split_role)
+    if role.lower() in {"test", "blind_test", "blind_holdout", "holdout_test"}:
+        raise SctsrError(ErrorCode.TEST_ACCESS_FORBIDDEN, "Test or blind holdout split loading is forbidden")
+    asset_ids = registry.split_asset_map.get(role)
+    if not asset_ids:
+        raise SctsrError(ErrorCode.ASSET_VALIDATION_FAILED, "Requested validation split is not registered", observed=role)
+    root = Path(repository_root).resolve()
+    asset_by_id = {record.asset_id: record for record in registry.assets}
+    labels: dict[str, int] = {}
+    for asset_id in asset_ids:
+        record = asset_by_id.get(asset_id)
+        if record is None:
+            raise SctsrError(ErrorCode.ASSET_VALIDATION_FAILED, "Registered split component is missing", observed=asset_id)
+        path = (root / record.relative_path).resolve()
+        try:
+            path.relative_to(root)
+        except ValueError as exc:
+            raise SctsrError(ErrorCode.ASSET_VALIDATION_FAILED, "Registered split component escapes repository", artifact_path=str(path)) from exc
+        if not path.is_file() or path.stat().st_size != record.bytes or sha256_file(path) != record.sha256:
+            raise SctsrError(ErrorCode.ASSET_VALIDATION_FAILED, "Registered split component identity changed", artifact_path=str(path))
+        evidence = _content_evidence(record, path)
+        if evidence is None or evidence.row_count != record.row_count or evidence.identity_digest != record.identity_digest:
+            raise SctsrError(ErrorCode.ASSET_VALIDATION_FAILED, "Registered split component content evidence changed", artifact_path=str(path))
+        for sample_id, label in evidence.identities.items():
+            if sample_id in labels:
+                raise SctsrError(ErrorCode.ASSET_VALIDATION_FAILED, "Registered split components overlap", observed=sample_id)
+            labels[sample_id] = label
+    if not labels:
+        raise SctsrError(ErrorCode.ASSET_VALIDATION_FAILED, "Registered validation split is empty", observed=role)
+    return labels
+
+
+def build_split_identity_bundle(
+    registry: AssetRegistry,
+    *,
+    repository_root: str | Path,
+    registry_path: str | Path,
+    split_role: str,
+    output_path: str | Path,
+) -> dict[str, Any]:
+    root = Path(repository_root).resolve()
+    registry_source = Path(registry_path).resolve()
+    output = Path(output_path)
+    if output.exists():
+        raise SctsrError(ErrorCode.ATOMIC_TRANSACTION_INCOMPLETE, "Split identity bundle is immutable; choose a new output path", artifact_path=str(output))
+    try:
+        registry_relative = registry_source.relative_to(root).as_posix()
+    except ValueError as exc:
+        raise SctsrError(ErrorCode.ASSET_VALIDATION_FAILED, "Asset registry path escapes repository root", artifact_path=str(registry_source)) from exc
+    if not registry_source.is_file():
+        raise SctsrError(ErrorCode.ASSET_VALIDATION_FAILED, "Asset registry file is missing", artifact_path=str(registry_source))
+    registered = load_asset_registry(registry_source)
+    if registered.digest != registry.digest:
+        raise SctsrError(ErrorCode.ASSET_VALIDATION_FAILED, "In-memory and on-disk asset registries differ")
+    report = validate_asset_registry(registry, root, verify_large_files=True)
+    labels = load_registered_split_labels(registry, root, split_role)
+    split_report = report["registered_splits"].get(split_role)
+    if split_report is None:
+        raise SctsrError(ErrorCode.ASSET_VALIDATION_FAILED, "Requested split is absent from validated registry", observed=split_role)
+    payload: dict[str, Any] = {
+        "schema_version": "stage1.sctsr.split_identity_bundle.v1",
+        "split_role": split_role,
+        "asset_registry_path": registry_relative,
+        "asset_registry_sha256": sha256_file(registry_source),
+        "asset_registry_digest": registry.digest,
+        "components": split_report["components"],
+        "row_count": len(labels),
+        "sample_label_identity_digest": _sample_label_digest(labels),
+        "formal_training_started": False,
+        "blind_holdout_opened": False,
+    }
+    payload["bundle_digest"] = stable_digest(payload)
+    atomic_write_json(output, payload)
+    return payload
+
+
+def load_split_identity_bundle(
+    path: str | Path,
+    *,
+    repository_root: str | Path,
+    expected_split_role: str,
+) -> tuple[dict[str, int], dict[str, Any]]:
+    source = Path(path)
+    raw = load_json(source)
+    if not isinstance(raw, Mapping) or raw.get("schema_version") != "stage1.sctsr.split_identity_bundle.v1":
+        raise SctsrError(ErrorCode.PREDICTION_IDENTITY_MISMATCH, "Prediction split identity bundle schema is invalid")
+    if raw.get("split_role") != expected_split_role:
+        raise SctsrError(ErrorCode.PREDICTION_IDENTITY_MISMATCH, "Prediction split identity bundle role mismatch")
+    if expected_split_role.lower() in {"test", "blind_test", "blind_holdout", "holdout_test"}:
+        raise SctsrError(ErrorCode.TEST_ACCESS_FORBIDDEN, "Test or blind holdout split bundle is forbidden")
+    expected_digest = stable_digest({key: value for key, value in raw.items() if key != "bundle_digest"})
+    if raw.get("bundle_digest") != expected_digest:
+        raise SctsrError(ErrorCode.PREDICTION_IDENTITY_MISMATCH, "Prediction split identity bundle digest mismatch")
+    root = Path(repository_root).resolve()
+    registry_path = (root / str(raw.get("asset_registry_path", ""))).resolve()
+    try:
+        registry_path.relative_to(root)
+    except ValueError as exc:
+        raise SctsrError(ErrorCode.ASSET_VALIDATION_FAILED, "Split bundle registry path escapes repository root") from exc
+    if not registry_path.is_file() or sha256_file(registry_path) != raw.get("asset_registry_sha256"):
+        raise SctsrError(ErrorCode.ASSET_VALIDATION_FAILED, "Split bundle asset registry identity changed")
+    registry = load_asset_registry(registry_path)
+    if registry.digest != raw.get("asset_registry_digest"):
+        raise SctsrError(ErrorCode.ASSET_VALIDATION_FAILED, "Split bundle asset registry digest changed")
+    report = validate_asset_registry(registry, root, verify_large_files=True)
+    labels = load_registered_split_labels(registry, root, expected_split_role)
+    split_report = report["registered_splits"][expected_split_role]
+    expected = {
+        "components": split_report["components"],
+        "row_count": len(labels),
+        "sample_label_identity_digest": _sample_label_digest(labels),
+    }
+    for field, value in expected.items():
+        if raw.get(field) != value:
+            raise SctsrError(ErrorCode.PREDICTION_IDENTITY_MISMATCH, "Split identity bundle content differs from the validated registry", failing_field=field)
+    return labels, dict(raw)

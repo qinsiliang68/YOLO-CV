@@ -16,6 +16,7 @@ from stage1_sctsr_v4.serialization import sha256_file
 def main() -> int:
     parser = argparse.ArgumentParser(description="Evaluate one registered prediction/checkpoint identity with the tie-safe raw frontier")
     parser.add_argument("--checkpoint", type=Path, required=True)
+    parser.add_argument("--repository-root", type=Path, default=Path.cwd())
     parser.add_argument("--checkpoint-epoch", type=int, required=True)
     parser.add_argument("--mode", choices=["formal", "trajectory", "synthetic"], required=True)
     parser.add_argument("--predictions", type=Path, required=True)
@@ -43,6 +44,7 @@ def main() -> int:
             checkpoint_path=arguments.checkpoint,
             evaluation_mode=arguments.mode,
             allow_synthetic_portable_fallback=arguments.allow_synthetic_columnar_fallback,
+            repository_root=arguments.repository_root,
         )
         checkpoint = validate_checkpoint_for_evaluation(
             arguments.checkpoint,
