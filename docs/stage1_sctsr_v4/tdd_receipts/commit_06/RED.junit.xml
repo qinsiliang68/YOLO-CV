@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="16" skipped="0" tests="16" time="0.438" timestamp="2026-08-13T17:53:47.027925+08:00" hostname="zhangdawei"><testcase classname="tests.stage1_sctsr_v4.test_prediction_evaluation_hardening" name="test_prediction_rows_require_one_bound_checkpoint_and_split" time="0.001"><failure message="Failed: DID NOT RAISE &lt;class 'stage1_sctsr_v4.errors.SctsrError'&gt;">prediction_rows = (PredictionRow(run_id='R', arm_id='T_U', training_seed=1, split_role='synthetic', split_manifest_path='synthetic.json'..., source_tree_digest='CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC', prediction_generation=1), ...)
+
+    def test_prediction_rows_require_one_bound_checkpoint_and_split(prediction_rows):
+        mixed = list(prediction_rows)
+        mixed[-1] = replace(
+            mixed[-1],
+            checkpoint_sha256="D" * 64,
+            split_manifest_sha256="E" * 64,
+            source_tree_digest="F" * 64,
+        )
+&gt;       with pytest.raises(SctsrError) as caught:
+E       Failed: DID NOT RAISE &lt;class 'stage1_sctsr_v4.errors.SctsrError'&gt;
+
+tests\stage1_sctsr_v4\test_prediction_evaluation_hardening.py:20: Failed</failure></testcase><testcase classname="tests.stage1_sctsr_v4.test_prediction_evaluation_hardening" name="test_prediction_probability_must_match_two_class_logits" time="0.001"><failure message="Failed: DID NOT RAISE &lt;class 'stage1_sctsr_v4.errors.SctsrError'&gt;">prediction_rows = (PredictionRow(run_id='R', arm_id='T_U', training_seed=1, split_role='synthetic', split_manifest_path='synthetic.json'..., source_tree_digest='CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC', prediction_generation=1), ...)
+
+    def test_prediction_probability_must_match_two_class_logits(prediction_rows):
+        inconsistent = (replace(prediction_rows[0], p_defect_raw=0.999),) + prediction_rows[1:]
+&gt;       with pytest.raises(SctsrError) as caught:
+E       Failed: DID NOT RAISE &lt;class 'stage1_sctsr_v4.errors.SctsrError'&gt;
+
+tests\stage1_sctsr_v4\test_prediction_evaluation_hardening.py:27: Failed</failure></testcase><testcase classname="tests.stage1_sctsr_v4.test_prediction_evaluation_hardening" name="test_formal_prediction_write_rejects_unverified_manifest_and_checkpoint" time="0.292"><failure message="Failed: DID NOT RAISE &lt;class 'stage1_sctsr_v4.errors.SctsrError'&gt;">tmp_path = WindowsPath('C:/Users/28898/AppData/Local/Temp/pytest-of-28898/pytest-1454/test_formal_prediction_write_r0')
+prediction_rows = (PredictionRow(run_id='R', arm_id='T_U', training_seed=1, split_role='synthetic', split_manifest_path='synthetic.json'..., source_tree_digest='CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC', prediction_generation=1), ...)
+
+    def test_formal_prediction_write_rejects_unverified_manifest_and_checkpoint(tmp_path, prediction_rows):
+&gt;       with pytest.raises(SctsrError) as caught:
+E       Failed: DID NOT RAISE &lt;class 'stage1_sctsr_v4.errors.SctsrError'&gt;
+
+tests\stage1_sctsr_v4\test_prediction_evaluation_hardening.py:33: Failed</failure></testcase><testcase classname="tests.stage1_sctsr_v4.test_prediction_evaluation_hardening" name="test_checkpoint_evaluation_requires_existing_loadable_bound_checkpoint" time="0.001"><failure message="Failed: DID NOT RAISE &lt;class 'stage1_sctsr_v4.errors.SctsrError'&gt;">tmp_path = WindowsPath('C:/Users/28898/AppData/Local/Temp/pytest-of-28898/pytest-1454/test_checkpoint_evaluation_req0')
+
+    def test_checkpoint_evaluation_requires_existing_loadable_bound_checkpoint(tmp_path):
+&gt;       with pytest.raises(SctsrError) as caught:
+E       Failed: DID NOT RAISE &lt;class 'stage1_sctsr_v4.errors.SctsrError'&gt;
+
+tests\stage1_sctsr_v4\test_prediction_evaluation_hardening.py:43: Failed</failure></testcase><testcase classname="tests.stage1_sctsr_v4.test_prediction_evaluation_hardening" name="test_frontier_rejects_unregistered_artifact_bindings" time="0.001"><failure message="Failed: DID NOT RAISE &lt;class 'stage1_sctsr_v4.errors.SctsrError'&gt;">prediction_rows = (PredictionRow(run_id='R', arm_id='T_U', training_seed=1, split_role='synthetic', split_manifest_path='synthetic.json'..., source_tree_digest='CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC', prediction_generation=1), ...)
+
+    def test_frontier_rejects_unregistered_artifact_bindings(prediction_rows):
+&gt;       with pytest.raises(SctsrError) as caught:
+E       Failed: DID NOT RAISE &lt;class 'stage1_sctsr_v4.errors.SctsrError'&gt;
+
+tests\stage1_sctsr_v4\test_prediction_evaluation_hardening.py:53: Failed</failure></testcase><testcase classname="tests.stage1_sctsr_v4.test_prediction_evaluation_hardening" name="test_prediction_test_role_is_always_forbidden" time="0.001"><failure message="Failed: DID NOT RAISE &lt;class 'stage1_sctsr_v4.errors.SctsrError'&gt;">prediction_rows = (PredictionRow(run_id='R', arm_id='T_U', training_seed=1, split_role='synthetic', split_manifest_path='synthetic.json'..., source_tree_digest='CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC', prediction_generation=1), ...)
+
+    def test_prediction_test_role_is_always_forbidden(prediction_rows):
+        rows = tuple(replace(row, split_role="test") for row in prediction_rows)
+&gt;       with pytest.raises(SctsrError) as caught:
+E       Failed: DID NOT RAISE &lt;class 'stage1_sctsr_v4.errors.SctsrError'&gt;
+
+tests\stage1_sctsr_v4\test_prediction_evaluation_hardening.py:60: Failed</failure></testcase><testcase classname="tests.stage1_sctsr_v4.test_statistics_hardening" name="test_seven_of_eight_negative_deltas_are_contradicted_not_supported" time="0.001"><failure message="AssertionError: assert 'SUPPORTED_FO..._NOT_EFFICACY' == 'CONTRADICTED'&#10;  &#10;  - CONTRADICTED&#10;  + SUPPORTED_FOR_CONFIRMATION_NOT_EFFICACY">def test_seven_of_eight_negative_deltas_are_contradicted_not_supported():
+        treatment = {seed: Endpoint(0.9 if seed &lt; 7 else 1.01, 100, 1) for seed in range(8)}
+        comparator = {seed: Endpoint(1.0, 100, 1) for seed in range(8)}
+        result = paired_contrast("C01", treatment, comparator)
+&gt;       assert validate_discovery(result) == "CONTRADICTED"
+E       AssertionError: assert 'SUPPORTED_FO..._NOT_EFFICACY' == 'CONTRADICTED'
+E
+E         - CONTRADICTED
+E         + SUPPORTED_FOR_CONFIRMATION_NOT_EFFICACY
+
+tests\stage1_sctsr_v4\test_statistics_hardening.py:15: AssertionError</failure></testcase><testcase classname="tests.stage1_sctsr_v4.test_statistics_hardening" name="test_unreachable_target_anchor_fails_confirmation_closed" time="0.014"><failure message="AssertionError: assert 'SUPPORTED' == 'FAIL_UNREACHABLE_TARGET_TN'&#10;  &#10;  - FAIL_UNREACHABLE_TARGET_TN&#10;  + SUPPORTED">def test_unreachable_target_anchor_fails_confirmation_closed():
+        treatment = {seed: Endpoint(1.1, 100, None) for seed in range(14)}
+        comparator = {seed: Endpoint(1.0, 99, 2) for seed in range(14)}
+        result = paired_contrast("C01", treatment, comparator)
+&gt;       assert validate_confirmation(result) == "FAIL_UNREACHABLE_TARGET_TN"
+E       AssertionError: assert 'SUPPORTED' == 'FAIL_UNREACHABLE_TARGET_TN'
+E
+E         - FAIL_UNREACHABLE_TARGET_TN
+E         + SUPPORTED
+
+tests\stage1_sctsr_v4\test_statistics_hardening.py:22: AssertionError</failure></testcase><testcase classname="tests.stage1_sctsr_v4.test_statistics_hardening" name="test_holm_rejects_invalid_raw_p_values[-0.1]" time="0.000"><failure message="Failed: DID NOT RAISE &lt;class 'stage1_sctsr_v4.errors.SctsrError'&gt;">bad_p = -0.1
+
+    @pytest.mark.parametrize("bad_p", [-0.1, 1.1, math.nan, math.inf])
+    def test_holm_rejects_invalid_raw_p_values(bad_p):
+&gt;       with pytest.raises(SctsrError) as caught:
+E       Failed: DID NOT RAISE &lt;class 'stage1_sctsr_v4.errors.SctsrError'&gt;
+
+tests\stage1_sctsr_v4\test_statistics_hardening.py:27: Failed</failure></testcase><testcase classname="tests.stage1_sctsr_v4.test_statistics_hardening" name="test_holm_rejects_invalid_raw_p_values[1.1]" time="0.000"><failure message="Failed: DID NOT RAISE &lt;class 'stage1_sctsr_v4.errors.SctsrError'&gt;">bad_p = 1.1
+
+    @pytest.mark.parametrize("bad_p", [-0.1, 1.1, math.nan, math.inf])
+    def test_holm_rejects_invalid_raw_p_values(bad_p):
+&gt;       with pytest.raises(SctsrError) as caught:
+E       Failed: DID NOT RAISE &lt;class 'stage1_sctsr_v4.errors.SctsrError'&gt;
+
+tests\stage1_sctsr_v4\test_statistics_hardening.py:27: Failed</failure></testcase><testcase classname="tests.stage1_sctsr_v4.test_statistics_hardening" name="test_holm_rejects_invalid_raw_p_values[nan]" time="0.000"><failure message="Failed: DID NOT RAISE &lt;class 'stage1_sctsr_v4.errors.SctsrError'&gt;">bad_p = nan
+
+    @pytest.mark.parametrize("bad_p", [-0.1, 1.1, math.nan, math.inf])
+    def test_holm_rejects_invalid_raw_p_values(bad_p):
+&gt;       with pytest.raises(SctsrError) as caught:
+E       Failed: DID NOT RAISE &lt;class 'stage1_sctsr_v4.errors.SctsrError'&gt;
+
+tests\stage1_sctsr_v4\test_statistics_hardening.py:27: Failed</failure></testcase><testcase classname="tests.stage1_sctsr_v4.test_statistics_hardening" name="test_holm_rejects_invalid_raw_p_values[inf]" time="0.000"><failure message="Failed: DID NOT RAISE &lt;class 'stage1_sctsr_v4.errors.SctsrError'&gt;">bad_p = inf
+
+    @pytest.mark.parametrize("bad_p", [-0.1, 1.1, math.nan, math.inf])
+    def test_holm_rejects_invalid_raw_p_values(bad_p):
+&gt;       with pytest.raises(SctsrError) as caught:
+E       Failed: DID NOT RAISE &lt;class 'stage1_sctsr_v4.errors.SctsrError'&gt;
+
+tests\stage1_sctsr_v4\test_statistics_hardening.py:27: Failed</failure></testcase><testcase classname="tests.stage1_sctsr_v4.test_statistics_hardening" name="test_holm_requires_complete_frozen_c01_to_c08_family" time="0.000"><failure message="TypeError: holm_adjust() got an unexpected keyword argument 'expected_contrast_ids'">def test_holm_requires_complete_frozen_c01_to_c08_family():
+        with pytest.raises(SctsrError) as caught:
+&gt;           holm_adjust({"C01": 0.01}, expected_contrast_ids=tuple(f"C{i:02d}" for i in range(1, 9)))
+E           TypeError: holm_adjust() got an unexpected keyword argument 'expected_contrast_ids'
+
+tests\stage1_sctsr_v4\test_statistics_hardening.py:34: TypeError</failure></testcase><testcase classname="tests.stage1_sctsr_v4.test_completion_hardening" name="test_completion_rejects_incomplete_arbitrary_check_map" time="0.000"><failure message="Failed: DID NOT RAISE &lt;class 'stage1_sctsr_v4.errors.SctsrError'&gt;">def test_completion_rejects_incomplete_arbitrary_check_map():
+        audit = CompletionAudit(
+            implementation_status="IMPLEMENTED_NOT_FORMALLY_RUN",
+            source_tree_digest="A" * 64,
+            checks={"core": "PASS"},
+        )
+&gt;       with pytest.raises(SctsrError) as caught:
+E       Failed: DID NOT RAISE &lt;class 'stage1_sctsr_v4.errors.SctsrError'&gt;
+
+tests\stage1_sctsr_v4\test_completion_hardening.py:15: Failed</failure></testcase><testcase classname="tests.stage1_sctsr_v4.test_completion_hardening" name="test_implementation_check_may_not_be_hidden_as_blocked" time="0.000"><failure message="Failed: DID NOT RAISE &lt;class 'stage1_sctsr_v4.errors.SctsrError'&gt;">def test_implementation_check_may_not_be_hidden_as_blocked():
+        audit = CompletionAudit(
+            implementation_status="IMPLEMENTED_NOT_FORMALLY_RUN",
+            source_tree_digest="A" * 64,
+            checks={"prediction_identity": "BLOCKED_WITH_REASON"},
+            blocker_reasons={"prediction_identity": "not implemented"},
+        )
+&gt;       with pytest.raises(SctsrError) as caught:
+E       Failed: DID NOT RAISE &lt;class 'stage1_sctsr_v4.errors.SctsrError'&gt;
+
+tests\stage1_sctsr_v4\test_completion_hardening.py:27: Failed</failure></testcase><testcase classname="tests.stage1_sctsr_v4.test_completion_hardening" name="test_completion_requires_canonical_source_digest" time="0.000"><failure message="Failed: DID NOT RAISE &lt;class 'stage1_sctsr_v4.errors.SctsrError'&gt;">def test_completion_requires_canonical_source_digest():
+        audit = CompletionAudit(
+            implementation_status="IMPLEMENTED_NOT_FORMALLY_RUN",
+            source_tree_digest="not-a-sha",
+            checks={},
+        )
+&gt;       with pytest.raises(SctsrError) as caught:
+E       Failed: DID NOT RAISE &lt;class 'stage1_sctsr_v4.errors.SctsrError'&gt;
+
+tests\stage1_sctsr_v4\test_completion_hardening.py:38: Failed</failure></testcase></testsuite></testsuites>

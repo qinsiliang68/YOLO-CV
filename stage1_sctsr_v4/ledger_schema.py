@@ -263,3 +263,47 @@ TELEMETRY_SCHEMA = pa.schema(
         _f("row_generation", pa.int32()),
     ]
 )
+
+
+PREDICTION_SCHEMA = pa.schema(
+    [
+        _f("run_id", pa.string()),
+        _f("arm_id", pa.string()),
+        _f("training_seed", pa.int64()),
+        _f("split_role", pa.string()),
+        _f("split_manifest_path", pa.string()),
+        _f("split_manifest_sha256", pa.string()),
+        _f("sample_id", pa.string()),
+        _f("y_true", pa.int8()),
+        _f("logit_normal", pa.float64()),
+        _f("logit_defect", pa.float64()),
+        _f("p_defect_raw", pa.float64()),
+        _f("checkpoint_epoch", pa.int16()),
+        _f("checkpoint_sha256", pa.string()),
+        _f("model_variant", pa.string()),
+        _f("source_tree_digest", pa.string()),
+        _f("prediction_generation", pa.int32()),
+        _f("sample_label_identity_digest", pa.string()),
+        _f("artifact_row_count", pa.int64()),
+    ]
+)
+
+
+FRONTIER_SCHEMA = pa.schema(
+    [
+        _f("fn_budget", pa.int16()),
+        _f("actual_fn", pa.int64()),
+        _f("tn", pa.int64()),
+        _f("fp", pa.int64()),
+        _f("tp", pa.int64()),
+        _f("threshold", pa.float64()),
+        _f("threshold_rule", pa.string()),
+        _f("tie_size", pa.int64()),
+        _f("reachable", pa.bool_()),
+        _f("defect_count", pa.int64()),
+        _f("normal_count", pa.int64()),
+        _f("normalized_tn", pa.float64()),
+        _f("checkpoint_sha256", pa.string()),
+        _f("prediction_artifact_sha256", pa.string()),
+    ]
+)

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import os
 import sys
+import math
 from pathlib import Path
 
 import pytest
@@ -63,11 +64,11 @@ def prediction_rows():
     for i in range(240):
         y = i % 2
         # Deliberate ties every four rows.
-        p = round(((i * 7) % 101) / 100, 2)
+        p = 0.01 + (((i * 7) % 99) / 100.0)
         rows.append(PredictionRow(
             run_id="R", arm_id="T_U", training_seed=1, split_role="synthetic",
             split_manifest_path="synthetic.json", split_manifest_sha256="A" * 64,
-            sample_id=f"S{i:04d}", y_true=y, logit_normal=1.0-p, logit_defect=p,
+            sample_id=f"S{i:04d}", y_true=y, logit_normal=math.log(1.0-p), logit_defect=math.log(p),
             p_defect_raw=p, checkpoint_epoch=200, checkpoint_sha256="B" * 64,
             model_variant="EMA", source_tree_digest="C" * 64, prediction_generation=1,
         ))

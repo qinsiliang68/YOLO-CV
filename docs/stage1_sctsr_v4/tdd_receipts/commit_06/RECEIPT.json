@@ -1,0 +1,39 @@
+{
+  "schema_version": "stage1.sctsr.tdd_receipt.v1",
+  "rollback_unit": "commit_06_prediction_evaluation_statistics_completion",
+  "execution_mode": "unit_and_synthetic_only",
+  "formal_training_started": false,
+  "red": {
+    "command": "uv run --no-sync pytest tests\\stage1_sctsr_v4\\test_prediction_evaluation_hardening.py tests\\stage1_sctsr_v4\\test_statistics_hardening.py tests\\stage1_sctsr_v4\\test_completion_hardening.py -q --junitxml=docs\\stage1_sctsr_v4\\tdd_receipts\\commit_06\\RED.junit.xml",
+    "exit_code": 1,
+    "observed": "16 contract-behavior failures before hardening",
+    "stdout_stderr": {
+      "path": "docs/stage1_sctsr_v4/tdd_receipts/commit_06/RED.txt",
+      "bytes": 23092,
+      "sha256": "6D14C6469D8D9BEB2879E7B492D6CBB788F78C9510DA520F0B9A20B1C51BCAFC"
+    },
+    "junit": {
+      "path": "docs/stage1_sctsr_v4/tdd_receipts/commit_06/RED.junit.xml",
+      "bytes": 12672,
+      "sha256": "4C28A124A7850158049692BF8CC99F65EBF70AFD6AC54586D1FC3A51C35ECB8B"
+    }
+  },
+  "green": {
+    "command": "uv run --no-sync pytest tests\\stage1_sctsr_v4\\test_prediction_artifact.py tests\\stage1_sctsr_v4\\test_prediction_evaluation_hardening.py tests\\stage1_sctsr_v4\\test_evaluation.py tests\\stage1_sctsr_v4\\test_statistics.py tests\\stage1_sctsr_v4\\test_statistics_hardening.py tests\\stage1_sctsr_v4\\test_completion.py tests\\stage1_sctsr_v4\\test_completion_hardening.py -q --junitxml=docs\\stage1_sctsr_v4\\tdd_receipts\\commit_06\\GREEN.junit.xml",
+    "exit_code": 0,
+    "observed": "45 passed in 2.44s",
+    "stdout_stderr": {
+      "path": "docs/stage1_sctsr_v4/tdd_receipts/commit_06/GREEN.txt",
+      "bytes": 204,
+      "sha256": "D03E60B86BDCD4ABFB02B05A891419390D265A0D7BAE46492E57536ACF8EF48B"
+    },
+    "junit": {
+      "path": "docs/stage1_sctsr_v4/tdd_receipts/commit_06/GREEN.junit.xml",
+      "bytes": 6508,
+      "sha256": "B1D8BCB04A362B233D0D2C95A8158A478D2FB8E992EA7F252BD3BB41C01B1241"
+    }
+  },
+  "compileall_command": "uv run --no-sync python -m compileall -q stage1_sctsr_v4",
+  "compileall_exit_code": 0,
+  "result": "PASS"
+}
