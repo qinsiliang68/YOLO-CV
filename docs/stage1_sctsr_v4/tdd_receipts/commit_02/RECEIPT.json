@@ -1,0 +1,74 @@
+{
+  "schema_version": "stage1.sctsr.tdd_receipt.v1",
+  "rollback_unit": "commit_02_assets_identity_pools_random_controls_and_schedule",
+  "status": "PASS_WITH_FORMAL_R2_SPECIFICATION_BLOCKER",
+  "red": {
+    "command": "uv run --project C:/GitHub/YOLO-CV python -m pytest tests/red_commit_02 -q (cwd=fresh unmodified expert package)",
+    "exit_code": 1,
+    "stdout_stderr_path": "RED.txt",
+    "stdout_stderr_bytes": 10330,
+    "stdout_stderr_sha256": "5386A95C26A6C38960BC731DDA91E74175888A605B1DC7940CED4B42A2EE8BE9",
+    "observed": "7 failed: registry did not verify rows, content identity, split or denominator; schedule trusted forged digest, empty treatment and rate mismatch",
+    "expected": "the same seven malformed cases fail closed"
+  },
+  "green": {
+    "command": "uv run pytest tests/stage1_sctsr_v4/test_asset_hardening.py tests/stage1_sctsr_v4/test_schedule_hardening.py -q",
+    "exit_code": 0,
+    "stdout_stderr_path": "GREEN.txt",
+    "stdout_stderr_bytes": 202,
+    "stdout_stderr_sha256": "1F263868BDA57518EB3E295A73C1D61BBBC1A46AB55CB484B5BE864E864C3F1F",
+    "observed": "7 passed",
+    "expected": "7 passed"
+  },
+  "targeted_regression": {
+    "exit_code": 0,
+    "stdout_stderr_path": "TARGETED_GREEN.txt",
+    "stdout_stderr_bytes": 204,
+    "stdout_stderr_sha256": "B8E76321DE9CEC4E9135EE8E6E4C10FFB5BABD118933498271B1AB698B44202E",
+    "observed": "36 passed",
+    "expected": "36 passed"
+  },
+  "real_asset_validation": {
+    "command": "uv run python - (load and validate configs/stage1_sctsr_v4/asset_registry_v1.json against repository content)",
+    "exit_code": 0,
+    "stdout_stderr_path": "ASSET_VALIDATION.txt",
+    "stdout_stderr_bytes": 5292,
+    "stdout_stderr_sha256": "2E7E7A26A2F59A9308577E96D24067EDA758E1C6B9914A27C71CF5D2A82F5E4B",
+    "observed": "9 assets PASS; canonical base 120000; base sample-label digest 7884B823...; T rows 3000 and digest 85D462C1...",
+    "expected": "all bytes/SHA/rows/splits/identities and mutual exclusion derive from real contents"
+  },
+  "formal_r2_feasibility": {
+    "command": "uv run python - (load registered pre-terminal frame and invoke exact joint-stratum zero-overlap R2 builder)",
+    "exit_code": 0,
+    "stdout_stderr_path": "R2_INFEASIBILITY.txt",
+    "stdout_stderr_bytes": 18172,
+    "stdout_stderr_sha256": "B1F477B0235D384167779AAD11D555C242F862FE89B4F60F751FCCBFD66DC49E",
+    "summary_path": "R2_INFEASIBILITY_SUMMARY.txt",
+    "summary_bytes": 978,
+    "summary_sha256": "EF852F39843B4BBC0E2005EBAB19D820C921DDAD6FCC63D630216F9990615383",
+    "observed": "R2_QUOTA_INFEASIBLE across 172 exact joint strata with 378 missing candidates; examples include filename_bucket_1000:382 and :500",
+    "expected": "fail closed without nearest, relaxed, repeated, overlapping or replacement matching"
+  },
+  "compileall": {
+    "exit_code": 0,
+    "stdout_stderr_path": "COMPILEALL.txt",
+    "stdout_stderr_bytes": 0,
+    "stdout_stderr_sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+  },
+  "git_diff_check": {
+    "exit_code": 0,
+    "stdout_stderr_path": "GIT_DIFF_CHECK.txt",
+    "stdout_stderr_bytes": 0,
+    "stdout_stderr_sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+  },
+  "reviewed_source_files": [
+    "stage1_sctsr_v4/asset_registry.py",
+    "stage1_sctsr_v4/identity_pool.py",
+    "stage1_sctsr_v4/random_controls.py",
+    "stage1_sctsr_v4/terminal_field_guard.py",
+    "stage1_sctsr_v4/schedule.py",
+    "stage1_sctsr_v4/formal_pool_inputs.py"
+  ],
+  "remaining_risk": "The frozen taskbook claim that a zero-overlap exact R2 is feasible is contradicted by the registered assets. Formal identity-pool publication and all treatment-vs-R2 training remain blocked.",
+  "required_action": "Owner must resolve docs/stage1_sctsr_v4/SPECIFICATION_CHANGE_REQUEST_R2_INFEASIBLE.md. Implementation must not relax the matcher."
+}
