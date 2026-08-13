@@ -23,6 +23,7 @@ dependencies = [
     "albumentations>=1.4.6",
     "scikit-learn>=1.8.0",
     "polars>=1.41.2",
+    "pyarrow>=19,<22",
 ]
 
 [project.optional-dependencies]

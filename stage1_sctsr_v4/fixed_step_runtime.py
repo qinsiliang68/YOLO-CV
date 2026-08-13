@@ -12,6 +12,7 @@ from .bn_isolation import capture_batchnorm_buffers, preserve_batchnorm_buffers
 from .errors import ErrorCode, SctsrError
 from .replay_step_plan import ReplayStepPlan
 from .rng_isolation import capture_global_rng, replay_rng_domain
+from .rng_isolation import derive_counter_seed
 from .serialization import stable_digest
 
 
@@ -53,6 +54,7 @@ class OccurrenceEvent:
     logits: torch.Tensor
     per_sample_ce: torch.Tensor
     augmentation_digests: tuple[str, ...]
+    augmentation_seeds: tuple[int, ...] | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -73,6 +75,8 @@ class StepRuntimeRecord:
     amp_scale_after: float | None
     rng_digest_before_replay: str | None
     rng_digest_after_replay_restore: str | None
+    rng_digest_before_base: str
+    replay_rng_fork_digest: str | None
     bn_digest_before_replay: str | None
     bn_digest_after_replay_restore: str | None
     overflow_or_step_skipped: bool
@@ -242,6 +246,7 @@ def run_fixed_step_epoch(
     base_loss_fn = base_loss_fn or (lambda logits, labels: F.cross_entropy(logits, labels, reduction="mean"))
 
     for step_index in range(replay_plan.base_step_count):
+        rng_before_base = capture_global_rng().digest()
         wait_start = time.monotonic()
         try:
             batch = next(base_iterator)
@@ -276,6 +281,10 @@ def run_fixed_step_epoch(
                         logits=logits.detach().cpu().clone(),
                         per_sample_ce=F.cross_entropy(logits, labels, reduction="none").detach().cpu().clone(),
                         augmentation_digests=augmentation_digests,
+                        augmentation_seeds=tuple(
+                            derive_counter_seed("base_augmentation", training_seed, epoch, sample_id)
+                            for sample_id in sample_ids
+                        ),
                     )
                 )
 
@@ -293,6 +302,7 @@ def run_fixed_step_epoch(
         replay_forward_seconds = 0.0
         replay_augmentation_digest = None
         rng_before = rng_after = bn_before = bn_after = None
+        replay_rng_fork_digest = None
 
         if replay_ids:
             cap = (
@@ -313,7 +323,8 @@ def run_fixed_step_epoch(
             rng_before = global_rng.digest()
             bn_before = bn_snapshot.digest()
             try:
-                with replay_rng_domain("replay_augmentation", training_seed, epoch, step_index):
+                with replay_rng_domain("replay_augmentation", training_seed, epoch, step_index) as replay_rng_receipt:
+                    replay_rng_fork_digest = str(replay_rng_receipt["fork_digest"])
                     with preserve_batchnorm_buffers(model):
                         replay_forward_start = time.monotonic()
                         replay_batch = replay_batch_provider(replay_ids, epoch, step_index, training_seed)
@@ -344,6 +355,15 @@ def run_fixed_step_epoch(
                                     logits=replay_logits.detach().cpu().clone(),
                                     per_sample_ce=replay_per_sample_ce.detach().cpu().clone(),
                                     augmentation_digests=replay_aug,
+                                    augmentation_seeds=tuple(
+                                        derive_counter_seed(
+                                            "replay_augmentation",
+                                            training_seed,
+                                            epoch,
+                                            f"{step_index}:{sample_id}",
+                                        )
+                                        for sample_id in replay_ids
+                                    ),
                                 )
                             )
                         replay_loss = replay_per_sample_ce.sum() / 128
@@ -440,6 +460,8 @@ def run_fixed_step_epoch(
                 amp_scale_after=amp_scale_after,
                 rng_digest_before_replay=rng_before,
                 rng_digest_after_replay_restore=rng_after,
+                rng_digest_before_base=rng_before_base,
+                replay_rng_fork_digest=replay_rng_fork_digest,
                 bn_digest_before_replay=bn_before,
                 bn_digest_after_replay_restore=bn_after,
                 overflow_or_step_skipped=skipped,

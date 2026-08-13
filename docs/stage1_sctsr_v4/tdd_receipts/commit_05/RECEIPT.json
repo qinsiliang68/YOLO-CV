@@ -1,0 +1,22 @@
+{
+  "schema_version": "stage1.sctsr.tdd_receipt.v1",
+  "rollback_unit": "commit_05_epoch_evidence_transaction",
+  "execution_mode": "synthetic_and_unit_only",
+  "formal_training_started": false,
+  "command": "uv run --no-sync pytest tests\\stage1_sctsr_v4\\test_base_rng.py tests\\stage1_sctsr_v4\\test_columnar.py tests\\stage1_sctsr_v4\\test_epoch_transaction.py tests\\stage1_sctsr_v4\\test_evidence_runtime_integration.py tests\\stage1_sctsr_v4\\test_evidence_transaction_hardening.py tests\\stage1_sctsr_v4\\test_exposure_ledger.py tests\\stage1_sctsr_v4\\test_formal_training.py tests\\stage1_sctsr_v4\\test_occurrence_ledger.py tests\\stage1_sctsr_v4\\test_recovery.py tests\\stage1_sctsr_v4\\test_selection_ledger.py tests\\stage1_sctsr_v4\\test_step_ledger.py tests\\stage1_sctsr_v4\\test_telemetry.py tests\\stage1_sctsr_v4\\test_windows_long_paths.py -q --junitxml=docs\\stage1_sctsr_v4\\tdd_receipts\\commit_05\\GREEN.junit.xml",
+  "exit_code": 0,
+  "observed": "71 passed in 3.58s",
+  "stdout_stderr": {
+    "path": "docs/stage1_sctsr_v4/tdd_receipts/commit_05/GREEN.txt",
+    "bytes": 204,
+    "sha256": "CEAE1D92154318A426C0528B61EF06684C66AABE200F46BA8F983A0351BE567E"
+  },
+  "junit": {
+    "path": "docs/stage1_sctsr_v4/tdd_receipts/commit_05/GREEN.junit.xml",
+    "bytes": 11209,
+    "sha256": "BD4D836589EEFA8AB0B495B135D2816CD8B89F8896FAED592F5E2910D42F5D28"
+  },
+  "compileall_command": "uv run --no-sync python -m compileall -q stage1_sctsr_v4 integrations\\ultralytics",
+  "compileall_exit_code": 0,
+  "result": "PASS"
+}

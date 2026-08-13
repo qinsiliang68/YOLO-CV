@@ -70,7 +70,10 @@ def _fsync_directory(path: str | Path) -> None:
 def atomic_write_bytes(path: str | Path, data: bytes) -> Path:
     destination = Path(path)
     destination.parent.mkdir(parents=True, exist_ok=True)
-    fd, tmp_name = tempfile.mkstemp(prefix=f".{destination.name}.", suffix=".tmp", dir=destination.parent)
+    # Registered Windows run roots can legitimately be close to MAX_PATH;
+    # repeating a long destination leaf in the tempfile prefix needlessly
+    # makes an otherwise safe atomic write fail.
+    fd, tmp_name = tempfile.mkstemp(prefix=".aw.", suffix=".tmp", dir=destination.parent)
     try:
         with os.fdopen(fd, "wb") as handle:
             handle.write(data)

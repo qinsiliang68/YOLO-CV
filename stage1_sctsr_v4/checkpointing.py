@@ -248,7 +248,10 @@ def save_checkpoint_atomic(path: str | Path, payload: Mapping[str, Any]) -> str:
     destination.parent.mkdir(parents=True, exist_ok=True)
     if destination.exists():
         raise SctsrError(ErrorCode.CHILD_MUTATED_PARENT, "Checkpoint publication may not overwrite an existing generation", artifact_path=str(destination))
-    fd, temp_name = tempfile.mkstemp(prefix=f".{destination.name}.", suffix=".tmp", dir=destination.parent)
+    # Keep the native Windows path comfortably below MAX_PATH.  The containing
+    # epoch generation is already unique, so the checkpoint name need not be
+    # repeated in tempfile's random leaf.
+    fd, temp_name = tempfile.mkstemp(prefix=".cp.", suffix=".tmp", dir=destination.parent)
     os.close(fd)
     try:
         with open(temp_name, "wb") as handle:

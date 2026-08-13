@@ -17,19 +17,28 @@ except ImportError as exc:  # pragma: no cover - exercised in the complete YOLO-
 
 
 class SctsrClassificationTrainer(ClassificationTrainer):
-    def __init__(self, *args: Any, identity_manifest: str | Path, **kwargs: Any) -> None:
+    def __init__(self, *args: Any, identity_manifest: str | Path, training_seed: int, **kwargs: Any) -> None:
         self._sctsr_identities = load_identity_manifest(identity_manifest)
+        self._sctsr_training_seed = int(training_seed)
         super().__init__(*args, **kwargs)
 
     def build_dataset(self, img_path: str, mode: str = "train", batch=None):
         dataset = super().build_dataset(img_path, mode=mode, batch=batch)
         if mode != "train":
             return dataset
-        return IdentityAugmentingDataset(dataset, self._sctsr_identities)
+        return IdentityAugmentingDataset(
+            dataset,
+            self._sctsr_identities,
+            training_seed=self._sctsr_training_seed,
+        )
 
     def replay_batch_provider(self, sample_ids, epoch: int, base_step_index: int, training_seed: int):
-        del epoch, base_step_index, training_seed
         dataset = self.train_loader.dataset
         if not isinstance(dataset, IdentityAugmentingDataset):
             raise RuntimeError("SCTSR identity-preserving training dataset is not installed")
-        return dataset.replay_batch(sample_ids)
+        return dataset.replay_batch(
+            sample_ids,
+            epoch=epoch,
+            base_step_index=base_step_index,
+            training_seed=training_seed,
+        )

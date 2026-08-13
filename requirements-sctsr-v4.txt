@@ -1,0 +1,6 @@
+# Merge these additions into the frozen YOLO-CV Python 3.11/3.12 environment.
+numpy>=1.23,<3
+torch>=2.1
+psutil>=5.9
+pyarrow>=19,<22
+pytest>=8.3
