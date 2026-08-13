@@ -8,6 +8,7 @@ from pathlib import Path
 from typing import Any, Sequence
 
 from .errors import ErrorCode, SctsrError
+from .filesystem import windows_safe_resolved_path
 from .serialization import sha256_file, stable_digest
 
 
@@ -166,7 +167,7 @@ def audit_repository_state(
 
     changed_files: list[dict[str, Any]] = []
     for status, relative in changed:
-        path = root / relative
+        path = windows_safe_resolved_path(root / relative)
         if not path.is_file():
             raise SctsrError(ErrorCode.SOURCE_TREE_MISMATCH, "Changed-file ledger path is missing", artifact_path=str(path))
         owner, lifecycle = _owner_lifecycle(relative)

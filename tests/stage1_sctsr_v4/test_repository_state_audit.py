@@ -7,6 +7,7 @@ from datetime import datetime, timezone
 import pytest
 
 from stage1_sctsr_v4.errors import ErrorCode, SctsrError
+from stage1_sctsr_v4.filesystem import windows_safe_resolved_path
 from stage1_sctsr_v4.repository_state_audit import audit_repository_state
 
 
@@ -148,3 +149,38 @@ def test_repository_audit_does_not_follow_broken_historical_directory_links(tmp_
         legacy_markers=("/04_run_queue_v2/",),
     )
     assert report["status"] == "PASS"
+
+
+@pytest.mark.skipif(os.name != "nt", reason="Win32 extended path contract")
+def test_repository_audit_records_changed_file_beyond_max_path(tmp_path):
+    base, _source = _repository(tmp_path)
+    _git(tmp_path, "config", "core.longpaths", "true")
+    relative = (
+        "stage1_sctsr_v4/"
+        + "registered_component_" + "a" * 70 + "/"
+        + "evidence_partition_" + "b" * 70 + "/"
+        + "artifact_identity_" + "c" * 50 + ".json"
+    )
+    destination = windows_safe_resolved_path(tmp_path / relative)
+    destination.parent.mkdir(parents=True)
+    destination.write_text('{"status":"PASS"}\n', encoding="utf-8")
+    expected_bytes = len(destination.read_bytes())
+    source = _commit(tmp_path, "implementation with long registered artifact")
+    old = datetime(2000, 1, 1, tzinfo=timezone.utc).timestamp()
+    os.utime(tmp_path / "artifacts/legacy/04_run_queue_v2/queue.json", (old, old))
+    assert len(str((tmp_path / relative).resolve())) > 260
+
+    report = audit_repository_state(
+        tmp_path,
+        baseline_commit=base,
+        implementation_start_commit=source,
+        implementation_source_commit=source,
+        allowed_prefixes=("stage1_sctsr_v4/",),
+        allowed_files=(),
+        protected_prefixes=("stage1_gapvalue240/", "stage1_dynamic_replay_v3/", "YOLOv11/ultralytics/"),
+        legacy_markers=("/04_run_queue_v2/",),
+    )
+
+    changed = {row["relative_path"]: row for row in report["changed_file_ledger"]["files"]}
+    assert changed[relative]["bytes"] == expected_bytes
+    assert len(changed[relative]["sha256"]) == 64
