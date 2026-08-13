@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from dataclasses import fields
 from pathlib import Path
 from typing import Any, Mapping, Sequence
@@ -358,6 +359,66 @@ def _validate_formal_tree(root: Path, manifest: Mapping[str, Any]) -> dict[str, 
     )
     chain = validate_receipt_chain(root / "08_receipts" / "epoch_receipts.jsonl")
     _require(chain["row_count"] == len(transactions), "Formal receipt-chain length differs from epoch count")
+    _require(receipt.get("epoch_receipt_digest") == chain["receipt_chain_digest"], "Terminal receipt does not bind the append-only epoch receipt chain")
+    resume_chain_path = root / "08_receipts" / "resume_bindings.jsonl"
+    resumed_from_epoch = receipt.get("resumed_from_epoch")
+    if resumed_from_epoch is None:
+        _require(receipt.get("resume_binding_receipt_digest") is None and not resume_chain_path.exists(), "Fresh run contains unregistered resume evidence")
+    else:
+        _require(resume_chain_path.is_file(), "Resumed run lacks its prepared-trainer resume chain")
+        previous_resume_digest = "0" * 64
+        resume_rows: list[dict[str, Any]] = []
+        try:
+            with resume_chain_path.open("r", encoding="utf-8") as handle:
+                for line in handle:
+                    _require(line.endswith("\n"), "Resume receipt row lacks a newline terminator")
+                    row = json.loads(line)
+                    claimed = str(row.pop("receipt_digest"))
+                    _require(
+                        row.get("previous_receipt_digest") == previous_resume_digest and stable_digest(row) == claimed,
+                        "Resume prepared-trainer receipt chain is invalid",
+                    )
+                    row["receipt_digest"] = claimed
+                    previous_resume_digest = claimed
+                    resume_rows.append(row)
+        except (OSError, UnicodeDecodeError, json.JSONDecodeError) as exc:
+            raise _closeout_failure("Resume prepared-trainer receipt chain is unreadable", observed=str(exc)) from exc
+        _require(bool(resume_rows), "Resumed run has an empty prepared-trainer receipt chain")
+        latest_resume = resume_rows[-1]
+        _require(
+            previous_resume_digest == receipt.get("resume_binding_receipt_digest")
+            and int(latest_resume.get("resume_epoch", -1)) - 1 == int(resumed_from_epoch)
+            and latest_resume.get("original_prepared_trainer_binding_digest") == trainer_binding.get("binding_digest")
+            and latest_resume.get("run_id") == manifest.get("run_id")
+            and latest_resume.get("arm_id") == manifest.get("arm_id")
+            and latest_resume.get("training_seed") == manifest.get("training_seed"),
+            "Terminal receipt does not bind the latest valid resume attempt",
+        )
+        for row in resume_rows:
+            resume_binding = row.get("resume_prepared_trainer_binding")
+            _require(isinstance(resume_binding, Mapping), "Resume receipt has no prepared-trainer binding")
+            binding_core = {key: value for key, value in resume_binding.items() if key != "binding_digest"}
+            _require(
+                resume_binding.get("binding_digest") == stable_digest(binding_core)
+                and row.get("resume_prepared_trainer_binding_digest") == resume_binding.get("binding_digest"),
+                "Resume prepared-trainer binding digest is invalid",
+            )
+            for field in (
+                "upstream_binding_digest",
+                "canonical_training_lock_sha256",
+                "initial_checkpoint_sha256",
+                "scientific_overrides_digest",
+                "identity_manifest_binding",
+                "dataset_binding",
+                "training_seed",
+            ):
+                _require(resume_binding.get(field) == trainer_binding.get(field), "Resume trainer changed a stable scientific binding", observed=field)
+            setup_root = Path(str(resume_binding.get("output_root", ""))).resolve()
+            try:
+                setup_root.relative_to((root / "10_resume_setup").resolve())
+            except ValueError as exc:
+                raise _closeout_failure("Resume trainer setup root escapes the run-root resume namespace") from exc
+            _require(setup_root.is_dir(), "Resume trainer setup evidence is missing", observed=setup_root.as_posix())
     schedule = None
     if role == "BRANCH":
         schedule_path = root / "SCHEDULE.json"
@@ -392,6 +453,9 @@ def _validate_formal_tree(root: Path, manifest: Mapping[str, Any]) -> dict[str, 
     final_checkpoint_sha = None
     total_occurrences = 0
     total_replay = 0
+    replay_counts: dict[str, int] = {}
+    replay_last_epoch: dict[str, int] = {}
+    replay_history_cumulative = 0
     for offset, (epoch, transaction) in enumerate(zip(range(expected[0], expected[1] + 1), transactions, strict=True)):
         _require(transaction.name == f"epoch_{epoch:04d}.generation_1.complete", "Formal epoch generation name is noncanonical", observed=transaction.name)
         generation = transaction / "GENERATION_MANIFEST.json"
@@ -452,6 +516,31 @@ def _validate_formal_tree(root: Path, manifest: Mapping[str, Any]) -> dict[str, 
         _require(len(steps) == 938 and len(exposure) == 1, "Formal epoch does not contain 938 steps and one exposure row", observed=epoch)
         base_count = sum(row["occurrence_role"] == "BASE" for row in occurrence)
         replay_count = len(occurrence) - base_count
+        for row_index, occurrence_row in enumerate(occurrence):
+            _require(
+                int(occurrence_row["cumulative_replay_count_before"]) == replay_history_cumulative,
+                "Formal occurrence replay history is discontinuous",
+                observed={"epoch": epoch, "row": row_index},
+            )
+            if occurrence_row["occurrence_role"] == "REPLAY":
+                sample_id = str(occurrence_row["sample_id"])
+                previous_count = replay_counts.get(sample_id, 0)
+                previous_epoch = replay_last_epoch.get(sample_id)
+                _require(
+                    int(occurrence_row["replay_count_before"]) == previous_count
+                    and int(occurrence_row["replay_count_after"]) == previous_count + 1
+                    and occurrence_row["last_replay_epoch"] == previous_epoch,
+                    "Formal per-sample replay history is discontinuous",
+                    observed={"epoch": epoch, "row": row_index, "sample_id": sample_id},
+                )
+                replay_counts[sample_id] = previous_count + 1
+                replay_last_epoch[sample_id] = epoch
+                replay_history_cumulative += 1
+            _require(
+                int(occurrence_row["cumulative_replay_count_after"]) == replay_history_cumulative,
+                "Formal occurrence cumulative-after replay history is invalid",
+                observed={"epoch": epoch, "row": row_index},
+            )
         _require(base_count == 120_000, "Formal base occurrence denominator changed", observed={"epoch": epoch, "base": base_count})
         exposure_row = exposure[0]
         _require(
@@ -495,6 +584,26 @@ def _validate_formal_tree(root: Path, manifest: Mapping[str, Any]) -> dict[str, 
             and summary.get("telemetry_partition", {}).get("sha256") == sha256_file(telemetry_path)
             and summary.get("exposure_partition", {}).get("sha256") == sha256_file(exposure_path),
             "Formal epoch evidence summary cross-binding failed",
+            observed=epoch,
+        )
+        _require(
+            summary.get("history_after_epoch")
+            == {
+                "counts": dict(sorted(replay_counts.items())),
+                "last_epoch": dict(sorted(replay_last_epoch.items())),
+                "cumulative_occurrences": replay_history_cumulative,
+            },
+            "Formal epoch history summary differs from occurrence bytes",
+            observed=epoch,
+        )
+        rng_evidence = summary.get("rng_evidence", {})
+        checkpoint_rng_digest = checkpoint_payload["rng_state"].digest()
+        _require(
+            rng_evidence.get("recorder_epoch_start_digest") == transaction_identity.get("rng_state_digest")
+            and rng_evidence.get("runtime_epoch_start_digest") == transaction_identity.get("rng_state_digest")
+            and rng_evidence.get("runtime_epoch_end_digest") == checkpoint_rng_digest
+            and rng_evidence.get("finalize_entry_digest") == checkpoint_rng_digest,
+            "Formal epoch RNG evidence is not closed by its checkpoint",
             observed=epoch,
         )
         previous_checkpoint = sha256_file(checkpoint_path)

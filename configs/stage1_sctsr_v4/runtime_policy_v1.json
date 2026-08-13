@@ -19,6 +19,7 @@
   "formal_endpoint_epoch": 200,
   "formal_requires_signed_release": true,
   "global_rng_restored_after_replay": true,
+  "minimum_resume_free_bytes": 21474836480,
   "oom_policy": "ABORT_FIXED_CONTRACT",
   "optimizer_steps_locked_to_base": true,
   "replay_gradient_retained": true,

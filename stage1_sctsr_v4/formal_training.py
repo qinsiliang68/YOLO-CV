@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import math
 import os
+import json
 from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Any, Callable, Mapping, Sequence
@@ -12,15 +13,16 @@ from .branch_lineage import BranchLineage
 from .base_rng import BaseEpochRngReceipt, prepare_counter_domain_base_loader
 from .checkpointing import build_checkpoint_payload, load_checkpoint, save_checkpoint_atomic
 from .contracts import require_synthetic_or_authorized
-from .epoch_transaction import EpochTransaction, GenerationIdentity
+from .epoch_transaction import EpochTransaction, GenerationIdentity, validate_receipt_chain
 from .errors import ErrorCode, SctsrError
 from .evidence_runtime import EpochEvidenceRecorder, ReplayHistoryState, SampleEvidence, sample_evidence_from_trainer
 from .filesystem import windows_safe_resolved_path
 from .logical_artifact_index import LogicalArtifactEntry, LogicalArtifactIndex
+from .recovery import FormalResumeContext
 from .replay_step_plan import build_replay_step_plan
 from .rng_isolation import capture_global_rng
 from .schedule import SchedulePlan, schedule_to_dict
-from .serialization import atomic_write_json, sha256_file, stable_digest
+from .serialization import _fsync_directory, atomic_write_json, canonical_json_bytes, load_json, sha256_file, stable_digest
 from .ultralytics_overlay import run_ultralytics_classification_epoch
 
 
@@ -169,6 +171,130 @@ def _prepare_run_root_after_upstream_setup(root_value: str | Path, *, execution_
         return root
     root.mkdir(parents=True, exist_ok=False)
     return root
+
+
+_RESUME_STABLE_TRAINER_BINDING_FIELDS = (
+    "upstream_binding_digest",
+    "canonical_training_lock_sha256",
+    "initial_checkpoint_sha256",
+    "scientific_overrides_digest",
+    "identity_manifest_binding",
+    "dataset_binding",
+    "training_seed",
+)
+
+
+def _validate_resume_root_and_bindings(
+    *,
+    output_root: str | Path,
+    context: FormalResumeContext,
+    identity: FormalIdentity,
+    release_expected_bindings: Mapping[str, str] | None,
+    prepared_trainer_binding: Mapping[str, Any] | None,
+    expected_run_id: str,
+    expected_arm_id: str,
+) -> tuple[Path, dict[str, Any]]:
+    canonical_output = Path(output_root).resolve()
+    canonical_context = Path(context.run_root).resolve()
+    root = windows_safe_resolved_path(canonical_output)
+    if canonical_output != canonical_context or context.run_id != expected_run_id or context.arm_id != expected_arm_id:
+        raise SctsrError(
+            ErrorCode.RESUME_GENERATION_MISMATCH,
+            "Resume context targets a different run root, run ID, or arm",
+        )
+    if context.training_seed != identity.training_seed:
+        raise SctsrError(ErrorCode.RESUME_GENERATION_MISMATCH, "Resume context training seed differs from the prepared identity")
+    if (root / "RUN_MANIFEST.json").exists() or (root / "PARENT_RECEIPT.json").exists() or (root / "BRANCH_RECEIPT.json").exists():
+        raise SctsrError(ErrorCode.RESUME_GENERATION_MISMATCH, "A terminal or published run may not enter resume")
+    formal_identity = load_json(root / "FORMAL_IDENTITY.json")
+    if formal_identity != asdict(identity):
+        raise SctsrError(ErrorCode.RESUME_GENERATION_MISMATCH, "Run-root formal identity differs from the resume identity")
+    authorization = load_json(root / "FORMAL_AUTHORIZATION_BINDING.json")
+    if authorization != dict(release_expected_bindings or {}):
+        raise SctsrError(ErrorCode.RESUME_GENERATION_MISMATCH, "Run-root authorization binding changed before resume")
+    original_binding = load_json(root / "PREPARED_TRAINER_BINDING.json")
+    if prepared_trainer_binding is None:
+        raise SctsrError(ErrorCode.UPSTREAM_BINDING_FAILED, "Resume requires a newly revalidated prepared trainer")
+    mismatch = {
+        field: {"original": original_binding.get(field), "resume": prepared_trainer_binding.get(field)}
+        for field in _RESUME_STABLE_TRAINER_BINDING_FIELDS
+        if original_binding.get(field) != prepared_trainer_binding.get(field)
+    }
+    if mismatch:
+        raise SctsrError(
+            ErrorCode.UPSTREAM_BINDING_FAILED,
+            "Resume prepared trainer differs in scientific or dataset identity",
+            observed=mismatch,
+        )
+    return root, original_binding
+
+
+def _append_resume_binding_receipt(
+    *,
+    root: Path,
+    context: FormalResumeContext,
+    original_binding: Mapping[str, Any],
+    resume_binding: Mapping[str, Any],
+) -> str:
+    path = root / "08_receipts" / "resume_bindings.jsonl"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    previous = "0" * 64
+    if path.exists():
+        try:
+            with path.open("r", encoding="utf-8") as handle:
+                for line_number, line in enumerate(handle, 1):
+                    if not line.endswith("\n"):
+                        raise ValueError("missing newline")
+                    existing = json.loads(line)
+                    claimed = str(existing.pop("receipt_digest"))
+                    if existing.get("previous_receipt_digest") != previous or stable_digest(existing) != claimed:
+                        raise ValueError(f"chain mismatch at {line_number}")
+                    previous = claimed
+        except (OSError, UnicodeDecodeError, json.JSONDecodeError, KeyError, ValueError) as exc:
+            raise SctsrError(
+                ErrorCode.RESUME_GENERATION_MISMATCH,
+                "Resume prepared-trainer receipt chain is corrupt",
+                artifact_path=str(path),
+            ) from exc
+    row = {
+        "schema_version": "stage1.sctsr.resume_prepared_trainer_receipt.v1",
+        "status": "REVALIDATED_BEFORE_RESUME",
+        "run_id": context.run_id,
+        "arm_id": context.arm_id,
+        "training_seed": context.training_seed,
+        "resume_epoch": context.resume_epoch,
+        "resume_context_digest": context.as_dict()["resume_context_digest"],
+        "original_prepared_trainer_binding_digest": original_binding.get("binding_digest"),
+        "resume_prepared_trainer_binding": dict(resume_binding),
+        "resume_prepared_trainer_binding_digest": resume_binding.get("binding_digest"),
+        "previous_receipt_digest": previous,
+    }
+    row["receipt_digest"] = stable_digest(row)
+    with path.open("ab") as handle:
+        handle.write(canonical_json_bytes(row))
+        handle.flush()
+        os.fsync(handle.fileno())
+    _fsync_directory(path.parent)
+    return str(row["receipt_digest"])
+
+
+def _restore_resume_checkpoint(
+    *,
+    trainer: Any,
+    identity: FormalIdentity,
+    context: FormalResumeContext,
+) -> Mapping[str, Any]:
+    checkpoint_path = windows_safe_resolved_path(context.checkpoint_path)
+    payload = load_checkpoint(
+        checkpoint_path,
+        expected_sha256=context.checkpoint_sha256,
+        expected_epoch=context.last_complete_epoch,
+    )
+    _assert_expected_checkpoint_payload(payload, identity)
+    if payload["rng_state"].digest() != context.checkpoint_rng_digest or int(payload["global_step"]) != context.global_step:
+        raise SctsrError(ErrorCode.RESUME_GENERATION_MISMATCH, "Resume checkpoint changed after preflight")
+    _restore_trainer(payload, trainer)
+    return payload
 
 
 def _run_transactional_epoch(
@@ -527,6 +653,7 @@ def run_prepared_common_parent(
     release_expected_bindings: Mapping[str, str] | None = None,
     release_verification_secret: bytes | str | None = None,
     prepared_trainer_binding: Mapping[str, Any] | None = None,
+    resume_context: FormalResumeContext | None = None,
 ) -> dict[str, Any]:
     """Run the formal E1-E120 no-replay common parent on a prepared trainer.
 
@@ -549,22 +676,51 @@ def run_prepared_common_parent(
     sample_evidence = sample_evidence_from_trainer(trainer) if evidence_enabled else {}
     if execution_mode == "formal" and prepared_trainer_binding is None:
         raise SctsrError(ErrorCode.UPSTREAM_BINDING_FAILED, "Formal parent lacks its prepared trainer binding")
-    root = _prepare_run_root_after_upstream_setup(output_root, execution_mode=execution_mode)
-    if execution_mode == "formal":
+    if resume_context is not None and execution_mode != "formal":
+        raise SctsrError(ErrorCode.RESUME_GENERATION_MISMATCH, "Only a formally authorized run may use formal resume")
+    resume_binding_receipt_digest = None
+    if resume_context is None:
+        root = _prepare_run_root_after_upstream_setup(output_root, execution_mode=execution_mode)
+        original_trainer_binding = dict(prepared_trainer_binding or {})
+    else:
+        if (resume_context.epoch_start, resume_context.epoch_end) != (1, 120):
+            raise SctsrError(ErrorCode.RESUME_GENERATION_MISMATCH, "Common-parent resume context has the wrong epoch range")
+        root, original_trainer_binding = _validate_resume_root_and_bindings(
+            output_root=output_root,
+            context=resume_context,
+            identity=identity,
+            release_expected_bindings=release_expected_bindings,
+            prepared_trainer_binding=prepared_trainer_binding,
+            expected_run_id=f"PARENT_{identity.training_seed}",
+            expected_arm_id="COMMON_PARENT_NR",
+        )
+        _restore_resume_checkpoint(trainer=trainer, identity=identity, context=resume_context)
+        if resume_context.history.cumulative_occurrences != 0 or resume_context.history.counts:
+            raise SctsrError(ErrorCode.RESUME_GENERATION_MISMATCH, "Common-parent resume history contains replay")
+        resume_binding_receipt_digest = _append_resume_binding_receipt(
+            root=root,
+            context=resume_context,
+            original_binding=original_trainer_binding,
+            resume_binding=dict(prepared_trainer_binding or {}),
+        )
+    if execution_mode == "formal" and resume_context is None:
         atomic_write_json(root / "FORMAL_IDENTITY.json", asdict(identity))
         atomic_write_json(root / "FORMAL_AUTHORIZATION_BINDING.json", dict(release_expected_bindings or {}))
         atomic_write_json(root / "PREPARED_TRAINER_BINDING.json", dict(prepared_trainer_binding or {}))
-    global_step = 0
+    global_step = 0 if resume_context is None else resume_context.global_step
+    start_epoch = 1 if resume_context is None else resume_context.resume_epoch
     epoch_receipts = []
-    history = ReplayHistoryState()
-    previous_checkpoint_sha = identity.initial_checkpoint_sha256
-    previous_generation_digest = stable_digest(
-        {"role": "COMMON_PARENT_START", "initial_checkpoint_sha256": identity.initial_checkpoint_sha256}
+    history = ReplayHistoryState() if resume_context is None else resume_context.history
+    previous_checkpoint_sha = identity.initial_checkpoint_sha256 if resume_context is None else resume_context.checkpoint_sha256
+    previous_generation_digest = (
+        stable_digest({"role": "COMMON_PARENT_START", "initial_checkpoint_sha256": identity.initial_checkpoint_sha256})
+        if resume_context is None
+        else resume_context.previous_generation_digest
     )
     final_evidence: dict[str, Any] | None = None
     no_replay_schedule_digest = stable_digest({"role": "COMMON_PARENT_NR", "epochs": [1, 120]})
     no_replay_pool_digest = stable_digest({"role": "NO_REPLAY_IDENTITY_POOL"})
-    for epoch in range(1, 121):
+    for epoch in range(start_epoch, 121):
         sampler = getattr(trainer.train_loader, "sampler", None)
         if hasattr(sampler, "set_epoch"):
             sampler.set_epoch(epoch - 1)
@@ -628,16 +784,19 @@ def run_prepared_common_parent(
         os.chmod(checkpoint, 0o444)
     except OSError:
         pass
+    receipt_chain = validate_receipt_chain(root / "08_receipts" / "epoch_receipts.jsonl") if evidence_enabled else None
     receipt = {
         "schema_version": "stage1.sctsr.formal_parent_receipt.v1",
         "status": "IMPLEMENTED_NOT_FORMALLY_RUN" if execution_mode != "formal" else "FORMAL_PARENT_COMPLETE",
         "parent_id": f"PARENT_{identity.training_seed}", "training_seed": identity.training_seed,
         "epoch_start": 1, "epoch_end": 120, "global_step": global_step,
         "checkpoint_path": checkpoint.as_posix(), "checkpoint_sha256": checkpoint_sha,
-        "epoch_receipt_digest": stable_digest(epoch_receipts), "best_pt_used": False,
+        "epoch_receipt_digest": receipt_chain["receipt_chain_digest"] if receipt_chain is not None else stable_digest(epoch_receipts), "best_pt_used": False,
         "epoch_evidence_enabled": evidence_enabled,
         "recovery_pointer_path": (root / "ROLLING_RECOVERY_POINTER.json").as_posix() if evidence_enabled else None,
-        "prepared_trainer_binding_digest": None if prepared_trainer_binding is None else prepared_trainer_binding.get("binding_digest"),
+        "prepared_trainer_binding_digest": original_trainer_binding.get("binding_digest"),
+        "resume_binding_receipt_digest": resume_binding_receipt_digest,
+        "resumed_from_epoch": None if resume_context is None else resume_context.last_complete_epoch,
     }
     atomic_write_json(root / "PARENT_RECEIPT.json", receipt)
     if execution_mode == "formal":
@@ -671,6 +830,7 @@ def run_prepared_branch(
     identity_pool_binding: Mapping[str, Any] | None = None,
     parent_artifact_index_binding: Mapping[str, Any] | None = None,
     prepared_trainer_binding: Mapping[str, Any] | None = None,
+    resume_context: FormalResumeContext | None = None,
 ) -> dict[str, Any]:
     identity.validate(formal=execution_mode == "formal")
     require_synthetic_or_authorized(
@@ -703,8 +863,45 @@ def run_prepared_branch(
             ErrorCode.ARTIFACT_VALIDATION_FAILED,
             "Formal branch lacks immutable trainer, identity-pool, or parent-index bindings",
         )
-    root = _prepare_run_root_after_upstream_setup(output_root, execution_mode=execution_mode)
-    if execution_mode == "formal":
+    if resume_context is not None and execution_mode != "formal":
+        raise SctsrError(ErrorCode.RESUME_GENERATION_MISMATCH, "Only a formally authorized run may use formal resume")
+    resume_binding_receipt_digest = None
+    if resume_context is None:
+        root = _prepare_run_root_after_upstream_setup(output_root, execution_mode=execution_mode)
+        original_trainer_binding = dict(prepared_trainer_binding or {})
+    else:
+        if (resume_context.epoch_start, resume_context.epoch_end) != (121, 200):
+            raise SctsrError(ErrorCode.RESUME_GENERATION_MISMATCH, "Branch resume context has the wrong epoch range")
+        root, original_trainer_binding = _validate_resume_root_and_bindings(
+            output_root=output_root,
+            context=resume_context,
+            identity=identity,
+            release_expected_bindings=release_expected_bindings,
+            prepared_trainer_binding=prepared_trainer_binding,
+            expected_run_id=lineage.logical_run_id,
+            expected_arm_id=schedule.arm_id.value,
+        )
+        snapshots = {
+            "BRANCH_LINEAGE.json": asdict(lineage),
+            "SCHEDULE.json": schedule_to_dict(schedule),
+            "IDENTITY_POOL_BINDING.json": dict(identity_pool_binding or {}),
+            "PARENT_ARTIFACT_INDEX_BINDING.json": dict(parent_artifact_index_binding or {}),
+        }
+        for filename, expected_snapshot in snapshots.items():
+            if load_json(root / filename) != expected_snapshot:
+                raise SctsrError(
+                    ErrorCode.RESUME_GENERATION_MISMATCH,
+                    "Formal branch snapshot changed before resume",
+                    failing_field=filename,
+                )
+        _restore_resume_checkpoint(trainer=trainer, identity=identity, context=resume_context)
+        resume_binding_receipt_digest = _append_resume_binding_receipt(
+            root=root,
+            context=resume_context,
+            original_binding=original_trainer_binding,
+            resume_binding=dict(prepared_trainer_binding or {}),
+        )
+    if execution_mode == "formal" and resume_context is None:
         atomic_write_json(root / "FORMAL_IDENTITY.json", asdict(identity))
         atomic_write_json(root / "FORMAL_AUTHORIZATION_BINDING.json", dict(release_expected_bindings or {}))
         atomic_write_json(root / "BRANCH_LINEAGE.json", asdict(lineage))
@@ -712,17 +909,32 @@ def run_prepared_branch(
         atomic_write_json(root / "IDENTITY_POOL_BINDING.json", dict(identity_pool_binding))
         atomic_write_json(root / "PARENT_ARTIFACT_INDEX_BINDING.json", dict(parent_artifact_index_binding))
         atomic_write_json(root / "PREPARED_TRAINER_BINDING.json", dict(prepared_trainer_binding))
-    global_step = int(payload["global_step"])
+    global_step = int(payload["global_step"]) if resume_context is None else resume_context.global_step
+    start_epoch = 121 if resume_context is None else resume_context.resume_epoch
     parent_sha_before = sha256_file(parent_checkpoint)
     epoch_receipts = []
     checkpoints: dict[int, dict[str, str]] = {}
-    history = ReplayHistoryState()
-    previous_checkpoint_sha = parent_sha
-    previous_generation_digest = stable_digest(
-        {"role": "BRANCH_START", "parent_checkpoint_sha256": parent_sha, "lineage_digest": lineage.lineage_digest}
+    history = ReplayHistoryState() if resume_context is None else resume_context.history
+    previous_checkpoint_sha = parent_sha if resume_context is None else resume_context.checkpoint_sha256
+    previous_generation_digest = (
+        stable_digest({"role": "BRANCH_START", "parent_checkpoint_sha256": parent_sha, "lineage_digest": lineage.lineage_digest})
+        if resume_context is None
+        else resume_context.previous_generation_digest
     )
+    if resume_context is not None:
+        for epoch in sorted(KEEP_CHECKPOINTS & set(range(121, resume_context.last_complete_epoch + 1))):
+            path = (
+                root
+                / "03_epoch_transactions"
+                / f"epoch_{epoch:04d}.generation_1.complete"
+                / "05_checkpoints"
+                / f"rolling_epoch_{epoch:04d}.generation_1.pt"
+            )
+            if not path.is_file():
+                raise SctsrError(ErrorCode.RESUME_GENERATION_MISMATCH, "Retained key checkpoint is missing before resume", epoch=epoch)
+            checkpoints[epoch] = {"path": path.as_posix(), "sha256": sha256_file(path)}
     multiplicity = schedule.multiplicity()
-    for epoch in range(121, 201):
+    for epoch in range(start_epoch, 201):
         sampler = getattr(trainer.train_loader, "sampler", None)
         if hasattr(sampler, "set_epoch"):
             sampler.set_epoch(epoch - 1)
@@ -796,6 +1008,7 @@ def run_prepared_branch(
             lineage=lineage,
             identity=identity,
         )
+    receipt_chain = validate_receipt_chain(root / "08_receipts" / "epoch_receipts.jsonl") if evidence_enabled else None
     receipt = {
         "schema_version": "stage1.sctsr.formal_branch_receipt.v1",
         "status": "FORMAL_BRANCH_COMPLETE" if execution_mode == "formal" else "IMPLEMENTED_NOT_FORMALLY_RUN", "logical_run_id": lineage.logical_run_id,
@@ -803,13 +1016,15 @@ def run_prepared_branch(
         "parent_checkpoint_sha256": parent_sha, "lineage_digest": lineage.lineage_digest,
         "epoch_start": 121, "epoch_end": 200, "global_step": global_step,
         "checkpoints": checkpoints, "fixed_formal_endpoint": checkpoints[200],
-        "epoch_receipt_digest": stable_digest(epoch_receipts), "best_pt_used": False,
+        "epoch_receipt_digest": receipt_chain["receipt_chain_digest"] if receipt_chain is not None else stable_digest(epoch_receipts), "best_pt_used": False,
         "epoch_evidence_enabled": evidence_enabled,
         "recovery_pointer_path": (root / "ROLLING_RECOVERY_POINTER.json").as_posix() if evidence_enabled else None,
         "logical_artifact_index": logical_index,
         "identity_pool_binding_digest": None if identity_pool_binding is None else identity_pool_binding.get("binding_digest"),
         "parent_artifact_index_binding_digest": None if parent_artifact_index_binding is None else parent_artifact_index_binding.get("binding_digest"),
-        "prepared_trainer_binding_digest": None if prepared_trainer_binding is None else prepared_trainer_binding.get("binding_digest"),
+        "prepared_trainer_binding_digest": original_trainer_binding.get("binding_digest"),
+        "resume_binding_receipt_digest": resume_binding_receipt_digest,
+        "resumed_from_epoch": None if resume_context is None else resume_context.last_complete_epoch,
     }
     atomic_write_json(root / "BRANCH_RECEIPT.json", receipt)
     if execution_mode == "formal":

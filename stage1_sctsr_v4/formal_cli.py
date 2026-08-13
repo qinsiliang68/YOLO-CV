@@ -567,6 +567,7 @@ def _validate_runtime_policy(raw: Mapping[str, Any]) -> str:
         "ema_advances_on_replay": False,
         "warmup_locked_to_base_steps": True,
         "global_rng_restored_after_replay": True,
+        "minimum_resume_free_bytes": 21_474_836_480,
         "batchnorm_buffers_restored_after_replay": True,
         "oom_policy": "ABORT_FIXED_CONTRACT",
         "world_size": 1,
@@ -836,6 +837,13 @@ def build_prepared_trainer(
         "trainer_overrides_path": Path(trainer_overrides_path).resolve().as_posix(),
         "trainer_overrides_sha256": sha256_file(trainer_overrides_path),
         "resolved_overrides_digest": stable_digest(clean),
+        "scientific_overrides_digest": stable_digest(
+            {
+                key: value
+                for key, value in clean.items()
+                if key not in {"project", "name", "exist_ok", "resume"}
+            }
+        ),
         "identity_manifest_binding": manifest_binding,
         "dataset_binding": dataset_binding,
         "output_root": output.as_posix(),
