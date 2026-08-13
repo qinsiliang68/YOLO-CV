@@ -17,7 +17,10 @@ def windows_safe_resolved_path(value: str | Path) -> Path:
     raw = str(value)
     if os.name != "nt":
         return Path(raw).expanduser().resolve()
-    if raw.startswith("\\\\?\\"):
+    # ``Path.as_posix()`` serializes an extended path as ``//?/...``.  Treat
+    # that spelling as already normalized too; resolving it again can turn it
+    # into the invalid ``\\?\UNC\?\...`` form.
+    if raw.startswith("\\\\?\\") or raw.startswith("//?/"):
         return Path(raw)
     resolved = Path(raw).expanduser().resolve()
     if str(resolved).startswith("\\\\"):

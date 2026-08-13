@@ -189,8 +189,11 @@ def find_last_complete_epoch(
 
 
 def quarantine_inprogress(transaction_root: str | Path, quarantine_root: str | Path, *, reason: str) -> list[str]:
-    root = Path(transaction_root)
-    qroot = Path(quarantine_root)
+    # Callers retain ordinary registered paths in manifests.  Normalize at the
+    # filesystem boundary so Win32 can enumerate, move, and receipt transaction
+    # directories whose resolved path exceeds MAX_PATH.
+    root = windows_safe_resolved_path(transaction_root)
+    qroot = windows_safe_resolved_path(quarantine_root)
     qroot.mkdir(parents=True, exist_ok=True)
     moved = []
     for path in sorted(root.glob("*.inprogress")):

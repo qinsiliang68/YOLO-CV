@@ -8,6 +8,7 @@ import pytest
 
 from stage1_sctsr_v4.columnar import validate_columnar_file, write_zstd_parquet
 from stage1_sctsr_v4.filesystem import windows_safe_resolved_path
+from stage1_sctsr_v4.recovery import quarantine_inprogress
 from stage1_sctsr_v4.synthetic_canary import run_synthetic_canary
 from stage1_sctsr_v4.run_validation import validate_run_tree
 from stage1_sctsr_v4.serialization import atomic_write_json, load_json, sha256_file
@@ -39,6 +40,31 @@ def test_atomic_json_and_hash_survive_transaction_identity_path_beyond_max_path(
         atomic_write_json(destination, {"status": "INPROGRESS", "generation": 1})
         assert load_json(destination) == {"status": "INPROGRESS", "generation": 1}
         assert len(sha256_file(destination)) == 64
+    finally:
+        shutil.rmtree(windows_safe_resolved_path(root), ignore_errors=True)
+
+
+@pytest.mark.skipif(os.name != "nt", reason="Win32 extended path contract")
+def test_quarantine_accepts_unprefixed_registered_root_beyond_max_path(tmp_path: Path):
+    root = tmp_path / ("registered_experiment_" + "a" * 80) / ("implementation_audit_" + "b" * 80)
+    transaction_root = root / "03_epoch_transactions"
+    quarantine_root = root / "09_quarantine"
+    partial = windows_safe_resolved_path(transaction_root) / "epoch_0121.generation_1.inprogress"
+    try:
+        partial.mkdir(parents=True)
+        atomic_write_json(partial / "TRANSACTION_IDENTITY.json", {"status": "INPROGRESS", "generation": 1})
+
+        moved = quarantine_inprogress(
+            transaction_root,
+            quarantine_root,
+            reason="ACTUAL_ENGINEERING_CANARY_KILL",
+        )
+
+        assert len(moved) == 1
+        target = windows_safe_resolved_path(moved[0])
+        assert target.is_dir()
+        assert load_json(target / "QUARANTINE_RECEIPT.json")["status"] == "QUARANTINED"
+        assert not partial.exists()
     finally:
         shutil.rmtree(windows_safe_resolved_path(root), ignore_errors=True)
 
