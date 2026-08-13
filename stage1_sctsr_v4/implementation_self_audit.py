@@ -157,10 +157,10 @@ def validate_implementation_self_audit(
     if raw.get("statuses_allowed") != list(ALLOWED_STATUSES):
         raise SctsrError(ErrorCode.CLOSEOUT_NOT_VALIDATED, "Self-audit status registry is invalid")
     side_effects = raw.get("side_effects")
-    if not isinstance(side_effects, Mapping) or tuple(side_effects) != SIDE_EFFECT_FIELDS or any(value is not False for value in side_effects.values()):
+    if not isinstance(side_effects, Mapping) or set(side_effects) != set(SIDE_EFFECT_FIELDS) or any(value is not False for value in side_effects.values()):
         raise SctsrError(ErrorCode.FORMAL_RELEASE_NOT_AUTHORIZED, "Self-audit detected or obscured prohibited v4 side effects")
     legacy = raw.get("legacy_detected")
-    if not isinstance(legacy, Mapping) or tuple(legacy) != LEGACY_FIELDS or any(type(value) is not bool for value in legacy.values()):
+    if not isinstance(legacy, Mapping) or set(legacy) != set(LEGACY_FIELDS) or any(type(value) is not bool for value in legacy.values()):
         raise SctsrError(ErrorCode.CLOSEOUT_NOT_VALIDATED, "Self-audit legacy detection schema is invalid")
 
     requirements = parse_taskbook_self_audit(taskbook)

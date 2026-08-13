@@ -12,7 +12,7 @@ from stage1_sctsr_v4.implementation_self_audit import (
     parse_taskbook_self_audit,
     validate_implementation_self_audit,
 )
-from stage1_sctsr_v4.serialization import sha256_file
+from stage1_sctsr_v4.serialization import atomic_write_json, sha256_file
 
 
 def _taskbook(repository_root):
@@ -82,6 +82,18 @@ def test_self_audit_validates_exact_206_row_pass_ledger(repository_root, tmp_pat
     )
     assert result["status"] == "PASS"
     assert result["check_count"] == 206
+
+
+def test_self_audit_round_trips_canonical_sorted_json(repository_root, tmp_path):
+    audit = _audit(repository_root, tmp_path)
+    path = tmp_path / "audit.json"
+    atomic_write_json(path, audit)
+    result = validate_implementation_self_audit(
+        path,
+        taskbook_path=_taskbook(repository_root),
+        evidence_root=tmp_path,
+    )
+    assert result["status"] == "PASS"
 
 
 def test_self_audit_preserves_v3_baseline_failure_instead_of_claiming_pass(repository_root, tmp_path):
