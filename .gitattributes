@@ -30,3 +30,8 @@ artifacts/stage1_sample_value_experiments/contracts/gapvalue240_v1_1/**/*.csv te
 # The lightweight analysis package carries a byte-level SHA-256 manifest.
 # Disable checkout-time newline conversion so every listed hash stays portable.
 artifacts/stage1_sample_value_experiments/experiments/oof_dynamics_gap_value_20260708/06_reports/gapvalue240_full_analysis_20260728_v1_git/** -text
+
+# Raw SCTSR TDD logs preserve the test runner's exact stdout/stderr bytes,
+# including diagnostic whitespace. Do not rewrite evidence merely to satisfy a
+# source-formatting heuristic; each receipt is SHA-bound separately.
+docs/stage1_sctsr_v4/tdd_receipts/** -whitespace

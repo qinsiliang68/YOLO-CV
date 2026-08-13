@@ -51,6 +51,7 @@ def test_canary_source_manifest_covers_dependency_lock_and_imported_upstream(can
     manifest = load_json(canary_root / '00_contract' / 'SOURCE_TREE_MANIFEST.json')
     included = set(manifest['include_paths'])
     assert 'uv.lock' in included
+    assert '.gitattributes' in included
     assert 'YOLOv11/ultralytics/engine/trainer.py' in included
     assert 'YOLOv11/ultralytics/models/yolo/classify/train.py' in included
     assert 'integrations/ultralytics' in included

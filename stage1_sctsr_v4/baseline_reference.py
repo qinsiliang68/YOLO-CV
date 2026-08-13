@@ -13,6 +13,7 @@ SOURCE_TREE_INCLUDE_PATHS = (
     "pyproject.toml",
     "uv.lock",
     "requirements-sctsr-v4.txt",
+    ".gitattributes",
     "README.md",
     TASKBOOK_PATH,
     "YOLOv11/ultralytics/engine/trainer.py",
