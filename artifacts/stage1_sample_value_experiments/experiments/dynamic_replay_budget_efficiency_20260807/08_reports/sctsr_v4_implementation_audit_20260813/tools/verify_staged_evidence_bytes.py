@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import os
 import subprocess
 from pathlib import Path
 
@@ -29,6 +30,7 @@ def main() -> int:
     parser.add_argument("--repository-root", type=Path, required=True)
     parser.add_argument("--evidence-root", type=Path, required=True)
     parser.add_argument("--manifest", type=Path, required=True)
+    parser.add_argument("--output", type=Path)
     args = parser.parse_args()
     repository = args.repository_root.resolve()
     evidence = args.evidence_root.resolve()
@@ -68,6 +70,11 @@ def main() -> int:
         "mismatch_count": len(mismatches),
         "mismatches": mismatches,
     }
+    if args.output is not None:
+        args.output.parent.mkdir(parents=True, exist_ok=True)
+        temporary = args.output.with_name(f".{args.output.name}.{os.getpid()}.tmp")
+        temporary.write_text(json.dumps(result, ensure_ascii=False, indent=2) + "\n", encoding="utf-8", newline="\n")
+        os.replace(temporary, args.output)
     print(json.dumps(result, ensure_ascii=False, sort_keys=True))
     return 0 if not mismatches else 1
 

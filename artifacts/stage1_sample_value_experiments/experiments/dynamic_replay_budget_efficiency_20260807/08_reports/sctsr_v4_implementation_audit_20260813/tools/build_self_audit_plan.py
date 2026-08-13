@@ -15,22 +15,6 @@ from stage1_sctsr_v4.serialization import atomic_write_json
 
 
 FAILURES = {
-    "SA-260": (
-        "The inherited receipt registry covers rollback units 01 through 09, but later behavior-changing hardening commits do not all have a canonical per-change failing-first receipt.",
-        "Add a canonical red receipt for every later behavior-changing commit, bind it to the exact pytest node ID and source commit, and rerun this audit.",
-    ),
-    "SA-261": (
-        "Several later fixes are represented by final green command receipts and session history rather than paired immutable red and green files under the registered evidence root.",
-        "Persist paired raw red and green logs with exit code, byte count, SHA-256, pytest node ID, and source-commit binding for every fix, then rerun this audit.",
-    ),
-    "SA-262": (
-        "The complete red corpus is absent, so this audit cannot prove for every later behavior change that the failure reached the intended assertion instead of failing during setup, syntax parsing, or import.",
-        "Record the intended failing assertion for every behavior change and prove that each red log reaches that assertion before the implementation is applied.",
-    ),
-    "SA-263": (
-        "The complete paired receipt corpus is absent, so this audit cannot prove that every later red and green run used the same exact pytest node ID.",
-        "Bind every red and green pair to the same exact pytest node ID and to the before and after source commits, then rerun this audit.",
-    ),
     "SA-266": (
         "The current registered v3 regression command completed with 183 passed and 1 skipped; the taskbook requires at least 231 passed.",
         "Resolve the baseline mismatch through an approved specification change or restore a verified 231-test v3 baseline without rewriting historical behavior, then rerun the exact command.",
@@ -41,7 +25,7 @@ FAILURES = {
 GROUPS = {
     "repository": {
         "range": range(1, 13),
-        "command": "repository_state_audit",
+        "command": "git_diff_check_e9b6df6",
         "reports": [
             "reports/REPOSITORY_STATE_AUDIT.json",
             "reports/CHANGED_FILE_LEDGER.json",
@@ -61,7 +45,7 @@ GROUPS = {
     },
     "contract": {
         "range": range(20, 31),
-        "command": "contract_rate_schema",
+        "command": "contract_cli_e9b6df6",
         "reports": ["reports/CONTRACT_VALIDATION.json"],
         "sources": [
             "stage1_sctsr_v4/rate_spec.py",
@@ -79,7 +63,7 @@ GROUPS = {
     },
     "assets": {
         "range": range(40, 58),
-        "command": "assets_pools_r2",
+        "command": "asset_cli_e9b6df6",
         "reports": [
             "reports/ASSET_VALIDATION.json",
             "reports/FORMAL_R2_INFEASIBILITY.json",
@@ -103,7 +87,7 @@ GROUPS = {
     },
     "schedule": {
         "range": range(60, 77),
-        "command": "schedules",
+        "command": "schedule_cli_e9b6df6",
         "reports": ["reports/SCHEDULE_VALIDATION.json"],
         "sources": [
             "stage1_sctsr_v4/schedule.py",
@@ -121,8 +105,8 @@ GROUPS = {
     },
     "parent": {
         "range": range(80, 92),
-        "command": "parent_lineage",
-        "reports": ["reports/SYNTHETIC_CANARY_FINAL_A_VALIDATION.json"],
+        "command": "full_v4_e9b6df6",
+        "reports": ["reports/SYNTHETIC_CANARY_E9_A_VALIDATION.json"],
         "sources": [
             "stage1_sctsr_v4/checkpointing.py",
             "stage1_sctsr_v4/common_parent.py",
@@ -140,8 +124,8 @@ GROUPS = {
     },
     "runtime": {
         "range": range(100, 121),
-        "command": "fixed_step_yolo",
-        "reports": ["reports/SYNTHETIC_CANARY_FINAL_A_VALIDATION.json"],
+        "command": "full_v4_e9b6df6",
+        "reports": ["reports/SYNTHETIC_CANARY_E9_A_VALIDATION.json"],
         "sources": [
             "stage1_sctsr_v4/fixed_step_runtime.py",
             "stage1_sctsr_v4/ultralytics_overlay.py",
@@ -162,8 +146,8 @@ GROUPS = {
     },
     "ledgers": {
         "range": range(130, 145),
-        "command": "evidence_ledgers",
-        "reports": ["reports/SYNTHETIC_CANARY_FINAL_A_VALIDATION.json"],
+        "command": "full_v4_e9b6df6",
+        "reports": ["reports/SYNTHETIC_CANARY_E9_A_VALIDATION.json"],
         "sources": [
             "stage1_sctsr_v4/ledger_schema.py",
             "stage1_sctsr_v4/occurrence_ledger.py",
@@ -186,8 +170,8 @@ GROUPS = {
     },
     "telemetry": {
         "range": range(150, 160),
-        "command": "telemetry",
-        "reports": ["reports/SYNTHETIC_CANARY_FINAL_A_VALIDATION.json"],
+        "command": "full_v4_e9b6df6",
+        "reports": ["reports/SYNTHETIC_CANARY_E9_A_VALIDATION.json"],
         "sources": [
             "stage1_sctsr_v4/telemetry.py",
             "stage1_sctsr_v4/evidence_runtime.py",
@@ -201,8 +185,8 @@ GROUPS = {
     },
     "evaluation": {
         "range": range(170, 189),
-        "command": "evaluation_statistics",
-        "reports": ["reports/SYNTHETIC_CANARY_FINAL_A_VALIDATION.json"],
+        "command": "full_v4_e9b6df6",
+        "reports": ["reports/SYNTHETIC_CANARY_E9_A_VALIDATION.json"],
         "sources": [
             "stage1_sctsr_v4/prediction_artifact.py",
             "stage1_sctsr_v4/prediction_runtime.py",
@@ -223,7 +207,7 @@ GROUPS = {
     },
     "qrad": {
         "range": range(200, 210),
-        "command": "qrad_phase2",
+        "command": "full_v4_e9b6df6",
         "reports": [
             "reports/ASSET_VALIDATION.json",
             "reports/REPOSITORY_STATE_AUDIT.json",
@@ -243,8 +227,8 @@ GROUPS = {
     },
     "recovery": {
         "range": range(220, 234),
-        "command": "transaction_recovery",
-        "reports": ["reports/SYNTHETIC_CANARY_FINAL_A_VALIDATION.json"],
+        "command": "full_v4_e9b6df6",
+        "reports": ["reports/SYNTHETIC_CANARY_E9_A_VALIDATION.json"],
         "sources": [
             "stage1_sctsr_v4/epoch_transaction.py",
             "stage1_sctsr_v4/recovery.py",
@@ -262,10 +246,10 @@ GROUPS = {
     },
     "cli": {
         "range": range(240, 251),
-        "command": "cli_side_effects",
+        "command": "cli_side_effects_e9b6df6",
         "reports": [
             "reports/REPOSITORY_STATE_AUDIT.json",
-            "reports/SYNTHETIC_CANARY_FINAL_A_VALIDATION.json",
+            "reports/SYNTHETIC_CANARY_E9_A_VALIDATION.json",
         ],
         "sources": [
             "stage1_sctsr_v4/formal_cli.py",
@@ -286,11 +270,13 @@ GROUPS = {
     },
     "testing": {
         "range": range(260, 276),
-        "command": "audit_infrastructure",
+        "command": "audit_tools_e9b6df6",
         "reports": [
             "COMMAND_INDEX.json",
             "reports/CHANGED_FILE_LEDGER.json",
-            "reports/SYNTHETIC_DETERMINISM_COMPARISON.json",
+            "reports/SYNTHETIC_DETERMINISM_COMPARISON_E9.json",
+            "tdd_history/TDD_HISTORY_AUDIT.json",
+            "tdd_history/TDD_HISTORY_AUDIT_RECEIPT.json",
         ],
         "sources": [
             "stage1_sctsr_v4/implementation_self_audit.py",
@@ -302,12 +288,12 @@ GROUPS = {
             "tests/stage1_sctsr_v4/test_documentation_contract.py",
             "tests/stage1_sctsr_v4/test_synthetic_canary.py",
         ],
-        "observed": "The audit-infrastructure test group completed with 21 passed and the command index preserves raw logs and hashes; individual testing checks use their own registered command overrides below.",
+        "observed": "The final audit-tool suite completed with 25 passed. The TDD history audit independently validates its own schema and records 34 rollback commits, 31 behavior commits, 3 non-behavior commits, 33 failing-first pairs, and 146 immutable rollout events. It explicitly identifies the reviewer as the primary agent rather than claiming independent review.",
         "risk": "Implementation tests do not authorize formal training and cannot establish SCTSR scientific effectiveness.",
     },
     "manual": {
         "range": range(280, 290),
-        "command": "validate_manual_line_review_v4",
+        "command": "validate_manual_line_review_e9b6df6",
         "reports": [
             "reports/MANUAL_LINE_REVIEW.json",
             "reports/MANUAL_LINE_REVIEW_VALIDATION.json",
@@ -328,10 +314,10 @@ GROUPS = {
     },
     "side_effects": {
         "range": range(300, 310),
-        "command": "repository_state_audit",
+        "command": "cli_side_effects_e9b6df6",
         "reports": [
             "reports/REPOSITORY_STATE_AUDIT.json",
-            "reports/SYNTHETIC_CANARY_FINAL_A_VALIDATION.json",
+            "reports/SYNTHETIC_CANARY_E9_A_VALIDATION.json",
         ],
         "sources": [
             "stage1_sctsr_v4/repository_state_audit.py",
@@ -351,30 +337,30 @@ GROUPS = {
 
 
 COMMAND_OVERRIDES = {
-    "SA-010": "git_diff_check",
-    "SA-011": "source_tree_manifest",
-    "SA-030": "cli_side_effects",
-    "SA-040": "asset_cli",
-    "SA-041": "assets_pools_r2",
-    "SA-042": "asset_cli",
-    "SA-260": "audit_infrastructure",
-    "SA-261": "audit_infrastructure",
-    "SA-262": "audit_infrastructure",
-    "SA-263": "audit_infrastructure",
-    "SA-264": "full_v4",
-    "SA-265": "full_v4",
-    "SA-266": "full_v3",
-    "SA-267": "contract_cli",
-    "SA-268": "asset_cli",
-    "SA-269": "schedule_cli",
-    "SA-270": "synthetic_canary_final_a",
-    "SA-271": "validate_canary_final_a",
-    "SA-272": "cli_side_effects",
-    "SA-273": "audit_infrastructure",
-    "SA-274": "audit_infrastructure",
-    "SA-275": "determinism_compare",
-    "SA-307": "qrad_phase2",
-    "SA-309": "validate_canary_final_a",
+    "SA-010": "git_diff_check_e9b6df6",
+    "SA-011": "source_tree_manifest_e9b6df6",
+    "SA-030": "cli_side_effects_e9b6df6",
+    "SA-040": "asset_cli_e9b6df6",
+    "SA-041": "full_v4_e9b6df6",
+    "SA-042": "asset_cli_e9b6df6",
+    "SA-260": "tdd_history_audit_e9b6df6",
+    "SA-261": "tdd_history_audit_e9b6df6",
+    "SA-262": "tdd_history_audit_e9b6df6",
+    "SA-263": "tdd_history_audit_e9b6df6",
+    "SA-264": "full_v4_e9b6df6",
+    "SA-265": "full_v4_e9b6df6",
+    "SA-266": "full_v3_e9b6df6",
+    "SA-267": "contract_cli_e9b6df6",
+    "SA-268": "asset_cli_e9b6df6",
+    "SA-269": "schedule_cli_e9b6df6",
+    "SA-270": "synthetic_canary_e9_a",
+    "SA-271": "validate_canary_e9_a",
+    "SA-272": "cli_side_effects_e9b6df6",
+    "SA-273": "audit_tools_e9b6df6",
+    "SA-274": "tdd_history_audit_e9b6df6",
+    "SA-275": "determinism_compare_e9b6df6",
+    "SA-307": "full_v4_e9b6df6",
+    "SA-309": "validate_canary_e9_a",
 }
 
 
@@ -410,9 +396,9 @@ def main() -> int:
     root = args.evidence_root.resolve()
     commands = json.loads((root / "COMMAND_INDEX.json").read_text(encoding="utf-8"))["commands"]
     command_by_name = {row["name"]: row for row in commands}
-    snapshot_manifest = json.loads((root / "reviewed/REVIEWED_FILE_SNAPSHOT_MANIFEST.json").read_text(encoding="utf-8"))
+    snapshot_manifest = json.loads((root / "reviewed_e9b6df6/REVIEWED_FILE_SNAPSHOT_MANIFEST.json").read_text(encoding="utf-8"))
     snapshot_by_original = {
-        row["original_relative_path"]: f"reviewed/{row['snapshot_relative_path']}"
+        row["original_relative_path"]: f"reviewed_e9b6df6/{row['snapshot_relative_path']}"
         for row in snapshot_manifest["files"]
     }
 
