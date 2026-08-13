@@ -9,6 +9,7 @@ import pytest
 from stage1_sctsr_v4.columnar import validate_columnar_file, write_zstd_parquet
 from stage1_sctsr_v4.filesystem import windows_safe_resolved_path
 from stage1_sctsr_v4.synthetic_canary import run_synthetic_canary
+from stage1_sctsr_v4.run_validation import validate_run_tree
 
 
 @pytest.mark.skipif(os.name != "nt", reason="Win32 extended path contract")
@@ -38,3 +39,4 @@ def test_complete_synthetic_canary_normalizes_a_long_registered_root(repository_
 
     assert receipt["status"] == "PASS"
     assert (windows_safe_resolved_path(root) / "RUN_MANIFEST.json").is_file()
+    assert validate_run_tree(root)["status"] == "PASS"

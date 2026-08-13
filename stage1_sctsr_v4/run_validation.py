@@ -905,7 +905,9 @@ def _validate_formal_tree(root: Path, manifest: Mapping[str, Any]) -> dict[str, 
 
 
 def validate_run_tree(run_root: str | Path, *, allow_synthetic_portable_fallback: bool = False) -> dict[str, Any]:
-    root = Path(run_root).resolve()
+    from .filesystem import windows_safe_resolved_path
+
+    root = windows_safe_resolved_path(run_root)
     if not root.is_dir():
         raise SctsrError(ErrorCode.ARTIFACT_VALIDATION_FAILED, "Run root is missing", artifact_path=str(root))
     manifest_path = root / "RUN_MANIFEST.json"
