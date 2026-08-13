@@ -7,7 +7,7 @@ import torch
 
 import stage1_sctsr_v4.branch_lineage as branch_lineage
 from stage1_sctsr_v4.branch_lineage import BranchLineage
-from stage1_sctsr_v4.checkpointing import build_checkpoint_payload, load_checkpoint, save_checkpoint_atomic
+from stage1_sctsr_v4.checkpointing import build_checkpoint_payload, checkpoint_state_digest, load_checkpoint, save_checkpoint_atomic
 from stage1_sctsr_v4.common_parent import CommonParentSpec
 from stage1_sctsr_v4.errors import ErrorCode, SctsrError
 from stage1_sctsr_v4.logical_artifact_index import LogicalArtifactEntry, LogicalArtifactIndex
@@ -281,3 +281,30 @@ def test_sa_090_child_tree_rejects_forged_prebranch_epoch(tmp_path):
         LogicalArtifactIndex().validate_child_tree(child_root)
 
     assert exc.value.code is ErrorCode.LOGICAL_ARTIFACT_IDENTITY_MISMATCH
+
+
+@pytest.mark.parametrize(
+    ("tensor", "expected"),
+    (
+        (torch.tensor([[1.25, -2.5], [0.0, 3.75]], dtype=torch.float32), "A8F593A3685C605EE53C75CE75F58E572635A29204D668AB03EFEEC663F2A248"),
+        (torch.tensor(42, dtype=torch.int64), "F9EF575AB39EEB1F2219C9686996A62E6E7FC54B3DC9A811FA18DB994358DC9A"),
+        (torch.tensor([1.0, -0.5, 3.0], dtype=torch.bfloat16), "560B4C2D2DAB843EE8E00FD6EAE98679B112D17EB4DACCE1A5E4B0E7405AED32"),
+        (torch.arange(12, dtype=torch.float64).reshape(3, 4).t(), "4A0E3AE7821DA77D3F10A12A3DD94691021F337DC3CCD35EC36B0DC3D02CF3B9"),
+        (torch.empty((0, 2), dtype=torch.float16), "0C8D0B7F3FF1048136C6CEEEBE61B6EE77AC0CF060DDDD66AB316D08E4BCB189"),
+    ),
+)
+def test_checkpoint_tensor_digest_preserves_frozen_typed_byte_vectors(tensor, expected):
+    assert checkpoint_state_digest({"tensor": tensor}) == expected
+
+
+def test_checkpoint_tensor_digest_uses_bulk_bytes_not_python_storage_iteration(monkeypatch):
+    original_storage = torch.Tensor.untyped_storage
+
+    def forbidden_iteration(self):
+        raise AssertionError("checkpoint hashing must not materialize bytes from Python storage iteration")
+
+    monkeypatch.setattr(torch.Tensor, "untyped_storage", forbidden_iteration)
+    try:
+        assert checkpoint_state_digest({"tensor": torch.arange(16, dtype=torch.float32)})
+    finally:
+        monkeypatch.setattr(torch.Tensor, "untyped_storage", original_storage)

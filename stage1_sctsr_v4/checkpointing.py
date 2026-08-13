@@ -91,16 +91,18 @@ def _update_checkpoint_hash(hasher: Any, value: Any) -> None:
     if isinstance(value, torch.Tensor):
         if value.layout is not torch.strided:
             raise SctsrError(ErrorCode.PARENT_CHECKPOINT_INCOMPLETE, "Checkpoint contains an unsupported non-strided tensor", observed=str(value.layout))
-        # ``Tensor.view(torch.uint8)`` rejects zero-dimensional tensors when
-        # the element size changes, and NumPy cannot represent every PyTorch
-        # dtype (notably bfloat16).  A contiguous clone owns an exact-sized,
-        # offset-zero storage, so hashing that storage covers every value byte
-        # without either limitation.
-        tensor = value.detach().cpu().contiguous().clone()
+        # Hash logical tensor bytes in bulk.  ``bytes(untyped_storage())``
+        # iterates storage one byte at a time in Python (roughly 8 seconds per
+        # 4 MB on the audited Windows host), making a model+EMA checkpoint take
+        # many minutes and repeating that cost during every validation.  A
+        # flattened uint8 view preserves the frozen typed-byte algorithm for
+        # scalar, bfloat16, non-contiguous and empty tensors while NumPy emits
+        # one contiguous byte buffer in native code.
+        tensor = value.detach().cpu().contiguous()
         hasher.update(b"T")
         _write_length_prefixed(hasher, str(tensor.dtype).encode("ascii"))
         _update_checkpoint_hash(hasher, tuple(int(item) for item in tensor.shape))
-        raw = bytes(tensor.untyped_storage())
+        raw = tensor.reshape(-1).view(torch.uint8).numpy().tobytes(order="C")
         _write_length_prefixed(hasher, raw)
         return
     if isinstance(value, np.ndarray):
