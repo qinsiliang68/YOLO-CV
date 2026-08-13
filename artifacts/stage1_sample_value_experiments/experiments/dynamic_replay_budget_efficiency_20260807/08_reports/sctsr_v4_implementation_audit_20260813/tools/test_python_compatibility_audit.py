@@ -90,8 +90,8 @@ def test_wrong_python_or_missing_zstd_fails_closed(tmp_path):
     probe = next(row for row in index["commands"] if row["name"] == "runtime_probe_python312_isolated")
     path = tmp_path / probe["stdout_path"]
     payload = json.dumps({"python": "3.13.0", "pyarrow": "21.0.0", "torch": "x", "zstd_codec_available": False}) + "\n"
-    path.write_text(payload, encoding="utf-8")
     raw = payload.encode("utf-8")
+    path.write_bytes(raw)
     probe["stdout_bytes"] = len(raw)
     probe["stdout_sha256"] = hashlib.sha256(raw).hexdigest().upper()
 
