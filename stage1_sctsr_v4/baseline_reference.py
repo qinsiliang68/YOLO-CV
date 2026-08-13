@@ -10,6 +10,7 @@ SOURCE_TREE_INCLUDE_PATHS = (
     "integrations/ultralytics",
     "tests/stage1_sctsr_v4",
     "docs/stage1_sctsr_v4",
+    "docs/README.md",
     "pyproject.toml",
     "uv.lock",
     "requirements-sctsr-v4.txt",
