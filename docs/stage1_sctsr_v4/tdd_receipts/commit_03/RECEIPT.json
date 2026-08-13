@@ -1,0 +1,54 @@
+{
+  "schema_version": "stage1.sctsr.tdd_receipt.v1",
+  "rollback_unit": "commit_03_common_parent_checkpoint_lineage_and_logical_index",
+  "status": "PASS_ENGINEERING_UNIT_NOT_TRAINING_AUTHORIZATION",
+  "red": {
+    "command": "uv run --project C:/GitHub/YOLO-CV pytest tests/red_commit_03 -q --junitxml=C:/GitHub/YOLO-CV/docs/stage1_sctsr_v4/tdd_receipts/commit_03/RED.junit.xml (cwd=untouched extracted expert package)",
+    "exit_code": 1,
+    "stdout_stderr_path": "RED.junit.xml",
+    "stdout_stderr_bytes": 7886,
+    "stdout_stderr_sha256": "A01D1DC0EA150605DD453596E62483997599BF1005A683907DEBD2E39B8AEB32",
+    "observed": "5 failed: Windows fsync used a read-only descriptor; checkpoint digest did not cover tensor values; actual parent-file validation and child prebranch-history rejection were absent; CommonParentSpec lacked runtime/assets identities",
+    "expected": "all five malformed or unsupported cases fail closed after implementation"
+  },
+  "green": {
+    "command": "uv run pytest tests/stage1_sctsr_v4/test_checkpoint_hardening.py tests/stage1_sctsr_v4/test_common_parent.py tests/stage1_sctsr_v4/test_branch_lineage.py tests/stage1_sctsr_v4/test_logical_artifact_index.py -q --junitxml=docs/stage1_sctsr_v4/tdd_receipts/commit_03/GREEN.junit.xml",
+    "exit_code": 0,
+    "stdout_stderr_path": "GREEN.junit.xml",
+    "stdout_stderr_bytes": 3635,
+    "stdout_stderr_sha256": "4ABBC53BD873603774489BB514AECF53AB171BE41B4FA4D4841FE0AA2662973A",
+    "observed": "24 passed",
+    "expected": "24 passed"
+  },
+  "targeted_regression": {
+    "command": "uv run pytest <all tracked SCTSR tests from commits 1-2 plus commit-3 checkpoint/common-parent/lineage/index/RNG tests> -q --junitxml=docs/stage1_sctsr_v4/tdd_receipts/commit_03/TARGETED_GREEN.junit.xml",
+    "exit_code": 0,
+    "stdout_stderr_path": "TARGETED_GREEN.junit.xml",
+    "stdout_stderr_bytes": 10500,
+    "stdout_stderr_sha256": "08B9840FFA361AE57A102B3460EC4785F285C519642363B5EB74BDCC9EBCE3A5",
+    "observed": "78 passed",
+    "expected": "78 passed"
+  },
+  "compileall": {
+    "command": "uv run python -m compileall -q stage1_sctsr_v4/checkpointing.py stage1_sctsr_v4/common_parent.py stage1_sctsr_v4/branch_lineage.py stage1_sctsr_v4/logical_artifact_index.py stage1_sctsr_v4/rng_isolation.py",
+    "exit_code": 0,
+    "observed": "no stderr/stdout"
+  },
+  "reviewed_source_files": [
+    "stage1_sctsr_v4/checkpointing.py",
+    "stage1_sctsr_v4/common_parent.py",
+    "stage1_sctsr_v4/branch_lineage.py",
+    "stage1_sctsr_v4/logical_artifact_index.py",
+    "stage1_sctsr_v4/rng_isolation.py"
+  ],
+  "properties_proved": [
+    "full-content checkpoint digest changes when tensor, optimizer, or RNG-bearing state changes",
+    "Windows atomic checkpoint publication flushes a writable file descriptor and verifies the temporary payload before replace",
+    "checkpoint generations cannot overwrite an existing path through the publication API",
+    "formal E120 parent identity includes seed, lock, initial weight, base manifest, source, runtime, assets, 112560 steps, 120 sampler generations, and 112560 EMA updates",
+    "child launch validation binds BranchLineage to the actual parent file and rechecks parent bytes after deserialization",
+    "logical E1-E120 ownership is PARENT, E121-E200 ownership is CHILD, and child-owned prebranch artifact names fail closed"
+  ],
+  "remaining_risk": "These primitives are not yet connected to the final parent/branch runner, generation transaction, parent completion receipt, or formal closeout. The frozen exact R2 specification remains infeasible on registered assets, so formal training is independently blocked.",
+  "required_action": "Connect these validated primitives in later fixed-step/runtime and transaction commits; do not authorize or start formal training."
+}

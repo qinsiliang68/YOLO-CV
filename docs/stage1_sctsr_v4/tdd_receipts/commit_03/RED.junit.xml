@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="5" skipped="0" tests="5" time="1.990" timestamp="2026-08-13T15:57:41.637578+08:00" hostname="zhangdawei"><testcase classname="tests.red_commit_03.test_parent_lineage_hardening" name="test_windows_atomic_checkpoint_write_is_durable" time="0.745"><failure message="OSError: [Errno 9] Bad file descriptor">tmp_path = WindowsPath('C:/Users/28898/AppData/Local/Temp/pytest-of-28898/pytest-1410/test_windows_atomic_checkpoint0')
+
+    def test_windows_atomic_checkpoint_write_is_durable(tmp_path):
+        path = tmp_path / "epoch_0120.pt"
+&gt;       digest = save_checkpoint_atomic(path, _payload())
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\red_commit_03\test_parent_lineage_hardening.py:54:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+path = WindowsPath('C:/Users/28898/AppData/Local/Temp/pytest-of-28898/pytest-1410/test_windows_atomic_checkpoint0/epoch_0120.pt')
+payload = {'asset_registry_digest': 'FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF', 'base_manifest_sha256': ...ation': 120, 'canonical_training_lock_sha256': 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA', ...}
+
+    def save_checkpoint_atomic(path: str | Path, payload: Mapping[str, Any]) -&gt; str:
+        validate_checkpoint_payload(payload)
+        destination = Path(path)
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        fd, temp_name = tempfile.mkstemp(prefix=f".{destination.name}.", suffix=".tmp", dir=destination.parent)
+        os.close(fd)
+        try:
+            torch.save(dict(payload), temp_name)
+            with open(temp_name, "rb") as handle:
+&gt;               os.fsync(handle.fileno())
+E               OSError: [Errno 9] Bad file descriptor
+
+stage1_sctsr_v4\checkpointing.py:94: OSError</failure></testcase><testcase classname="tests.red_commit_03.test_parent_lineage_hardening" name="test_forged_tensor_content_is_rejected" time="0.011"><failure message="Failed: DID NOT RAISE &lt;class 'stage1_sctsr_v4.errors.SctsrError'&gt;">tmp_path = WindowsPath('C:/Users/28898/AppData/Local/Temp/pytest-of-28898/pytest-1410/test_forged_tensor_content_is_0')
+
+    def test_forged_tensor_content_is_rejected(tmp_path):
+        path = tmp_path / "epoch_0120.pt"
+        payload = _payload()
+        payload["model_state"]["weight"] = payload["model_state"]["weight"] + 10
+        torch.save(payload, path)
+&gt;       with pytest.raises(SctsrError):
+E       Failed: DID NOT RAISE &lt;class 'stage1_sctsr_v4.errors.SctsrError'&gt;
+
+tests\red_commit_03\test_parent_lineage_hardening.py:63: Failed</failure></testcase><testcase classname="tests.red_commit_03.test_parent_lineage_hardening" name="test_branch_launch_validates_actual_parent_not_a_bare_path" time="0.000"><failure message="AttributeError: module 'stage1_sctsr_v4.branch_lineage' has no attribute 'validate_branch_parent'">def test_branch_launch_validates_actual_parent_not_a_bare_path():
+&gt;       assert callable(branch_lineage.validate_branch_parent)
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: module 'stage1_sctsr_v4.branch_lineage' has no attribute 'validate_branch_parent'
+
+tests\red_commit_03\test_parent_lineage_hardening.py:68: AttributeError</failure></testcase><testcase classname="tests.red_commit_03.test_parent_lineage_hardening" name="test_logical_index_rejects_forged_child_history" time="0.001"><failure message="AttributeError: 'LogicalArtifactIndex' object has no attribute 'validate_child_tree'">tmp_path = WindowsPath('C:/Users/28898/AppData/Local/Temp/pytest-of-28898/pytest-1410/test_logical_index_rejects_for0')
+
+    def test_logical_index_rejects_forged_child_history(tmp_path):
+        child = tmp_path / "epoch_0120"
+        child.mkdir()
+        with pytest.raises(SctsrError):
+&gt;           LogicalArtifactIndex().validate_child_tree(tmp_path)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           AttributeError: 'LogicalArtifactIndex' object has no attribute 'validate_child_tree'
+
+tests\red_commit_03\test_parent_lineage_hardening.py:75: AttributeError</failure></testcase><testcase classname="tests.red_commit_03.test_parent_lineage_hardening" name="test_parent_spec_requires_runtime_and_asset_identity" time="0.000"><failure message="TypeError: CommonParentSpec.__init__() got an unexpected keyword argument 'runtime_config_digest'">def test_parent_spec_requires_runtime_and_asset_identity():
+        with pytest.raises(SctsrError):
+&gt;           replace(_spec(), runtime_config_digest="").validate()
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\red_commit_03\test_parent_lineage_hardening.py:80:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+obj = CommonParentSpec(parent_id='P', training_seed=7, canonical_training_lock_sha256='AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA...minator_role=&lt;DenominatorRole.CANONICAL_BASE_OPTIMIZER_VISIBLE_EXPOSURE: 'CANONICAL_BASE_OPTIMIZER_VISIBLE_EXPOSURE'&gt;))
+changes = {'arm_id': 'COMMON_PARENT_NR', 'base_manifest_sha256': 'CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC...AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA', 'checkpoint_schema_version': 'stage1.sctsr.checkpoint.v1', ...}
+f = Field(name='replay_rate',type='ReplayRateSpec',default=ReplayRateSpec(numerator=0, denominator=1000, semantic=&lt;RateSem...00001D41DBD8ED0&gt;,init=True,repr=True,hash=None,compare=True,metadata=mappingproxy({}),kw_only=False,_field_type=_FIELD)
+
+    def replace(obj, /, **changes):
+        """Return a new object replacing specified fields with new values.
+
+        This is especially useful for frozen classes.  Example usage::
+
+          @dataclass(frozen=True)
+          class C:
+              x: int
+              y: int
+
+          c = C(1, 2)
+          c1 = replace(c, x=3)
+          assert c1.x == 3 and c1.y == 2
+        """
+
+        # We're going to mutate 'changes', but that's okay because it's a
+        # new dict, even if called with 'replace(obj, **my_changes)'.
+
+        if not _is_dataclass_instance(obj):
+            raise TypeError("replace() should be called on dataclass instances")
+
+        # It's an error to have init=False fields in 'changes'.
+        # If a field is not in 'changes', read its value from the provided obj.
+
+        for f in getattr(obj, _FIELDS).values():
+            # Only consider normal fields or InitVars.
+            if f._field_type is _FIELD_CLASSVAR:
+                continue
+
+            if not f.init:
+                # Error if this field is specified in changes.
+                if f.name in changes:
+                    raise ValueError(f'field {f.name} is declared with '
+                                     'init=False, it cannot be specified with '
+                                     'replace()')
+                continue
+
+            if f.name not in changes:
+                if f._field_type is _FIELD_INITVAR and f.default is MISSING:
+                    raise ValueError(f"InitVar {f.name!r} "
+                                     'must be specified with replace()')
+                changes[f.name] = getattr(obj, f.name)
+
+        # Create the new object, which calls __init__() and
+        # __post_init__() (if defined), using all of the init fields we've
+        # added and/or left in 'changes'.  If there are values supplied in
+        # changes that aren't fields, this will correctly raise a
+        # TypeError.
+&gt;       return obj.__class__(**changes)
+               ^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: CommonParentSpec.__init__() got an unexpected keyword argument 'runtime_config_digest'
+
+..\..\..\..\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\dataclasses.py:1503: TypeError</failure></testcase></testsuite></testsuites>
