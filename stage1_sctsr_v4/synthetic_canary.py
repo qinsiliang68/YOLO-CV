@@ -29,6 +29,7 @@ from .evaluation import compute_tie_safe_frontier, write_frontier_artifacts
 from .errors import SctsrError
 from .fault_injection import FaultKind, inject_fault
 from .exposure_ledger import build_exposure_row, write_exposure_partition
+from .filesystem import windows_safe_resolved_path
 from .fixed_step_runtime import (
     ExponentialMovingAverage,
     OccurrenceEvent,
@@ -604,7 +605,7 @@ def run_synthetic_canary(
     training_seed: int = 20260812,
     overwrite: bool = False,
 ) -> dict[str, Any]:
-    root = Path(output_root)
+    root = windows_safe_resolved_path(output_root)
     if overwrite:
         raise SctsrError(ErrorCode.ATOMIC_TRANSACTION_INCOMPLETE, "Synthetic evidence is immutable; choose a new output root instead of overwriting")
     if root.exists():
