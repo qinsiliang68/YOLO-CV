@@ -7,6 +7,7 @@ SOURCE_TREE_INCLUDE_PATHS = (
     "stage1_sctsr_v4",
     "scripts/stage1_sctsr_v4",
     "configs/stage1_sctsr_v4",
+    "integrations/ultralytics",
     "tests/stage1_sctsr_v4",
     "docs/stage1_sctsr_v4",
     "pyproject.toml",

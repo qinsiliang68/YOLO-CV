@@ -188,3 +188,10 @@ def test_closeout_rejects_synthetic_canary_as_full_implementation_completion(rep
     )
     assert result.returncode != 0
     assert json.loads(receipt.read_text(encoding="utf-8"))["error"]["code"] == ErrorCode.CLOSEOUT_NOT_VALIDATED.value
+
+
+def test_closeout_requires_the_detailed_taskbook_self_audit(repository_root):
+    result = _run(repository_root, repository_root / "scripts" / "stage1_sctsr_v4" / "closeout_run.py", "--help")
+    assert result.returncode == 0
+    assert "--detailed-self-audit" in result.stdout
+    assert "--taskbook" in result.stdout

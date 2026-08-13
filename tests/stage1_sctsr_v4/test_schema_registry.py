@@ -18,3 +18,9 @@ def test_schema_registry_rejects_stale_or_unregistered_public_schema(repository_
     raw['schemas']['unregistered_extra'] = 'stage1.sctsr.unregistered.v1'
     with pytest.raises(SctsrError):
         SchemaRegistry.from_mapping(raw).validate()
+
+
+def test_schema_registry_registers_formal_input_and_detailed_self_audit_schemas():
+    assert REQUIRED_SCHEMAS["external_file_binding"] == "stage1.sctsr.external_file_binding.v1"
+    assert REQUIRED_SCHEMAS["formal_input_snapshot"] == "stage1.sctsr.formal_input_snapshot.v1"
+    assert REQUIRED_SCHEMAS["implementation_self_audit"] == "stage1.sctsr.implementation_self_audit.v1"

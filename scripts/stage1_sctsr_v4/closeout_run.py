@@ -9,6 +9,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 from stage1_sctsr_v4.cli_support import add_output_argument, require_receipt_outside_artifact_root, run_cli
 from stage1_sctsr_v4.completion import completion_audit_from_mapping
 from stage1_sctsr_v4.errors import ErrorCode, SctsrError
+from stage1_sctsr_v4.implementation_self_audit import SELF_AUDIT_PASS, validate_implementation_self_audit
 from stage1_sctsr_v4.run_validation import build_artifact_index, validate_run_tree
 from stage1_sctsr_v4.serialization import atomic_write_json, load_json, sha256_file
 
@@ -23,6 +24,8 @@ def main() -> int:
     parser.add_argument("--run-root", type=Path, required=True)
     parser.add_argument("--repository-root", type=Path, default=Path.cwd())
     parser.add_argument("--implementation-audit", type=Path)
+    parser.add_argument("--detailed-self-audit", type=Path)
+    parser.add_argument("--taskbook", type=Path)
     parser.add_argument("--completion-output", type=Path, required=True)
     parser.add_argument("--allow-synthetic-columnar-fallback", action="store_true")
     add_output_argument(parser)
@@ -35,6 +38,11 @@ def main() -> int:
                 ErrorCode.CLOSEOUT_NOT_VALIDATED,
                 "A synthetic canary or run tree alone cannot prove full implementation completion",
             )
+        if arguments.detailed_self_audit is None or arguments.taskbook is None:
+            raise SctsrError(
+                ErrorCode.CLOSEOUT_NOT_VALIDATED,
+                "Closeout requires the exact Appendix-D detailed self-audit and bound taskbook",
+            )
         repository_root = arguments.repository_root.resolve()
         validation = validate_run_tree(
             arguments.run_root,
@@ -43,6 +51,26 @@ def main() -> int:
         raw_audit = load_json(arguments.implementation_audit)
         audit = completion_audit_from_mapping(raw_audit)
         audit.validate(require_evidence=True)
+        detailed = validate_implementation_self_audit(
+            arguments.detailed_self_audit,
+            taskbook_path=arguments.taskbook,
+            evidence_root=repository_root,
+        )
+        if detailed["overall_status"] != SELF_AUDIT_PASS:
+            raise SctsrError(
+                ErrorCode.CLOSEOUT_NOT_VALIDATED,
+                "Detailed Appendix-D self-audit contains failed or blocked implementation checks",
+                observed={
+                    "failed": detailed["failed_check_ids"],
+                    "blocked": detailed["blocked_check_ids"],
+                },
+            )
+        detailed_raw = load_json(arguments.detailed_self_audit)
+        if detailed_raw.get("implementation_source_commit") not in audit.commit_list:
+            raise SctsrError(
+                ErrorCode.CLOSEOUT_NOT_VALIDATED,
+                "Detailed self-audit source commit is absent from the summary completion commit ledger",
+            )
         run_manifest = load_json(arguments.run_root / "RUN_MANIFEST.json")
         if str(run_manifest.get("source_tree_digest", "")).upper() != audit.source_tree_digest:
             raise SctsrError(ErrorCode.SOURCE_TREE_MISMATCH, "Run evidence and implementation audit bind different source trees")
@@ -71,6 +99,9 @@ def main() -> int:
             "validation": validation,
             "implementation_audit_path": arguments.implementation_audit.resolve().as_posix(),
             "implementation_audit_sha256": sha256_file(arguments.implementation_audit),
+            "detailed_self_audit_path": arguments.detailed_self_audit.resolve().as_posix(),
+            "detailed_self_audit_sha256": sha256_file(arguments.detailed_self_audit),
+            "detailed_self_audit_digest": detailed["audit_digest"],
             "source_tree_digest": audit.source_tree_digest,
             "commit_list": list(audit.commit_list),
             "changed_file_ledger_path": audit.changed_file_ledger_path,
