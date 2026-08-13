@@ -378,11 +378,35 @@ def validate_source_tree_manifest(
             observed=digest,
             expected=raw.get("source_tree_digest"),
         )
-    if require_clean and raw.get("git_dirty") is not False:
-        raise SctsrError(
-            ErrorCode.SOURCE_TREE_MISMATCH,
-            "Formal source-tree manifest must have been generated from a clean checkout",
-        )
+    if require_clean:
+        recorded_head = raw.get("git_head")
+        current_head = _git(root, "rev-parse", "HEAD")
+        # Untracked files under registered import roots are already rejected by
+        # the exact rescan above.  Ignore unrelated untracked run artifacts so
+        # a formal output directory cannot make its own frozen source checkout
+        # look dirty; all tracked modifications remain fatal.
+        current_status = _git(root, "status", "--porcelain=v1", "--untracked-files=no")
+        if raw.get("git_dirty") is not False or not isinstance(recorded_head, str) or not recorded_head:
+            raise SctsrError(
+                ErrorCode.SOURCE_TREE_MISMATCH,
+                "Formal source-tree manifest must have been generated from a clean Git checkout",
+            )
+        if current_head is None or current_status is None:
+            raise SctsrError(
+                ErrorCode.SOURCE_TREE_MISMATCH,
+                "Formal source-tree validation could not re-read the current Git identity",
+            )
+        if current_head != recorded_head or current_status:
+            raise SctsrError(
+                ErrorCode.SOURCE_TREE_MISMATCH,
+                "Current Git HEAD or worktree differs from the clean source-tree freeze",
+                observed={
+                    "git_head": current_head,
+                    "git_dirty": bool(current_status),
+                    "dirty_paths": current_status.splitlines()[:100],
+                },
+                expected={"git_head": recorded_head, "git_dirty": False},
+            )
     return {
         "status": "PASS",
         "file_count": len(normalized),

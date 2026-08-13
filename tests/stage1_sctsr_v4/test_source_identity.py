@@ -1,3 +1,5 @@
+import subprocess
+
 import pytest
 
 from stage1_sctsr_v4.errors import ErrorCode, SctsrError
@@ -18,11 +20,11 @@ def test_source_manifest_rejects_unregistered_importable_file(tmp_path):
     manifest = build_source_tree_manifest(tmp_path, ["package"])
     manifest["git_dirty"] = False
 
-    assert validate_source_tree_manifest(manifest, tmp_path)["status"] == "PASS"
+    assert validate_source_tree_manifest(manifest, tmp_path, require_clean=False)["status"] == "PASS"
 
     (package / "unregistered.py").write_text("VALUE = 2\n", encoding="utf-8")
     with pytest.raises(SctsrError) as caught:
-        validate_source_tree_manifest(manifest, tmp_path)
+        validate_source_tree_manifest(manifest, tmp_path, require_clean=False)
     assert caught.value.code is ErrorCode.SOURCE_TREE_MISMATCH
 
 
@@ -53,3 +55,32 @@ def test_source_manifest_records_runtime_dependency_identity(tmp_path):
     assert environment["nvidia_driver"]["status"] in {"AVAILABLE", "UNAVAILABLE"}
     assert environment["ultralytics"]["status"] in {"AVAILABLE", "UNAVAILABLE"}
     assert len(manifest["runtime_environment_digest"]) == 64
+
+
+def test_clean_source_manifest_revalidates_current_git_head_and_worktree(tmp_path):
+    subprocess.run(["git", "init", "-q"], cwd=tmp_path, check=True)
+    subprocess.run(["git", "config", "user.email", "sctsr-test@example.invalid"], cwd=tmp_path, check=True)
+    subprocess.run(["git", "config", "user.name", "SCTSR Test"], cwd=tmp_path, check=True)
+    package = tmp_path / "package"
+    package.mkdir()
+    source = package / "module.py"
+    source.write_text("VALUE = 1\n", encoding="utf-8")
+    outside = tmp_path / "tracked_outside_include.txt"
+    outside.write_text("frozen\n", encoding="utf-8")
+    subprocess.run(["git", "add", "package/module.py", "tracked_outside_include.txt"], cwd=tmp_path, check=True)
+    subprocess.run(["git", "commit", "-qm", "freeze"], cwd=tmp_path, check=True)
+
+    manifest = build_source_tree_manifest(tmp_path, ["package"])
+    assert manifest["git_dirty"] is False
+    assert validate_source_tree_manifest(manifest, tmp_path, require_clean=True)["status"] == "PASS"
+
+    outside.write_text("dirty\n", encoding="utf-8")
+    with pytest.raises(SctsrError) as dirty:
+        validate_source_tree_manifest(manifest, tmp_path, require_clean=True)
+    assert dirty.value.code is ErrorCode.SOURCE_TREE_MISMATCH
+
+    subprocess.run(["git", "add", "tracked_outside_include.txt"], cwd=tmp_path, check=True)
+    subprocess.run(["git", "commit", "-qm", "drift"], cwd=tmp_path, check=True)
+    with pytest.raises(SctsrError) as head:
+        validate_source_tree_manifest(manifest, tmp_path, require_clean=True)
+    assert head.value.code is ErrorCode.SOURCE_TREE_MISMATCH
