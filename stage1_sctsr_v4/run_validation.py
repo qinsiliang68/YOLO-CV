@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import json
-from dataclasses import fields
+from dataclasses import asdict, fields
 from pathlib import Path
 from typing import Any, Mapping, Sequence
 
@@ -10,10 +10,16 @@ from .checkpointing import load_checkpoint
 from .columnar import PORTABLE_MAGIC, read_columnar, validate_columnar_file
 from .epoch_transaction import validate_receipt_chain
 from .errors import ErrorCode, SctsrError
+from .evaluation import compute_tie_safe_frontier
 from .exposure_ledger import validate_exposure_rows
 from .logical_artifact_index import LogicalArtifactEntry, LogicalArtifactIndex
 from .occurrence_ledger import validate_occurrence_rows
-from .prediction_artifact import PredictionRow, sample_label_identity_digest, validate_prediction_rows
+from .prediction_artifact import (
+    PredictionRow,
+    read_registered_prediction_artifact,
+    sample_label_identity_digest,
+    validate_prediction_rows,
+)
 from .recovery import validate_recovery_pointer
 from .schedule import schedule_from_dict
 from .selection_ledger import validate_selection_rows
@@ -157,6 +163,116 @@ def _prediction_rows(rows: Sequence[Mapping[str, Any]]) -> tuple[PredictionRow, 
 def _telemetry_rows(rows: Sequence[Mapping[str, Any]]) -> tuple[TelemetryRow, ...]:
     names = {field.name for field in fields(TelemetryRow)}
     return tuple(TelemetryRow(**{name: row[name] for name in names}) for row in rows)
+
+
+def validate_formal_endpoint_evidence(
+    run_root: str | Path,
+    *,
+    manifest: Mapping[str, Any],
+    checkpoint_path: str | Path,
+    repository_root: str | Path,
+) -> dict[str, Any]:
+    """Recompute and cross-bind the immutable E200 ``val_op`` endpoint.
+
+    A formal branch is incomplete without this evidence.  The function does
+    not trust either the published frontier rows or their summary: it reloads
+    the registered prediction artifact, revalidates its checkpoint and split
+    identity, recomputes all 96 tie-safe points, and then compares the stored
+    artifacts byte-semantically with that recomputation.
+    """
+
+    root = Path(run_root).resolve()
+    run_id = str(manifest.get("run_id", ""))
+    arm_id = str(manifest.get("arm_id", ""))
+    if not run_id or not arm_id:
+        raise _closeout_failure("Formal endpoint cannot be located without run/arm identity")
+    prediction_root = root / "06_predictions" / f"run_id={run_id}" / "epoch=0200"
+    evaluation_root = root / "07_evaluation" / f"run_id={run_id}" / "epoch=0200"
+    paths = {
+        "prediction": prediction_root / "predictions.parquet",
+        "prediction_summary": prediction_root / "prediction_summary.json",
+        "split_bundle": prediction_root / "split_identity_bundle.json",
+        "frontier": evaluation_root / "frontier.parquet",
+        "frontier_summary": evaluation_root / "frontier_summary.json",
+    }
+    missing = sorted(name for name, path in paths.items() if not path.is_file())
+    if missing:
+        raise _closeout_failure(
+            "Formal branch lacks required E200 val_op endpoint evidence",
+            observed=missing,
+            expected=sorted(paths),
+        )
+
+    predictions, prediction_summary, binding = read_registered_prediction_artifact(
+        paths["prediction"],
+        summary_path=paths["prediction_summary"],
+        checkpoint_path=checkpoint_path,
+        evaluation_mode="formal",
+        repository_root=repository_root,
+    )
+    _require(binding.split_role == "val_op" and binding.checkpoint_epoch == 200, "Formal endpoint is not E200 val_op")
+    _require(
+        Path(binding.split_manifest_path).resolve() == paths["split_bundle"].resolve(),
+        "Formal endpoint prediction binding does not use its canonical split bundle",
+    )
+    _require(
+        predictions[0].run_id == run_id
+        and predictions[0].arm_id == arm_id
+        and predictions[0].training_seed == int(manifest.get("training_seed", -1))
+        and predictions[0].source_tree_digest == str(manifest.get("source_tree_digest", ""))
+        and prediction_summary.get("asset_registry_digest") == manifest.get("asset_registry_digest"),
+        "Formal endpoint identity differs from its run manifest",
+    )
+
+    frontier_report = validate_columnar_file(
+        paths["frontier"],
+        expected_rows=96,
+        expected_schema_version="stage1.sctsr.frontier.v1",
+        expected_sha256=sha256_file(paths["frontier"]),
+    )
+    stored_rows = read_columnar(paths["frontier"])
+    expected_points, expected_summary = compute_tie_safe_frontier(
+        predictions,
+        max_fn=95,
+        target_tn=68_253,
+        checkpoint_sha256=binding.checkpoint_sha256,
+        prediction_artifact_sha256=sha256_file(paths["prediction"]),
+    )
+    expected_rows = [asdict(point) for point in expected_points]
+    _require(
+        stored_rows == expected_rows,
+        "Published formal frontier differs from recomputation over registered predictions",
+    )
+    stored_summary = load_json(paths["frontier_summary"])
+    expected_summary_payload = {
+        "schema_version": "stage1.sctsr.frontier_summary.v1",
+        **asdict(expected_summary),
+        "evaluation_mode": "formal",
+        "split_role": "val_op",
+        "checkpoint_epoch": 200,
+        "checkpoint_sha256": binding.checkpoint_sha256,
+        "prediction_artifact_sha256": sha256_file(paths["prediction"]),
+        "frontier_artifact_sha256": sha256_file(paths["frontier"]),
+        "frontier_row_count": 96,
+        "selection_semantic": "ENDPOINT_ONLY_NOT_FOR_SELECTION",
+        "two_anchor_thresholds_are_independent": True,
+    }
+    _require(
+        stored_summary == expected_summary_payload,
+        "Published formal frontier summary differs from endpoint recomputation",
+    )
+    return {
+        "status": "PASS",
+        "split_role": "val_op",
+        "checkpoint_epoch": 200,
+        "checkpoint_sha256": binding.checkpoint_sha256,
+        "prediction_rows": len(predictions),
+        "prediction_sha256": sha256_file(paths["prediction"]),
+        "frontier_points": int(frontier_report["row_count"]),
+        "frontier_sha256": sha256_file(paths["frontier"]),
+        "sample_label_identity_digest": sample_label_identity_digest(predictions),
+        "selection_semantic": "ENDPOINT_ONLY_NOT_FOR_SELECTION",
+    }
 
 
 def _validate_synthetic_canary(
@@ -613,6 +729,7 @@ def _validate_formal_tree(root: Path, manifest: Mapping[str, Any]) -> dict[str, 
         total_replay += replay_count
     pointer = validate_recovery_pointer(root / "ROLLING_RECOVERY_POINTER.json")
     _require(pointer.get("epoch") == expected[1] and pointer.get("generation") == 1, "Formal recovery pointer does not identify the final complete epoch")
+    endpoint_evidence = None
     if role == "COMMON_PARENT":
         _require(receipt.get("checkpoint_sha256") == final_checkpoint_sha, "Parent terminal checkpoint differs from E120 transaction")
     else:
@@ -630,6 +747,21 @@ def _validate_formal_tree(root: Path, manifest: Mapping[str, Any]) -> dict[str, 
             physical_root = parent_root if entry.physical_owner_type == "PARENT" else child_root
             physical = physical_root / entry.artifact_relative_path
             _require(physical.is_file() and sha256_file(physical) == entry.artifact_sha256, "Formal logical timeline physical binding failed", observed=entry.logical_epoch)
+        lock_path = Path(str(trainer_binding.get("canonical_training_lock_path", ""))).resolve()
+        try:
+            repository_root = lock_path.parents[2]
+        except IndexError as exc:
+            raise _closeout_failure("Prepared trainer lock path cannot identify the repository root") from exc
+        _require(
+            (repository_root / "configs/stage1_gapvalue240/CANONICAL_TRAINING_LOCK_v1.json").resolve() == lock_path,
+            "Prepared trainer lock path is not rooted in the canonical repository layout",
+        )
+        endpoint_evidence = validate_formal_endpoint_evidence(
+            root,
+            manifest=manifest,
+            checkpoint_path=checkpoint_path,
+            repository_root=repository_root,
+        )
     return {
         "formal_semantic_status": "PASS",
         "run_role": role,
@@ -638,6 +770,7 @@ def _validate_formal_tree(root: Path, manifest: Mapping[str, Any]) -> dict[str, 
         "total_optimizer_visible_occurrences": total_occurrences,
         "total_replay_occurrences": total_replay,
         "fixed_endpoint_checkpoint_sha256": final_checkpoint_sha,
+        "endpoint_evidence": endpoint_evidence,
     }
 
 

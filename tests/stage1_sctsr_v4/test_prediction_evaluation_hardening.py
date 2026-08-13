@@ -14,6 +14,7 @@ from stage1_sctsr_v4.errors import ErrorCode, SctsrError
 from stage1_sctsr_v4.evaluation import compute_tie_safe_frontier, validate_checkpoint_for_evaluation, write_frontier_artifacts
 from stage1_sctsr_v4.fixed_step_runtime import ExponentialMovingAverage
 from stage1_sctsr_v4.prediction_artifact import PredictionArtifactBinding, validate_prediction_rows, write_prediction_artifact
+from stage1_sctsr_v4.run_validation import validate_formal_endpoint_evidence
 from stage1_sctsr_v4.serialization import atomic_write_json, sha256_file
 
 
@@ -22,7 +23,8 @@ class _Scaler:
         return {}
 
 
-def _bound_formal_prediction(tmp_path, prediction_rows):
+def _bound_formal_prediction(tmp_path, prediction_rows, *, split_path=None):
+    tmp_path.mkdir(parents=True, exist_ok=True)
     selected = prediction_rows[:12]
     base_manifest = tmp_path / "base.csv"
     val_op_manifest = tmp_path / "val_op.csv"
@@ -78,7 +80,7 @@ def _bound_formal_prediction(tmp_path, prediction_rows):
     registry_path = tmp_path / "asset_registry.json"
     atomic_write_json(registry_path, raw_registry)
     registry = AssetRegistry.from_mapping(raw_registry)
-    split = tmp_path / "VAL_OP_SPLIT_BUNDLE.json"
+    split = split_path or (tmp_path / "VAL_OP_SPLIT_BUNDLE.json")
     build_split_identity_bundle(
         registry,
         repository_root=tmp_path,
@@ -136,6 +138,52 @@ def _bound_formal_prediction(tmp_path, prediction_rows):
         selection_semantic="ENDPOINT_ONLY_NOT_FOR_SELECTION",
     )
     return rows, binding, checkpoint, split
+
+
+def _write_formal_endpoint(tmp_path, prediction_rows):
+    run_root = tmp_path / "formal_branch"
+    prediction_root = run_root / "06_predictions" / "run_id=R" / "epoch=0200"
+    split = prediction_root / "split_identity_bundle.json"
+    rows, binding, checkpoint, _ = _bound_formal_prediction(
+        tmp_path,
+        prediction_rows,
+        split_path=split,
+    )
+    prediction_path = prediction_root / "predictions.parquet"
+    prediction_manifest, prediction_summary = write_prediction_artifact(
+        rows,
+        prediction_path,
+        formal_endpoint=True,
+        binding=binding,
+        repository_root=tmp_path,
+    )
+    atomic_write_json(prediction_root / "prediction_summary.json", prediction_summary)
+
+    points, frontier_summary = compute_tie_safe_frontier(
+        rows,
+        max_fn=95,
+        target_tn=68_253,
+        checkpoint_sha256=sha256_file(checkpoint),
+        prediction_artifact_sha256=prediction_manifest.sha256,
+    )
+    evaluation_root = run_root / "07_evaluation" / "run_id=R" / "epoch=0200"
+    write_frontier_artifacts(
+        points,
+        frontier_summary,
+        frontier_path=evaluation_root / "frontier.parquet",
+        summary_path=evaluation_root / "frontier_summary.json",
+        evaluation_mode="formal",
+        split_role="val_op",
+        checkpoint_epoch=200,
+    )
+    manifest = {
+        "run_id": "R",
+        "arm_id": "T_U",
+        "training_seed": 1,
+        "source_tree_digest": "D" * 64,
+        "asset_registry_digest": binding.validate()["asset_registry_digest"],
+    }
+    return run_root, checkpoint, manifest
 
 
 def test_prediction_rows_require_one_bound_checkpoint_and_split(prediction_rows):
@@ -306,3 +354,51 @@ def test_formal_frontier_writer_requires_all_96_points(tmp_path, prediction_rows
             checkpoint_epoch=200,
         )
     assert caught.value.code is ErrorCode.FRONTIER_INVALID
+
+
+def test_formal_closeout_requires_recomputable_registered_e200_endpoint(tmp_path, prediction_rows):
+    run_root, checkpoint, manifest = _write_formal_endpoint(tmp_path, prediction_rows)
+    report = validate_formal_endpoint_evidence(
+        run_root,
+        manifest=manifest,
+        checkpoint_path=checkpoint,
+        repository_root=tmp_path,
+    )
+    assert report["status"] == "PASS"
+    assert report["prediction_rows"] == 12
+    assert report["frontier_points"] == 96
+    assert report["split_role"] == "val_op"
+
+
+def test_formal_closeout_rejects_missing_or_mutated_endpoint(tmp_path, prediction_rows):
+    empty = tmp_path / "empty_formal_branch"
+    empty.mkdir()
+    manifest = {
+        "run_id": "R",
+        "arm_id": "T_U",
+        "training_seed": 1,
+        "source_tree_digest": "D" * 64,
+        "asset_registry_digest": "E" * 64,
+    }
+    with pytest.raises(SctsrError) as missing:
+        validate_formal_endpoint_evidence(
+            empty,
+            manifest=manifest,
+            checkpoint_path=tmp_path / "missing.pt",
+            repository_root=tmp_path,
+        )
+    assert missing.value.code is ErrorCode.CLOSEOUT_NOT_VALIDATED
+
+    run_root, checkpoint, manifest = _write_formal_endpoint(tmp_path / "mutated", prediction_rows)
+    summary_path = run_root / "07_evaluation" / "run_id=R" / "epoch=0200" / "frontier_summary.json"
+    summary = json.loads(summary_path.read_text(encoding="utf-8"))
+    summary["raw_frontier_normalized_auc"] = 0.123456789
+    atomic_write_json(summary_path, summary)
+    with pytest.raises(SctsrError) as mutated:
+        validate_formal_endpoint_evidence(
+            run_root,
+            manifest=manifest,
+            checkpoint_path=checkpoint,
+            repository_root=tmp_path / "mutated",
+        )
+    assert mutated.value.code is ErrorCode.CLOSEOUT_NOT_VALIDATED
