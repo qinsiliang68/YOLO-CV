@@ -1,0 +1,39 @@
+{
+  "current_loss_arm_state": "HELD_NOT_IN_PHASE1",
+  "enabled": false,
+  "predictor": {
+    "allowed_model_families": [
+      "LOGISTIC_REGRESSION",
+      "SHALLOW_DECISION_TREE",
+      "MONOTONE_LOW_CAPACITY"
+    ],
+    "enabled": false,
+    "reinforcement_learning_allowed": false
+  },
+  "qrad": {
+    "A": "independent FN95-local target direction",
+    "D": "set-conditioned coverage and redundancy",
+    "Q": "reliability gate",
+    "R": "residual/reducible learnability"
+  },
+  "schema_version": "stage1.sctsr.disabled_phase2.v1",
+  "short_branch": {
+    "anchors": [
+      120,
+      140,
+      160
+    ],
+    "enabled": false,
+    "horizons": [
+      5,
+      10
+    ]
+  },
+  "state": "HELD_UNTIL_PHASE1_GATE",
+  "target_alignment": {
+    "enabled": false,
+    "state": "BLOCKED_BY_VAL_TARGET",
+    "val_target_available": false
+  },
+  "weighted_total_score_allowed": false
+}

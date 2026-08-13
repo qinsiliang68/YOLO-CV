@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="7" skipped="0" tests="7" time="0.076" timestamp="2026-08-13T18:07:38.719366+08:00" hostname="zhangdawei"><testcase classname="tests.stage1_sctsr_v4.test_qrad_scaffold_hardening" name="test_nested_weighted_qrad_is_rejected_recursively" time="0.000"><failure message="Failed: DID NOT RAISE &lt;class 'stage1_sctsr_v4.errors.SctsrError'&gt;">def test_nested_weighted_qrad_is_rejected_recursively():
+&gt;       with pytest.raises(SctsrError) as caught:
+E       Failed: DID NOT RAISE &lt;class 'stage1_sctsr_v4.errors.SctsrError'&gt;
+
+tests\stage1_sctsr_v4\test_qrad_scaffold_hardening.py:13: Failed</failure></testcase><testcase classname="tests.stage1_sctsr_v4.test_qrad_scaffold_hardening" name="test_current_baseline_cannot_enable_a_even_when_caller_claims_target_available" time="0.000"><failure message="Failed: DID NOT RAISE &lt;class 'stage1_sctsr_v4.errors.SctsrError'&gt;">def test_current_baseline_cannot_enable_a_even_when_caller_claims_target_available():
+        config = TargetAlignmentConfig(True, "A" * 64, True, True, "FN95_LOCAL", 1)
+&gt;       with pytest.raises(SctsrError) as caught:
+E       Failed: DID NOT RAISE &lt;class 'stage1_sctsr_v4.errors.SctsrError'&gt;
+
+tests\stage1_sctsr_v4\test_qrad_scaffold_hardening.py:20: Failed</failure></testcase><testcase classname="tests.stage1_sctsr_v4.test_qrad_scaffold_hardening" name="test_candidate_signal_semantic_must_be_an_exact_registered_nonutility_token" time="0.000"><failure message="Failed: DID NOT RAISE &lt;class 'stage1_sctsr_v4.errors.SctsrError'&gt;">def test_candidate_signal_semantic_must_be_an_exact_registered_nonutility_token():
+&gt;       with pytest.raises(SctsrError) as caught:
+E       Failed: DID NOT RAISE &lt;class 'stage1_sctsr_v4.errors.SctsrError'&gt;
+
+tests\stage1_sctsr_v4\test_qrad_scaffold_hardening.py:26: Failed</failure></testcase><testcase classname="tests.stage1_sctsr_v4.test_qrad_scaffold_hardening" name="test_short_branch_rejects_unbound_or_same_treatment_and_r2_pools" time="0.000"><failure message="Failed: DID NOT RAISE &lt;class 'stage1_sctsr_v4.errors.SctsrError'&gt;">def test_short_branch_rejects_unbound_or_same_treatment_and_r2_pools():
+        for treatment_digest, r2_digest in (("T", "R2"), ("A" * 64, "A" * 64)):
+&gt;           with pytest.raises(SctsrError):
+E           Failed: DID NOT RAISE &lt;class 'stage1_sctsr_v4.errors.SctsrError'&gt;
+
+tests\stage1_sctsr_v4\test_qrad_scaffold_hardening.py:33: Failed</failure></testcase><testcase classname="tests.stage1_sctsr_v4.test_qrad_scaffold_hardening" name="test_predictor_requires_more_than_a_boolean_phase1_claim" time="0.000"><failure message="Failed: DID NOT RAISE &lt;class 'stage1_sctsr_v4.errors.SctsrError'&gt;">def test_predictor_requires_more_than_a_boolean_phase1_claim():
+&gt;       with pytest.raises(SctsrError) as caught:
+E       Failed: DID NOT RAISE &lt;class 'stage1_sctsr_v4.errors.SctsrError'&gt;
+
+tests\stage1_sctsr_v4\test_qrad_scaffold_hardening.py:38: Failed</failure></testcase><testcase classname="tests.stage1_sctsr_v4.test_qrad_scaffold_hardening" name="test_blocked_seed_registry_cannot_smuggle_formal_seed_values" time="0.000"><failure message="Failed: DID NOT RAISE &lt;class 'stage1_sctsr_v4.errors.SctsrError'&gt;">def test_blocked_seed_registry_cannot_smuggle_formal_seed_values():
+        registry = SeedRegistry(
+            "stage1.sctsr.seed_registry.v1",
+            "FORMAL_SEEDS_BLOCKED_UNTIL_RELEASE",
+            (),
+            (20260606,),
+            tuple(range(8)),
+            (),
+        )
+&gt;       with pytest.raises(SctsrError) as caught:
+E       Failed: DID NOT RAISE &lt;class 'stage1_sctsr_v4.errors.SctsrError'&gt;
+
+tests\stage1_sctsr_v4\test_qrad_scaffold_hardening.py:52: Failed</failure></testcase><testcase classname="tests.stage1_sctsr_v4.test_qrad_scaffold_hardening" name="test_formal_seed_state_string_alone_is_not_release_authorization" time="0.000"><failure message="Failed: DID NOT RAISE &lt;class 'stage1_sctsr_v4.errors.SctsrError'&gt;">def test_formal_seed_state_string_alone_is_not_release_authorization():
+        registry = SeedRegistry(
+            "stage1.sctsr.seed_registry.v1",
+            "FROZEN_BY_RELEASE_AUTHORITY",
+            (),
+            (),
+            tuple(range(8)),
+            tuple(range(20, 34)),
+        )
+&gt;       with pytest.raises(SctsrError) as caught:
+E       Failed: DID NOT RAISE &lt;class 'stage1_sctsr_v4.errors.SctsrError'&gt;
+
+tests\stage1_sctsr_v4\test_qrad_scaffold_hardening.py:66: Failed</failure></testcase></testsuite></testsuites>

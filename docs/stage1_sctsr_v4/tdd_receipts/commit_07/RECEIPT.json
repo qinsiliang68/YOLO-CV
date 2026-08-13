@@ -1,0 +1,39 @@
+{
+  "schema_version": "stage1.sctsr.tdd_receipt.v1",
+  "rollback_unit": "commit_07_held_qrad_short_branch_scaffold",
+  "execution_mode": "unit_only",
+  "formal_training_started": false,
+  "red": {
+    "command": "uv run --no-sync pytest tests\\stage1_sctsr_v4\\test_qrad_scaffold_hardening.py -q --junitxml=docs\\stage1_sctsr_v4\\tdd_receipts\\commit_07\\RED.junit.xml",
+    "exit_code": 1,
+    "observed": "7 fail-closed scaffold behavior failures before hardening",
+    "stdout_stderr": {
+      "path": "docs/stage1_sctsr_v4/tdd_receipts/commit_07/RED.txt",
+      "bytes": 8532,
+      "sha256": "5DD3AF7D0CA2AC5C313DEC364EFFFDF38C1D1224136EA023AFD52A4AABF9CC20"
+    },
+    "junit": {
+      "path": "docs/stage1_sctsr_v4/tdd_receipts/commit_07/RED.junit.xml",
+      "bytes": 4680,
+      "sha256": "78C37CE86839DD6FA74340EC8E3B0514102AD517D967AC7887140BA7293FD650"
+    }
+  },
+  "green": {
+    "command": "uv run --no-sync pytest tests\\stage1_sctsr_v4\\test_qrad_contract.py tests\\stage1_sctsr_v4\\test_short_branch_scaffold.py tests\\stage1_sctsr_v4\\test_seed_registry.py tests\\stage1_sctsr_v4\\test_qrad_scaffold_hardening.py -q --junitxml=docs\\stage1_sctsr_v4\\tdd_receipts\\commit_07\\GREEN.junit.xml",
+    "exit_code": 0,
+    "observed": "24 passed in 0.10s",
+    "stdout_stderr": {
+      "path": "docs/stage1_sctsr_v4/tdd_receipts/commit_07/GREEN.txt",
+      "bytes": 204,
+      "sha256": "292996A1B874CEF116C737E756E471A5019FBEB2705229255C507CC672662FFC"
+    },
+    "junit": {
+      "path": "docs/stage1_sctsr_v4/tdd_receipts/commit_07/GREEN.junit.xml",
+      "bytes": 3779,
+      "sha256": "8CB1F291BB23B0AEA5859F746DC11152810CC99C322FD02BF777B54A6C45FEFC"
+    }
+  },
+  "compileall_command": "uv run --no-sync python -m compileall -q stage1_sctsr_v4",
+  "compileall_exit_code": 0,
+  "result": "PASS"
+}
