@@ -1,0 +1,20 @@
+{
+  "schema_version": "stage1.sctsr.schema_registry.v1",
+  "schemas": {
+    "arms": "stage1.sctsr.arms.v1",
+    "asset_registry": "stage1.sctsr.asset_registry.v1",
+    "contract": "stage1.sctsr.contract.v1",
+    "disabled_phase2": "stage1.sctsr.disabled_phase2.v1",
+    "exposure_ledger": "stage1.sctsr.exposure_ledger.v1",
+    "frontier": "stage1.sctsr.frontier.v1",
+    "formal_release": "stage1.sctsr.formal_release.v1",
+    "occurrence_ledger": "stage1.sctsr.occurrence_ledger.v1",
+    "optimizer_step_ledger": "stage1.sctsr.optimizer_step_ledger.v1",
+    "prediction": "stage1.sctsr.prediction.v1",
+    "runtime_policy": "stage1.sctsr.runtime_policy.v1",
+    "release_trust": "stage1.sctsr.release_trust.v1",
+    "seed_registry": "stage1.sctsr.seed_registry.v1",
+    "selection_ledger": "stage1.sctsr.selection_ledger.v1",
+    "telemetry": "stage1.sctsr.telemetry.v1"
+  }
+}

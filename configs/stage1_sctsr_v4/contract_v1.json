@@ -1,0 +1,71 @@
+{
+  "asset_id": "STAGE1_SCTSR_V4_CONTRACT_20260812",
+  "baseline": {
+    "branch": "main",
+    "commit": "a70ba60485dd32c2f8b4268b8f28ea2d3549f42f",
+    "repository": "qinsiliang68/YOLO-CV",
+    "taskbook_blob_sha": "b201d021712e9c6614e119d35f0e14bdf405c6be",
+    "taskbook_path": "artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/03_preregistration_v4_sctsr/SCTSR_EXPERT_IMPLEMENTATION_TASKBOOK.md"
+  },
+  "canonical_base_denominator_role": "CANONICAL_BASE_OPTIMIZER_VISIBLE_EXPOSURE",
+  "fixed_anchors": {
+    "common_parent_epoch": 120,
+    "fallback_epoch": 160,
+    "formal_endpoint_epoch": 200
+  },
+  "formal_checkpoint": "epoch_0200.pt",
+  "formal_checkpoint_epoch": 200,
+  "formal_execution_default": false,
+  "formal_side_effects": {
+    "assignments_generated": false,
+    "blind_holdout_opened": false,
+    "engineering_gate_generated": false,
+    "formal_training_started": false,
+    "method_effectiveness_claimed": false,
+    "pilot_release_generated": false,
+    "selector_trained": false
+  },
+  "optimizer_step_policy": "BASE_STEP_LOCK",
+  "rates": {
+    "front_loaded_active": {
+      "denominator": 1000,
+      "denominator_role": "CANONICAL_BASE_OPTIMIZER_VISIBLE_EXPOSURE",
+      "numerator": 10,
+      "semantic": "PER_EPOCH_REPLAY_RATE",
+      "canonical_token": "1/100"
+    },
+    "identity_pool": {
+      "denominator": 1000,
+      "denominator_role": "CANONICAL_BASE_OPTIMIZER_VISIBLE_EXPOSURE",
+      "numerator": 25,
+      "semantic": "IDENTITY_POOL_RATE",
+      "canonical_token": "1/40"
+    },
+    "none": {
+      "denominator": 1000,
+      "denominator_role": "CANONICAL_BASE_OPTIMIZER_VISIBLE_EXPOSURE",
+      "numerator": 0,
+      "semantic": "PER_EPOCH_REPLAY_RATE",
+      "canonical_token": "0/1"
+    },
+    "uniform": {
+      "denominator": 1000,
+      "denominator_role": "CANONICAL_BASE_OPTIMIZER_VISIBLE_EXPOSURE",
+      "numerator": 5,
+      "semantic": "PER_EPOCH_REPLAY_RATE",
+      "canonical_token": "1/200"
+    }
+  },
+  "replay_loss_denominator": 128,
+  "replay_microbatch_max_fraction": {
+    "denominator": 4,
+    "numerator": 1
+  },
+  "research_name": "State-Conditional Tail-Safe Replay",
+  "schema_version": "stage1.sctsr.contract.v1",
+  "scientific_state": "IMPLEMENTED_NOT_FORMALLY_RUN",
+  "single_process_single_gpu_only": true,
+  "test_sealed": true,
+  "val_target_available": false,
+  "weighted_qrad_allowed": false
+}

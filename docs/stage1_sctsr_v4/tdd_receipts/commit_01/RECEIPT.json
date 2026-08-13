@@ -1,0 +1,71 @@
+{
+  "schema_version": "stage1.sctsr.tdd_receipt.v1",
+  "rollback_unit": "commit_01_contract_types_and_schema",
+  "status": "PASS",
+  "source_baseline": {
+    "expert_archive": "C:/Users/28898/Downloads/YOLO-CV_main_a70ba604_SCTSR_v4_complete_training_and_system_source.zip",
+    "expert_archive_sha256": "FFED4E1CADA0BF285FF4AB21703BF47549AC4382F2A9EA25CD141E4DD6A7AD29",
+    "repository_head": "a70ba60485dd32c2f8b4268b8f28ea2d3549f42f",
+    "taskbook_blob_sha": "b201d021712e9c6614e119d35f0e14bdf405c6be"
+  },
+  "red": {
+    "command": "PYTHONPATH=<fresh expert package> uv run pytest <fresh expert package>/tests/stage1_sctsr_v4/test_contract_hardening.py -q",
+    "exit_code": 1,
+    "stdout_stderr_path": "RED.txt",
+    "stdout_stderr_bytes": 8056,
+    "stdout_stderr_sha256": "02BCDB8D3FFF45D7ABC1B6D1360C5F6E4EB09A54ED2314DBA014C5642B0D6FD0",
+    "observed": "4 failed: forged nonempty signature, mutable baseline identity, absolute contract count, and absolute arm count were all accepted",
+    "expected": "all four malformed inputs are rejected fail-closed"
+  },
+  "green": {
+    "command": "uv run pytest tests/stage1_sctsr_v4/test_contract_hardening.py -q",
+    "exit_code": 0,
+    "stdout_stderr_path": "GREEN.txt",
+    "stdout_stderr_bytes": 202,
+    "stdout_stderr_sha256": "D8C4756CB11CA13B52D27920ECC85B4AA4B36A3EB48E985CB4076DA288C22F34",
+    "observed": "4 passed",
+    "expected": "4 passed"
+  },
+  "targeted_regression": {
+    "command": "uv run pytest tests/stage1_sctsr_v4/test_contract_hardening.py tests/stage1_sctsr_v4/test_formal_release.py tests/stage1_sctsr_v4/test_contract.py tests/stage1_sctsr_v4/test_rate_spec.py tests/stage1_sctsr_v4/test_schema_registry.py -q",
+    "exit_code": 0,
+    "stdout_stderr_path": "TARGETED_GREEN.txt",
+    "stdout_stderr_bytes": 204,
+    "stdout_stderr_sha256": "634A6C3F3F3A0D05FBDE886CD1CD44537502D97E3611B21069DB971BF7356BAD",
+    "observed": "20 passed",
+    "expected": "20 passed"
+  },
+  "compileall": {
+    "command": "uv run python -m compileall -q <commit-01 modules>",
+    "exit_code": 0,
+    "stdout_stderr_path": "COMPILEALL.txt",
+    "stdout_stderr_bytes": 0,
+    "stdout_stderr_sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+  },
+  "git_diff_check": {
+    "command": "git diff --check",
+    "exit_code": 0,
+    "stdout_stderr_path": "GIT_DIFF_CHECK.txt",
+    "stdout_stderr_bytes": 0,
+    "stdout_stderr_sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+  },
+  "reviewed_source_files": [
+    "stage1_sctsr_v4/errors.py",
+    "stage1_sctsr_v4/serialization.py",
+    "stage1_sctsr_v4/baseline_reference.py",
+    "stage1_sctsr_v4/rate_spec.py",
+    "stage1_sctsr_v4/arm_spec.py",
+    "stage1_sctsr_v4/schema_registry.py",
+    "stage1_sctsr_v4/formal_release.py",
+    "stage1_sctsr_v4/contracts.py"
+  ],
+  "reviewed_test_files": [
+    "tests/stage1_sctsr_v4/test_contract_hardening.py",
+    "tests/stage1_sctsr_v4/test_formal_release.py",
+    "tests/stage1_sctsr_v4/test_contract.py",
+    "tests/stage1_sctsr_v4/test_rate_spec.py",
+    "tests/stage1_sctsr_v4/test_schema_registry.py"
+  ],
+  "remaining_risk": "The checked-in trust policy intentionally contains zero active keys. Formal execution remains impossible until the owner separately registers an out-of-repository secret digest and issues a time-limited fully bound release.",
+  "required_action": "Do not create a formal release during implementation. Independently review all eight rollback units before any future owner authorization."
+}

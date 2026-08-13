@@ -1,0 +1,209 @@
+{
+  "arms": [
+    {
+      "allowed_comparators": [],
+      "arm_id": "NR",
+      "display_name": "No replay",
+      "epoch_end": 200,
+      "epoch_start": 121,
+      "fallback_epoch": null,
+      "fallback_identity_policy": null,
+      "formal_state": "HELD",
+      "identity_policy": "NONE",
+      "optimizer_step_policy": "BASE_STEP_LOCK",
+      "phase": "PHASE1",
+      "requires_common_parent": true,
+      "schedule_policy": "NR",
+      "scientific_role": "BASE_PROCESS"
+    },
+    {
+      "allowed_comparators": [
+        "NR"
+      ],
+      "arm_id": "R1_U",
+      "display_name": "Global random uniform",
+      "epoch_end": 200,
+      "epoch_start": 121,
+      "fallback_epoch": null,
+      "fallback_identity_policy": null,
+      "formal_state": "HELD",
+      "identity_policy": "R1_GLOBAL_RANDOM",
+      "optimizer_step_policy": "BASE_STEP_LOCK",
+      "phase": "PHASE1",
+      "requires_common_parent": true,
+      "schedule_policy": "U",
+      "scientific_role": "IDENTITY_NEUTRAL_RANDOM_REPLAY"
+    },
+    {
+      "allowed_comparators": [
+        "T_U",
+        "NR"
+      ],
+      "arm_id": "R2_U",
+      "display_name": "Matched random uniform",
+      "epoch_end": 200,
+      "epoch_start": 121,
+      "fallback_epoch": null,
+      "fallback_identity_policy": null,
+      "formal_state": "HELD",
+      "identity_policy": "R2_MATCHED_RANDOM",
+      "optimizer_step_policy": "BASE_STEP_LOCK",
+      "phase": "PHASE1",
+      "requires_common_parent": true,
+      "schedule_policy": "U",
+      "scientific_role": "STRICT_IDENTITY_COMPARATOR"
+    },
+    {
+      "allowed_comparators": [
+        "R2_U"
+      ],
+      "arm_id": "T_U",
+      "display_name": "T stress-set uniform",
+      "epoch_end": 200,
+      "epoch_start": 121,
+      "fallback_epoch": null,
+      "fallback_identity_policy": null,
+      "formal_state": "HELD",
+      "identity_policy": "T_STRESS",
+      "optimizer_step_policy": "BASE_STEP_LOCK",
+      "phase": "PHASE1",
+      "requires_common_parent": true,
+      "schedule_policy": "U",
+      "scientific_role": "HISTORICAL_SIGN_REVERSAL_STRESS_SET"
+    },
+    {
+      "allowed_comparators": [
+        "T_F",
+        "R2_U"
+      ],
+      "arm_id": "R2_F",
+      "display_name": "Matched random front-loaded",
+      "epoch_end": 200,
+      "epoch_start": 121,
+      "fallback_epoch": null,
+      "fallback_identity_policy": null,
+      "formal_state": "HELD",
+      "identity_policy": "R2_MATCHED_RANDOM",
+      "optimizer_step_policy": "BASE_STEP_LOCK",
+      "phase": "PHASE1",
+      "requires_common_parent": true,
+      "schedule_policy": "F",
+      "scientific_role": "STRICT_TIMING_COMPARATOR"
+    },
+    {
+      "allowed_comparators": [
+        "R2_F",
+        "T_U"
+      ],
+      "arm_id": "T_F",
+      "display_name": "T stress-set front-loaded",
+      "epoch_end": 200,
+      "epoch_start": 121,
+      "fallback_epoch": null,
+      "fallback_identity_policy": null,
+      "formal_state": "HELD",
+      "identity_policy": "T_STRESS",
+      "optimizer_step_policy": "BASE_STEP_LOCK",
+      "phase": "PHASE1",
+      "requires_common_parent": true,
+      "schedule_policy": "F",
+      "scientific_role": "TREATMENT_TIMING_ARM"
+    },
+    {
+      "allowed_comparators": [
+        "T_U"
+      ],
+      "arm_id": "T_TO_R2_AT_160",
+      "display_name": "T then R2 fallback",
+      "epoch_end": 200,
+      "epoch_start": 121,
+      "fallback_epoch": 160,
+      "fallback_identity_policy": "R2_MATCHED_RANDOM",
+      "formal_state": "HELD",
+      "identity_policy": "T_STRESS",
+      "optimizer_step_policy": "BASE_STEP_LOCK",
+      "phase": "PHASE1",
+      "requires_common_parent": true,
+      "schedule_policy": "T_TO_R2",
+      "scientific_role": "STOP_TARGETED_FALLBACK_POLICY"
+    },
+    {
+      "allowed_comparators": [
+        "T_TO_R2_AT_160"
+      ],
+      "arm_id": "T_TO_NR_AT_160",
+      "display_name": "T then no replay",
+      "epoch_end": 200,
+      "epoch_start": 121,
+      "fallback_epoch": 160,
+      "fallback_identity_policy": "NONE",
+      "formal_state": "HELD",
+      "identity_policy": "T_STRESS",
+      "optimizer_step_policy": "BASE_STEP_LOCK",
+      "phase": "PHASE1",
+      "requires_common_parent": true,
+      "schedule_policy": "T_TO_NR",
+      "scientific_role": "STOP_ALL_REPLAY_POLICY"
+    }
+  ],
+  "contrasts": [
+    {
+      "comparator": "R2_U",
+      "contrast_id": "C01",
+      "prohibited_inference": "Does not prove intrinsic T value",
+      "question": "T identity effect under U",
+      "treatment": "T_U"
+    },
+    {
+      "comparator": "R2_F",
+      "contrast_id": "C02",
+      "prohibited_inference": "Does not isolate timing alone",
+      "question": "T identity effect under F",
+      "treatment": "T_F"
+    },
+    {
+      "comparator": "T_U",
+      "contrast_id": "C03",
+      "prohibited_inference": "Does not generalize to arbitrary selector",
+      "question": "Timing effect with fixed T identity/dose/multiplicity",
+      "treatment": "T_F"
+    },
+    {
+      "comparator": "R2_U",
+      "contrast_id": "C04",
+      "prohibited_inference": "Does not prove T value",
+      "question": "Timing effect for matched random identity",
+      "treatment": "R2_F"
+    },
+    {
+      "comparator": "T_U",
+      "contrast_id": "C05",
+      "prohibited_inference": "Not a pure stop effect",
+      "question": "Fallback policy after E160",
+      "treatment": "T_TO_R2_AT_160"
+    },
+    {
+      "comparator": "T_TO_R2_AT_160",
+      "contrast_id": "C06",
+      "prohibited_inference": "Late dose intentionally differs",
+      "question": "Late replay versus no replay after common prefix",
+      "treatment": "T_TO_NR_AT_160"
+    },
+    {
+      "comparator": "NR",
+      "contrast_id": "C07",
+      "prohibited_inference": "Does not prove selection",
+      "question": "General matched-random exposure effect",
+      "treatment": "R2_U"
+    },
+    {
+      "comparator": "NR",
+      "contrast_id": "C08",
+      "prohibited_inference": "Does not prove matching",
+      "question": "General global-random exposure effect",
+      "treatment": "R1_U"
+    }
+  ],
+  "current_loss_state": "HELD_NOT_IN_PHASE1",
+  "schema_version": "stage1.sctsr.arms.v1"
+}

@@ -1,0 +1,8 @@
+{
+  "schema_version": "stage1.sctsr.release_trust.v1",
+  "required_algorithm": "HMAC-SHA256",
+  "secret_environment_variable": "SCTSR_V4_RELEASE_HMAC_KEY",
+  "authorized_keys": [],
+  "state": "NO_FORMAL_RELEASE_KEY_REGISTERED",
+  "note": "Fail-closed placeholder. A future owner decision must register an out-of-repository verification key before any formal release can verify."
+}
