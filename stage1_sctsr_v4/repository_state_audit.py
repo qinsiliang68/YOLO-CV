@@ -262,19 +262,35 @@ def audit_repository_state(
     }
     legacy_evidence = {**legacy_core, "audit_digest": stable_digest(legacy_core)}
 
-    experiment_root = root / "artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807"
+    experiment_relative = "artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807"
+    experiment_root = root / experiment_relative
+    ignored_output = str(
+        _git(
+            root,
+            "ls-files",
+            "--others",
+            "--ignored",
+            "--exclude-standard",
+            "--",
+            experiment_relative,
+        )
+    )
+    ignored = [line.replace("\\", "/") for line in ignored_output.splitlines() if line]
+    all_known_paths = sorted(set([*normalized_tracked_paths, *untracked, *ignored]))
     formal_manifests: list[str] = []
-    if experiment_root.is_dir():
-        for manifest_path in experiment_root.rglob("RUN_MANIFEST.json"):
-            try:
-                payload = json.loads(manifest_path.read_text(encoding="utf-8"))
-            except (OSError, UnicodeDecodeError, json.JSONDecodeError):
-                continue
-            if payload.get("schema_version") == "stage1.sctsr.formal_run_manifest.v1" or payload.get("formal_training_started") is True:
-                formal_manifests.append(manifest_path.relative_to(root).as_posix())
+    for relative in all_known_paths:
+        if not relative.startswith(f"{experiment_relative}/") or not relative.endswith("/RUN_MANIFEST.json"):
+            continue
+        manifest_path = root / relative
+        try:
+            payload = json.loads(manifest_path.read_text(encoding="utf-8"))
+        except (OSError, UnicodeDecodeError, json.JSONDecodeError):
+            continue
+        if payload.get("schema_version") == "stage1.sctsr.formal_run_manifest.v1" or payload.get("formal_training_started") is True:
+            formal_manifests.append(relative)
     active_side_effect_paths = [
         path
-        for path in [*tracked_paths, *untracked]
+        for path in all_known_paths
         if "sctsr_v4" in path.lower()
         and any(token in Path(path).name.lower() for token in ("assignment", "engineering_gate", "pilot_release"))
         and not path.startswith(("stage1_sctsr_v4/", "scripts/", "tests/", "docs/", "configs/"))

@@ -122,3 +122,29 @@ def test_repository_audit_rejects_untracked_importable_overlay_file(tmp_path):
             legacy_markers=("/04_run_queue_v2/",),
         )
     assert caught.value.code is ErrorCode.SOURCE_TREE_MISMATCH
+
+
+def test_repository_audit_does_not_follow_broken_historical_directory_links(tmp_path):
+    base, source = _repository(tmp_path)
+    experiment = tmp_path / "artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807"
+    experiment.mkdir(parents=True)
+    target = tmp_path / "historical_external_target"
+    target.mkdir()
+    link = experiment / "historical_broken_link"
+    if os.name == "nt":
+        subprocess.run(["cmd", "/c", "mklink", "/J", str(link), str(target)], check=True, capture_output=True)
+    else:
+        link.symlink_to(target, target_is_directory=True)
+    target.rmdir()
+
+    report = audit_repository_state(
+        tmp_path,
+        baseline_commit=base,
+        implementation_start_commit=source,
+        implementation_source_commit=source,
+        allowed_prefixes=("stage1_sctsr_v4/",),
+        allowed_files=(),
+        protected_prefixes=("stage1_gapvalue240/", "stage1_dynamic_replay_v3/", "YOLOv11/ultralytics/"),
+        legacy_markers=("/04_run_queue_v2/",),
+    )
+    assert report["status"] == "PASS"
