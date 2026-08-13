@@ -26,6 +26,16 @@ def test_branch_cli_exposes_identity_pool_and_parent_artifact_index(repository_r
     assert "--parent-artifact-index" in result.stdout
 
 
+def test_formal_endpoint_model_split_and_batch_are_frozen_in_runtime_policy(repository_root):
+    policy = json.loads(
+        (repository_root / "configs/stage1_sctsr_v4/runtime_policy_v1.json").read_text(encoding="utf-8")
+    )
+    assert policy["formal_endpoint_epoch"] == 200
+    assert policy["formal_endpoint_split_role"] == "val_op"
+    assert policy["formal_endpoint_model_variant"] == "EMA"
+    assert policy["formal_endpoint_batch_size"] == 128
+
+
 def test_asset_cli_cannot_skip_registered_large_file_hashes(repository_root):
     result = _run(repository_root, repository_root / "scripts" / "stage1_sctsr_v4" / "validate_assets.py", "--help")
     assert result.returncode == 0

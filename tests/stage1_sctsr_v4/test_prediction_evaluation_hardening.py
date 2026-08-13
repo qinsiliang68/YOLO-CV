@@ -14,6 +14,7 @@ from stage1_sctsr_v4.errors import ErrorCode, SctsrError
 from stage1_sctsr_v4.evaluation import compute_tie_safe_frontier, validate_checkpoint_for_evaluation, write_frontier_artifacts
 from stage1_sctsr_v4.fixed_step_runtime import ExponentialMovingAverage
 from stage1_sctsr_v4.prediction_artifact import PredictionArtifactBinding, validate_prediction_rows, write_prediction_artifact
+from stage1_sctsr_v4.prediction_runtime import build_formal_endpoint_receipt
 from stage1_sctsr_v4.run_validation import validate_formal_endpoint_evidence
 from stage1_sctsr_v4.serialization import atomic_write_json, sha256_file
 
@@ -176,6 +177,16 @@ def _write_formal_endpoint(tmp_path, prediction_rows):
         split_role="val_op",
         checkpoint_epoch=200,
     )
+    receipt = build_formal_endpoint_receipt(
+        run_root,
+        run_id="R",
+        arm_id="T_U",
+        training_seed=1,
+        checkpoint_epoch=200,
+        checkpoint_sha256=sha256_file(checkpoint),
+        model_variant="MODEL",
+    )
+    atomic_write_json(run_root / "08_receipts" / "FORMAL_ENDPOINT_RECEIPT.json", receipt)
     manifest = {
         "run_id": "R",
         "arm_id": "T_U",

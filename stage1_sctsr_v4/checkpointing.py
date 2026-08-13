@@ -149,6 +149,19 @@ def checkpoint_payload_digest(payload: Mapping[str, Any]) -> str:
     return hasher.hexdigest().upper()
 
 
+def checkpoint_state_digest(state: Mapping[str, Any]) -> str:
+    """Hash a model/EMA state with the checkpoint's typed byte algorithm."""
+
+    if not isinstance(state, Mapping) or not state:
+        raise SctsrError(
+            ErrorCode.PARENT_CHECKPOINT_INCOMPLETE,
+            "Model state is empty or not a mapping",
+        )
+    hasher = hashlib.sha256()
+    _update_checkpoint_hash(hasher, state)
+    return hasher.hexdigest().upper()
+
+
 def _ema_state(ema: Any) -> tuple[Mapping[str, Any], int]:
     if ema is None:
         return {}, 0

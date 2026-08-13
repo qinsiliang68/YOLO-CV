@@ -195,13 +195,46 @@ def validate_formal_endpoint_evidence(
         "frontier": evaluation_root / "frontier.parquet",
         "frontier_summary": evaluation_root / "frontier_summary.json",
     }
-    missing = sorted(name for name, path in paths.items() if not path.is_file())
+    receipt_path = root / "08_receipts" / "FORMAL_ENDPOINT_RECEIPT.json"
+    missing = sorted(name for name, path in {**paths, "endpoint_receipt": receipt_path}.items() if not path.is_file())
     if missing:
         raise _closeout_failure(
             "Formal branch lacks required E200 val_op endpoint evidence",
             observed=missing,
             expected=sorted(paths),
         )
+
+    receipt = load_json(receipt_path)
+    receipt_core = {key: value for key, value in receipt.items() if key != "endpoint_digest"}
+    expected_receipt_fields = {
+        "schema_version", "status", "run_id", "arm_id", "training_seed", "split_role",
+        "checkpoint_epoch", "checkpoint_sha256", "model_variant", "selection_semantic", "files",
+        "formal_training_started", "blind_holdout_opened", "test_accessed",
+        "method_effectiveness_claimed", "endpoint_digest",
+    }
+    _require(set(receipt) == expected_receipt_fields, "Formal endpoint receipt schema is not exact")
+    _require(
+        receipt.get("schema_version") == "stage1.sctsr.formal_endpoint_receipt.v1"
+        and receipt.get("status") == "FORMAL_ENDPOINT_COMPLETE_NOT_METHOD_SELECTION"
+        and receipt.get("endpoint_digest") == stable_digest(receipt_core)
+        and receipt.get("formal_training_started") is True
+        and receipt.get("blind_holdout_opened") is False
+        and receipt.get("test_accessed") is False
+        and receipt.get("method_effectiveness_claimed") is False,
+        "Formal endpoint receipt state/digest is invalid",
+    )
+    expected_file_rows = sorted(
+        (
+            {
+                "path": path.relative_to(root).as_posix(),
+                "bytes": path.stat().st_size,
+                "sha256": sha256_file(path),
+            }
+            for path in paths.values()
+        ),
+        key=lambda row: row["path"],
+    )
+    _require(receipt.get("files") == expected_file_rows, "Formal endpoint receipt does not bind the exact endpoint bytes")
 
     predictions, prediction_summary, binding = read_registered_prediction_artifact(
         paths["prediction"],
@@ -222,6 +255,17 @@ def validate_formal_endpoint_evidence(
         and predictions[0].source_tree_digest == str(manifest.get("source_tree_digest", ""))
         and prediction_summary.get("asset_registry_digest") == manifest.get("asset_registry_digest"),
         "Formal endpoint identity differs from its run manifest",
+    )
+    _require(
+        receipt.get("run_id") == run_id
+        and receipt.get("arm_id") == arm_id
+        and int(receipt.get("training_seed", -1)) == binding.training_seed
+        and receipt.get("split_role") == binding.split_role
+        and int(receipt.get("checkpoint_epoch", -1)) == binding.checkpoint_epoch
+        and receipt.get("checkpoint_sha256") == binding.checkpoint_sha256
+        and receipt.get("model_variant") == binding.model_variant
+        and receipt.get("selection_semantic") == "ENDPOINT_ONLY_NOT_FOR_SELECTION",
+        "Formal endpoint receipt identity differs from registered predictions",
     )
 
     frontier_report = validate_columnar_file(
@@ -272,6 +316,7 @@ def validate_formal_endpoint_evidence(
         "frontier_sha256": sha256_file(paths["frontier"]),
         "sample_label_identity_digest": sample_label_identity_digest(predictions),
         "selection_semantic": "ENDPOINT_ONLY_NOT_FOR_SELECTION",
+        "endpoint_receipt_sha256": sha256_file(receipt_path),
     }
 
 

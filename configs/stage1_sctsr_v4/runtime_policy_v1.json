@@ -17,6 +17,9 @@
     "blind_holdout"
   ],
   "formal_endpoint_epoch": 200,
+  "formal_endpoint_split_role": "val_op",
+  "formal_endpoint_model_variant": "EMA",
+  "formal_endpoint_batch_size": 128,
   "formal_requires_signed_release": true,
   "global_rng_restored_after_replay": true,
   "minimum_resume_free_bytes": 21474836480,

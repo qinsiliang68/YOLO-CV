@@ -18,9 +18,10 @@ from stage1_sctsr_v4.formal_cli import (
     validate_parent_artifact_index,
 )
 from stage1_sctsr_v4.formal_training import run_prepared_branch
+from stage1_sctsr_v4.prediction_runtime import publish_formal_endpoint
 from stage1_sctsr_v4.recovery import prepare_formal_resume_context
 from stage1_sctsr_v4.schedule import schedule_from_dict
-from stage1_sctsr_v4.serialization import load_json, sha256_file, stable_digest
+from stage1_sctsr_v4.serialization import atomic_write_json, load_json, sha256_file, stable_digest
 from stage1_sctsr_v4.synthetic_execution import run_synthetic_branch
 
 
@@ -96,6 +97,7 @@ def main() -> int:
             runtime_config_path=arguments.runtime_config,
             seed_registry_path=arguments.seed_registry,
         )
+        runtime_policy = load_json(arguments.runtime_config)
         pool_binding = validate_identity_pool_artifacts(
             arguments.identity_pool,
             schedule=schedule,
@@ -111,7 +113,6 @@ def main() -> int:
         if arguments.resume:
             if arguments.resume_setup_root is None:
                 raise SctsrError(ErrorCode.RESUME_GENERATION_MISMATCH, "--resume requires --resume-setup-root")
-            runtime_policy = load_json(arguments.runtime_config)
             parent_sha = sha256_file(arguments.parent_checkpoint)
             resume_context = prepare_formal_resume_context(
                 run_root=arguments.output_root,
@@ -180,8 +181,47 @@ def main() -> int:
             resume_context=resume_context,
             execution_mode="formal",
         )
+        endpoint_variant = str(runtime_policy["formal_endpoint_model_variant"])
+        if endpoint_variant == "EMA":
+            endpoint_model = getattr(getattr(trainer, "ema", None), "ema", None)
+        elif endpoint_variant == "MODEL":
+            endpoint_model = getattr(trainer, "model", None)
+        else:
+            raise SctsrError(
+                ErrorCode.PREDICTION_IDENTITY_MISMATCH,
+                "Runtime policy selects an unsupported formal endpoint model variant",
+                observed=endpoint_variant,
+            )
+        if endpoint_model is None:
+            raise SctsrError(
+                ErrorCode.PARENT_CHECKPOINT_INCOMPLETE,
+                "Prepared trainer does not expose the frozen endpoint model variant",
+                observed=endpoint_variant,
+            )
+        transform = getattr(getattr(getattr(trainer, "test_loader", None), "dataset", None), "torch_transforms", None)
+        if not callable(transform):
+            raise SctsrError(ErrorCode.UPSTREAM_BINDING_FAILED, "Prepared val_model loader has no frozen evaluation transform")
+        endpoint = publish_formal_endpoint(
+            model=endpoint_model,
+            transform=transform,
+            run_root=arguments.output_root,
+            repository_root=arguments.repository_root,
+            asset_registry_path=arguments.asset_registry,
+            checkpoint_path=Path(result["fixed_formal_endpoint"]["path"]),
+            run_id=lineage.logical_run_id,
+            arm_id=schedule.arm_id.value,
+            model_variant=endpoint_variant,
+            batch_size=int(runtime_policy["formal_endpoint_batch_size"]),
+        )
+        branch_receipt_path = arguments.output_root / "BRANCH_RECEIPT.json"
+        branch_receipt = load_json(branch_receipt_path)
+        atomic_write_json(branch_receipt_path, {**branch_receipt, "formal_endpoint_evidence": endpoint})
+        from stage1_sctsr_v4.run_validation import build_artifact_index
+
+        atomic_write_json(arguments.output_root / "ARTIFACT_INDEX.json", build_artifact_index(arguments.output_root))
         return {
             **result,
+            "formal_endpoint_evidence": endpoint,
             "upstream_binding_digest": binding.binding_digest,
             "prepared_trainer_binding": trainer_binding,
             "formal_authorization": authorization,
