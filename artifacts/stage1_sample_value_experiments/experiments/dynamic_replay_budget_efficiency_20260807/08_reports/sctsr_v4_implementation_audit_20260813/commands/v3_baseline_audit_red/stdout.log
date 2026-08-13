@@ -1,0 +1,100 @@
+FFFF                                                                     [100%]
+================================== FAILURES ===================================
+____ test_pytest_output_parsing_distinguishes_passed_collected_and_skipped ____
+
+    def test_pytest_output_parsing_distinguishes_passed_collected_and_skipped():
+>       module = _load_module()
+                 ^^^^^^^^^^^^^^
+
+artifacts\stage1_sample_value_experiments\experiments\dynamic_replay_budget_efficiency_20260807\08_reports\sctsr_v4_implementation_audit_20260813\tools\test_v3_baseline_audit.py:22: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+artifacts\stage1_sample_value_experiments\experiments\dynamic_replay_budget_efficiency_20260807\08_reports\sctsr_v4_implementation_audit_20260813\tools\test_v3_baseline_audit.py:17: in _load_module
+    spec.loader.exec_module(module)
+<frozen importlib._bootstrap_external>:936: in exec_module
+    ???
+<frozen importlib._bootstrap_external>:1073: in get_code
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <_frozen_importlib_external.SourceFileLoader object at 0x000001652121C8D0>
+path = 'C:\\GitHub\\YOLO-CV\\artifacts\\stage1_sample_value_experiments\\experiments\\dynamic_replay_budget_efficiency_20260807\\08_reports\\sctsr_v4_implementation_audit_20260813\\tools\\build_v3_baseline_audit.py'
+
+>   ???
+E   FileNotFoundError: [Errno 2] No such file or directory: 'C:\\GitHub\\YOLO-CV\\artifacts\\stage1_sample_value_experiments\\experiments\\dynamic_replay_budget_efficiency_20260807\\08_reports\\sctsr_v4_implementation_audit_20260813\\tools\\build_v3_baseline_audit.py'
+
+<frozen importlib._bootstrap_external>:1130: FileNotFoundError
+_____ test_frozen_v3_source_and_test_trees_equal_the_registered_baseline ______
+
+    def test_frozen_v3_source_and_test_trees_equal_the_registered_baseline():
+>       module = _load_module()
+                 ^^^^^^^^^^^^^^
+
+artifacts\stage1_sample_value_experiments\experiments\dynamic_replay_budget_efficiency_20260807\08_reports\sctsr_v4_implementation_audit_20260813\tools\test_v3_baseline_audit.py:36: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+artifacts\stage1_sample_value_experiments\experiments\dynamic_replay_budget_efficiency_20260807\08_reports\sctsr_v4_implementation_audit_20260813\tools\test_v3_baseline_audit.py:17: in _load_module
+    spec.loader.exec_module(module)
+<frozen importlib._bootstrap_external>:936: in exec_module
+    ???
+<frozen importlib._bootstrap_external>:1073: in get_code
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <_frozen_importlib_external.SourceFileLoader object at 0x0000016520F56990>
+path = 'C:\\GitHub\\YOLO-CV\\artifacts\\stage1_sample_value_experiments\\experiments\\dynamic_replay_budget_efficiency_20260807\\08_reports\\sctsr_v4_implementation_audit_20260813\\tools\\build_v3_baseline_audit.py'
+
+>   ???
+E   FileNotFoundError: [Errno 2] No such file or directory: 'C:\\GitHub\\YOLO-CV\\artifacts\\stage1_sample_value_experiments\\experiments\\dynamic_replay_budget_efficiency_20260807\\08_reports\\sctsr_v4_implementation_audit_20260813\\tools\\build_v3_baseline_audit.py'
+
+<frozen importlib._bootstrap_external>:1130: FileNotFoundError
+____ test_taskbook_count_contradiction_is_not_reported_as_acceptance_pass _____
+
+    def test_taskbook_count_contradiction_is_not_reported_as_acceptance_pass():
+>       module = _load_module()
+                 ^^^^^^^^^^^^^^
+
+artifacts\stage1_sample_value_experiments\experiments\dynamic_replay_budget_efficiency_20260807\08_reports\sctsr_v4_implementation_audit_20260813\tools\test_v3_baseline_audit.py:52: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+artifacts\stage1_sample_value_experiments\experiments\dynamic_replay_budget_efficiency_20260807\08_reports\sctsr_v4_implementation_audit_20260813\tools\test_v3_baseline_audit.py:17: in _load_module
+    spec.loader.exec_module(module)
+<frozen importlib._bootstrap_external>:936: in exec_module
+    ???
+<frozen importlib._bootstrap_external>:1073: in get_code
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <_frozen_importlib_external.SourceFileLoader object at 0x0000016520F56B10>
+path = 'C:\\GitHub\\YOLO-CV\\artifacts\\stage1_sample_value_experiments\\experiments\\dynamic_replay_budget_efficiency_20260807\\08_reports\\sctsr_v4_implementation_audit_20260813\\tools\\build_v3_baseline_audit.py'
+
+>   ???
+E   FileNotFoundError: [Errno 2] No such file or directory: 'C:\\GitHub\\YOLO-CV\\artifacts\\stage1_sample_value_experiments\\experiments\\dynamic_replay_budget_efficiency_20260807\\08_reports\\sctsr_v4_implementation_audit_20260813\\tools\\build_v3_baseline_audit.py'
+
+<frozen importlib._bootstrap_external>:1130: FileNotFoundError
+_ test_modified_protected_tree_fails_the_identity_audit_even_if_count_is_high _
+
+    def test_modified_protected_tree_fails_the_identity_audit_even_if_count_is_high():
+>       module = _load_module()
+                 ^^^^^^^^^^^^^^
+
+artifacts\stage1_sample_value_experiments\experiments\dynamic_replay_budget_efficiency_20260807\08_reports\sctsr_v4_implementation_audit_20260813\tools\test_v3_baseline_audit.py:71: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+artifacts\stage1_sample_value_experiments\experiments\dynamic_replay_budget_efficiency_20260807\08_reports\sctsr_v4_implementation_audit_20260813\tools\test_v3_baseline_audit.py:17: in _load_module
+    spec.loader.exec_module(module)
+<frozen importlib._bootstrap_external>:936: in exec_module
+    ???
+<frozen importlib._bootstrap_external>:1073: in get_code
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <_frozen_importlib_external.SourceFileLoader object at 0x00000165211D6C50>
+path = 'C:\\GitHub\\YOLO-CV\\artifacts\\stage1_sample_value_experiments\\experiments\\dynamic_replay_budget_efficiency_20260807\\08_reports\\sctsr_v4_implementation_audit_20260813\\tools\\build_v3_baseline_audit.py'
+
+>   ???
+E   FileNotFoundError: [Errno 2] No such file or directory: 'C:\\GitHub\\YOLO-CV\\artifacts\\stage1_sample_value_experiments\\experiments\\dynamic_replay_budget_efficiency_20260807\\08_reports\\sctsr_v4_implementation_audit_20260813\\tools\\build_v3_baseline_audit.py'
+
+<frozen importlib._bootstrap_external>:1130: FileNotFoundError
+=========================== short test summary info ===========================
+FAILED artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/08_reports/sctsr_v4_implementation_audit_20260813/tools/test_v3_baseline_audit.py::test_pytest_output_parsing_distinguishes_passed_collected_and_skipped
+FAILED artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/08_reports/sctsr_v4_implementation_audit_20260813/tools/test_v3_baseline_audit.py::test_frozen_v3_source_and_test_trees_equal_the_registered_baseline
+FAILED artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/08_reports/sctsr_v4_implementation_audit_20260813/tools/test_v3_baseline_audit.py::test_taskbook_count_contradiction_is_not_reported_as_acceptance_pass
+FAILED artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/08_reports/sctsr_v4_implementation_audit_20260813/tools/test_v3_baseline_audit.py::test_modified_protected_tree_fails_the_identity_audit_even_if_count_is_high
+4 failed in 0.07s

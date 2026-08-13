@@ -1,0 +1,52 @@
+{
+  "schema_version": "stage1.sctsr.python_compatibility_audit.v1",
+  "generated_at_utc": "2026-08-13T17:59:12.829504+00:00",
+  "status": "PASS",
+  "required_passed_per_version": 340,
+  "required_versions": [
+    "3.11",
+    "3.12"
+  ],
+  "expected_implementation_source_commit": "e9b6df61b0eb02e1d32c29175644f1c2af545afc",
+  "versions": {
+    "3.11": {
+      "commands": {
+        "tests": "full_v4_python311_isolated",
+        "probe": "runtime_probe_python311_isolated",
+        "compileall": "compileall_python311_isolated"
+      },
+      "test_summary": {
+        "passed": 340,
+        "failed": 0,
+        "skipped": 0,
+        "errors": 0
+      },
+      "runtime_probe": {
+        "pyarrow": "21.0.0",
+        "python": "3.11.14",
+        "torch": "2.11.0+cu128",
+        "zstd_codec_available": true
+      }
+    },
+    "3.12": {
+      "commands": {
+        "tests": "full_v4_python312_isolated",
+        "probe": "runtime_probe_python312_isolated",
+        "compileall": "compileall_python312_isolated"
+      },
+      "test_summary": {
+        "passed": 340,
+        "failed": 0,
+        "skipped": 0,
+        "errors": 0
+      },
+      "runtime_probe": {
+        "pyarrow": "21.0.0",
+        "python": "3.12.12",
+        "torch": "2.11.0+cu128",
+        "zstd_codec_available": true
+      }
+    }
+  },
+  "errors": []
+}

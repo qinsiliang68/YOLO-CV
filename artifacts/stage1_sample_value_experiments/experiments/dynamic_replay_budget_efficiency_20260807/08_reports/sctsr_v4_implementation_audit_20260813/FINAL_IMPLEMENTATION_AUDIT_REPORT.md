@@ -122,18 +122,20 @@ Appendix-D 共 206 项，当前为 205 PASS、1 FAIL。唯一失败是 `SA-266`�
 
 | 范围 | 结果 |
 |---|---:|
-| 完整 SCTSR v4 | 340 passed |
-| 旧 v3 regression | 183 passed, 1 skipped |
-| 最终审计工具 | 26 passed（含 checkpoint 分片串流重组 SHA 校验） |
+| SCTSR v4 / Python 3.11 isolated | 340 passed |
+| SCTSR v4 / Python 3.12 isolated | 340 passed |
+| 旧 v3 regression / Python 3.11 isolated | 184 collected；183 passed, 1 skipped |
+| 最终审计工具 | 33 passed（含 checkpoint 分片、双 Python 与 v3 基线身份校验） |
 | CLI 与禁止副作用 | 32 passed |
-| Python compileall | PASS |
+| Python 3.11 / 3.12 compileall | 双 PASS |
+| PyArrow/Zstd | 21.0.0 / 两版本 codec available |
 | uv lock check | PASS |
 | synthetic canary A | PASS |
 | synthetic canary B | PASS |
 | synthetic semantic determinism | 7/7 PASS |
 | 真实本地数据工程 canary | PASS |
 
-完整 v4 没有 skip/xfail。旧 v3 命令本身 exit 0，但其真实数量低于任务书的 231 下限，所以 `SA-266` 仍为 FAIL。
+完整 v4 在两个隔离 Python 版本中均无 skip/xfail。旧 v3 命令本身 exit 0，但其真实数量低于任务书的 231 下限，所以 `SA-266` 仍为 FAIL。`reports/PYTHON_COMPATIBILITY_AUDIT.json` 对两套 test、runtime probe、compileall 的命令和日志 SHA 做了 fail-closed 聚合，状态为 PASS。
 
 ## 5. 真实本地数据工程 canary
 
@@ -193,7 +195,7 @@ pass_count: 205
 fail_count: 1
 blocked_count: 0
 overall_status: SELF_AUDIT_FAIL
-audit_digest: 575A7E71299117E9C9A5193EB317D8F372DF803673774F7611B6A8661EC5B5D3
+audit_digest: 2DF515FFFAACB9D76E1899C1A5DA49B98CE00E084D6F33B53E73247262DB6E99
 validator_status: VALID_AUDIT_WITH_FAILURES
 ```
 
@@ -211,9 +213,16 @@ uv run pytest tests\stage1_dynamic_replay_v3 -q
 当前冻结树真实结果：
 
 ```text
-183 passed, 1 skipped in 4.76s
+184 tests collected
+183 passed, 1 skipped in 6.25s
 exit_code: 0
+source_tree_sha: 34d75d55c1adcfb983fdd4e1cfe6080409f59ba5
+test_tree_sha: 085d34afc270b4951f0f8dd8ef5f96e991000b5b
+protected_diff_paths: []
+historical_max_python_test_file_count: 34
 ```
+
+`reports/V3_BASELINE_IDENTITY_AUDIT.json` 的身份审计状态为 PASS，说明 v4 没有改动或回归 v3；同一报告中的 `sa266_status=FAIL_TASKBOOK_COUNT_CONTRADICTION`，说明这不能替代任务书要求的 231。Git 历史没有可恢复的额外 48 个 tracked tests。
 
 解决方式只能是：
 

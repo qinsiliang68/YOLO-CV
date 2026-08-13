@@ -1,0 +1,1 @@
+{"pyarrow": "21.0.0", "python": "3.12.12", "torch": "2.11.0+cu128", "zstd_codec_available": true}

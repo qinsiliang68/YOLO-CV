@@ -1,0 +1,82 @@
+FFF                                                                      [100%]
+================================== FAILURES ===================================
+_______ test_dual_python_audit_requires_tests_probe_compileall_and_zstd _______
+
+tmp_path = WindowsPath('C:/Users/28898/AppData/Local/Temp/pytest-of-28898/pytest-1653/test_dual_python_audit_require0')
+
+    def test_dual_python_audit_requires_tests_probe_compileall_and_zstd(tmp_path):
+>       module = _load_module()
+                 ^^^^^^^^^^^^^^
+
+artifacts\stage1_sample_value_experiments\experiments\dynamic_replay_budget_efficiency_20260807\08_reports\sctsr_v4_implementation_audit_20260813\tools\test_python_compatibility_audit.py:66: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+artifacts\stage1_sample_value_experiments\experiments\dynamic_replay_budget_efficiency_20260807\08_reports\sctsr_v4_implementation_audit_20260813\tools\test_python_compatibility_audit.py:16: in _load_module
+    spec.loader.exec_module(module)
+<frozen importlib._bootstrap_external>:936: in exec_module
+    ???
+<frozen importlib._bootstrap_external>:1073: in get_code
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <_frozen_importlib_external.SourceFileLoader object at 0x000002A03060D0D0>
+path = 'C:\\GitHub\\YOLO-CV\\artifacts\\stage1_sample_value_experiments\\experiments\\dynamic_replay_budget_efficiency_20260807\\08_reports\\sctsr_v4_implementation_audit_20260813\\tools\\build_python_compatibility_audit.py'
+
+>   ???
+E   FileNotFoundError: [Errno 2] No such file or directory: 'C:\\GitHub\\YOLO-CV\\artifacts\\stage1_sample_value_experiments\\experiments\\dynamic_replay_budget_efficiency_20260807\\08_reports\\sctsr_v4_implementation_audit_20260813\\tools\\build_python_compatibility_audit.py'
+
+<frozen importlib._bootstrap_external>:1130: FileNotFoundError
+______________________ test_log_hash_drift_fails_closed _______________________
+
+tmp_path = WindowsPath('C:/Users/28898/AppData/Local/Temp/pytest-of-28898/pytest-1653/test_log_hash_drift_fails_clos0')
+
+    def test_log_hash_drift_fails_closed(tmp_path):
+>       module = _load_module()
+                 ^^^^^^^^^^^^^^
+
+artifacts\stage1_sample_value_experiments\experiments\dynamic_replay_budget_efficiency_20260807\08_reports\sctsr_v4_implementation_audit_20260813\tools\test_python_compatibility_audit.py:77: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+artifacts\stage1_sample_value_experiments\experiments\dynamic_replay_budget_efficiency_20260807\08_reports\sctsr_v4_implementation_audit_20260813\tools\test_python_compatibility_audit.py:16: in _load_module
+    spec.loader.exec_module(module)
+<frozen importlib._bootstrap_external>:936: in exec_module
+    ???
+<frozen importlib._bootstrap_external>:1073: in get_code
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <_frozen_importlib_external.SourceFileLoader object at 0x000002A0305F06D0>
+path = 'C:\\GitHub\\YOLO-CV\\artifacts\\stage1_sample_value_experiments\\experiments\\dynamic_replay_budget_efficiency_20260807\\08_reports\\sctsr_v4_implementation_audit_20260813\\tools\\build_python_compatibility_audit.py'
+
+>   ???
+E   FileNotFoundError: [Errno 2] No such file or directory: 'C:\\GitHub\\YOLO-CV\\artifacts\\stage1_sample_value_experiments\\experiments\\dynamic_replay_budget_efficiency_20260807\\08_reports\\sctsr_v4_implementation_audit_20260813\\tools\\build_python_compatibility_audit.py'
+
+<frozen importlib._bootstrap_external>:1130: FileNotFoundError
+_______________ test_wrong_python_or_missing_zstd_fails_closed ________________
+
+tmp_path = WindowsPath('C:/Users/28898/AppData/Local/Temp/pytest-of-28898/pytest-1653/test_wrong_python_or_missing_z0')
+
+    def test_wrong_python_or_missing_zstd_fails_closed(tmp_path):
+>       module = _load_module()
+                 ^^^^^^^^^^^^^^
+
+artifacts\stage1_sample_value_experiments\experiments\dynamic_replay_budget_efficiency_20260807\08_reports\sctsr_v4_implementation_audit_20260813\tools\test_python_compatibility_audit.py:88: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+artifacts\stage1_sample_value_experiments\experiments\dynamic_replay_budget_efficiency_20260807\08_reports\sctsr_v4_implementation_audit_20260813\tools\test_python_compatibility_audit.py:16: in _load_module
+    spec.loader.exec_module(module)
+<frozen importlib._bootstrap_external>:936: in exec_module
+    ???
+<frozen importlib._bootstrap_external>:1073: in get_code
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <_frozen_importlib_external.SourceFileLoader object at 0x000002A030616290>
+path = 'C:\\GitHub\\YOLO-CV\\artifacts\\stage1_sample_value_experiments\\experiments\\dynamic_replay_budget_efficiency_20260807\\08_reports\\sctsr_v4_implementation_audit_20260813\\tools\\build_python_compatibility_audit.py'
+
+>   ???
+E   FileNotFoundError: [Errno 2] No such file or directory: 'C:\\GitHub\\YOLO-CV\\artifacts\\stage1_sample_value_experiments\\experiments\\dynamic_replay_budget_efficiency_20260807\\08_reports\\sctsr_v4_implementation_audit_20260813\\tools\\build_python_compatibility_audit.py'
+
+<frozen importlib._bootstrap_external>:1130: FileNotFoundError
+=========================== short test summary info ===========================
+FAILED artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/08_reports/sctsr_v4_implementation_audit_20260813/tools/test_python_compatibility_audit.py::test_dual_python_audit_requires_tests_probe_compileall_and_zstd
+FAILED artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/08_reports/sctsr_v4_implementation_audit_20260813/tools/test_python_compatibility_audit.py::test_log_hash_drift_fails_closed
+FAILED artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/08_reports/sctsr_v4_implementation_audit_20260813/tools/test_python_compatibility_audit.py::test_wrong_python_or_missing_zstd_fails_closed
+3 failed in 0.08s

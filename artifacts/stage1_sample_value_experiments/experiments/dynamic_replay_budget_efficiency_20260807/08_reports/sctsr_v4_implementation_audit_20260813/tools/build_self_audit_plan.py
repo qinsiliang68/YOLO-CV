@@ -16,8 +16,8 @@ from stage1_sctsr_v4.serialization import atomic_write_json
 
 FAILURES = {
     "SA-266": (
-        "The current registered v3 regression command completed with 183 passed and 1 skipped; the taskbook requires at least 231 passed.",
-        "Resolve the baseline mismatch through an approved specification change or restore a verified 231-test v3 baseline without rewriting historical behavior, then rerun the exact command.",
+        "The isolated Python 3.11 v3 command collected 184 tests and completed with 183 passed and 1 skipped, while the taskbook requires at least 231 passed. The machine baseline audit proves that the v3 source tree 34d75d55c1adcfb983fdd4e1cfe6080409f59ba5 and test tree 085d34afc270b4951f0f8dd8ef5f96e991000b5b are identical at baseline, frozen implementation, and current HEAD; Git history contains at most the same 34 Python test files, so no implementation regression or recoverable 48-test tracked inventory was found.",
+        "Resolve the taskbook contradiction through an approved specification change, or supply a hash-verifiable historical 231-test source tree and receipt without rewriting protected v3 behavior; do not add empty or duplicate tests to manufacture the count.",
     ),
 }
 
@@ -275,6 +275,8 @@ GROUPS = {
             "COMMAND_INDEX.json",
             "reports/CHANGED_FILE_LEDGER.json",
             "reports/SYNTHETIC_DETERMINISM_COMPARISON_E9.json",
+            "reports/PYTHON_COMPATIBILITY_AUDIT.json",
+            "reports/V3_BASELINE_IDENTITY_AUDIT.json",
             "tdd_history/TDD_HISTORY_AUDIT.json",
             "tdd_history/TDD_HISTORY_AUDIT_RECEIPT.json",
         ],
@@ -288,7 +290,7 @@ GROUPS = {
             "tests/stage1_sctsr_v4/test_documentation_contract.py",
             "tests/stage1_sctsr_v4/test_synthetic_canary.py",
         ],
-        "observed": "The final audit-tool suite completed with 26 passed, including streamed verification of the published checkpoint-part concatenation against the original checkpoint SHA-256. The TDD history audit independently validates its own schema and records 34 rollback commits, 31 behavior commits, 3 non-behavior commits, 33 failing-first pairs, and 146 immutable rollout events. It explicitly identifies the reviewer as the primary agent rather than claiming independent review.",
+        "observed": "The final audit-tool suite completed with 33 passed, including streamed verification of the published checkpoint-part concatenation, frozen v3 baseline identity, and dual-Python receipt integrity. Isolated Python 3.11 and 3.12 each completed the 340-test v4 suite with no skip, failure, or error; both probes loaded PyArrow 21.0.0 with Zstd available and both compileall commands exited zero. The TDD history audit validates its own schema and records 34 implementation rollback commits, 31 behavior commits, 3 non-behavior commits, 33 failing-first pairs, and 146 immutable rollout events. It explicitly identifies the reviewer as the primary agent rather than claiming independent review.",
         "risk": "Implementation tests do not authorize formal training and cannot establish SCTSR scientific effectiveness.",
     },
     "manual": {
@@ -349,7 +351,7 @@ COMMAND_OVERRIDES = {
     "SA-263": "tdd_history_audit_e9b6df6",
     "SA-264": "full_v4_e9b6df6",
     "SA-265": "full_v4_e9b6df6",
-    "SA-266": "full_v3_e9b6df6",
+    "SA-266": "full_v3_python311_isolated",
     "SA-267": "contract_cli_e9b6df6",
     "SA-268": "asset_cli_e9b6df6",
     "SA-269": "schedule_cli_e9b6df6",
