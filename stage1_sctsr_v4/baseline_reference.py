@@ -3,6 +3,24 @@ from __future__ import annotations
 MAIN_COMMIT = "a70ba60485dd32c2f8b4268b8f28ea2d3549f42f"
 TASKBOOK_BLOB_SHA = "b201d021712e9c6614e119d35f0e14bdf405c6be"
 TASKBOOK_PATH = "artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/03_preregistration_v4_sctsr/SCTSR_EXPERT_IMPLEMENTATION_TASKBOOK.md"
+SOURCE_TREE_INCLUDE_PATHS = (
+    "stage1_sctsr_v4",
+    "scripts/stage1_sctsr_v4",
+    "configs/stage1_sctsr_v4",
+    "tests/stage1_sctsr_v4",
+    "docs/stage1_sctsr_v4",
+    "pyproject.toml",
+    "uv.lock",
+    "requirements-sctsr-v4.txt",
+    "README.md",
+    TASKBOOK_PATH,
+    "YOLOv11/ultralytics/engine/trainer.py",
+    "YOLOv11/ultralytics/models/yolo/classify/train.py",
+    "YOLOv11/ultralytics/nn/tasks.py",
+    "YOLOv11/ultralytics/nn/modules/head.py",
+    "YOLOv11/ultralytics/utils/loss.py",
+    "YOLOv11/ultralytics/utils/torch_utils.py",
+)
 
 
 def source_external_references() -> list[dict[str, str]]:

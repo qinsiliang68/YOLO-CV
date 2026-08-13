@@ -52,6 +52,7 @@
     "synthetic_asset_registry": "stage1.sctsr.synthetic_asset_registry.v1",
     "synthetic_branch_receipt": "stage1.sctsr.synthetic_branch_receipt.v1",
     "synthetic_canary_receipt": "stage1.sctsr.synthetic_canary_receipt.v1",
+    "synthetic_checkpoint_resume_receipt": "stage1.sctsr.synthetic_checkpoint_resume_receipt.v1",
     "synthetic_failure_injection_summary": "stage1.sctsr.synthetic_failure_injection_summary.v1",
     "synthetic_mechanism_audit": "stage1.sctsr.synthetic_mechanism_audit.v1",
     "synthetic_parent_receipt": "stage1.sctsr.synthetic_parent_receipt.v1",

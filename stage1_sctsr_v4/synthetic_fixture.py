@@ -99,6 +99,10 @@ def _features(records: Sequence[IdentityRecord], seed: int) -> dict[str, torch.T
         sign = 1.0 if record.y_true else -1.0
         tensor = torch.randn(4, generator=generator) * 0.18 + center + sign * bucket_shift
         output[record.sample_id] = tensor.float()
+    # Two distinct identities deliberately share the exact same raw input.
+    # This produces a real model-output probability tie without rounding or
+    # rewriting predictions after inference.
+    output["SYN_000001"] = output["SYN_000000"].clone()
     return output
 
 
@@ -252,6 +256,14 @@ def make_replay_provider(fixture: SyntheticFixture) -> Callable[[Sequence[str], 
 
 
 def synthetic_split(fixture: SyntheticFixture, *, size: int = 160) -> tuple[IdentityRecord, ...]:
-    # Fixed subset with duplicates in feature geometry, not identity, to exercise probability ties.
-    ordered = sorted(fixture.base_records, key=lambda r: (_counter_token("synthetic_split", fixture.training_seed, r.sample_id), r.sample_id))
-    return tuple(ordered[:size])
+    # Pin the two distinct identities with identical feature bytes into every
+    # evaluation split so tie-safe frontier handling is exercised reliably.
+    if size < 2:
+        raise ValueError("Synthetic evaluation split must contain the registered tie pair")
+    pinned_ids = {"SYN_000000", "SYN_000001"}
+    pinned = sorted((record for record in fixture.base_records if record.sample_id in pinned_ids), key=lambda row: row.sample_id)
+    ordered = sorted(
+        (record for record in fixture.base_records if record.sample_id not in pinned_ids),
+        key=lambda row: (_counter_token("synthetic_split", fixture.training_seed, row.sample_id), row.sample_id),
+    )
+    return tuple(pinned + ordered[: size - len(pinned)])
