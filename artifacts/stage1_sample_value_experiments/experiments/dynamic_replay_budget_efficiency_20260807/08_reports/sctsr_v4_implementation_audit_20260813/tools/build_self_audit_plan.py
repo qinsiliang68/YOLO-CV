@@ -288,7 +288,7 @@ GROUPS = {
             "tests/stage1_sctsr_v4/test_documentation_contract.py",
             "tests/stage1_sctsr_v4/test_synthetic_canary.py",
         ],
-        "observed": "The final audit-tool suite completed with 25 passed. The TDD history audit independently validates its own schema and records 34 rollback commits, 31 behavior commits, 3 non-behavior commits, 33 failing-first pairs, and 146 immutable rollout events. It explicitly identifies the reviewer as the primary agent rather than claiming independent review.",
+        "observed": "The final audit-tool suite completed with 26 passed, including streamed verification of the published checkpoint-part concatenation against the original checkpoint SHA-256. The TDD history audit independently validates its own schema and records 34 rollback commits, 31 behavior commits, 3 non-behavior commits, 33 failing-first pairs, and 146 immutable rollout events. It explicitly identifies the reviewer as the primary agent rather than claiming independent review.",
         "risk": "Implementation tests do not authorize formal training and cannot establish SCTSR scientific effectiveness.",
     },
     "manual": {

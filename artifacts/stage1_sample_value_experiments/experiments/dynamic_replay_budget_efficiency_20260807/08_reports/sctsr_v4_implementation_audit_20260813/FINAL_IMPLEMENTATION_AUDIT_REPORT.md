@@ -124,7 +124,7 @@ Appendix-D 共 206 项，当前为 205 PASS、1 FAIL。唯一失败是 `SA-266`�
 |---|---:|
 | 完整 SCTSR v4 | 340 passed |
 | 旧 v3 regression | 183 passed, 1 skipped |
-| 最终审计工具 | 25 passed |
+| 最终审计工具 | 26 passed（含 checkpoint 分片串流重组 SHA 校验） |
 | CLI 与禁止副作用 | 32 passed |
 | Python compileall | PASS |
 | uv lock check | PASS |
@@ -193,7 +193,7 @@ pass_count: 205
 fail_count: 1
 blocked_count: 0
 overall_status: SELF_AUDIT_FAIL
-audit_digest: C009E010B74C565E154C9608BB690E34630188664ABC82F048FDDE41B72C93C9
+audit_digest: 575A7E71299117E9C9A5193EB317D8F372DF803673774F7611B6A8661EC5B5D3
 validator_status: VALID_AUDIT_WITH_FAILURES
 ```
 
