@@ -1,0 +1,3 @@
+{"base_occurrences": 128, "blind_or_test_data_accessed": false, "formal_training_started": false, "global_step_end": 112561, "global_step_start": 112560, "initial_weight_sha256": "6B56513A5D8BDAE6B8F0A36DACAF01B26D5A522BA1B34197C3BAC9FA6463366C", "model_class": "ultralytics.nn.tasks.ClassificationModel", "optimizer_steps": 1, "replay_occurrences": 1, "schema_version": "stage1.sctsr.real_yolo_engineering_canary.v1", "scientific_role": "SYNTHETIC_NOT_SCIENTIFIC_RESULT", "status": "PASS", "trainer_class": "ultralytics.models.yolo.classify.train.ClassificationTrainer", "upstream_optimizer_step_calls": 1}
+.
+1 passed in 2.72s

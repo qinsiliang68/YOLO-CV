@@ -11,5 +11,8 @@ def source_external_references() -> list[dict[str, str]]:
         {"repository": "qinsiliang68/YOLO-CV", "commit": MAIN_COMMIT, "path": "YOLOv11/ultralytics/engine/trainer.py", "blob_sha": "1e5cec6b4b36f30d7d6653eb70420ae2b4cb3524", "role": "UPSTREAM_TRAINER_REFERENCE"},
         {"repository": "qinsiliang68/YOLO-CV", "commit": MAIN_COMMIT, "path": "YOLOv11/ultralytics/models/yolo/classify/train.py", "blob_sha": "779e940d8c4d9e3abd1bce42a5ac39b9127cd1d3", "role": "UPSTREAM_CLASSIFICATION_TRAINER_REFERENCE"},
         {"repository": "qinsiliang68/YOLO-CV", "commit": MAIN_COMMIT, "path": "YOLOv11/ultralytics/nn/tasks.py", "blob_sha": "bcaf6999ea8a81c82502366f2cc3fd3e921ea0ee", "role": "UPSTREAM_CLASSIFICATION_MODEL_REFERENCE"},
+        {"repository": "qinsiliang68/YOLO-CV", "commit": MAIN_COMMIT, "path": "YOLOv11/ultralytics/nn/modules/head.py", "blob_sha": "c1ec140b101e0111851cda55466df6c8b737da3e", "role": "UPSTREAM_CLASSIFICATION_HEAD_REFERENCE"},
+        {"repository": "qinsiliang68/YOLO-CV", "commit": MAIN_COMMIT, "path": "YOLOv11/ultralytics/utils/loss.py", "blob_sha": "d4a9dda93caff84cf0f8dae4e84e0e446e55f85e", "role": "UPSTREAM_CLASSIFICATION_LOSS_REFERENCE"},
+        {"repository": "qinsiliang68/YOLO-CV", "commit": MAIN_COMMIT, "path": "YOLOv11/ultralytics/utils/torch_utils.py", "blob_sha": "537f0d5621bef6b1f2faa52148ba8dfa0280ffca", "role": "UPSTREAM_OPTIMIZER_EMA_REFERENCE"},
         {"repository": "qinsiliang68/YOLO-CV", "commit": MAIN_COMMIT, "path": "pyproject.toml", "blob_sha": "c08bf04a1242d4853272117254dd81c88d157e7b", "role": "DEPENDENCY_REFERENCE"},
     ]

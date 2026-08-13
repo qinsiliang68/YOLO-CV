@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="6" skipped="0" tests="6" time="1.997" timestamp="2026-08-13T16:24:17.831969+08:00" hostname="zhangdawei"><testcase classname="tests.red_commit_04.test_fixed_step_hardening" name="test_plan_digest_recomputed" time="0.000"><failure message="Failed: DID NOT RAISE &lt;class 'stage1_sctsr_v4.errors.SctsrError'&gt;">def test_plan_digest_recomputed():
+&gt;       with pytest.raises(SctsrError):replace(plan(('x','y')),plan_digest='F'*64).validate_structure()
+E       Failed: DID NOT RAISE &lt;class 'stage1_sctsr_v4.errors.SctsrError'&gt;
+
+tests\red_commit_04\test_fixed_step_hardening.py:54: Failed</failure></testcase><testcase classname="tests.red_commit_04.test_fixed_step_hardening" name="test_counter_domain_seeds_materialized" time="0.000"><failure message="AssertionError: assert 19 == 16194821679476061177&#10; +  where 19 = ReplayStepPlan(run_id='R', arm_id='T_U', training_seed=19, epoch=121, base_step_count=1, planned_replay_occurrences=2,...umerator=1, max_fraction_denominator=4, plan_digest='53B45A1AAE1EF6890766F55D377ED96591E1C0F81488B52C662E2084304CA11F').step_slot_seed&#10; +  and   16194821679476061177 = derive_counter_seed('replay_step_slots', 19, 121)">def test_counter_domain_seeds_materialized():
+&gt;       value=plan(('x','y'));assert value.step_slot_seed==derive_counter_seed('replay_step_slots',19,121);assert value.identity_order_seed==derive_counter_seed('replay_identity_order',19,121)
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AssertionError: assert 19 == 16194821679476061177
+E        +  where 19 = ReplayStepPlan(run_id='R', arm_id='T_U', training_seed=19, epoch=121, base_step_count=1, planned_replay_occurrences=2,...umerator=1, max_fraction_denominator=4, plan_digest='53B45A1AAE1EF6890766F55D377ED96591E1C0F81488B52C662E2084304CA11F').step_slot_seed
+E        +  and   16194821679476061177 = derive_counter_seed('replay_step_slots', 19, 121)
+
+tests\red_commit_04\test_fixed_step_hardening.py:57: AssertionError</failure></testcase><testcase classname="tests.red_commit_04.test_fixed_step_hardening" name="test_upstream_optimizer_step_called_once" time="0.759"><failure message="assert 0 == 1&#10; +  where 0 = &lt;test_fixed_step_hardening.Trainer object at 0x0000021A75F42BD0&gt;.optimizer_step_calls">def test_upstream_optimizer_step_called_once():
+&gt;       trainer=Trainer();run(trainer,('x','y'));assert trainer.optimizer_step_calls==1
+                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       assert 0 == 1
+E        +  where 0 = &lt;test_fixed_step_hardening.Trainer object at 0x0000021A75F42BD0&gt;.optimizer_step_calls
+
+tests\red_commit_04\test_fixed_step_hardening.py:60: AssertionError</failure></testcase><testcase classname="tests.red_commit_04.test_fixed_step_hardening" name="test_base_identity_required" time="0.002"><failure message="Failed: DID NOT RAISE &lt;class 'stage1_sctsr_v4.errors.SctsrError'&gt;">def test_base_identity_required():
+&gt;       with pytest.raises(SctsrError):run(Trainer(include_identity=False))
+E       Failed: DID NOT RAISE &lt;class 'stage1_sctsr_v4.errors.SctsrError'&gt;
+
+tests\red_commit_04\test_fixed_step_hardening.py:63: Failed</failure></testcase><testcase classname="tests.red_commit_04.test_fixed_step_hardening" name="test_replay_order_required" time="0.003"><failure message="Failed: DID NOT RAISE &lt;class 'stage1_sctsr_v4.errors.SctsrError'&gt;">def test_replay_order_required():
+        def reversed_provider(ids,e,s,seed):
+            result=provider(ids,e,s,seed);result['sample_ids']=tuple(reversed(ids));return result
+&gt;       with pytest.raises(SctsrError):run(Trainer(),('x','y'),reversed_provider)
+E       Failed: DID NOT RAISE &lt;class 'stage1_sctsr_v4.errors.SctsrError'&gt;
+
+tests\red_commit_04\test_fixed_step_hardening.py:68: Failed</failure></testcase><testcase classname="tests.red_commit_04.test_fixed_step_hardening" name="test_amp_skip_aborts" time="0.002"><failure message="Failed: DID NOT RAISE &lt;class 'stage1_sctsr_v4.errors.SctsrError'&gt;">def test_amp_skip_aborts():
+&gt;       with pytest.raises(SctsrError):run(Trainer(scaler=SkippingScaler()))
+E       Failed: DID NOT RAISE &lt;class 'stage1_sctsr_v4.errors.SctsrError'&gt;
+
+tests\red_commit_04\test_fixed_step_hardening.py:71: Failed</failure></testcase></testsuite></testsuites>

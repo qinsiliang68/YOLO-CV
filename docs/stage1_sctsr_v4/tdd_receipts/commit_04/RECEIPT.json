@@ -1,0 +1,78 @@
+{
+  "schema_version": "stage1.sctsr.tdd_receipt.v1",
+  "rollback_unit": "commit_04_fixed_base_step_replay_and_frozen_yolo_integration",
+  "status": "PASS_ENGINEERING_UNIT_NOT_TRAINING_AUTHORIZATION",
+  "red": {
+    "command": "uv run --project C:/GitHub/YOLO-CV pytest tests/red_commit_04 -q --junitxml=C:/GitHub/YOLO-CV/docs/stage1_sctsr_v4/tdd_receipts/commit_04/RED.junit.xml (cwd=untouched extracted expert package)",
+    "exit_code": 1,
+    "stdout_stderr_path": "RED.junit.xml",
+    "stdout_stderr_bytes": 4485,
+    "stdout_stderr_sha256": "6120F7CC931677DB6574D7A14D651F45F1A43AB9519D8F3E1521EF3874AC9BA1",
+    "observed": "6 failed: step-plan content digest and counter seeds were not enforced; overlay bypassed upstream optimizer_step; missing base identity, reordered replay identity, and AMP skipped steps were accepted",
+    "expected": "the same six malformed or unsafe cases fail closed"
+  },
+  "green": {
+    "command": "uv run pytest tests/stage1_sctsr_v4/test_replay_step_plan.py tests/stage1_sctsr_v4/test_bn_isolation.py tests/stage1_sctsr_v4/test_fixed_step_runtime.py tests/stage1_sctsr_v4/test_fixed_step_hardening.py tests/stage1_sctsr_v4/test_real_yolo_integration.py tests/stage1_sctsr_v4/test_ultralytics_overlay.py tests/stage1_sctsr_v4/test_dataset_adapter.py tests/stage1_sctsr_v4/test_training_system.py -q --junitxml=docs/stage1_sctsr_v4/tdd_receipts/commit_04/GREEN.junit.xml",
+    "exit_code": 0,
+    "stdout_stderr_path": "GREEN.junit.xml",
+    "stdout_stderr_bytes": 4605,
+    "stdout_stderr_sha256": "030481D05230CAAE1B4AC7E2C2E4DE6036310A579DA21CEF1B6AF6F4FA1E0D46",
+    "observed": "32 passed",
+    "expected": "32 passed"
+  },
+  "targeted_regression": {
+    "command": "uv run pytest <all tracked SCTSR tests from commits 1-3 plus commit-4 tests> -q --junitxml=docs/stage1_sctsr_v4/tdd_receipts/commit_04/TARGETED_GREEN.junit.xml",
+    "exit_code": 0,
+    "stdout_stderr_path": "TARGETED_GREEN.junit.xml",
+    "stdout_stderr_bytes": 14859,
+    "stdout_stderr_sha256": "383005A2041E60D88CAEFDAFAD609D7D7A82C17639C697196DB267992E75D411",
+    "observed": "110 passed",
+    "expected": "110 passed"
+  },
+  "real_yolo_engineering_canary": {
+    "command": "uv run pytest tests/stage1_sctsr_v4/test_real_yolo_integration.py -q -s",
+    "exit_code": 0,
+    "stdout_stderr_path": "REAL_YOLO_CANARY.txt",
+    "stdout_stderr_bytes": 631,
+    "stdout_stderr_sha256": "F14925F1A5376DDBC7F9946048721E90B8B949616429AB691488F418AD6529AA",
+    "scientific_role": "SYNTHETIC_NOT_SCIENTIFIC_RESULT",
+    "observed": "real frozen ClassificationTrainer and ClassificationModel loaded from YOLOv11; yolo11l-cls.pt SHA matched; one base batch plus one replay occurrence produced exactly one upstream optimizer step and one EMA update",
+    "formal_training_started": false,
+    "blind_or_test_data_accessed": false
+  },
+  "upstream_binding": {
+    "binding_digest": "AF4C7A4A799AD64B9AB45C5E465DBCBF18AA4AB5C15C6DA720E55FE6D78471C5",
+    "manifest_digest": "EF49BCE0974B6CC541DCBB86506735B3DE3D3DA9DB9CC3D0115AC23F74A3BCDD",
+    "source_count": 6,
+    "git_blob_sha1_and_file_sha256_both_verified": true,
+    "archived_upstream_modified": false
+  },
+  "compileall": {
+    "exit_code": 0,
+    "observed": "all commit-4 Python source parsed and compiled"
+  },
+  "properties_proved": [
+    "base dataset length and loader step count do not grow with replay",
+    "materialized per-step identity slices are content-hashed and counter-domain seeds are reproducible",
+    "base loss remains the frozen upstream ClassificationModel loss",
+    "replay loss is unreduced cross entropy sum divided by canonical 128",
+    "base and replay backward accumulate before exactly one frozen upstream optimizer_step call",
+    "unscale, clip, scaler step, scaler update, optimizer zeroing, and EMA happen once per base step",
+    "AMP overflow step skips and OOM abort the epoch rather than changing the contract",
+    "replay RNG is restored and BatchNorm running buffers are restored while replay parameter gradients remain",
+    "physical ImageFolder order is identity-bound by filename plus separately verified binary label",
+    "all imported trainer/model/head/loss/EMA modules resolve to the frozen repository source"
+  ],
+  "reviewed_source_files": [
+    "stage1_sctsr_v4/replay_step_plan.py",
+    "stage1_sctsr_v4/bn_isolation.py",
+    "stage1_sctsr_v4/fixed_step_runtime.py",
+    "stage1_sctsr_v4/ultralytics_overlay.py",
+    "stage1_sctsr_v4/dataset_adapter.py",
+    "stage1_sctsr_v4/training_system.py",
+    "integrations/ultralytics/sctsr_classification_trainer.py",
+    "integrations/ultralytics/UPSTREAM_FILES_MANIFEST.json"
+  ],
+  "remaining_risk": "This unit proves the training step and source binding, not the E1-E200 transactional orchestrator. Full 120000/938 execution, ledgers, telemetry, recovery, evaluation, and closeout are later rollback units. Exact formal R2 remains infeasible on registered assets.",
+  "required_action": "Connect this runtime only through validated generation transactions and formal identity/release gates; do not start formal training."
+}

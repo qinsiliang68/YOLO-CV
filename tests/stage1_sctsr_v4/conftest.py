@@ -2,9 +2,7 @@ from __future__ import annotations
 
 import os
 import sys
-import hashlib
 from pathlib import Path
-from types import SimpleNamespace
 
 import pytest
 
@@ -20,102 +18,9 @@ def repository_root() -> Path:
 
 @pytest.fixture(scope="session")
 def synthetic_fixture():
-    from stage1_sctsr_v4.identity_pool import IdentityRecord, T_SELECTION_SEMANTIC, make_pool, partition_five_groups
-    from stage1_sctsr_v4.random_controls import build_r1_global_random, build_r2_matched_random
-    from stage1_sctsr_v4.terminal_field_guard import TerminalFieldGuard
+    from stage1_sctsr_v4.synthetic_fixture import build_synthetic_fixture
 
-    denominator = 2_000
-    seed = 20260812
-    buckets = ("EASY", "BOUNDARY", "FORGETTING", "PERSISTENT_ERROR")
-    base = tuple(
-        IdentityRecord(
-            sample_id=f"SYN_{index:06d}",
-            y_true=index % 2,
-            replay_role="NORMAL_REPLAY" if index % 2 == 0 else "DEFECT_GUARD_REPLAY",
-            historical_dynamic_bucket=buckets[(index // 40) % len(buckets)],
-            oof_fold=(index // 2) % 10,
-            oof_group_id=f"bucket_{(index // 20) % 20:02d}",
-            group_source="numeric_filename_bucket",
-            base_manifest_membership=True,
-        )
-        for index in range(denominator)
-    )
-    by_stratum = {}
-    for record in base:
-        by_stratum.setdefault(record.stratum(), []).append(record)
-    chosen = []
-    ordered_strata = sorted(by_stratum)
-    cursor = 0
-    while len(chosen) < 50:
-        stratum = ordered_strata[cursor % len(ordered_strata)]
-        ranked = sorted(
-            by_stratum[stratum],
-            key=lambda record: (
-                hashlib.sha256(f"T_STRESS\0{seed}\0{record.sample_id}".encode()).hexdigest(),
-                record.sample_id,
-            ),
-        )
-        rank = cursor // len(ordered_strata)
-        if rank < len(ranked) - 1:
-            chosen.append(ranked[rank])
-        cursor += 1
-    t_pool = make_pool(
-        pool_id="SYNTHETIC_T_STRESS",
-        pool_role="T_STRESS",
-        records=chosen,
-        base_denominator=denominator,
-        base_manifest_sha256="1" * 64,
-        source_manifest_path="SYNTHETIC_T_CANONICAL",
-        source_manifest_sha256="2" * 64,
-        construction_seed=None,
-        selection_semantic=T_SELECTION_SEMANTIC,
-    )
-    r1 = build_r1_global_random(
-        base,
-        base_denominator=denominator,
-        base_manifest_sha256="1" * 64,
-        source_manifest_sha256="2" * 64,
-        selection_seed=seed + 1,
-        t_ids={record.sample_id for record in t_pool.records},
-    )
-    rows = [
-        {
-            "sample_id": record.sample_id,
-            "y_true": record.y_true,
-            "replay_role": record.replay_role,
-            "historical_dynamic_bucket": record.historical_dynamic_bucket,
-            "oof_fold": record.oof_fold,
-            "oof_group_id": record.oof_group_id,
-            "group_source": record.group_source,
-            "base_manifest_membership": record.base_manifest_membership,
-            "loss": 999.0,
-            "RHO": 999.0,
-        }
-        for record in base
-    ]
-    r2 = build_r2_matched_random(
-        rows,
-        t_pool=t_pool,
-        base_denominator=denominator,
-        base_manifest_sha256="1" * 64,
-        source_manifest_sha256="2" * 64,
-        selection_seed=seed + 2,
-        guard=TerminalFieldGuard(),
-    )
-    return SimpleNamespace(
-        training_seed=seed,
-        base_denominator=denominator,
-        base_records=base,
-        base_ids=tuple(record.sample_id for record in base),
-        t_pool=t_pool,
-        r1_result=r1,
-        r2_result=r2,
-        groups_by_pool={
-            "T": partition_five_groups(t_pool, base_denominator=denominator),
-            "R1": partition_five_groups(r1.pool, base_denominator=denominator),
-            "R2": partition_five_groups(r2.pool, base_denominator=denominator),
-        },
-    )
+    return build_synthetic_fixture(training_seed=20260812)
 
 
 @pytest.fixture
