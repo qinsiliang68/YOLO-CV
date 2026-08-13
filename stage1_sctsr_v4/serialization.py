@@ -10,6 +10,8 @@ from enum import Enum
 from pathlib import Path
 from typing import Any, Mapping, Sequence
 
+from .filesystem import windows_safe_resolved_path
+
 
 def _normalize(value: Any) -> Any:
     if dataclasses.is_dataclass(value):
@@ -47,7 +49,7 @@ def stable_digest(value: Any) -> str:
 
 def sha256_file(path: str | Path, *, chunk_size: int = 1024 * 1024) -> str:
     h = hashlib.sha256()
-    with Path(path).open("rb") as handle:
+    with windows_safe_resolved_path(path).open("rb") as handle:
         while True:
             chunk = handle.read(chunk_size)
             if not chunk:
@@ -68,7 +70,8 @@ def _fsync_directory(path: str | Path) -> None:
 
 
 def atomic_write_bytes(path: str | Path, data: bytes) -> Path:
-    destination = Path(path)
+    requested_destination = Path(path)
+    destination = windows_safe_resolved_path(requested_destination)
     destination.parent.mkdir(parents=True, exist_ok=True)
     # Registered Windows run roots can legitimately be close to MAX_PATH;
     # repeating a long destination leaf in the tempfile prefix needlessly
@@ -87,7 +90,7 @@ def atomic_write_bytes(path: str | Path, data: bytes) -> Path:
         except FileNotFoundError:
             pass
         raise
-    return destination
+    return requested_destination
 
 
 def atomic_write_text(path: str | Path, text: str) -> Path:
@@ -99,11 +102,12 @@ def atomic_write_json(path: str | Path, value: Any) -> Path:
 
 
 def load_json(path: str | Path) -> Any:
-    with Path(path).open("r", encoding="utf-8") as handle:
+    with windows_safe_resolved_path(path).open("r", encoding="utf-8") as handle:
         return json.load(handle)
 
 
 def file_record(path: str | Path, *, root: str | Path | None = None) -> dict[str, Any]:
-    p = Path(path)
-    relative = p.relative_to(Path(root)).as_posix() if root is not None else p.as_posix()
-    return {"path": relative, "bytes": p.stat().st_size, "sha256": sha256_file(p)}
+    requested = Path(path)
+    physical = windows_safe_resolved_path(requested)
+    relative = requested.relative_to(Path(root)).as_posix() if root is not None else requested.as_posix()
+    return {"path": relative, "bytes": physical.stat().st_size, "sha256": sha256_file(physical)}
