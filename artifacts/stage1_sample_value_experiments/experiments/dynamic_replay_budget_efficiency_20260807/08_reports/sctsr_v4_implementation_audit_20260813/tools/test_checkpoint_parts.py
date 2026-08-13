@@ -27,6 +27,9 @@ def test_checkpoint_parts_round_trip_and_detect_corruption(tmp_path: Path) -> No
     assert manifest["original_bytes"] == len(payload)
     assert len(manifest["parts"]) == 4
     assert all(row["bytes"] <= 7000 for row in manifest["parts"])
+    verification = module.verify_parts(tmp_path / "parts/CHECKPOINT_PARTS_MANIFEST.json")
+    assert verification["status"] == "PASS"
+    assert verification["sha256"] == manifest["original_sha256"]
 
     restored = tmp_path / "restored.pt"
     receipt = module.reassemble_file(tmp_path / "parts/CHECKPOINT_PARTS_MANIFEST.json", restored)

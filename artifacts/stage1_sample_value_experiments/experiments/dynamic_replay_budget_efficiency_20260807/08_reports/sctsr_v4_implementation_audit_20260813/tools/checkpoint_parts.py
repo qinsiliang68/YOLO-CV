@@ -102,7 +102,7 @@ def split_file(source: str | Path, output_dir: str | Path, *, part_size: int = D
     return core
 
 
-def reassemble_file(manifest_path: str | Path, output: str | Path) -> dict[str, Any]:
+def _load_manifest(manifest_path: str | Path) -> tuple[Path, dict[str, Any], list[dict[str, Any]]]:
     manifest_file = _safe(manifest_path)
     manifest = json.loads(manifest_file.read_text(encoding="utf-8"))
     if manifest.get("schema_version") != SCHEMA or manifest.get("status") != "PASS":
@@ -112,6 +112,40 @@ def reassemble_file(manifest_path: str | Path, output: str | Path) -> dict[str, 
         raise ValueError("checkpoint-parts manifest count is invalid")
     if [row.get("index") for row in parts if isinstance(row, dict)] != list(range(1, len(parts) + 1)):
         raise ValueError("checkpoint-parts indices are not contiguous")
+    return manifest_file, manifest, parts
+
+
+def verify_parts(manifest_path: str | Path) -> dict[str, Any]:
+    manifest_file, manifest, parts = _load_manifest(manifest_path)
+    full_digest = hashlib.sha256()
+    total = 0
+    for row in parts:
+        part = manifest_file.parent / str(row["filename"])
+        if not part.is_file() or part.stat().st_size != row["bytes"]:
+            raise ValueError(f"part bytes mismatch: {row['filename']}")
+        observed_digest = hashlib.sha256()
+        with part.open("rb") as stream:
+            for chunk in iter(lambda: stream.read(BUFFER_BYTES), b""):
+                observed_digest.update(chunk)
+                full_digest.update(chunk)
+                total += len(chunk)
+        if observed_digest.hexdigest().upper() != row["sha256"]:
+            raise ValueError(f"part SHA-256 mismatch: {row['filename']}")
+    observed_sha = full_digest.hexdigest().upper()
+    if total != manifest.get("original_bytes") or observed_sha != manifest.get("original_sha256"):
+        raise ValueError("concatenated checkpoint bytes or SHA-256 mismatch")
+    return {
+        "schema_version": "stage1.sctsr.checkpoint_parts_verification.v1",
+        "status": "PASS",
+        "bytes": total,
+        "sha256": observed_sha,
+        "part_count": len(parts),
+        "manifest_digest": manifest["manifest_digest"],
+    }
+
+
+def reassemble_file(manifest_path: str | Path, output: str | Path) -> dict[str, Any]:
+    manifest_file, manifest, parts = _load_manifest(manifest_path)
 
     destination = _safe(output)
     if destination.exists():
@@ -165,11 +199,15 @@ def main() -> int:
     join = subparsers.add_parser("reassemble")
     join.add_argument("--manifest", type=Path, required=True)
     join.add_argument("--output", type=Path, required=True)
+    verify = subparsers.add_parser("verify")
+    verify.add_argument("--manifest", type=Path, required=True)
     args = parser.parse_args()
     if args.action == "split":
         result = split_file(args.source, args.output_dir, part_size=args.part_size)
-    else:
+    elif args.action == "reassemble":
         result = reassemble_file(args.manifest, args.output)
+    else:
+        result = verify_parts(args.manifest)
     print(json.dumps(result, ensure_ascii=False, sort_keys=True))
     return 0
 
