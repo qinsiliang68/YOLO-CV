@@ -1,7 +1,7 @@
 {
   "schema_version": "stage1.sctsr.staged_evidence_byte_validation.v1",
   "status": "PASS",
-  "checked_file_count": 1603,
+  "checked_file_count": 1637,
   "mismatch_count": 0,
   "mismatches": []
 }
