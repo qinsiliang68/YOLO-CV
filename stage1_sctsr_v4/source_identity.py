@@ -1,8 +1,10 @@
 from __future__ import annotations
 
 import platform
+import re
 import subprocess
 import sys
+from importlib import metadata
 from pathlib import Path
 from typing import Any, Mapping, Sequence
 
@@ -26,6 +28,103 @@ def _git(root: Path, *args: str) -> str | None:
         ).strip()
     except (OSError, subprocess.CalledProcessError):
         return None
+
+
+def _unavailable(reason_code: str) -> dict[str, str]:
+    return {"status": "UNAVAILABLE", "reason_code": reason_code}
+
+
+def _runtime_environment(base: Path) -> dict[str, Any]:
+    environment: dict[str, Any] = {
+        "python": {
+            "status": "AVAILABLE",
+            "version": platform.python_version(),
+            "implementation": platform.python_implementation(),
+            "executable": Path(sys.executable).resolve().as_posix(),
+        },
+        "platform": {
+            "status": "AVAILABLE",
+            "description": platform.platform(),
+            "machine": platform.machine(),
+        },
+    }
+
+    try:
+        import torch
+
+        cuda_build = str(torch.version.cuda) if torch.version.cuda is not None else None
+        torch_record: dict[str, Any] = {
+            "status": "AVAILABLE",
+            "version": str(torch.__version__),
+            "cuda_build": (
+                {"status": "AVAILABLE", "version": cuda_build}
+                if cuda_build is not None
+                else _unavailable("TORCH_CPU_ONLY_BUILD")
+            ),
+            "cuda_available": bool(torch.cuda.is_available()),
+            "cuda_device_count": int(torch.cuda.device_count()) if torch.cuda.is_available() else 0,
+            "cuda_devices": [],
+        }
+        if torch.cuda.is_available():
+            for index in range(torch.cuda.device_count()):
+                properties = torch.cuda.get_device_properties(index)
+                torch_record["cuda_devices"].append(
+                    {
+                        "index": index,
+                        "name": str(properties.name),
+                        "total_memory_bytes": int(properties.total_memory),
+                        "compute_capability": f"{properties.major}.{properties.minor}",
+                    }
+                )
+        environment["torch"] = torch_record
+    except (ImportError, OSError, RuntimeError) as exc:
+        environment["torch"] = {
+            **_unavailable("TORCH_IMPORT_OR_CUDA_PROBE_FAILED"),
+            "exception_type": type(exc).__name__,
+        }
+
+    try:
+        completed = subprocess.run(
+            ["nvidia-smi", "--query-gpu=driver_version", "--format=csv,noheader,nounits"],
+            check=True,
+            capture_output=True,
+            text=True,
+            timeout=5,
+        )
+        versions = sorted({line.strip() for line in completed.stdout.splitlines() if line.strip()})
+        environment["nvidia_driver"] = (
+            {"status": "AVAILABLE", "versions": versions}
+            if versions
+            else _unavailable("NVIDIA_SMI_RETURNED_NO_DRIVER_VERSION")
+        )
+    except (OSError, subprocess.SubprocessError):
+        environment["nvidia_driver"] = _unavailable("NVIDIA_SMI_UNAVAILABLE")
+
+    local_init = base / "YOLOv11" / "ultralytics" / "__init__.py"
+    local_version: str | None = None
+    if local_init.is_file():
+        match = re.search(r'^__version__\s*=\s*["\']([^"\']+)["\']', local_init.read_text(encoding="utf-8"), re.MULTILINE)
+        if match:
+            local_version = match.group(1)
+    if local_version is not None:
+        environment["ultralytics"] = {
+            "status": "AVAILABLE",
+            "version": local_version,
+            "source": "FROZEN_REPOSITORY_SOURCE",
+            "init_path": local_init.relative_to(base).as_posix(),
+        }
+    else:
+        try:
+            installed_version = metadata.version("ultralytics")
+        except metadata.PackageNotFoundError:
+            environment["ultralytics"] = _unavailable("ULTRALYTICS_VERSION_NOT_DISCOVERABLE")
+        else:
+            environment["ultralytics"] = {
+                "status": "AVAILABLE",
+                "version": installed_version,
+                "source": "INSTALLED_DISTRIBUTION_METADATA_ONLY",
+            }
+    return environment
 
 
 def _normalize_include_path(value: object) -> str:
@@ -119,6 +218,7 @@ def _content_digest(
     include_paths: Sequence[str],
     files: Sequence[Mapping[str, Any]],
     external_references: Sequence[Mapping[str, Any]],
+    runtime_environment: Mapping[str, Any],
 ) -> str:
     return stable_digest(
         {
@@ -126,6 +226,7 @@ def _content_digest(
             "exclusion_policy": EXCLUSION_POLICY,
             "files": list(files),
             "external_references": list(external_references),
+            "runtime_environment": dict(runtime_environment),
         }
     )
 
@@ -139,6 +240,7 @@ def build_source_tree_manifest(
     base = Path(root).resolve()
     roots, files = _scan_included_files(base, include_paths)
     external = list(external_references or [])
+    runtime_environment = _runtime_environment(base)
     git_status = _git(base, "status", "--porcelain")
     return {
         "schema_version": SOURCE_TREE_SCHEMA,
@@ -151,10 +253,13 @@ def build_source_tree_manifest(
         "platform": platform.platform(),
         "files": files,
         "external_references": external,
+        "runtime_environment": runtime_environment,
+        "runtime_environment_digest": stable_digest(runtime_environment),
         "source_tree_digest": _content_digest(
             include_paths=roots,
             files=files,
             external_references=external,
+            runtime_environment=runtime_environment,
         ),
     }
 
@@ -249,10 +354,22 @@ def validate_source_tree_manifest(
     external = raw.get("external_references", [])
     if not isinstance(external, list):
         raise SctsrError(ErrorCode.SOURCE_TREE_MISMATCH, "Source-tree external references must be a list")
+    runtime_environment = raw.get("runtime_environment")
+    if not isinstance(runtime_environment, Mapping):
+        raise SctsrError(ErrorCode.SOURCE_TREE_MISMATCH, "Source-tree runtime environment is missing")
+    runtime_environment_digest = stable_digest(runtime_environment)
+    if runtime_environment_digest != str(raw.get("runtime_environment_digest", "")).upper():
+        raise SctsrError(
+            ErrorCode.SOURCE_TREE_MISMATCH,
+            "Source-tree runtime environment digest mismatch",
+            observed=runtime_environment_digest,
+            expected=raw.get("runtime_environment_digest"),
+        )
     digest = _content_digest(
         include_paths=include_paths,
         files=normalized,
         external_references=external,
+        runtime_environment=runtime_environment,
     )
     if digest != str(raw.get("source_tree_digest", "")).upper():
         raise SctsrError(

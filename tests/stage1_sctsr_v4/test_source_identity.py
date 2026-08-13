@@ -38,3 +38,18 @@ def test_source_manifest_rejects_missing_or_overlapping_include_paths(tmp_path):
     with pytest.raises(SctsrError) as overlapping:
         build_source_tree_manifest(tmp_path, ["package", "package/module.py"])
     assert overlapping.value.code is ErrorCode.SOURCE_TREE_MISMATCH
+
+
+def test_source_manifest_records_runtime_dependency_identity(tmp_path):
+    package = tmp_path / "package"
+    package.mkdir()
+    (package / "module.py").write_text("VALUE = 1\n", encoding="utf-8")
+    manifest = build_source_tree_manifest(tmp_path, ["package"])
+
+    environment = manifest["runtime_environment"]
+    assert environment["python"]["status"] == "AVAILABLE"
+    assert environment["python"]["version"]
+    assert environment["torch"]["status"] in {"AVAILABLE", "UNAVAILABLE"}
+    assert environment["nvidia_driver"]["status"] in {"AVAILABLE", "UNAVAILABLE"}
+    assert environment["ultralytics"]["status"] in {"AVAILABLE", "UNAVAILABLE"}
+    assert len(manifest["runtime_environment_digest"]) == 64
