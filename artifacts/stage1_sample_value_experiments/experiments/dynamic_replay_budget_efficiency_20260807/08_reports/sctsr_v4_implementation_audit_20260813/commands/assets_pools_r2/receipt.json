@@ -1,0 +1,28 @@
+{
+  "schema_version": "stage1.sctsr.command_receipt.v1",
+  "name": "assets_pools_r2",
+  "argv": [
+    "uv",
+    "run",
+    "pytest",
+    "tests/stage1_sctsr_v4/test_asset_hardening.py",
+    "tests/stage1_sctsr_v4/test_asset_registry.py",
+    "tests/stage1_sctsr_v4/test_identity_pool.py",
+    "tests/stage1_sctsr_v4/test_random_controls.py",
+    "tests/stage1_sctsr_v4/test_selection_ledger.py",
+    "tests/stage1_sctsr_v4/test_formal_pool_inputs.py",
+    "-q"
+  ],
+  "command_line": "uv run pytest tests/stage1_sctsr_v4/test_asset_hardening.py tests/stage1_sctsr_v4/test_asset_registry.py tests/stage1_sctsr_v4/test_identity_pool.py tests/stage1_sctsr_v4/test_random_controls.py tests/stage1_sctsr_v4/test_selection_ledger.py tests/stage1_sctsr_v4/test_formal_pool_inputs.py -q",
+  "cwd": "C:\\GitHub\\YOLO-CV",
+  "implementation_source_commit": "8675ebfbc25133607348f358da167d14f1a2f0eb",
+  "started_at_utc": "2026-08-13T14:25:01.535440+00:00",
+  "ended_at_utc": "2026-08-13T14:25:08.851154+00:00",
+  "exit_code": 0,
+  "stdout_path": "commands/assets_pools_r2/stdout.log",
+  "stdout_bytes": 101,
+  "stdout_sha256": "92E762F1FA2DF13D4DE9925945057421E28CF51183E19F7C18BB7B2D6DC899D0",
+  "stderr_path": "commands/assets_pools_r2/stderr.log",
+  "stderr_bytes": 0,
+  "stderr_sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+}

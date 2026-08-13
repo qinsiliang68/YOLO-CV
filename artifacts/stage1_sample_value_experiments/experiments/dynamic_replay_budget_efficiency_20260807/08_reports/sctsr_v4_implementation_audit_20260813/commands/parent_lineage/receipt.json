@@ -1,0 +1,27 @@
+{
+  "schema_version": "stage1.sctsr.command_receipt.v1",
+  "name": "parent_lineage",
+  "argv": [
+    "uv",
+    "run",
+    "pytest",
+    "tests/stage1_sctsr_v4/test_checkpoint_hardening.py",
+    "tests/stage1_sctsr_v4/test_common_parent.py",
+    "tests/stage1_sctsr_v4/test_branch_lineage.py",
+    "tests/stage1_sctsr_v4/test_logical_artifact_index.py",
+    "tests/stage1_sctsr_v4/test_formal_resume.py",
+    "-q"
+  ],
+  "command_line": "uv run pytest tests/stage1_sctsr_v4/test_checkpoint_hardening.py tests/stage1_sctsr_v4/test_common_parent.py tests/stage1_sctsr_v4/test_branch_lineage.py tests/stage1_sctsr_v4/test_logical_artifact_index.py tests/stage1_sctsr_v4/test_formal_resume.py -q",
+  "cwd": "C:\\GitHub\\YOLO-CV",
+  "implementation_source_commit": "8675ebfbc25133607348f358da167d14f1a2f0eb",
+  "started_at_utc": "2026-08-13T14:25:11.269017+00:00",
+  "ended_at_utc": "2026-08-13T14:25:19.223439+00:00",
+  "exit_code": 0,
+  "stdout_path": "commands/parent_lineage/stdout.log",
+  "stdout_bytes": 101,
+  "stdout_sha256": "949AC73D892BF30794879BB75AA89EF02C64E33929412AC7A4271FBA714B930B",
+  "stderr_path": "commands/parent_lineage/stderr.log",
+  "stderr_bytes": 0,
+  "stderr_sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+}

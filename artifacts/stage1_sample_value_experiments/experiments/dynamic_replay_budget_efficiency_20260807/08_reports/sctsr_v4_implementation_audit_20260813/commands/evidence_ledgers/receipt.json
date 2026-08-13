@@ -1,0 +1,29 @@
+{
+  "schema_version": "stage1.sctsr.command_receipt.v1",
+  "name": "evidence_ledgers",
+  "argv": [
+    "uv",
+    "run",
+    "pytest",
+    "tests/stage1_sctsr_v4/test_columnar.py",
+    "tests/stage1_sctsr_v4/test_evidence_runtime_integration.py",
+    "tests/stage1_sctsr_v4/test_evidence_transaction_hardening.py",
+    "tests/stage1_sctsr_v4/test_exposure_ledger.py",
+    "tests/stage1_sctsr_v4/test_occurrence_ledger.py",
+    "tests/stage1_sctsr_v4/test_selection_ledger.py",
+    "tests/stage1_sctsr_v4/test_step_ledger.py",
+    "-q"
+  ],
+  "command_line": "uv run pytest tests/stage1_sctsr_v4/test_columnar.py tests/stage1_sctsr_v4/test_evidence_runtime_integration.py tests/stage1_sctsr_v4/test_evidence_transaction_hardening.py tests/stage1_sctsr_v4/test_exposure_ledger.py tests/stage1_sctsr_v4/test_occurrence_ledger.py tests/stage1_sctsr_v4/test_selection_ledger.py tests/stage1_sctsr_v4/test_step_ledger.py -q",
+  "cwd": "C:\\GitHub\\YOLO-CV",
+  "implementation_source_commit": "8675ebfbc25133607348f358da167d14f1a2f0eb",
+  "started_at_utc": "2026-08-13T14:25:23.739826+00:00",
+  "ended_at_utc": "2026-08-13T14:25:26.849000+00:00",
+  "exit_code": 0,
+  "stdout_path": "commands/evidence_ledgers/stdout.log",
+  "stdout_bytes": 101,
+  "stdout_sha256": "3D644E66B1900761D7AD6A637934D2C8920165E8FF7479B5614148FF5B05C1B9",
+  "stderr_path": "commands/evidence_ledgers/stderr.log",
+  "stderr_bytes": 0,
+  "stderr_sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+}

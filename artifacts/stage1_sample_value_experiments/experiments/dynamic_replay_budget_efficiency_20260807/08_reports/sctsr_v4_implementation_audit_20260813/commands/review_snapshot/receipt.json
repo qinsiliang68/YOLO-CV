@@ -1,0 +1,28 @@
+{
+  "schema_version": "stage1.sctsr.command_receipt.v1",
+  "name": "review_snapshot",
+  "argv": [
+    "uv",
+    "run",
+    "python",
+    "C:\\GitHub\\YOLO-CV\\artifacts\\stage1_sample_value_experiments\\experiments\\dynamic_replay_budget_efficiency_20260807\\08_reports\\sctsr_v4_implementation_audit_20260813\\tools\\build_review_snapshot.py",
+    "--repository",
+    "C:\\GitHub\\YOLO-CV",
+    "--source-commit",
+    "8675ebfbc25133607348f358da167d14f1a2f0eb",
+    "--output-root",
+    "C:\\GitHub\\YOLO-CV\\artifacts\\stage1_sample_value_experiments\\experiments\\dynamic_replay_budget_efficiency_20260807\\08_reports\\sctsr_v4_implementation_audit_20260813\\reviewed\\files"
+  ],
+  "command_line": "uv run python C:\\GitHub\\YOLO-CV\\artifacts\\stage1_sample_value_experiments\\experiments\\dynamic_replay_budget_efficiency_20260807\\08_reports\\sctsr_v4_implementation_audit_20260813\\tools\\build_review_snapshot.py --repository C:\\GitHub\\YOLO-CV --source-commit 8675ebfbc25133607348f358da167d14f1a2f0eb --output-root C:\\GitHub\\YOLO-CV\\artifacts\\stage1_sample_value_experiments\\experiments\\dynamic_replay_budget_efficiency_20260807\\08_reports\\sctsr_v4_implementation_audit_20260813\\reviewed\\files",
+  "cwd": "C:\\GitHub\\YOLO-CV",
+  "implementation_source_commit": "8675ebfbc25133607348f358da167d14f1a2f0eb",
+  "started_at_utc": "2026-08-13T14:31:03.119789+00:00",
+  "ended_at_utc": "2026-08-13T14:31:09.544449+00:00",
+  "exit_code": 0,
+  "stdout_path": "commands/review_snapshot/stdout.log",
+  "stdout_bytes": 126,
+  "stdout_sha256": "90762C5729BDF83A6B150B332D74B17E8D321C2F669C92AB2D7B746C79EECEAD",
+  "stderr_path": "commands/review_snapshot/stderr.log",
+  "stderr_bytes": 0,
+  "stderr_sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+}

@@ -1,0 +1,23 @@
+{
+  "schema_version": "stage1.sctsr.command_receipt.v1",
+  "name": "full_v4",
+  "argv": [
+    "uv",
+    "run",
+    "pytest",
+    "tests/stage1_sctsr_v4",
+    "-q"
+  ],
+  "command_line": "uv run pytest tests/stage1_sctsr_v4 -q",
+  "cwd": "C:\\GitHub\\YOLO-CV",
+  "implementation_source_commit": "8675ebfbc25133607348f358da167d14f1a2f0eb",
+  "started_at_utc": "2026-08-13T14:23:53.166363+00:00",
+  "ended_at_utc": "2026-08-13T14:24:55.965181+00:00",
+  "exit_code": 0,
+  "stdout_path": "commands/full_v4/stdout.log",
+  "stdout_bytes": 437,
+  "stdout_sha256": "8FC2585AEB4ED6C86FF7C7E82A8D298286D14D356FEB1668467F12133E2EC630",
+  "stderr_path": "commands/full_v4/stderr.log",
+  "stderr_bytes": 0,
+  "stderr_sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+}

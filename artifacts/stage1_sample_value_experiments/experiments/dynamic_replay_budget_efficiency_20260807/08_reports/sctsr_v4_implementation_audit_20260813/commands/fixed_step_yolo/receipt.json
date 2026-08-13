@@ -1,0 +1,31 @@
+{
+  "schema_version": "stage1.sctsr.command_receipt.v1",
+  "name": "fixed_step_yolo",
+  "argv": [
+    "uv",
+    "run",
+    "pytest",
+    "tests/stage1_sctsr_v4/test_fixed_step_hardening.py",
+    "tests/stage1_sctsr_v4/test_fixed_step_runtime.py",
+    "tests/stage1_sctsr_v4/test_real_yolo_integration.py",
+    "tests/stage1_sctsr_v4/test_ultralytics_overlay.py",
+    "tests/stage1_sctsr_v4/test_dataset_adapter.py",
+    "tests/stage1_sctsr_v4/test_training_system.py",
+    "tests/stage1_sctsr_v4/test_bn_isolation.py",
+    "tests/stage1_sctsr_v4/test_rng_isolation.py",
+    "tests/stage1_sctsr_v4/test_base_rng.py",
+    "-q"
+  ],
+  "command_line": "uv run pytest tests/stage1_sctsr_v4/test_fixed_step_hardening.py tests/stage1_sctsr_v4/test_fixed_step_runtime.py tests/stage1_sctsr_v4/test_real_yolo_integration.py tests/stage1_sctsr_v4/test_ultralytics_overlay.py tests/stage1_sctsr_v4/test_dataset_adapter.py tests/stage1_sctsr_v4/test_training_system.py tests/stage1_sctsr_v4/test_bn_isolation.py tests/stage1_sctsr_v4/test_rng_isolation.py tests/stage1_sctsr_v4/test_base_rng.py -q",
+  "cwd": "C:\\GitHub\\YOLO-CV",
+  "implementation_source_commit": "8675ebfbc25133607348f358da167d14f1a2f0eb",
+  "started_at_utc": "2026-08-13T14:25:19.225441+00:00",
+  "ended_at_utc": "2026-08-13T14:25:23.738322+00:00",
+  "exit_code": 0,
+  "stdout_path": "commands/fixed_step_yolo/stdout.log",
+  "stdout_bytes": 101,
+  "stdout_sha256": "8B2EED4B17FAB6B60F5F802C530FCBC265290AC96F26EFD7AC29CC95B0BA444B",
+  "stderr_path": "commands/fixed_step_yolo/stderr.log",
+  "stderr_bytes": 0,
+  "stderr_sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+}

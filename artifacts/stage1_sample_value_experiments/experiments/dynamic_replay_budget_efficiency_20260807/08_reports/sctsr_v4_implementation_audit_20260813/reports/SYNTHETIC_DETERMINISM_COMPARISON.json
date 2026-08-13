@@ -1,0 +1,39 @@
+{
+  "schema_version": "stage1.sctsr.synthetic_determinism_comparison.v1",
+  "status": "PASS",
+  "semantic": "SYNTHETIC_NOT_SCIENTIFIC_RESULT",
+  "training_seed": 20260606,
+  "comparisons": {
+    "source_tree_digest": true,
+    "parent_checkpoint_sha256": true,
+    "arms_completed": true,
+    "failure_injection_count": true,
+    "json_equal:01_assets/SYNTHETIC_ASSET_REGISTRY.json": true,
+    "json_equal:08_receipts/CHECKPOINT_RESUME_RECEIPT.json": true,
+    "json_equal:08_receipts/SYNTHETIC_MECHANISM_AUDIT.json": true
+  },
+  "stable_files": [
+    {
+      "relative_path": "01_assets/SYNTHETIC_ASSET_REGISTRY.json",
+      "equal": true,
+      "stable_digest": "3DF0773EE960B0591029381EC791D0C250F11F4DD9F5CF4E3888FA32B0E0EB68"
+    },
+    {
+      "relative_path": "08_receipts/CHECKPOINT_RESUME_RECEIPT.json",
+      "equal": true,
+      "stable_digest": "2C865DDF02ABAEF8A588458DB36D9DE9804DB6C3C701EA4151E8550442CFF408"
+    },
+    {
+      "relative_path": "08_receipts/SYNTHETIC_MECHANISM_AUDIT.json",
+      "equal": true,
+      "stable_digest": "2CFF34D4CD5F950687325F7301458373527513727C269EF96DDD8A4D05DFD65B"
+    }
+  ],
+  "excluded_from_byte_identity": [
+    "absolute output_root paths",
+    "timestamps and quarantine names",
+    "artifact indexes containing absolute paths"
+  ],
+  "formal_training_started": false,
+  "method_effectiveness_claimed": false
+}

@@ -1,0 +1,23 @@
+{
+  "schema_version": "stage1.sctsr.command_receipt.v1",
+  "name": "telemetry",
+  "argv": [
+    "uv",
+    "run",
+    "pytest",
+    "tests/stage1_sctsr_v4/test_telemetry.py",
+    "-q"
+  ],
+  "command_line": "uv run pytest tests/stage1_sctsr_v4/test_telemetry.py -q",
+  "cwd": "C:\\GitHub\\YOLO-CV",
+  "implementation_source_commit": "8675ebfbc25133607348f358da167d14f1a2f0eb",
+  "started_at_utc": "2026-08-13T14:25:26.851001+00:00",
+  "ended_at_utc": "2026-08-13T14:25:28.678596+00:00",
+  "exit_code": 0,
+  "stdout_path": "commands/telemetry/stdout.log",
+  "stdout_bytes": 100,
+  "stdout_sha256": "A5F0F6AFBB4C397C99A00B34A28BEB2C73198C4B1E885B679DF0E8EE41211218",
+  "stderr_path": "commands/telemetry/stderr.log",
+  "stderr_bytes": 0,
+  "stderr_sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+}

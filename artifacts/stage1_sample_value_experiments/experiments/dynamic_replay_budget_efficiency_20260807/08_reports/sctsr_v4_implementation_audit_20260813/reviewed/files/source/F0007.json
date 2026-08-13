@@ -1,0 +1,20 @@
+{
+  "schema_version": "stage1.sctsr.formal_release.v1",
+  "authorization": "SIGNED_SCTSR_V4_FORMAL_RELEASE",
+  "formal_training_authorized": false,
+  "release_id": "FUTURE_RELEASE_AUTHORITY_VALUE",
+  "key_id": "FUTURE_OUT_OF_REPOSITORY_KEY_ID",
+  "signature_algorithm": "HMAC-SHA256",
+  "signature": "FUTURE_64_HEX_CHARACTER_SIGNATURE",
+  "issued_at_utc": "FUTURE_UTC_TIMESTAMP_Z",
+  "expires_at_utc": "FUTURE_UTC_TIMESTAMP_Z_WITHIN_7_DAYS",
+  "nonce": "FUTURE_UNIQUE_NONCE_AT_LEAST_32_CHARACTERS",
+  "baseline_main_commit": "a70ba60485dd32c2f8b4268b8f28ea2d3549f42f",
+  "taskbook_blob_sha": "b201d021712e9c6614e119d35f0e14bdf405c6be",
+  "source_tree_digest": "FUTURE_FROZEN_SOURCE_TREE_SHA256",
+  "contract_digest": "FUTURE_VALIDATED_CONTRACT_SHA256",
+  "asset_registry_digest": "FUTURE_VALIDATED_ASSET_REGISTRY_SHA256",
+  "runtime_config_digest": "FUTURE_VALIDATED_RUNTIME_CONFIG_SHA256",
+  "seed_registry_digest": "FUTURE_VALIDATED_SEED_REGISTRY_SHA256",
+  "note": "Schema/template only. This file is not an authorization."
+}

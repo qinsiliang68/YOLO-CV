@@ -1,0 +1,23 @@
+{
+  "schema_version": "stage1.sctsr.command_receipt.v1",
+  "name": "full_v3",
+  "argv": [
+    "uv",
+    "run",
+    "pytest",
+    "tests/stage1_dynamic_replay_v3",
+    "-q"
+  ],
+  "command_line": "uv run pytest tests/stage1_dynamic_replay_v3 -q",
+  "cwd": "C:\\GitHub\\YOLO-CV",
+  "implementation_source_commit": "8675ebfbc25133607348f358da167d14f1a2f0eb",
+  "started_at_utc": "2026-08-13T14:24:55.967182+00:00",
+  "ended_at_utc": "2026-08-13T14:25:01.037155+00:00",
+  "exit_code": 0,
+  "stdout_path": "commands/full_v3/stdout.log",
+  "stdout_bytes": 275,
+  "stdout_sha256": "AE8D52F744516A40603634F2EFD978BABE9E39A6BA1DEBB4BD4295A3CFF87169",
+  "stderr_path": "commands/full_v3/stderr.log",
+  "stderr_bytes": 0,
+  "stderr_sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+}

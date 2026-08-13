@@ -1,0 +1,30 @@
+{
+  "schema_version": "stage1.sctsr.command_receipt.v1",
+  "name": "synthetic_canary_final_b",
+  "argv": [
+    "uv",
+    "run",
+    "python",
+    "scripts/stage1_sctsr_v4/run_synthetic_canary.py",
+    "--artifact-root",
+    "C:\\GitHub\\YOLO-CV\\artifacts\\stage1_sample_value_experiments\\experiments\\dynamic_replay_budget_efficiency_20260807\\08_reports\\sctsr_v4_implementation_audit_20260813\\synthetic\\canary_final_b",
+    "--repository-root",
+    "C:\\GitHub\\YOLO-CV",
+    "--training-seed",
+    "20260606",
+    "--output",
+    "C:\\GitHub\\YOLO-CV\\artifacts\\stage1_sample_value_experiments\\experiments\\dynamic_replay_budget_efficiency_20260807\\08_reports\\sctsr_v4_implementation_audit_20260813\\reports\\SYNTHETIC_CANARY_FINAL_B_CLI.json"
+  ],
+  "command_line": "uv run python scripts/stage1_sctsr_v4/run_synthetic_canary.py --artifact-root C:\\GitHub\\YOLO-CV\\artifacts\\stage1_sample_value_experiments\\experiments\\dynamic_replay_budget_efficiency_20260807\\08_reports\\sctsr_v4_implementation_audit_20260813\\synthetic\\canary_final_b --repository-root C:\\GitHub\\YOLO-CV --training-seed 20260606 --output C:\\GitHub\\YOLO-CV\\artifacts\\stage1_sample_value_experiments\\experiments\\dynamic_replay_budget_efficiency_20260807\\08_reports\\sctsr_v4_implementation_audit_20260813\\reports\\SYNTHETIC_CANARY_FINAL_B_CLI.json",
+  "cwd": "C:\\GitHub\\YOLO-CV",
+  "implementation_source_commit": "8675ebfbc25133607348f358da167d14f1a2f0eb",
+  "started_at_utc": "2026-08-13T14:26:57.461619+00:00",
+  "ended_at_utc": "2026-08-13T14:27:07.394069+00:00",
+  "exit_code": 0,
+  "stdout_path": "commands/synthetic_canary_final_b/stdout.log",
+  "stdout_bytes": 207,
+  "stdout_sha256": "02AE182245659E088CDE8FE23C67795C07A6AA922907C74F9FD782F9F7A57F53",
+  "stderr_path": "commands/synthetic_canary_final_b/stderr.log",
+  "stderr_bytes": 0,
+  "stderr_sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+}

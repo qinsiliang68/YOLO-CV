@@ -1,0 +1,21 @@
+{
+  "schema_version": "stage1.sctsr.command_receipt.v1",
+  "name": "git_diff_check",
+  "argv": [
+    "git",
+    "diff",
+    "--check"
+  ],
+  "command_line": "git diff --check",
+  "cwd": "C:\\GitHub\\YOLO-CV",
+  "implementation_source_commit": "8675ebfbc25133607348f358da167d14f1a2f0eb",
+  "started_at_utc": "2026-08-13T14:23:53.120344+00:00",
+  "ended_at_utc": "2026-08-13T14:23:53.146362+00:00",
+  "exit_code": 0,
+  "stdout_path": "commands/git_diff_check/stdout.log",
+  "stdout_bytes": 0,
+  "stdout_sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+  "stderr_path": "commands/git_diff_check/stderr.log",
+  "stderr_bytes": 0,
+  "stderr_sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+}

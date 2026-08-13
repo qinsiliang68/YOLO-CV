@@ -1,0 +1,6 @@
+[
+  {"sample_id":"n0","y_true":0,"p_defect_raw":0.5},
+  {"sample_id":"d0","y_true":1,"p_defect_raw":0.5},
+  {"sample_id":"n1","y_true":0,"p_defect_raw":0.2},
+  {"sample_id":"d1","y_true":1,"p_defect_raw":0.8}
+]

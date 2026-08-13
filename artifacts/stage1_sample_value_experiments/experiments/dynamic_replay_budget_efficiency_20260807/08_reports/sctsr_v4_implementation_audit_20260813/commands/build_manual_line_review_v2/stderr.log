@@ -1,0 +1,7 @@
+Traceback (most recent call last):
+  File "C:\GitHub\YOLO-CV\artifacts\stage1_sample_value_experiments\experiments\dynamic_replay_budget_efficiency_20260807\08_reports\sctsr_v4_implementation_audit_20260813\tools\build_manual_line_review.py", line 125, in <module>
+    raise SystemExit(main())
+                     ^^^^^^
+  File "C:\GitHub\YOLO-CV\artifacts\stage1_sample_value_experiments\experiments\dynamic_replay_budget_efficiency_20260807\08_reports\sctsr_v4_implementation_audit_20260813\tools\build_manual_line_review.py", line 92, in main
+    raise ValueError((relative, start, end, len(lines)))
+ValueError: ('stage1_sctsr_v4/bn_isolation.py', 18, 79, 78)

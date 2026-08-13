@@ -1,0 +1,28 @@
+{
+  "schema_version": "stage1.sctsr.command_receipt.v1",
+  "name": "source_tree_manifest",
+  "argv": [
+    "uv",
+    "run",
+    "python",
+    "scripts/stage1_sctsr_v4/build_source_tree_manifest.py",
+    "--repository-root",
+    "C:\\GitHub\\YOLO-CV",
+    "--manifest-output",
+    "C:\\GitHub\\YOLO-CV\\artifacts\\stage1_sample_value_experiments\\experiments\\dynamic_replay_budget_efficiency_20260807\\08_reports\\sctsr_v4_implementation_audit_20260813\\reports\\SOURCE_TREE_MANIFEST.json",
+    "--output",
+    "C:\\GitHub\\YOLO-CV\\artifacts\\stage1_sample_value_experiments\\experiments\\dynamic_replay_budget_efficiency_20260807\\08_reports\\sctsr_v4_implementation_audit_20260813\\reports\\SOURCE_TREE_MANIFEST_RECEIPT.json"
+  ],
+  "command_line": "uv run python scripts/stage1_sctsr_v4/build_source_tree_manifest.py --repository-root C:\\GitHub\\YOLO-CV --manifest-output C:\\GitHub\\YOLO-CV\\artifacts\\stage1_sample_value_experiments\\experiments\\dynamic_replay_budget_efficiency_20260807\\08_reports\\sctsr_v4_implementation_audit_20260813\\reports\\SOURCE_TREE_MANIFEST.json --output C:\\GitHub\\YOLO-CV\\artifacts\\stage1_sample_value_experiments\\experiments\\dynamic_replay_budget_efficiency_20260807\\08_reports\\sctsr_v4_implementation_audit_20260813\\reports\\SOURCE_TREE_MANIFEST_RECEIPT.json",
+  "cwd": "C:\\GitHub\\YOLO-CV",
+  "implementation_source_commit": "8675ebfbc25133607348f358da167d14f1a2f0eb",
+  "started_at_utc": "2026-08-13T14:23:51.283358+00:00",
+  "ended_at_utc": "2026-08-13T14:23:53.118342+00:00",
+  "exit_code": 0,
+  "stdout_path": "commands/source_tree_manifest/stdout.log",
+  "stdout_bytes": 207,
+  "stdout_sha256": "86FB5828A28126C0A62B6E222E96469DB393CE3D3C6F569DB60309052790F0C4",
+  "stderr_path": "commands/source_tree_manifest/stderr.log",
+  "stderr_bytes": 0,
+  "stderr_sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+}

@@ -1,0 +1,44 @@
+{
+  "schema_version": "stage1.sctsr.upstream_files_manifest.v2",
+  "repository": "qinsiliang68/YOLO-CV",
+  "commit": "a70ba60485dd32c2f8b4268b8f28ea2d3549f42f",
+  "files": [
+    {
+      "path": "YOLOv11/ultralytics/engine/trainer.py",
+      "git_blob_sha1": "1e5cec6b4b36f30d7d6653eb70420ae2b4cb3524",
+      "file_sha256": "B5E85EA5DC2B5D4183A11044C1362CDC55552C81DFACC39FF961D6B7AA8CE7F6",
+      "role": "BASE_TRAINING_LOOP_REFERENCE"
+    },
+    {
+      "path": "YOLOv11/ultralytics/models/yolo/classify/train.py",
+      "git_blob_sha1": "779e940d8c4d9e3abd1bce42a5ac39b9127cd1d3",
+      "file_sha256": "D4F78D78CB6091026C6FF7C5341F8B97A84456A9EEF2E64924D523A70F265B64",
+      "role": "CLASSIFICATION_TRAINER_REFERENCE"
+    },
+    {
+      "path": "YOLOv11/ultralytics/nn/tasks.py",
+      "git_blob_sha1": "bcaf6999ea8a81c82502366f2cc3fd3e921ea0ee",
+      "file_sha256": "91E56D93F3687EB8777CC05FE0225907D354DD7F32BE5E34BD4ACDA5873A1015",
+      "role": "CLASSIFICATION_MODEL_REFERENCE"
+    },
+    {
+      "path": "YOLOv11/ultralytics/nn/modules/head.py",
+      "git_blob_sha1": "c1ec140b101e0111851cda55466df6c8b737da3e",
+      "file_sha256": "65F85B83275F66D001D9C5DF09439C971935EF3637B83C63F471B117BCBD9B8A",
+      "role": "CLASSIFICATION_HEAD_REFERENCE"
+    },
+    {
+      "path": "YOLOv11/ultralytics/utils/loss.py",
+      "git_blob_sha1": "d4a9dda93caff84cf0f8dae4e84e0e446e55f85e",
+      "file_sha256": "B142E7608A8A9D1B1F51B66E4E9562B8B3B176426212CD6A2186BB677DA603BE",
+      "role": "UPSTREAM_CLASSIFICATION_LOSS_REFERENCE"
+    },
+    {
+      "path": "YOLOv11/ultralytics/utils/torch_utils.py",
+      "git_blob_sha1": "537f0d5621bef6b1f2faa52148ba8dfa0280ffca",
+      "file_sha256": "60ED8E18561375C29FFAFBBA684B93CD0E5C5D13609E0ADADB8CE1CB457E9AEE",
+      "role": "UPSTREAM_OPTIMIZER_EMA_REFERENCE"
+    }
+  ],
+  "upstream_files_modified": false
+}

@@ -1,0 +1,25 @@
+{
+  "schema_version": "stage1.sctsr.command_receipt.v1",
+  "name": "qrad_phase2",
+  "argv": [
+    "uv",
+    "run",
+    "pytest",
+    "tests/stage1_sctsr_v4/test_qrad_contract.py",
+    "tests/stage1_sctsr_v4/test_qrad_scaffold_hardening.py",
+    "tests/stage1_sctsr_v4/test_short_branch_scaffold.py",
+    "-q"
+  ],
+  "command_line": "uv run pytest tests/stage1_sctsr_v4/test_qrad_contract.py tests/stage1_sctsr_v4/test_qrad_scaffold_hardening.py tests/stage1_sctsr_v4/test_short_branch_scaffold.py -q",
+  "cwd": "C:\\GitHub\\YOLO-CV",
+  "implementation_source_commit": "8675ebfbc25133607348f358da167d14f1a2f0eb",
+  "started_at_utc": "2026-08-13T14:25:33.158820+00:00",
+  "ended_at_utc": "2026-08-13T14:25:33.487591+00:00",
+  "exit_code": 0,
+  "stdout_path": "commands/qrad_phase2/stdout.log",
+  "stdout_bytes": 101,
+  "stdout_sha256": "A9BC921DF1DA7641B4F201CCBFD4242CA1AF884BF2650D7D54B3D7151B1C6578",
+  "stderr_path": "commands/qrad_phase2/stderr.log",
+  "stderr_bytes": 0,
+  "stderr_sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+}

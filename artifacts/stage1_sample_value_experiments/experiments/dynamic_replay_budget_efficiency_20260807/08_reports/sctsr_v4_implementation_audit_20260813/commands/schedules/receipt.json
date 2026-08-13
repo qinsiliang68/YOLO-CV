@@ -1,0 +1,26 @@
+{
+  "schema_version": "stage1.sctsr.command_receipt.v1",
+  "name": "schedules",
+  "argv": [
+    "uv",
+    "run",
+    "pytest",
+    "tests/stage1_sctsr_v4/test_schedule.py",
+    "tests/stage1_sctsr_v4/test_schedule_hardening.py",
+    "tests/stage1_sctsr_v4/test_schedule_registry.py",
+    "tests/stage1_sctsr_v4/test_replay_step_plan.py",
+    "-q"
+  ],
+  "command_line": "uv run pytest tests/stage1_sctsr_v4/test_schedule.py tests/stage1_sctsr_v4/test_schedule_hardening.py tests/stage1_sctsr_v4/test_schedule_registry.py tests/stage1_sctsr_v4/test_replay_step_plan.py -q",
+  "cwd": "C:\\GitHub\\YOLO-CV",
+  "implementation_source_commit": "8675ebfbc25133607348f358da167d14f1a2f0eb",
+  "started_at_utc": "2026-08-13T14:25:08.853156+00:00",
+  "ended_at_utc": "2026-08-13T14:25:11.267012+00:00",
+  "exit_code": 0,
+  "stdout_path": "commands/schedules/stdout.log",
+  "stdout_bytes": 101,
+  "stdout_sha256": "90D5164FC49B4C8FDEF654B5715545346938DF00A0B197FAB4AF5E3455FFB66E",
+  "stderr_path": "commands/schedules/stderr.log",
+  "stderr_bytes": 0,
+  "stderr_sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+}

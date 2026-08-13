@@ -1,0 +1,17 @@
+{
+  "alpha": 0.05,
+  "contrasts": [
+    "C01",
+    "C02",
+    "C03",
+    "C04",
+    "C05",
+    "C06",
+    "C07",
+    "C08"
+  ],
+  "efficacy_early_stop_allowed": false,
+  "method": "HOLM_FAMILYWISE",
+  "schema_version": "stage1.sctsr.contrast_family.v1",
+  "state": "TO_BE_FROZEN_BY_RELEASE_AUTHORITY"
+}

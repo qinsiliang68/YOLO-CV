@@ -1,0 +1,12 @@
+{
+  "schema_version": "stage1.sctsr.formal_identity.v1",
+  "training_seed": 0,
+  "canonical_training_lock_sha256": "REPLACE_FROM_FROZEN_ASSET_REGISTRY",
+  "initial_checkpoint_sha256": "REPLACE_FROM_FROZEN_ASSET_REGISTRY",
+  "base_manifest_sha256": "REPLACE_FROM_FROZEN_ASSET_REGISTRY",
+  "source_tree_digest": "REPLACE_FROM_CLEAN_RELEASE_SOURCE_MANIFEST",
+  "contract_digest": "REPLACE_FROM_VALIDATED_CONTRACT",
+  "runtime_config_digest": "REPLACE_FROM_FROZEN_RUNTIME_CONFIG",
+  "asset_registry_digest": "REPLACE_FROM_VALIDATED_ASSET_REGISTRY",
+  "seed_registry_digest": "REPLACE_FROM_RELEASE_FROZEN_SEED_REGISTRY"
+}

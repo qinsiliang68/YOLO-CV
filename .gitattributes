@@ -35,3 +35,8 @@ artifacts/stage1_sample_value_experiments/experiments/oof_dynamics_gap_value_202
 # including diagnostic whitespace. Do not rewrite evidence merely to satisfy a
 # source-formatting heuristic; each receipt is SHA-bound separately.
 docs/stage1_sctsr_v4/tdd_receipts/** -whitespace
+
+# SCTSR v4 implementation-audit evidence is byte-bound by an explicit
+# SHA-256 manifest. Preserve the exact stdout, stderr, JSON, Parquet, reviewed
+# snapshots, and synthetic receipts instead of applying text normalization.
+artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/08_reports/sctsr_v4_implementation_audit_20260813/** -text -eol -whitespace
