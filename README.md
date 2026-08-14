@@ -10,6 +10,9 @@ Start here for scope control:
   SCTSR v4 binary-gating experiment. It explains why this experiment must not
   inherit the six-class assumptions below. Formal SCTSR training remains
   disabled, and it does not supersede historical Stage1 results.
+- `docs/stage1_sctsr_v4/IMPLEMENTATION_GUIDE.md` is the direct implementation,
+  validation, engineering-canary, and formal-release boundary reference for
+  that held experiment; reading it does not authorize training.
 
 When a number can refer to several datasets or experiments, name the scope first
 before using it.  Historical material under `_recycle_bin/` is audit-only unless
