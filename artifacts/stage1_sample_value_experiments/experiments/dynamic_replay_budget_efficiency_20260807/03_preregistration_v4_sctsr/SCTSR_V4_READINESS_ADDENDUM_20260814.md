@@ -95,6 +95,14 @@ sha256=B4AE826649C8924388B118B0738A341A36013ACEE0B0418B2814E2F3A6C8D4F0
 
 该修订改变 R2 的条件化 estimand，因此不能由代码静默启用。owner 接受本节前，formal matcher 继续抛出 `R2_QUOTA_INFEASIBLE`；接受后也必须另做失败优先实现提交并重新冻结 pool/schema/validator，仍不自动授权训练。
 
+## 2026-08-15 Owner 决定
+
+研究负责人已批准上述唯一推荐修订：只放宽 `oof_group_id`，同时应用到
+`R2_U`、`R2_F` 和 `T_TO_R2_AT_160` fallback，并要求三个 arm 复用同一 R2
+identity digest。权威决策、算法、身份和训练授权边界见
+`SCTSR_R2_MATCHING_ADDENDUM_20260815.md`。本段不回写或抹除 2026-08-14 的
+不可行性事实；它只把 proposal 状态推进为 owner-approved implementation input。
+
 ## 6. 尚未授权事项
 
 以下内容仍保持阻断，直到本文件后续章节和对应机器验证给出明确结论：

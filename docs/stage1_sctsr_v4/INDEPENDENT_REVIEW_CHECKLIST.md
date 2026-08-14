@@ -25,7 +25,10 @@
 - 确认 R1 universe 是完整 eligible base，自然 T overlap 被报告。
 - 逐行检查 terminal whitelist projection 在 R2 matcher 前发生。
 - 主动注入 terminal-field access，必须抛错。
-- 在真实资产复现 R2 joint-stratum infeasibility；确认实现 fail closed，未生成伪 R2。
+- 在真实资产复现旧四字段 R2 joint-stratum infeasibility，再独立物化 owner-approved
+  addendum：3,000 unique、T overlap=0、三字段 exact、378 displacement、group TV=0.126。
+- 确认 `R2_U`、`R2_F` 与 fallback 共用同一 R2 digest，并主动注入第二字段 relaxation、
+  错 seed、错 digest、replacement 和 T overlap，全部必须 fail closed。
 - 检查 selection ledger 是候选全集而非 selected-only。
 
 ## 4. Schedule 与 common parent

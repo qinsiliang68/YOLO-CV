@@ -6,7 +6,7 @@ from typing import Any, Mapping, Sequence
 
 from .errors import ErrorCode, SctsrError
 from .identity_pool import IdentityRecord, identity_digest
-from .random_controls import counter_hash
+from .random_controls import build_minimum_oof_group_displacement_selection, counter_hash
 from .serialization import stable_digest
 
 
@@ -97,70 +97,29 @@ def build_minimum_displacement_candidate(
 
     _base, treatment, candidates = _validate_inputs(base_records, treatment_records)
     required = Counter(_strict_key(record) for record in treatment)
-    by_strict: dict[tuple[int, str, int, str], list[IdentityRecord]] = defaultdict(list)
-    for record in candidates:
-        by_strict[_strict_key(record)].append(record)
-
-    selected: list[IdentityRecord] = []
-    selected_ids: set[str] = set()
-    shortages: dict[tuple[int, str, int, str], int] = {}
-    for key in sorted(required, key=_stratum_text):
-        ranked = sorted(
-            by_strict.get(key, ()),
-            key=lambda record: (
-                counter_hash("R2_exact_capacity", selection_seed, _stratum_text(key), record.sample_id),
-                record.sample_id,
-            ),
-        )
-        take = min(required[key], len(ranked))
-        selected.extend(ranked[:take])
-        selected_ids.update(record.sample_id for record in ranked[:take])
-        if take < required[key]:
-            shortages[key] = required[key] - take
-
-    required_coarse = Counter(_coarse_key(record) for record in treatment)
-    selected_coarse = Counter(_coarse_key(record) for record in selected)
-    remaining_by_coarse: dict[tuple[int, str, int], list[IdentityRecord]] = defaultdict(list)
-    for record in candidates:
-        if record.sample_id not in selected_ids:
-            remaining_by_coarse[_coarse_key(record)].append(record)
-    for key in sorted(required_coarse, key=_stratum_text):
-        deficit = required_coarse[key] - selected_coarse.get(key, 0)
-        if deficit <= 0:
-            continue
-        ranked = sorted(
-            remaining_by_coarse.get(key, ()),
-            key=lambda record: (
-                counter_hash("R2_minimum_displacement_fill", selection_seed, _stratum_text(key), record.sample_id),
-                record.sample_id,
-            ),
-        )
-        if len(ranked) < deficit:
-            raise SctsrError(
-                ErrorCode.R2_QUOTA_INFEASIBLE,
-                "Even the preregistration-candidate coarse R2 quota is infeasible",
-                observed={_stratum_text(key): deficit - len(ranked)},
-            )
-        selected.extend(ranked[:deficit])
-        selected_ids.update(record.sample_id for record in ranked[:deficit])
-        selected_coarse[key] += deficit
-
-    selected_tuple = tuple(selected)
+    available = Counter(_strict_key(record) for record in candidates)
+    shortages = {
+        key: required[key] - available.get(key, 0)
+        for key in required
+        if available.get(key, 0) < required[key]
+    }
+    selected_tuple, displacement_records, minimum = build_minimum_oof_group_displacement_selection(
+        candidates,
+        treatment,
+        selection_seed=selection_seed,
+    )
+    selected_ids = {record.sample_id for record in selected_tuple}
     treatment_ids = {record.sample_id for record in treatment}
     if len(selected_tuple) != len(treatment) or len(selected_ids) != len(selected_tuple):
         raise SctsrError(ErrorCode.R2_QUOTA_INFEASIBLE, "Minimum-displacement candidate does not conserve unique count")
     overlap = len(selected_ids & treatment_ids)
     if overlap:
         raise SctsrError(ErrorCode.R2_OVERLAPS_T, "Minimum-displacement candidate overlaps T", observed=overlap)
+    required_coarse = Counter(_coarse_key(record) for record in treatment)
     observed_coarse = Counter(_coarse_key(record) for record in selected_tuple)
     if observed_coarse != required_coarse:
         raise SctsrError(ErrorCode.R2_QUOTA_INFEASIBLE, "Minimum-displacement candidate changed coarse quota")
-    selected_strict = Counter(_strict_key(record) for record in selected_tuple)
-    displacement = int(
-        sum(abs(required.get(key, 0) - selected_strict.get(key, 0)) for key in set(required) | set(selected_strict))
-        // 2
-    )
-    minimum = sum(shortages.values())
+    displacement = len(displacement_records)
     if displacement != minimum:
         raise SctsrError(
             ErrorCode.R2_QUOTA_INFEASIBLE,

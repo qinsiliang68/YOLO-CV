@@ -133,5 +133,6 @@ sign-flip 与 Holm 控制多重比较。
 - `method_effectiveness_claimed=false`。
 
 代码和 synthetic/engineering canary 的成功只说明训练链路可施工，不是方法
-有效。R2 四字段零重叠精确配额在真实资产上不可行，正式八臂训练必须等 owner
-接受一个预注册 addendum 后再发布。
+有效。R2 四字段零重叠精确配额在真实资产上不可行这一事实仍成立；owner 已批准
+只放宽 filename-bucket surrogate 的预注册 addendum，代码现可物化公平的共享 R2
+pool。正式八臂训练仍必须等待新 commit 独立复审及签名 release/control plane。

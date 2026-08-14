@@ -41,7 +41,7 @@ index/pointer 丢失时，可以从 receipt+immutable generation 重建 secondar
 | failure | 当前进程动作 | 是否允许 resume | 必需证据 |
 | --- | --- | --- | --- |
 | source/asset/data SHA mismatch | trainer 构造前拒绝 | 否；修复后新 token | FAIL receipt、expected/observed |
-| R2 infeasible | pool generation 拒绝 | 否；owner addendum | shortage audit |
+| R2 approved three-field cell仍不足或 digest不符 | pool generation 拒绝 | 否；新 owner addendum | shortage/displacement audit |
 | duplicate/expired/invalid token | claim 前拒绝 | 否；authority 新 token | claim registry evidence |
 | output root 已存在 | START 拒绝 | 仅合法 RESUME | root inventory |
 | OOM | 当前 epoch abort | 是，固定 batch/steps 不变 | OOM code、quarantine |

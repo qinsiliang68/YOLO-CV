@@ -1,0 +1,26 @@
+{
+  "status": "PASS",
+  "shared_r2_digest": "075FC31FE487D3646E89BA1043E5124D9FE49CE9FCC61C1A8041A9CB8196BECC",
+  "u": {
+    "digest": "D976728392D9177AC8DA1EF107DE098EE6369AA38DC5391E8F0781DC85384079",
+    "total_occurrences": 48000,
+    "unique": 3000,
+    "multiplicity": [
+      16
+    ]
+  },
+  "f": {
+    "digest": "0E0A592349D4C19D978C0570386EC8882E7A5E155F8E14BCF86AE9E8DA5F01EB",
+    "total_occurrences": 48000,
+    "unique": 3000,
+    "multiplicity": [
+      16
+    ]
+  },
+  "fallback": {
+    "digest": "7A607BEC1A6737F6BB9A72AD301D3E907F942C4B84BD5F6525C51CBB81EDE348",
+    "post_e160_policy": "R2_MATCHED_RANDOM",
+    "post_e160_unique": 3000,
+    "same_r2_ids": true
+  }
+}

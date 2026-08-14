@@ -1,0 +1,16 @@
+C:/Users/28898/AppData/Local/Temp/sctsr-r2-final-evidence-950120ecadbd42d39d5265142cb86051/BUILD_RECEIPT.json
+{
+  "status": "PASS_ENGINEERING_EVIDENCE_NOT_FORMAL_TRAINING_ASSET",
+  "temp_root": "C:\\Users\\28898\\AppData\\Local\\Temp\\sctsr-r2-final-evidence-950120ecadbd42d39d5265142cb86051",
+  "pool_manifest_sha256": "BD76A8AC87239C4F5576D6A12A146F52A1DE1F9ED7367F1EDA8B47AEDC478CE9",
+  "pool_digest": "075FC31FE487D3646E89BA1043E5124D9FE49CE9FCC61C1A8041A9CB8196BECC",
+  "selected_count": 3000,
+  "overlap_with_t": 0,
+  "displacement_count": 378,
+  "displacement_ledger_digest": "4DC4918D07858E112498613D7313A4F0960BB100C0E57FA2755E9118B5762015",
+  "relaxed_fields": [
+    "oof_group_id"
+  ],
+  "policy_sha256": "E58E9D7093C6148687472769A1781AA0F3985A76C8C4269DF143C5D1B565EA3C",
+  "formal_training_started": false
+}

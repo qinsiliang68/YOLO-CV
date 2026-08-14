@@ -89,18 +89,22 @@ R2 是方法匹配随机，目的不是做另一个 selector，而是在 treatme
 范围内剥离 T 的身份效应。禁止给 matcher 访问 loss、confidence、RHO、gradient、
 AUM、correct rate、未来 checkpoint 或 endpoint 字段。
 
-冻结任务书要求 R2：
+2026-08-15 owner addendum 后，R2 要求为：
 
 - 3,000 unique；
 - 与 T identity overlap 为 0；
-- exact label + historical dynamic bucket + OOF fold + `oof_group_id` quota；
+- exact label + historical dynamic bucket + OOF fold；
 - `oof_group_id` 语义是
   `FILENAME_BUCKET_SURROGATE_NOT_TRUE_VIDEO_ID`；
-- quota 不可满足时 fail closed。
+- 只允许对 `oof_group_id` 做容量下界为 378 的最小 displacement；
+- 三字段 quota 不可满足或试图再放宽第二字段时 fail closed。
 
-真实资产审计得到 172 个 shortage strata、378 个缺口，故当前正式 R2 不可生成。
-推荐 addendum 尚未由 owner 接受。任何自动 relaxation、nearest group、replacement、
-回用 T、改标签或少于 3,000 unique 都是实验无效，不是“临时工程修复”。
+真实资产审计得到 172 个 shortage strata、378 个缺口。批准算法先耗尽全部可用
+四字段 exact capacity，再在相同三字段 cell 内 counter-hash 填充 378 个缺口；
+group TV 必须恰为 0.126。R2 固定为 3,000 unique、T overlap=0、digest
+`075FC31...19B6BECC`。`R2_U`、`R2_F` 和 fallback 共用该 pool；不得各自重抽。
+任何额外 relaxation、nearest outside coarse cell、replacement、回用 T、改标签或
+少于 3,000 unique 都是实验无效，不是“临时工程修复”。
 
 ## 6. Schedule、dose、unique 和 repeat
 
@@ -159,7 +163,7 @@ byte-level ledger：
 - OOM 后改 batch/accumulation/steps 继续；
 - E200 以外 checkpoint、MODEL 替代 EMA、`best.pt` 或 val_op 选点；
 - resume 跳过 receipt chain、跨 generation/seed/arm/parent；
-- R2 overlap、quota relaxation 或 terminal leakage；
+- R2 overlap、超出 owner addendum 的 quota relaxation 或 terminal leakage；
 - Parquet fallback、半写文件、缺 SHA/row count/schema；
 - test/blind access；
 - 只有 exit code 0，没有 canonical completion audit。

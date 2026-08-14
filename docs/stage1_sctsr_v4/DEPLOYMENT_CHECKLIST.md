@@ -5,7 +5,7 @@
 
 ## A. Owner 科学决定
 
-- [ ] A01 R2 addendum 有 owner 明确接受文本、日期和 SHA。
+- [ ] A01 R2 addendum 有 owner 明确接受文本、日期、policy SHA 和 contract SHA。
 - [ ] A02 addendum 明确 estimand、匹配字段、不可避免 imbalance 和分析方式。
 - [ ] A03 新 R2 matcher 有 failure-first/green tests。
 - [ ] A04 R2 生成 3,000 unique、T overlap=0，quota audit符合 addendum。
@@ -64,6 +64,8 @@
 - [ ] E10 stop/fallback planned/actual E160切换一致。
 - [ ] E11 R2 terminal fields不可访问。
 - [ ] E12 planned/actual occurrence和cumulative history守恒。
+- [ ] E13 `R2_U`、`R2_F` 和 `T_TO_R2_AT_160` fallback 的 R2 pool digest完全相同。
+- [ ] E14 R2 displacement ledger恰为378行、digest匹配、只改变`oof_group_id`。
 
 ## F. Release、token 和 intent
 

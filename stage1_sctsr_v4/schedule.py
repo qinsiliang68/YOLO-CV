@@ -258,6 +258,8 @@ def validate_phase1_schedule_registry(
         "validated_arms": [arm.value for arm in ArmId],
         "base_denominator": next(iter(denominators)),
         "schedule_digests": {arm.value: plans[arm].plan_digest for arm in ArmId},
+        "shared_r2_pool_digest": r2_pool_digest,
+        "r2_arms": [ArmId.R2_U.value, ArmId.R2_F.value, ArmId.T_TO_R2_AT_160.value],
     }
 
 

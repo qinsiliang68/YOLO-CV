@@ -1,0 +1,9 @@
+Installed 57 packages in 5.04s
+..............s.........s.s............................................. [ 39%]
+........................................................................ [ 78%]
+........................................                                 [100%]
+=========================== short test summary info ===========================
+SKIPPED [1] ..\sctsr-v4-fix-short\tests\stage1_dynamic_replay_v3\test_global_completion_audit_v2.py:27: local evidence integration test requires the registered Desktop mirror
+SKIPPED [1] ..\sctsr-v4-fix-short\tests\stage1_dynamic_replay_v3\test_literature_anchor_promotion_v2.py:43: local evidence integration test requires 21 anchor source files
+SKIPPED [1] ..\sctsr-v4-fix-short\tests\stage1_dynamic_replay_v3\test_literature_anchor_promotion_v2.py:84: local evidence integration test requires 21 anchor source files
+181 passed, 3 skipped in 5.01s

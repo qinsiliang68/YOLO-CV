@@ -1,0 +1,93 @@
+{
+  "schema_version": "stage1.sctsr.r2_addendum_validation.v1",
+  "status": "PASS_NOT_TRAINING_AUTHORIZATION",
+  "date": "2026-08-15",
+  "base_commit": "30e50ea3130694af73ae486827b7109930e61d68",
+  "implementation_commit": "e940199",
+  "documentation_commit": "07f428d",
+  "owner_decision": {
+    "policy_id": "MINIMUM_OOF_GROUP_DISPLACEMENT_ZERO_OVERLAP_V1",
+    "exact_fields": [
+      "y_true",
+      "historical_dynamic_bucket",
+      "oof_fold"
+    ],
+    "relaxed_fields": [
+      "oof_group_id"
+    ],
+    "shared_pool_arms": [
+      "R2_U",
+      "R2_F",
+      "T_TO_R2_AT_160"
+    ],
+    "shared_identity_pool_required": true
+  },
+  "formal_asset_materialization": {
+    "status": "PASS_ENGINEERING_EVIDENCE_NOT_FORMAL_TRAINING_ASSET",
+    "base_rows": 120000,
+    "t_unique_count": 3000,
+    "r2_unique_count": 3000,
+    "overlap_with_t": 0,
+    "exact_four_field_shortage_strata": 172,
+    "minimum_displacement_count": 378,
+    "relaxed_field_count": 1,
+    "group_total_variation": 0.126,
+    "identity_group_counts": {
+      "G0": 600,
+      "G1": 600,
+      "G2": 600,
+      "G3": 600,
+      "G4": 600
+    },
+    "r2_identity_digest": "075FC31FE487D3646E89BA1043E5124D9FE49CE9FCC61C1A8041A9CB8196BECC",
+    "displacement_ledger_digest": "4DC4918D07858E112498613D7313A4F0960BB100C0E57FA2755E9118B5762015",
+    "policy_sha256": "E58E9D7093C6148687472769A1781AA0F3985A76C8C4269DF143C5D1B565EA3C",
+    "repeat_build_identity_and_displacement_digests_equal": true
+  },
+  "schedule_fairness": {
+    "status": "PASS",
+    "r2_u_total_occurrences": 48000,
+    "r2_f_total_occurrences": 48000,
+    "r2_u_per_identity_multiplicity": 16,
+    "r2_f_per_identity_multiplicity": 16,
+    "r2_u_and_r2_f_identity_digest_equal": true,
+    "fallback_uses_shared_r2_identity_pool": true,
+    "r2_u_schedule_digest": "D976728392D9177AC8DA1EF107DE098EE6369AA38DC5391E8F0781DC85384079",
+    "r2_f_schedule_digest": "0E0A592349D4C19D978C0570386EC8882E7A5E155F8E14BCF86AE9E8DA5F01EB",
+    "fallback_schedule_digest": "7A607BEC1A6737F6BB9A72AD301D3E907F942C4B84BD5F6525C51CBB81EDE348"
+  },
+  "verification": {
+    "uv_lock_check": "PASS",
+    "python_3_11_v4": "404 passed",
+    "python_3_12_v4": "404 passed",
+    "python_3_11_compileall": "PASS",
+    "python_3_12_compileall": "PASS",
+    "v3_regression": "181 passed, 3 skipped",
+    "runbook_document_count": 18,
+    "runbook_manifest_sha256": "7D11D7DF3151CE1D6E0AD7B54B691C7A19F572F3EC88E88A56C165B1C3E2885F"
+  },
+  "protected_history": {
+    "stage1_gapvalue240_modified": false,
+    "stage1_dynamic_replay_v3_modified": false,
+    "ultralytics_modified": false,
+    "historical_training_artifacts_modified": false
+  },
+  "formal_side_effects": {
+    "formal_training_started": false,
+    "assignment_generated": false,
+    "engineering_gate_generated": false,
+    "pilot_release_generated": false,
+    "blind_holdout_opened": false,
+    "test_opened": false
+  },
+  "remaining_blockers": [
+    "INDEPENDENT_REVIEW_OF_ADDENDUM_COMMIT",
+    "FORMAL_8_PLUS_14_SEED_REGISTRY",
+    "SIGNED_MATRIX_RELEASE",
+    "ONE_USE_JOB_TOKENS",
+    "SHARED_CLAIM_REGISTRY",
+    "RTX3090_SINGLE_EPOCH_ENGINEERING_BENCHMARK"
+  ],
+  "phase2_only_blocker": "VAL_TARGET_MISSING_A_GRADIENT_ALIGNMENT_HELD",
+  "method_effectiveness_claimed": false
+}
