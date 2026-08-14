@@ -62,6 +62,24 @@ uv run python scripts/stage1_sctsr_v4/validate_schedule.py `
 
 资产验证会实际重算 path、bytes、SHA、row count、identity digest、split role 和互斥性；没有“跳过大文件 SHA”的正式入口。
 
+图像内容身份另有强制门禁。正式资产包含 384,000 行 Zstd Parquet
+`DATASET_CONTENT_LEDGER_v1.parquet`，覆盖 canonical train、val_model、
+val_cal 和 val_op，不包含 test/blind。每行绑定 canonical relative path、
+manifest SHA、标签、图像 bytes/SHA、尺寸、mode 和 format。训练机必须运行：
+
+```powershell
+uv run python scripts/stage1_sctsr_v4/validate_dataset_content.py `
+  --registry configs/stage1_sctsr_v4/asset_registry_v1.json `
+  --repository-root C:\GitHub\YOLO-CV `
+  --dataset-root C:\GitHub\YOLO-CV\data\final_sewerml_dataset `
+  --output <receipt.json>
+```
+
+这不是可选的运维检查：正式 trainer 在构造前会再次逐图哈希，closeout
+再复验一次。文件名、标签、目录结构和 CSV 都正确，但任一图像字节错误时，
+必须返回 `DATASET_CONTENT_MISMATCH`。不得用 `--ledger-only` 的结果替代正式
+物理复验；该开关只用于快速检查 ledger/manifest 自身。
+
 ## 5. Identity pool 和 schedule
 
 `build_identity_pools.py` 只允许四个登记角色：

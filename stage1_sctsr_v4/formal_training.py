@@ -292,6 +292,7 @@ _RESUME_STABLE_TRAINER_BINDING_FIELDS = (
     "scientific_overrides_digest",
     "identity_manifest_binding",
     "dataset_binding",
+    "dataset_content_binding",
     "training_seed",
 )
 

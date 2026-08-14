@@ -625,6 +625,7 @@ def _validate_formal_tree(root: Path, manifest: Mapping[str, Any]) -> dict[str, 
                 "scientific_overrides_digest",
                 "identity_manifest_binding",
                 "dataset_binding",
+                "dataset_content_binding",
                 "training_seed",
             ):
                 _require(resume_binding.get(field) == trainer_binding.get(field), "Resume trainer changed a stable scientific binding", observed=field)
@@ -722,6 +723,19 @@ def _validate_formal_tree(root: Path, manifest: Mapping[str, Any]) -> dict[str, 
             recomputed_identity_manifest == trainer_binding["identity_manifest_binding"],
             "Formal parent trainer identity manifest no longer matches registered assets",
         )
+    from .dataset_content_ledger import registered_dataset_manifest_asset_ids, validate_registered_dataset_content
+
+    recomputed_dataset_content = validate_registered_dataset_content(
+        registry=authorization_inputs["asset_registry"],
+        repository_root=repository_root,
+        dataset_root=trainer_binding["dataset_content_binding"]["dataset_root"],
+        required_manifest_asset_ids=registered_dataset_manifest_asset_ids(authorization_inputs["asset_registry"]),
+        verify_physical_files=True,
+    )
+    _require(
+        recomputed_dataset_content == trainer_binding["dataset_content_binding"],
+        "Formal dataset image bytes changed after prepared-trainer preflight",
+    )
     previous_checkpoint = str(identity["initial_checkpoint_sha256"]) if role == "COMMON_PARENT" else str(receipt["parent_checkpoint_sha256"])
     previous_generation = stable_digest(
         {"role": "COMMON_PARENT_START", "initial_checkpoint_sha256": identity["initial_checkpoint_sha256"]}

@@ -1,0 +1,21 @@
+{
+  "schema_version": "stage1.sctsr.dataset_content_ledger.v1",
+  "storage_format": "PARQUET_ZSTD",
+  "identity_digest_algorithm": "SHA256_SORTED_DATASET_CONTENT_ROWS_V1",
+  "columns": [
+    "sample_id",
+    "split_role",
+    "y_true",
+    "manifest_asset_id",
+    "manifest_sha256",
+    "canonical_image_relpath",
+    "image_bytes",
+    "image_sha256",
+    "image_width",
+    "image_height",
+    "image_mode",
+    "image_format"
+  ],
+  "test_or_blind_rows_allowed": false,
+  "portable_fallback_allowed": false
+}

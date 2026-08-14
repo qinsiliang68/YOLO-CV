@@ -245,6 +245,18 @@
       "identity_digest": "7884B823E8A55D4B1BF1A3285CF551FB03E63A2A35F2A95E868F5301A87AA686",
       "identity_digest_algorithm": "SHA256_SORTED_SAMPLE_ID_PIPE_LABEL_LF",
       "identity_universe": "REFERENCE_FULL"
+    },
+    {
+      "asset_id": "dataset_content_ledger",
+      "relative_path": "artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/03_preregistration_v4_sctsr/assets/DATASET_CONTENT_LEDGER_v1.parquet",
+      "sha256": "B2B61509AB4451C881FE7E9D0AAFB3F9D3CC0981A78AB9337C54C320E3E96D2C",
+      "bytes": 19350859,
+      "role": "DATASET_CONTENT_LEDGER_ALL_REGISTERED_NON_TEST_IMAGES",
+      "required": true,
+      "row_count": 384000,
+      "identity_digest": "EDA93977CE43E946D4C795A8FBA30BF39B6AF510034276E739BC51D88DB1DD6E",
+      "identity_digest_algorithm": "SHA256_SORTED_DATASET_CONTENT_ROWS_V1",
+      "group_semantic": "BYTE_LEVEL_NON_TEST_IMAGE_IDENTITY"
     }
   ]
 }

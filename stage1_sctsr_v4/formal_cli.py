@@ -19,6 +19,7 @@ from .formal_training import FormalIdentity
 from .formal_pool_inputs import load_formal_pool_inputs
 from .identity_pool import FixedIdentityPoolSpec, IdentityPool, IdentityRecord, partition_five_groups
 from .dataset_adapter import load_identity_manifest
+from .dataset_content_ledger import registered_dataset_manifest_asset_ids, validate_registered_dataset_content
 from .evidence_runtime import SampleEvidence
 from .rate_spec import DenominatorRole, RateSemantic, ReplayRateSpec
 from .schedule import SchedulePlan
@@ -985,6 +986,13 @@ def build_prepared_trainer(
     data_root = (root / data_root).resolve() if not data_root.is_absolute() else data_root.resolve()
     if not data_root.is_dir():
         raise SctsrError(ErrorCode.ASSET_VALIDATION_FAILED, "Prepared classification data root is missing", artifact_path=str(data_root))
+    dataset_content_binding = validate_registered_dataset_content(
+        registry=registry,
+        repository_root=root,
+        dataset_root=data_root,
+        required_manifest_asset_ids=registered_dataset_manifest_asset_ids(registry),
+        verify_physical_files=True,
+    )
     project = Path(str(clean["project"]))
     project = (root / project).resolve() if not project.is_absolute() else project.resolve()
     if project != output or clean.get("name") != "trainer" or clean.get("exist_ok") is not False or clean.get("resume") is not False:
@@ -1062,6 +1070,7 @@ def build_prepared_trainer(
         ),
         "identity_manifest_binding": manifest_binding,
         "dataset_binding": dataset_binding,
+        "dataset_content_binding": dataset_content_binding,
         "output_root": output.as_posix(),
         "training_seed": identity.training_seed,
         "formal_training_started": False,
