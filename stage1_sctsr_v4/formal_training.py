@@ -410,6 +410,23 @@ def _restore_resume_checkpoint(
     return payload
 
 
+def _abort_failed_epoch(*, recorder: EpochEvidenceRecorder | None, transaction: EpochTransaction, primary_error: BaseException) -> None:
+    """Attempt every cleanup step without replacing the epoch's root cause."""
+
+    cleanup_errors: list[tuple[str, BaseException]] = []
+    if recorder is not None:
+        try:
+            recorder.abort()
+        except BaseException as exc:  # cleanup must continue through telemetry/writer failure.
+            cleanup_errors.append(("evidence recorder abort", exc))
+    try:
+        transaction.abort("EPOCH_RUNTIME_OR_EVIDENCE_FAILURE")
+    except BaseException as exc:  # preserve root cause and expose quarantine failure as a note.
+        cleanup_errors.append(("epoch transaction abort", exc))
+    for role, error in cleanup_errors:
+        primary_error.add_note(f"SCTSR cleanup failure during {role}: {type(error).__name__}: {error}")
+
+
 def _run_transactional_epoch(
     *,
     trainer: Any,
@@ -456,27 +473,28 @@ def _run_transactional_epoch(
             previous_generation_digest=previous_generation_digest,
         ),
     ).begin()
-    recorder = EpochEvidenceRecorder(
-        transaction=transaction,
-        parent_id=parent_id,
-        arm_id=arm_id,
-        training_seed=identity.training_seed,
-        sample_evidence=sample_evidence,
-        identity_policy=identity_policy,
-        schedule_family=schedule_family,
-        fallback_state=fallback_state,
-        rate_numerator=rate_numerator,
-        rate_denominator=rate_denominator,
-        schedule_digest=schedule_digest,
-        identity_pool_digest=identity_pool_digest,
-        pool_multiplicity_targets=pool_multiplicity_targets,
-        expected_base_denominator=CANONICAL_BASE_DENOMINATOR,
-        expected_optimizer_steps=CANONICAL_BASE_STEPS,
-        global_step_start=global_step_start,
-        history=history,
-        artifact_root=root,
-    )
+    recorder: EpochEvidenceRecorder | None = None
     try:
+        recorder = EpochEvidenceRecorder(
+            transaction=transaction,
+            parent_id=parent_id,
+            arm_id=arm_id,
+            training_seed=identity.training_seed,
+            sample_evidence=sample_evidence,
+            identity_policy=identity_policy,
+            schedule_family=schedule_family,
+            fallback_state=fallback_state,
+            rate_numerator=rate_numerator,
+            rate_denominator=rate_denominator,
+            schedule_digest=schedule_digest,
+            identity_pool_digest=identity_pool_digest,
+            pool_multiplicity_targets=pool_multiplicity_targets,
+            expected_base_denominator=CANONICAL_BASE_DENOMINATOR,
+            expected_optimizer_steps=CANONICAL_BASE_STEPS,
+            global_step_start=global_step_start,
+            history=history,
+            artifact_root=root,
+        )
         result = run_ultralytics_classification_epoch(
             trainer=trainer,
             replay_plan=replay_plan,
@@ -502,9 +520,8 @@ def _run_transactional_epoch(
         )
         evidence_summary = recorder.finalize(runtime_result=result, checkpoint_sha256=checkpoint_sha)
         generation_manifest = transaction.commit()
-    except BaseException:
-        recorder.abort()
-        transaction.abort("EPOCH_RUNTIME_OR_EVIDENCE_FAILURE")
+    except BaseException as exc:
+        _abort_failed_epoch(recorder=recorder, transaction=transaction, primary_error=exc)
         raise
     published_checkpoint = transaction.complete / recorder.checkpoint_relative
     if sha256_file(published_checkpoint) != checkpoint_sha:

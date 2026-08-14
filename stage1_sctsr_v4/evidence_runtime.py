@@ -168,26 +168,36 @@ class EpochEvidenceRecorder:
             self.summary_relative,
             self.checkpoint_relative,
         )
-        self.occurrence_writer = StreamingZstdParquetWriter(
-            transaction.path_for(self.occurrence_relative),
-            schema_version="stage1.sctsr.occurrence_ledger.v1",
-            schema=OCCURRENCE_SCHEMA,
-        )
-        self.step_writer = StreamingZstdParquetWriter(
-            transaction.path_for(self.step_relative),
-            schema_version="stage1.sctsr.optimizer_step_ledger.v1",
-            schema=STEP_SCHEMA,
-        )
-        self.telemetry = TelemetrySampler(
-            run_id=self.run_id,
-            arm_id=self.arm_id,
-            training_seed=self.training_seed,
-            epoch=self.epoch,
-            run_path=transaction.inprogress,
-            artifact_path=artifact_root,
-            row_generation=self.generation,
-        ).start()
         self._closed = False
+        self.occurrence_writer: StreamingZstdParquetWriter | None = None
+        self.step_writer: StreamingZstdParquetWriter | None = None
+        self.telemetry: TelemetrySampler | None = None
+        try:
+            self.occurrence_writer = StreamingZstdParquetWriter(
+                transaction.path_for(self.occurrence_relative),
+                schema_version="stage1.sctsr.occurrence_ledger.v1",
+                schema=OCCURRENCE_SCHEMA,
+            )
+            self.step_writer = StreamingZstdParquetWriter(
+                transaction.path_for(self.step_relative),
+                schema_version="stage1.sctsr.optimizer_step_ledger.v1",
+                schema=STEP_SCHEMA,
+            )
+            self.telemetry = TelemetrySampler(
+                run_id=self.run_id,
+                arm_id=self.arm_id,
+                training_seed=self.training_seed,
+                epoch=self.epoch,
+                run_path=transaction.inprogress,
+                artifact_path=artifact_root,
+                row_generation=self.generation,
+            ).start()
+        except BaseException as primary:
+            try:
+                self.abort()
+            except BaseException as cleanup:
+                primary.add_note(f"SCTSR recorder-construction cleanup failure: {type(cleanup).__name__}: {cleanup}")
+            raise
 
     @property
     def checkpoint_path(self) -> Path:
@@ -451,7 +461,22 @@ class EpochEvidenceRecorder:
 
     def abort(self) -> None:
         if not self._closed:
-            self.telemetry.stop()
-            self.occurrence_writer.abort()
-            self.step_writer.abort()
+            errors: list[tuple[str, BaseException]] = []
+            for role, component, method in (
+                ("telemetry stop", self.telemetry, "stop"),
+                ("occurrence writer abort", self.occurrence_writer, "abort"),
+                ("step writer abort", self.step_writer, "abort"),
+            ):
+                if component is None:
+                    continue
+                try:
+                    getattr(component, method)()
+                except BaseException as exc:
+                    errors.append((role, exc))
             self._closed = True
+            if errors:
+                role, primary = errors[0]
+                primary.add_note(f"SCTSR cleanup component failed: {role}")
+                for later_role, later in errors[1:]:
+                    primary.add_note(f"Additional SCTSR cleanup failure during {later_role}: {type(later).__name__}: {later}")
+                raise primary
