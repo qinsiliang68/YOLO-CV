@@ -15,6 +15,18 @@ from stage1_sctsr_v4.serialization import atomic_write_json, load_json, sha256_f
 
 
 @pytest.mark.skipif(os.name != "nt", reason="Win32 extended path contract")
+def test_resolved_junction_path_is_not_double_prefixed_as_unc(monkeypatch: pytest.MonkeyPatch):
+    extended_target = Path(r"\\?\C:\physical\junction-target\artifact.json")
+
+    monkeypatch.setattr(Path, "resolve", lambda self: extended_target)
+
+    actual = windows_safe_resolved_path(r"C:\logical-junction\artifact.json")
+
+    assert str(actual) == str(extended_target)
+    assert not str(actual).startswith("\\\\?\\UNC\\?\\")
+
+
+@pytest.mark.skipif(os.name != "nt", reason="Win32 extended path contract")
 def test_pyarrow_zstd_partition_survives_registered_path_beyond_max_path(tmp_path: Path):
     root = windows_safe_resolved_path(tmp_path / ("a" * 80) / ("b" * 80) / ("c" * 50))
     path = root / "run_id=run-1" / "epoch=0121" / "part-00000.parquet"

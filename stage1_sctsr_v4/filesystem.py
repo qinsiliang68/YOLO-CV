@@ -23,6 +23,13 @@ def windows_safe_resolved_path(value: str | Path) -> Path:
     if raw.startswith("\\\\?\\") or raw.startswith("//?/"):
         return Path(raw)
     resolved = Path(raw).expanduser().resolve()
-    if str(resolved).startswith("\\\\"):
-        return Path("\\\\?\\UNC\\" + str(resolved)[2:])
-    return Path("\\\\?\\" + str(resolved))
+    resolved_text = str(resolved)
+    # Resolving a sufficiently long child through a directory junction may
+    # already yield an extended local path even though the requested spelling
+    # was ordinary ``C:\\...``.  Do not misclassify that ``\\\\?\\C:\\...``
+    # result as a UNC share and produce the invalid ``\\\\?\\UNC\\?\\C:``.
+    if resolved_text.startswith("\\\\?\\") or resolved_text.startswith("//?/"):
+        return Path(resolved_text)
+    if resolved_text.startswith("\\\\"):
+        return Path("\\\\?\\UNC\\" + resolved_text[2:])
+    return Path("\\\\?\\" + resolved_text)
