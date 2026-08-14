@@ -468,7 +468,7 @@ def _validate_synthetic_canary(
 
 
 def _validate_formal_tree(root: Path, manifest: Mapping[str, Any]) -> dict[str, Any]:
-    _require(manifest.get("schema_version") == "stage1.sctsr.formal_run_manifest.v1" and manifest.get("execution_mode") == "formal", "Formal run manifest is missing the formal execution semantic")
+    _require(manifest.get("schema_version") == "stage1.sctsr.formal_run_manifest.v2" and manifest.get("execution_mode") == "formal", "Formal run manifest is missing the current formal execution semantic")
     enabled = [field for field in _PROHIBITED_SIDE_EFFECTS[1:] if manifest.get(field) is not False]
     _require(not enabled, "Formal run contains prohibited orchestration/test/claim side effects", observed=enabled)
     _require(manifest.get("formal_training_started") is True and manifest.get("formal_training_authorized") is True, "Completed formal run does not record its authorized training side effect")
@@ -479,12 +479,21 @@ def _validate_formal_tree(root: Path, manifest: Mapping[str, Any]) -> dict[str, 
     execution_snapshot_digest = manifest.get("execution_attempt_snapshot_digest")
     execution_job_digest = manifest.get("execution_job_binding_digest")
     execution_claim_sha = manifest.get("execution_claim_sha256")
+    run_intent_snapshot_digest = manifest.get("run_intent_snapshot_digest")
+    run_intent_acknowledgement_id = manifest.get("run_intent_acknowledgement_id")
     _require(
         all(
             isinstance(value, str) and bool(value)
             for value in (execution_id, execution_snapshot_digest, execution_job_digest, execution_claim_sha)
         ),
         "Formal run is missing its execution attempt evidence",
+    )
+    _require(
+        isinstance(run_intent_snapshot_digest, str)
+        and len(run_intent_snapshot_digest) == 64
+        and isinstance(run_intent_acknowledgement_id, str)
+        and bool(run_intent_acknowledgement_id),
+        "Formal run is missing its operator run-intent evidence",
     )
     try:
         from .formal_execution import validate_execution_attempt_snapshot
@@ -522,6 +531,17 @@ def _validate_formal_tree(root: Path, manifest: Mapping[str, Any]) -> dict[str, 
         (repository_root / "configs/stage1_gapvalue240/CANONICAL_TRAINING_LOCK_v1.json").resolve() == lock_path,
         "Prepared trainer lock path is not rooted in the canonical repository layout",
     )
+    from .run_intent import validate_run_intent_snapshot_chain
+
+    run_intent_evidence = validate_run_intent_snapshot_chain(
+        root,
+        repository_root=repository_root,
+        expected_latest_snapshot_digest=run_intent_snapshot_digest,
+    )
+    _require(
+        run_intent_evidence["attempts"][-1]["acknowledgement_id"] == run_intent_acknowledgement_id,
+        "Formal run manifest names a different run-intent acknowledgement",
+    )
     from .formal_cli import (
         validate_formal_authorization_inputs_at_closeout,
         validate_prepared_trainer_external_files,
@@ -554,6 +574,12 @@ def _validate_formal_tree(root: Path, manifest: Mapping[str, Any]) -> dict[str, 
     receipt_path = root / receipt_name
     _require(receipt_path.is_file(), "Formal run terminal receipt is missing", observed=receipt_name)
     receipt = load_json(receipt_path)
+    expected_receipt_schema = (
+        "stage1.sctsr.formal_parent_receipt.v2"
+        if role == "COMMON_PARENT"
+        else "stage1.sctsr.formal_branch_receipt.v2"
+    )
+    _require(receipt.get("schema_version") == expected_receipt_schema, "Formal terminal receipt schema is stale or invalid")
     expected = (1, 120) if role == "COMMON_PARENT" else (121, 200)
     _require((receipt.get("epoch_start"), receipt.get("epoch_end")) == expected, "Formal receipt epoch range is incomplete", observed=(receipt.get("epoch_start"), receipt.get("epoch_end")), expected=expected)
     _require(receipt.get("epoch_evidence_enabled") is True and receipt.get("best_pt_used") is False, "Formal receipt lacks mandatory evidence or used best.pt")
@@ -561,6 +587,11 @@ def _validate_formal_tree(root: Path, manifest: Mapping[str, Any]) -> dict[str, 
     _require(
         receipt.get("formal_input_snapshot_digest") == input_snapshot["snapshot_digest"],
         "Formal terminal receipt does not bind its authorization-input snapshot",
+    )
+    _require(
+        receipt.get("run_intent_snapshot_digest") == run_intent_evidence["latest_snapshot_digest"]
+        and receipt.get("run_intent_acknowledgement_id") == run_intent_acknowledgement_id,
+        "Formal terminal receipt does not bind its latest run-intent attempt",
     )
     transactions = sorted((root / "03_epoch_transactions").glob("epoch_*.generation_*.complete"))
     _require(len(transactions) == expected[1] - expected[0] + 1, "Formal epoch transaction count is incomplete", observed=len(transactions), expected=expected[1] - expected[0] + 1)
@@ -934,6 +965,8 @@ def _validate_formal_tree(root: Path, manifest: Mapping[str, Any]) -> dict[str, 
         "run_role": role,
         "execution_id": execution_id,
         "execution_attempt_snapshot_digest": execution_evidence["snapshot_digest"],
+        "run_intent_attempt_count": run_intent_evidence["attempt_count"],
+        "run_intent_snapshot_digest": run_intent_evidence["latest_snapshot_digest"],
         "epoch_transaction_count": len(transactions),
         "receipt_chain_digest": chain["receipt_chain_digest"],
         "total_optimizer_visible_occurrences": total_occurrences,

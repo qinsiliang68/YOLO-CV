@@ -26,6 +26,7 @@ from .logical_artifact_index import LogicalArtifactEntry, LogicalArtifactIndex
 from .recovery import FormalResumeContext
 from .replay_step_plan import build_replay_step_plan
 from .rng_isolation import capture_global_rng
+from .run_intent import publish_run_intent_snapshot, validate_run_intent_binding
 from .schedule import SchedulePlan, schedule_to_dict
 from .serialization import _fsync_directory, atomic_write_bytes, atomic_write_json, canonical_json_bytes, load_json, sha256_file, stable_digest
 from .ultralytics_overlay import run_ultralytics_classification_epoch
@@ -724,6 +725,7 @@ def _publish_formal_run_manifest_and_indexes(
     release_expected_bindings: Mapping[str, str],
     execution_claim_binding: Mapping[str, Any],
     execution_claim_snapshot: Mapping[str, Any],
+    run_intent_snapshot: Mapping[str, Any],
 ) -> dict[str, Any]:
     from .run_validation import build_artifact_index
     from .serialization import load_json
@@ -739,7 +741,7 @@ def _publish_formal_run_manifest_and_indexes(
     release_sha = stable_digest(release) if isinstance(release_authorization, Mapping) else sha256_file(release_authorization)
     formal_input_snapshot = validate_formal_input_snapshot(root)
     manifest = {
-        "schema_version": "stage1.sctsr.formal_run_manifest.v1",
+        "schema_version": "stage1.sctsr.formal_run_manifest.v2",
         "execution_mode": "formal",
         "run_role": run_role,
         "run_id": run_id,
@@ -760,6 +762,8 @@ def _publish_formal_run_manifest_and_indexes(
         "execution_claim_sha256": execution_claim_binding["claim_sha256"],
         "execution_job_binding_digest": execution_claim_binding["job_binding_digest"],
         "execution_attempt_snapshot_digest": execution_claim_snapshot["snapshot_digest"],
+        "run_intent_snapshot_digest": run_intent_snapshot["snapshot_digest"],
+        "run_intent_acknowledgement_id": run_intent_snapshot["acknowledgement_id"],
         "formal_training_authorized": True,
         "formal_training_started": True,
         "engineering_gate_generated": False,
@@ -794,6 +798,7 @@ def run_prepared_common_parent(
     prepared_trainer_binding: Mapping[str, Any] | None = None,
     formal_input_binding: Mapping[str, Any] | None = None,
     execution_claim_binding: Mapping[str, Any] | None = None,
+    run_intent_binding: Mapping[str, Any] | None = None,
     resume_context: FormalResumeContext | None = None,
 ) -> dict[str, Any]:
     """Run the formal E1-E120 no-replay common parent on a prepared trainer.
@@ -833,6 +838,9 @@ def run_prepared_common_parent(
             expected_job_bindings=execution_job,
             require_token_file=True,
         )
+        if run_intent_binding is None:
+            raise SctsrError(ErrorCode.RUN_INTENT_NOT_ACKNOWLEDGED, "Formal parent lacks its exact run-intent acknowledgement")
+        validate_run_intent_binding(run_intent_binding, enforce_freshness=True)
     sizes = _base_batch_sizes(trainer)
     evidence_enabled = _evidence_enabled(execution_mode, collect_epoch_evidence)
     sample_evidence = sample_evidence_from_trainer(trainer) if evidence_enabled else {}
@@ -869,6 +877,11 @@ def run_prepared_common_parent(
         )
     execution_claim_snapshot = (
         publish_execution_claim_snapshot(root, dict(execution_claim_binding), expected_job_bindings=execution_job)
+        if execution_mode == "formal"
+        else None
+    )
+    run_intent_snapshot = (
+        publish_run_intent_snapshot(root, dict(run_intent_binding))
         if execution_mode == "formal"
         else None
     )
@@ -963,7 +976,7 @@ def run_prepared_common_parent(
         pass
     receipt_chain = validate_receipt_chain(root / "08_receipts" / "epoch_receipts.jsonl") if evidence_enabled else None
     receipt = {
-        "schema_version": "stage1.sctsr.formal_parent_receipt.v1",
+        "schema_version": "stage1.sctsr.formal_parent_receipt.v2",
         "status": "IMPLEMENTED_NOT_FORMALLY_RUN" if execution_mode != "formal" else "FORMAL_PARENT_COMPLETE",
         "parent_id": f"PARENT_{identity.training_seed}", "training_seed": identity.training_seed,
         "epoch_start": 1, "epoch_end": 120, "global_step": global_step,
@@ -977,6 +990,8 @@ def run_prepared_common_parent(
         "formal_input_snapshot_digest": None if formal_input_snapshot is None else formal_input_snapshot["snapshot_digest"],
         "execution_id": None if execution_claim_binding is None else execution_claim_binding.get("execution_id"),
         "execution_attempt_snapshot_digest": None if execution_claim_snapshot is None else execution_claim_snapshot["snapshot_digest"],
+        "run_intent_snapshot_digest": None if run_intent_snapshot is None else run_intent_snapshot["snapshot_digest"],
+        "run_intent_acknowledgement_id": None if run_intent_snapshot is None else run_intent_snapshot["acknowledgement_id"],
     }
     atomic_write_json(root / "PARENT_RECEIPT.json", receipt)
     if execution_mode == "formal":
@@ -992,6 +1007,7 @@ def run_prepared_common_parent(
             release_expected_bindings=release_expected_bindings,
             execution_claim_binding=dict(execution_claim_binding or {}),
             execution_claim_snapshot=dict(execution_claim_snapshot or {}),
+            run_intent_snapshot=dict(run_intent_snapshot or {}),
         )
         receipt = {**receipt, "final_indexes": final_indexes}
         atomic_write_json(root / "PARENT_RECEIPT.json", receipt)
@@ -1014,6 +1030,7 @@ def run_prepared_branch(
     prepared_trainer_binding: Mapping[str, Any] | None = None,
     formal_input_binding: Mapping[str, Any] | None = None,
     execution_claim_binding: Mapping[str, Any] | None = None,
+    run_intent_binding: Mapping[str, Any] | None = None,
     resume_context: FormalResumeContext | None = None,
 ) -> dict[str, Any]:
     identity.validate(formal=execution_mode == "formal")
@@ -1046,6 +1063,9 @@ def run_prepared_branch(
             expected_job_bindings=execution_job,
             require_token_file=True,
         )
+        if run_intent_binding is None:
+            raise SctsrError(ErrorCode.RUN_INTENT_NOT_ACKNOWLEDGED, "Formal branch lacks its exact run-intent acknowledgement")
+        validate_run_intent_binding(run_intent_binding, enforce_freshness=True)
     parent_receipt = _validate_parent_completion_receipt(
         parent_checkpoint,
         parent_sha,
@@ -1113,6 +1133,11 @@ def run_prepared_branch(
         )
     execution_claim_snapshot = (
         publish_execution_claim_snapshot(root, dict(execution_claim_binding), expected_job_bindings=execution_job)
+        if execution_mode == "formal"
+        else None
+    )
+    run_intent_snapshot = (
+        publish_run_intent_snapshot(root, dict(run_intent_binding))
         if execution_mode == "formal"
         else None
     )
@@ -1233,7 +1258,7 @@ def run_prepared_branch(
         )
     receipt_chain = validate_receipt_chain(root / "08_receipts" / "epoch_receipts.jsonl") if evidence_enabled else None
     receipt = {
-        "schema_version": "stage1.sctsr.formal_branch_receipt.v1",
+        "schema_version": "stage1.sctsr.formal_branch_receipt.v2",
         "status": "FORMAL_BRANCH_COMPLETE" if execution_mode == "formal" else "IMPLEMENTED_NOT_FORMALLY_RUN", "logical_run_id": lineage.logical_run_id,
         "arm_id": schedule.arm_id.value, "training_seed": identity.training_seed,
         "parent_checkpoint_sha256": parent_sha, "lineage_digest": lineage.lineage_digest,
@@ -1251,6 +1276,8 @@ def run_prepared_branch(
         "formal_input_snapshot_digest": None if formal_input_snapshot is None else formal_input_snapshot["snapshot_digest"],
         "execution_id": None if execution_claim_binding is None else execution_claim_binding.get("execution_id"),
         "execution_attempt_snapshot_digest": None if execution_claim_snapshot is None else execution_claim_snapshot["snapshot_digest"],
+        "run_intent_snapshot_digest": None if run_intent_snapshot is None else run_intent_snapshot["snapshot_digest"],
+        "run_intent_acknowledgement_id": None if run_intent_snapshot is None else run_intent_snapshot["acknowledgement_id"],
     }
     atomic_write_json(root / "BRANCH_RECEIPT.json", receipt)
     if execution_mode == "formal":
@@ -1266,6 +1293,7 @@ def run_prepared_branch(
             release_expected_bindings=release_expected_bindings,
             execution_claim_binding=dict(execution_claim_binding or {}),
             execution_claim_snapshot=dict(execution_claim_snapshot or {}),
+            run_intent_snapshot=dict(run_intent_snapshot or {}),
         )
         receipt = {**receipt, "final_indexes": final_indexes}
         atomic_write_json(root / "BRANCH_RECEIPT.json", receipt)

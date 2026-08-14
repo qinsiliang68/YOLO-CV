@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="1.294" timestamp="2026-08-14T22:09:02.037876+08:00" hostname="zhangdawei"><testcase classname="tests.stage1_sctsr_v4.test_run_intent_acknowledgement" name="test_formal_training_rejects_missing_run_intent_before_dataset_iteration" time="1.227"><failure message="AttributeError: 'object' object has no attribute 'train_loader'">monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x000001FDF190C850&gt;
+tmp_path = WindowsPath('C:/Users/28898/AppData/Local/Temp/pytest-of-28898/pytest-1704/test_formal_training_rejects_m0')
+
+    def test_formal_training_rejects_missing_run_intent_before_dataset_iteration(monkeypatch, tmp_path: Path) -&gt; None:
+        import stage1_sctsr_v4.formal_training as formal
+    
+        monkeypatch.setattr(formal, "require_synthetic_or_authorized", lambda *_args, **_kwargs: None)
+        monkeypatch.setattr(formal, "validate_execution_claim_binding", lambda *_args, **_kwargs: {})
+        identity = formal.FormalIdentity(
+            training_seed=7,
+            canonical_training_lock_sha256="1" * 64,
+            initial_checkpoint_sha256="2" * 64,
+            base_manifest_sha256="3" * 64,
+            source_tree_digest="4" * 64,
+            runtime_config_digest="5" * 64,
+            asset_registry_digest="6" * 64,
+            contract_digest="7" * 64,
+            seed_registry_digest="8" * 64,
+        )
+    
+        with pytest.raises(SctsrError) as error:
+&gt;           formal.run_prepared_common_parent(
+                trainer=object(),
+                identity=identity,
+                output_root=tmp_path / "must_not_exist",
+                release_authorization={"unit": True},
+                release_expected_bindings={},
+                execution_claim_binding={"unit": True},
+                prepared_trainer_binding={"unit": True},
+                formal_input_binding={"unit": True},
+                execution_mode="formal",
+            )
+
+tests\stage1_sctsr_v4\test_run_intent_acknowledgement.py:241: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+stage1_sctsr_v4\formal_training.py:836: in run_prepared_common_parent
+    sizes = _base_batch_sizes(trainer)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+trainer = &lt;object object at 0x000001FDAF03CCE0&gt;
+
+    def _base_batch_sizes(trainer: Any) -&gt; tuple[int, ...]:
+&gt;       dataset_size = len(trainer.train_loader.dataset)
+                           ^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: 'object' object has no attribute 'train_loader'
+
+stage1_sctsr_v4\formal_training.py:200: AttributeError</failure></testcase></testsuite></testsuites>

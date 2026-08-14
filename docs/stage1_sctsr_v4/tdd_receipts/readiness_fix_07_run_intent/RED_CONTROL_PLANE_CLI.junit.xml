@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="0.130" timestamp="2026-08-14T22:12:44.223958+08:00" hostname="zhangdawei"><testcase classname="tests.stage1_sctsr_v4.test_cli_contract_hardening" name="test_run_intent_control_plane_has_explicit_build_and_validation_clis" time="0.056"><failure message="assert 2 == 0&#10; +  where 2 = CompletedProcess(args=['C:\\Users\\28898\\AppData\\Local\\Temp\\YOLO-CV-sctsr-v4-readiness-fix-f285754\\.venv\\Scripts...diness-fix-f285754\\\\scripts\\\\stage1_sctsr_v4\\\\build_runbook_manifest.py': [Errno 2] No such file or directory\n&quot;).returncode">repository_root = WindowsPath('C:/Users/28898/AppData/Local/Temp/YOLO-CV-sctsr-v4-readiness-fix-f285754')
+
+    def test_run_intent_control_plane_has_explicit_build_and_validation_clis(repository_root):
+        runbook = _run(
+            repository_root,
+            repository_root / "scripts" / "stage1_sctsr_v4" / "build_runbook_manifest.py",
+            "--help",
+        )
+        acknowledgement = _run(
+            repository_root,
+            repository_root / "scripts" / "stage1_sctsr_v4" / "build_run_intent_acknowledgement.py",
+            "--help",
+        )
+&gt;       assert runbook.returncode == 0
+E       assert 2 == 0
+E        +  where 2 = CompletedProcess(args=['C:\\Users\\28898\\AppData\\Local\\Temp\\YOLO-CV-sctsr-v4-readiness-fix-f285754\\.venv\\Scripts...diness-fix-f285754\\\\scripts\\\\stage1_sctsr_v4\\\\build_runbook_manifest.py': [Errno 2] No such file or directory\n").returncode
+
+tests\stage1_sctsr_v4\test_cli_contract_hardening.py:159: AssertionError</failure></testcase></testsuite></testsuites>

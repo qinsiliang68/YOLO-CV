@@ -171,7 +171,7 @@ def test_formal_closeout_rejects_missing_execution_attempt_snapshot(tmp_path):
     from stage1_sctsr_v4.run_validation import _validate_formal_tree
 
     manifest = {
-        "schema_version": "stage1.sctsr.formal_run_manifest.v1",
+        "schema_version": "stage1.sctsr.formal_run_manifest.v2",
         "execution_mode": "formal",
         "formal_training_authorized": True,
         "formal_training_started": True,

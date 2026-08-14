@@ -1,0 +1,10 @@
+{
+  "schema_version": "stage1.sctsr.run_intent_acknowledgement.v1",
+  "maximum_age_days": 7,
+  "requires_exact_job_context": true,
+  "requires_runbook_manifest_sha256": true,
+  "requires_release_manifest_sha256": true,
+  "requires_execution_token_sha256": true,
+  "requires_all_statements_true": true,
+  "placeholders_allowed": false
+}

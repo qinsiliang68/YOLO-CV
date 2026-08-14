@@ -409,6 +409,12 @@ def test_branch_runner_continues_at_resume_epoch_without_overwriting_completed_g
     monkeypatch.setattr(formal, "_publish_complete_logical_timeline", lambda **_kwargs: {"status": "UNIT_ONLY"})
     monkeypatch.setattr(formal, "_publish_formal_run_manifest_and_indexes", lambda **_kwargs: {"status": "UNIT_ONLY"})
     monkeypatch.setattr(formal, "validate_execution_claim_binding", lambda *_args, **_kwargs: {"status": "UNIT_ONLY"})
+    monkeypatch.setattr(formal, "validate_run_intent_binding", lambda *_args, **_kwargs: {"status": "UNIT_ONLY"})
+    monkeypatch.setattr(
+        formal,
+        "publish_run_intent_snapshot",
+        lambda *_args, **_kwargs: {"snapshot_digest": "9" * 64, "acknowledgement_id": "UNIT_RESUME_ACK"},
+    )
     monkeypatch.setattr(
         formal,
         "publish_execution_claim_snapshot",
@@ -440,6 +446,7 @@ def test_branch_runner_continues_at_resume_epoch_without_overwriting_completed_g
             "claim_sha256": "2" * 64,
             "job_binding_digest": "3" * 64,
         },
+        run_intent_binding={"unit": True},
         resume_context=context,
     )
 

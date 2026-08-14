@@ -26,6 +26,8 @@ def test_branch_cli_exposes_identity_pool_and_parent_artifact_index(repository_r
     assert "--parent-artifact-index" in result.stdout
     assert "--execution-token" in result.stdout
     assert "--execution-claim-root" in result.stdout
+    assert "--run-intent-acknowledgement" in result.stdout
+    assert "--runbook-manifest" in result.stdout
 
 
 def test_formal_parent_fails_before_output_without_execution_token_or_claim_registry(repository_root, tmp_path):
@@ -49,6 +51,7 @@ def test_formal_parent_fails_before_output_without_execution_token_or_claim_regi
     assert result.returncode != 0
     payload = json.loads(receipt.read_text(encoding="utf-8"))
     assert {"execution_token", "execution_claim_root"}.issubset(payload["error"]["observed"])
+    assert {"run_intent_acknowledgement", "runbook_manifest"}.issubset(payload["error"]["observed"])
     assert not output_root.exists()
 
 
@@ -140,3 +143,23 @@ def test_formal_identity_template_names_every_runtime_binding(repository_root):
     assert template["name"] == "trainer"
     assert template["exist_ok"] is False
     assert template["resume"] is False
+
+
+def test_run_intent_control_plane_has_explicit_build_and_validation_clis(repository_root):
+    runbook = _run(
+        repository_root,
+        repository_root / "scripts" / "stage1_sctsr_v4" / "build_runbook_manifest.py",
+        "--help",
+    )
+    acknowledgement = _run(
+        repository_root,
+        repository_root / "scripts" / "stage1_sctsr_v4" / "build_run_intent_acknowledgement.py",
+        "--help",
+    )
+    assert runbook.returncode == 0
+    assert "--document" in runbook.stdout
+    assert "--manifest-output" in runbook.stdout
+    assert acknowledgement.returncode == 0
+    assert "--acknowledge-all-required-statements" in acknowledgement.stdout
+    assert "--acknowledgement-output" in acknowledgement.stdout
+    assert "--execution-token" in acknowledgement.stdout

@@ -21,6 +21,7 @@ from stage1_sctsr_v4.formal_cli import (
 from stage1_sctsr_v4.formal_training import run_prepared_branch
 from stage1_sctsr_v4.prediction_runtime import publish_formal_endpoint
 from stage1_sctsr_v4.recovery import prepare_formal_resume_context
+from stage1_sctsr_v4.run_intent import prepare_formal_run_intent_binding
 from stage1_sctsr_v4.schedule import schedule_from_dict
 from stage1_sctsr_v4.serialization import atomic_write_json, load_json, sha256_file, stable_digest
 from stage1_sctsr_v4.synthetic_execution import run_synthetic_branch
@@ -77,6 +78,8 @@ def main() -> int:
             "asset_registry": arguments.asset_registry,
             "runtime_config": arguments.runtime_config,
             "seed_registry": arguments.seed_registry,
+            "run_intent_acknowledgement": arguments.run_intent_acknowledgement,
+            "runbook_manifest": arguments.runbook_manifest,
         }
         missing = sorted(name for name, value in required.items() if value is None)
         if missing:
@@ -170,6 +173,33 @@ def main() -> int:
             schedule_digest=schedule.plan_digest,
             resume_from_receipt_digest="0" * 64 if resume_context is None else resume_context.receipt_chain_digest,
         )
+        run_intent_binding = prepare_formal_run_intent_binding(
+            acknowledgement_path=arguments.run_intent_acknowledgement,
+            runbook_manifest_path=arguments.runbook_manifest,
+            repository_root=arguments.repository_root,
+            output_root=arguments.output_root,
+            action="RESUME" if arguments.resume else "START",
+            run_role="BRANCH",
+            logical_run_id=lineage.logical_run_id,
+            arm_id=schedule.arm_id.value,
+            training_seed=identity.training_seed,
+            formal_identity_path=arguments.formal_identity,
+            trainer_overrides_path=arguments.trainer_overrides,
+            identity_manifest_path=arguments.identity_manifest,
+            source_tree_digest=identity.source_tree_digest,
+            contract_digest=identity.effective_contract_digest,
+            asset_registry_digest=identity.asset_registry_digest,
+            runtime_config_digest=identity.runtime_config_digest,
+            asset_registry_path=arguments.asset_registry,
+            parent_checkpoint_sha256=parent_sha,
+            schedule_digest=schedule.plan_digest,
+            identity_pool_binding_digest=pool_binding["binding_digest"],
+            release_manifest_path=arguments.release_authorization,
+            execution_token_path=arguments.execution_token,
+            claim_registry_root=arguments.execution_claim_root,
+            resume_checkpoint_sha256="0" * 64 if resume_context is None else resume_context.checkpoint_sha256,
+            resume_receipt_digest="0" * 64 if resume_context is None else resume_context.receipt_chain_digest,
+        )
         execution_claim = claim_formal_execution(
             arguments.execution_token,
             claim_registry_root=arguments.execution_claim_root,
@@ -205,6 +235,7 @@ def main() -> int:
             prepared_trainer_binding=trainer_binding,
             formal_input_binding=authorization["formal_input_binding"],
             execution_claim_binding=execution_claim,
+            run_intent_binding=run_intent_binding,
             resume_context=resume_context,
             execution_mode="formal",
         )
@@ -253,6 +284,7 @@ def main() -> int:
             "prepared_trainer_binding": trainer_binding,
             "formal_authorization": authorization,
             "execution_claim": execution_claim,
+            "run_intent_binding": run_intent_binding,
             "identity_pool_binding": pool_binding,
             "parent_artifact_index_binding": parent_binding,
             "resume_context": None if resume_context is None else resume_context.as_dict(),

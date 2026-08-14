@@ -27,6 +27,8 @@ def add_execution_arguments(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--asset-registry", type=Path, default=None)
     parser.add_argument("--runtime-config", type=Path, default=None)
     parser.add_argument("--seed-registry", type=Path, default=None)
+    parser.add_argument("--run-intent-acknowledgement", type=Path, default=None)
+    parser.add_argument("--runbook-manifest", type=Path, default=None)
 
 
 def require_receipt_outside_artifact_root(receipt_path: str | Path, artifact_root: str | Path) -> None:

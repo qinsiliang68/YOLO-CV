@@ -287,7 +287,7 @@ def audit_repository_state(
             payload = json.loads(manifest_path.read_text(encoding="utf-8"))
         except (OSError, UnicodeDecodeError, json.JSONDecodeError):
             continue
-        if payload.get("schema_version") == "stage1.sctsr.formal_run_manifest.v1" or payload.get("formal_training_started") is True:
+        if payload.get("schema_version") in {"stage1.sctsr.formal_run_manifest.v1", "stage1.sctsr.formal_run_manifest.v2"} or payload.get("formal_training_started") is True:
             formal_manifests.append(relative)
     active_side_effect_paths = [
         path
