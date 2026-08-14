@@ -47,3 +47,9 @@ vectorized REPLAY event, while the assertion incorrectly expected one event per
 sample. `REAL_RUN_RED_EVENT_CARDINALITY.json` preserves that failure. The fix
 keeps event count at two and independently expands/validates five occurrence
 rows in canonical Parquet.
+
+The second physical run reached post-update inference and showed that frozen
+YOLO classification evaluation returns the registered `(probabilities,
+logits)` tuple rather than the train-mode tensor. The raw failure is preserved
+as `REAL_RUN_RED_EVAL_OUTPUT.json`; the fix reuses the production endpoint's
+strict `_probabilities_and_logits` validator instead of guessing an output.

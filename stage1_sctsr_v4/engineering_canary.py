@@ -38,6 +38,7 @@ from .epoch_transaction import EpochTransaction
 from .errors import ErrorCode, SctsrError
 from .evaluation import compute_tie_safe_frontier, write_frontier_artifacts
 from .prediction_artifact import PredictionRow, write_prediction_artifact
+from .prediction_runtime import _probabilities_and_logits
 from .recovery import find_last_complete_epoch, quarantine_inprogress, validate_recovery_pointer
 from .replay_step_plan import build_replay_step_plan
 from .serialization import atomic_write_json, sha256_file, stable_digest
@@ -544,8 +545,9 @@ def run_real_engineering_canary(
     model.eval()
     with torch.no_grad():
         evaluation_images = torch.stack([tensors[sample_id] for sample_id in base_ids]).to(torch_device)
-        logits = model(evaluation_images).detach().float().cpu()
-        probabilities = torch.softmax(logits, dim=1)[:, 1]
+        probabilities, logits = _probabilities_and_logits(model(evaluation_images), batch_size=len(base_ids))
+        logits = logits.detach().cpu()
+        probabilities = probabilities.detach().cpu()[:, 1]
     split_manifest_sha = stable_digest(
         [(sample.sample_id, sample.label, sample.image_sha256) for sample in samples]
     )
