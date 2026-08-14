@@ -6,10 +6,23 @@ def test_sctsr_documentation_records_current_fail_closed_state(repository_root):
     guide = (docs / "IMPLEMENTATION_GUIDE.md").read_text(encoding="utf-8")
     blockers = (docs / "KNOWN_BLOCKERS.md").read_text(encoding="utf-8")
     review = (docs / "INDEPENDENT_REVIEW_CHECKLIST.md").read_text(encoding="utf-8")
+    addendum = (
+        repository_root
+        / "artifacts"
+        / "stage1_sample_value_experiments"
+        / "experiments"
+        / "dynamic_replay_budget_efficiency_20260807"
+        / "03_preregistration_v4_sctsr"
+        / "SCTSR_R2_MATCHING_ADDENDUM_20260815.md"
+    ).read_text(encoding="utf-8")
 
     assert "206" in guide and "IMPLEMENTATION_ACCEPTANCE_PASS_NOT_TRAINING_AUTHORIZATION" in guide
     assert "172" in blockers and "378" in blockers
-    assert "183 passed, 1 skipped" in blockers
+    assert "R2 旧规格矛盾已解决，不再是当前阻断" in blockers
+    assert "MINIMUM_OOF_GROUP_DISPLACEMENT_ZERO_OVERLAP_V1" in addendum
+    assert "不为 U/F 各自另抽一套 3,000 IDs" in addendum
+    assert "formal_training_started=false" in addendum
+    assert "181 passed, 3 skipped" in blockers
     assert "SELF_AUDIT_FAIL" in blockers
     assert "不证明 SCTSR" in guide
     assert "不能伪称独立审稿人" in review

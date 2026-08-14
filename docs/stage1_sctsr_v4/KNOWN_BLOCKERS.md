@@ -6,15 +6,22 @@
 
 `formal_release_trust_v1.json` 没有登记 authorized key，仓库也没有未来签名 release。`seed_registry_schema_v1.json` 的 discovery/confirmation seed 为空，状态为 `FORMAL_SEEDS_BLOCKED_UNTIL_RELEASE`。因此 formal runner 必须在构建 trainer、生成 assignment 或读取正式 split 前拒绝。
 
-## 2. R2 真实资产不可行
+## 2. R2 旧规格矛盾已解决，不再是当前阻断
 
 冻结 T 为 3,000 IDs，digest 是 `85D462C1D95F30FB8B519162BBAD762CC4E9506A185C07D719145F07FE003B4B`。在排除 T 后，按 `(label, dynamic bucket, OOF fold, oof_group_id)` 精确匹配有 172 个 joint strata 缺口，累计短缺 378 个 occurrence。
 
-实现正确行为是抛出 `R2_QUOTA_INFEASIBLE`。2026-08-14 的冻结资产审计已提出唯一推荐修订：保持 3,000 unique、零 overlap 和 `(label, dynamic bucket, OOF fold)` exact，四字段先按可用容量填满，再在相同三字段 cell 内随机填充不可避免的 378 个 deficit；group TV 为容量下界 0.126。该提案尚未 owner 接受，也尚未激活为 formal matcher。此前不得用放宽 quota、nearest bucket、replacement、T overlap 或标签替换绕过。详见 `SPECIFICATION_CHANGE_REQUEST_R2_INFEASIBLE.md` 和 canonical `08_reports/sctsr_v4_r2_specification_audit_20260814/`。
+2026-08-15 owner 已批准唯一推荐修订：保持 3,000 unique、零 overlap 和
+`(label, dynamic bucket, OOF fold)` exact，四字段先按可用容量填满，再在相同三字段
+cell 内随机填充不可避免的 378 个 deficit；group TV 为容量下界 0.126。正式 matcher
+已显式激活该版本化政策，真实资产物化得到预注册 R2 digest
+`075FC31FE487D3646E89BA1043E5124D9FE49CE9FCC61C1A8041A9CB8196BECC`。
+`R2_U`、`R2_F` 和 fallback 必须复用该同一 pool。任何第二字段放宽、replacement、
+T overlap 或标签替换仍失败封闭。详见 `SPECIFICATION_CHANGE_REQUEST_R2_INFEASIBLE.md`
+和 canonical `SCTSR_R2_MATCHING_ADDENDUM_20260815.md`。
 
 ## 3. v3 回归口径矛盾
 
-任务书 SA-266 和附录 C 要求 `tests/stage1_dynamic_replay_v3` 至少 231 passed。当前冻结 checkout 可复现的是 `183 passed, 1 skipped`；skip 是需要登记 Desktop mirror 的本地 evidence integration test。现有 tracked v3 测试树没有另外 48 个可执行测试可供复跑。
+任务书 SA-266 和附录 C 要求 `tests/stage1_dynamic_replay_v3` 至少 231 passed。2026-08-15 在当前冻结 clean checkout 上以 Python 3.11 可复现的是 `181 passed, 3 skipped`；1 项需要登记 Desktop mirror，2 项需要本地 21 份 literature anchor source files。这些都是本地 evidence integration skips，不是 SCTSR 训练逻辑失败。现有 tracked v3 测试树仍不能支持 231 passed 的历史口径。
 
 这不是 SCTSR v4 测试失败，但在任务书未修订或缺失测试未恢复前，SA-266 必须 FAIL，不能把历史“231 passed”声明当作当前执行证据。详见 `SPECIFICATION_CHANGE_REQUEST_V3_231_BASELINE_MISMATCH.md`。
 
@@ -42,10 +49,10 @@ BudgetedReplay 报告所称的三个源码载体在既有现场审计中为 `REP
 
 ## 8. 严格解除顺序
 
-1. owner 对 R2 规格矛盾作书面、预注册决定；
+1. 对 R2 addendum 实现提交做独立复审并冻结新 source manifest；
 2. owner 对 v3 231 基线矛盾作修订或恢复缺失测试；
-3. 独立代码审查通过；
-4. 从 exact clean source commit 生成 source manifest；
-5. release authority 登记 key、seed 和签名 release；
-6. 仍先做 canary/资源 gate，不自动启动正式训练；
-7. blind/test 继续密封。
+3. 3090 正式规格单 epoch engineering benchmark 通过；
+4. release authority 登记 key、8+14 training seeds、签名 release、逐 job token 和
+   10 台机器共享 claim registry；
+5. 只在所有机器 preflight PASS 后另行授权正式训练；
+6. blind/test 继续密封。

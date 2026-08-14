@@ -3,12 +3,12 @@
 ## 1. 权限和当前状态
 
 本手册描述未来 release 后怎样运行，不是当前训练授权。当前所有 arm 的
-`formal_state=HELD`，R2 规格仍需 owner addendum，正式 key/seed/release/token
-尚未生成。
+`formal_state=HELD`。R2 addendum 已由 owner 批准并完成本地物化验证，但正式
+key、8+14 training seeds、release、逐 job token 和 shared claim registry 尚未生成。
 
 只有 release authority 可以：
 
-- 接受科学 addendum；
+- 验证已批准科学 addendum 的 SHA 和 source commit；
 - 冻结 discovery/confirmation seeds；
 - 签名 matrix release；
 - 为每个 logical process 签发一次性 execution token；
@@ -21,7 +21,7 @@ pool、parent、data root、output root 或 retry 语义，也不能自行生成
 
 ### Phase 0：代码和科学规格冻结
 
-1. owner 处理 R2 addendum；
+1. 独立复审 R2 addendum 实现与真实 pool digest；
 2. code review 无 P0/P1；
 3. clean commit 生成 source-tree manifest；
 4. contract/arms/runtime/registry/runbook manifest 全部冻结；runbook manifest 必须由
@@ -61,7 +61,8 @@ uv run --python 3.11 python scripts/stage1_sctsr_v4/validate_dataset_content.py 
 
 Pool 由 release authority 在独立冻结目录一次性生成，不由 10 台机器各自随机生成。
 每个 pool 保存 manifest、membership Parquet、selection ledger、quota audit 和 CLI
-receipt。R2 只在正式 addendum 激活后才允许成功。
+receipt。R2 只能按已批准 policy ID、selection seed `20260812` 和 expected digest
+成功；`R2_U`、`R2_F` 与 fallback 必须读取同一个 pool artifact，不得在训练机重抽。
 
 每个 arm/seed 的 E1-E200 schedule 由已冻结 pool 物化。训练机只读 schedule，
 不得重新抽样或根据本机性能改变 slots。

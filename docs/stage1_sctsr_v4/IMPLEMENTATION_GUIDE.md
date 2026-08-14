@@ -86,10 +86,15 @@ uv run python scripts/stage1_sctsr_v4/validate_dataset_content.py `
 
 - `T_STRESS`：冻结的 2.5% 压力集合，不是已验证 selector；
 - `R1_GLOBAL_RANDOM`：完整 eligible base 上的全局随机，自然 T overlap 必须报告；
-- `R2_MATCHED_RANDOM`：先排除 T，再精确匹配 label、历史 dynamic bucket、OOF fold 和 `oof_group_id`；
+- `R2_MATCHED_RANDOM`：先排除 T，精确匹配 label、历史 dynamic bucket 和 OOF fold；
+  仅对 filename-bucket surrogate `oof_group_id` 使用 owner-approved 最小偏移；
 - `CURRENT_LOSS_HELD`：接口存在但第一阶段必须拒绝启用。
 
-R2 matcher 在匹配前只接收预终端白名单投影。loss、confidence、RHO、gradient、forgetting、AUM、未来结果和 endpoint 字段不可见。任何联合 quota 不可满足时必须抛出 `R2_QUOTA_INFEASIBLE`，不得 nearest、relax、replacement 或回用 T。
+R2 matcher 在匹配前只接收预终端白名单投影。loss、confidence、RHO、gradient、forgetting、AUM、未来结果和 endpoint 字段不可见。算法先耗尽每个四字段 exact cell，再只在同 label/dynamic/fold cell 内填充不可避免的 378 个 group deficit；必须记录逐 occurrence displacement，且 group TV 恰为 0.126。三字段 quota 仍不可满足、出现第二字段 relaxation、replacement 或回用 T 时必须抛出 `R2_QUOTA_INFEASIBLE`。
+
+`R2_U` 与 `R2_F` 不是两套各 3,000 IDs 的抽样。两者及
+`T_TO_R2_AT_160` fallback 必须复用 selection seed `20260812`、3,000 unique 和
+identity digest `075FC31...19B6BECC` 的同一 pool；U/F 只允许 schedule 不同。
 
 正式 pool 从登记资产派生分母；CLI 不接受人为 `--base-denominator`。生成后保存 manifest、五组 membership、候选全集 selection ledger 和 quota audit。
 

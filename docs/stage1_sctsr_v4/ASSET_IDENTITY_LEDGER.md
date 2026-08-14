@@ -27,7 +27,8 @@ source manifest 和签名 release；不得手改本表后继续使用旧 release
 | role | canonical path | bytes | SHA-256 / digest |
 | --- | --- | ---: | --- |
 | taskbook | `artifacts/.../03_preregistration_v4_sctsr/SCTSR_EXPERT_IMPLEMENTATION_TASKBOOK.md` | 87,333 | file SHA `732FF49F...98A66`; Git blob `b201d021...05c6be` |
-| contract | `configs/stage1_sctsr_v4/contract_v1.json` | 2,419 | file SHA `DDDC31CD...0CAA7` |
+| contract | `configs/stage1_sctsr_v4/contract_v1.json` | 2,885 | file SHA `DF30244A...E0271` |
+| R2 addendum policy | `configs/stage1_sctsr_v4/r2_matching_policy_v1.json` | 1,122 | file SHA `E58E9D70...5EA3C`; digest `33B4681F...E7D4F` |
 | arms | `configs/stage1_sctsr_v4/arms_phase1_v1.json` | 6,126 | file SHA `DD7A3FF7...07277` |
 | contract+arms semantic | derived by validator | N/A | `8AA9CC9F...E9E0C` |
 | runtime policy | `configs/stage1_sctsr_v4/runtime_policy_v1.json` | 1,138 | file SHA `5628D5BE...49626`; digest `12A07710...8838` |
@@ -103,13 +104,14 @@ identity。R2 builder 只能从参考表先投影白名单字段，再交给 mat
   `DFDADC5D75B39A78E0C8995BD46F063C5D969BEA1024E4A332A051D00A172689`；
 - T identity digest：
   `85D462C1D95F30FB8B519162BBAD762CC4E9506A185C07D719145F07FE003B4B`；
-- R2 current status：`R2_QUOTA_INFEASIBLE`；
+- R2 old strict status：`R2_QUOTA_INFEASIBLE`；
 - shortage：172 joint strata / 378 occurrences；
-- audited proposed pool digest（未激活）：
+- owner-approved active policy pool digest：
   `075FC31FE487D3646E89BA1043E5124D9FE49CE9FCC61C1A8041A9CB8196BECC`。
 
-提案 digest 不能填入正式 pool，除非 owner 接受 addendum、实现 commit 通过 TDD、
-所有 arm/schedule/release 重新冻结。
+该 digest 已通过 TDD 和真实 120,000-row 物化验证，但仍必须由新的 clean source
+commit、contract、pool artifact、schedule 和签名 release共同冻结，不能沿用旧 review
+分支的 release identity。
 
 ## 8. 训练机最低核验
 

@@ -18,11 +18,11 @@ uv run pytest tests/stage1_dynamic_replay_v3 -q
 
 在完整 `C:\GitHub\YOLO-CV` checkout、Python 3.11 `uv` 环境中，tracked `tests/stage1_dynamic_replay_v3` 当前包含 34 个 Python test files。上述命令得到：
 
-`183 passed, 1 skipped`
+`181 passed, 3 skipped`
 
-skip 来自 `test_global_completion_audit_v2.py`：它要求登记的 Desktop 文献镜像。该本地 evidence integration dependency 不应伪造，也不能通过复制任意目录强行消除。
+3 项 skip 都是本地 evidence integration：1 项需要登记 Desktop mirror，2 项需要 21 份 literature anchor source files。这些依赖不应伪造，也不能通过复制任意目录强行消除。
 
-Taskbook、现有 tracked tree 和本机现有 evidence 中没有可执行的另外 48 个 v3 tests 可供当前 checkout 复跑。因此，历史 `231 passed` 文本不能替代当前命令证据。
+Taskbook、现有 tracked tree 和本机 clean-checkout evidence 仍不能复现 `231 passed`。因此，历史 `231 passed` 文本不能替代当前命令证据。
 
 ## 对验收的影响
 

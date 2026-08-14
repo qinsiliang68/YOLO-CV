@@ -12,7 +12,10 @@ multi-label 主训练任务，也不覆盖任何历史 120/240-run 结果。SCTS
 - 代码实现和训练前 review 正在完成；
 - 正式训练尚未授权；
 - R2 四字段 exact quota 在真实资产上缺 172 strata / 378 occurrences；
-- owner 尚未接受改变 R2 estimand 的 addendum；
+- owner 已于 2026-08-15 批准只放宽 filename-bucket surrogate `oof_group_id`，
+  其余三字段 exact、3,000 unique、T overlap=0 保持不变；
+- `R2_U`、`R2_F` 和 fallback 必须复用 digest 为
+  `075FC31...19B6BECC` 的同一 R2 pool；
 - 正式 seed、matrix release 和 execution token 尚未发布；
 - `val_target` 不存在，故 A/gradient-alignment保持 HELD，但不阻断第一阶段
   timing/stop/fallback 代码审查；
@@ -20,8 +23,9 @@ multi-label 主训练任务，也不覆盖任何历史 120/240-run 结果。SCTS
 - 没有任何 SCTSR 方法有效性结论。
 
 因此，训练机现在只允许执行 unit/integration/synthetic/engineering canary 和只读
-验证。出现一份签名 release 并不自动解除 R2 规格阻断；release authority 必须先把
-已接受 addendum、可物化 R2 pool 和新的 contract/source identities一并冻结。
+验证。R2 规格阻断已经由 owner addendum 解除，但这不等于训练授权；release
+authority 仍必须把 addendum、可物化 R2 pool 和新的 contract/source identities
+一并冻结，并另行签发 seed、release、token 和 shared claim registry。
 
 ## 阅读顺序
 
@@ -35,12 +39,13 @@ multi-label 主训练任务，也不覆盖任何历史 120/240-run 结果。SCTS
 6. `FAILURE_AND_RECOVERY.md`：OOM/kill/disk/partial/receipt恢复规则；
 7. `ARTIFACT_AND_SCHEMA_GUIDE.md`：每个 ledger/checkpoint/prediction/frontier字段；
 8. `DEPLOYMENT_CHECKLIST.md`：发布前逐项机器验收；
-9. `SPECIFICATION_CHANGE_REQUEST_R2_INFEASIBLE.md`：当前科学阻断及候选 addendum；
+9. `SPECIFICATION_CHANGE_REQUEST_R2_INFEASIBLE.md` 与 canonical
+   `SCTSR_R2_MATCHING_ADDENDUM_20260815.md`：原不可行证据和已批准决定；
 10. `INDEPENDENT_REVIEW_CHECKLIST.md`、`KNOWN_BLOCKERS.md` 和最终 review report。
 
 任务书仍是实施范围的上游权威规范；本 runbook 是对已经实现代码和本轮 review
 修复后的操作解释。若二者冲突，不能由训练机自行选择：必须登记冲突，停止，并由
-owner/release authority签署 addendum。Markdown声明不能覆盖机器 validator。
+owner/release authority确认是否已被 canonical addendum 替代。Markdown声明不能覆盖机器 validator。
 
 ## 一个 job 何时算开始、完成或作废
 
@@ -61,7 +66,7 @@ owner/release authority签署 addendum。Markdown声明不能覆盖机器 valida
 
 - 找 Downloads/Desktop或相邻目录中的“最新/相似”文件；
 - 选择空闲 GPU 后改写 signed device；
-- 放宽 R2 quota、允许 replacement或复用 T；
+- 超出 addendum 再放宽 R2、允许 replacement或复用 T；
 - 减 batch、改 workers/imgsz/accumulation或在 OOM 后继续；
 - 从 best.pt/val_op/轨迹图挑 checkpoint、停止点或阈值；
 - 复制 execution-claim registry以绕过一次性 claim；

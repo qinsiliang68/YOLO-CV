@@ -9,7 +9,7 @@
 3. parent/initial checkpoint 的完整 SHA 是什么？
 4. 本 job 唯一允许变化的 treatment 是什么？
 5. 为什么 T 不是已验证 selector？
-6. R2 是否已有 owner 接受的可实例化规格？
+6. R2 是否精确绑定 owner-approved policy、selection seed、pool digest 和同池 arm 映射？
 7. 为什么 exit 0 不等于完成？
 8. E200/EMA/val_op 为什么不能用于选择方法？
 9. 发生 OOM、disk full、kill 或 receipt 损坏时，为什么不能直接 `--resume`？
@@ -147,7 +147,7 @@ uv run --python <PYTHON_VERSION> python scripts/stage1_sctsr_v4/validate_run_int
 `assignments_generated`、`engineering_gate_generated`、`pilot_release_generated`、
 `blind_holdout_opened`、`test_accessed`、`method_effectiveness_claimed` 全部为 JSON
 `false`。该 PASS 只解除“本机能否读图、跑一步和写恢复产物”的工程疑问，不解除
-R2、release、seed 或科学合同阻断。
+R2 policy/pool identity mismatch、release、seed 或科学合同阻断。
 
 ## 6. Common parent START 模板
 

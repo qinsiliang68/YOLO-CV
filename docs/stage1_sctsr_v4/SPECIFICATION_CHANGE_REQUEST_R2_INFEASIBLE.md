@@ -1,6 +1,6 @@
 # SCTSR v4 R2 specification change request
 
-Status: `AUDITED_PROPOSAL_AVAILABLE_OWNER_DECISION_REQUIRED`
+Status: `RESOLVED_BY_OWNER_ADDENDUM_2026-08-15`
 
 This request does not relax the implementation and does not authorize training. It records a contradiction between the frozen taskbook claim and the currently registered assets.
 
@@ -32,7 +32,7 @@ The full four-field joint audit observes **172 shortage strata** and **378 missi
 
 The machine-readable summary is `docs/stage1_sctsr_v4/tdd_receipts/commit_02/R2_INFEASIBILITY_SUMMARY.txt`. The current implementation must raise `R2_QUOTA_INFEASIBLE`; it must not silently weaken matching.
 
-## Owner decision required
+## Original owner decision request
 
 Exactly one preregistered change is required before formal R2 construction can pass:
 
@@ -54,6 +54,19 @@ that remains exact on `(label, dynamic bucket, OOF fold)`, exhausts every
 available exact four-field cell, and randomly fills only the unavoidable 378
 capacity deficits inside the same three-field cell. Its four-field/group total
 variation is the capacity lower bound `378/3000 = 0.126`; direct drop-group
-random produces `0.392333...`. This is a proposal, not an active formal policy.
-Until owner acceptance and a separate TDD implementation commit,
-`build_registered_r2` must continue to raise `R2_QUOTA_INFEASIBLE`.
+random produces `0.392333...`. This was a proposal at the time of the
+2026-08-14 audit.
+
+## Resolution on 2026-08-15
+
+The owner approved option 2 with the minimum-displacement construction: only
+`oof_group_id` is relaxed, while 3,000 unique IDs, zero T overlap, label,
+historical dynamic bucket and OOF fold remain exact. `R2_U`, `R2_F` and the
+post-E160 fallback share one pool rather than drawing separate identities.
+
+The active machine policy is
+`configs/stage1_sctsr_v4/r2_matching_policy_v1.json`; the canonical scientific
+decision is `SCTSR_R2_MATCHING_ADDENDUM_20260815.md`. An unavailable exact
+three-field cell, a second relaxed field, wrong seed/digest, replacement or T
+overlap still raises `R2_QUOTA_INFEASIBLE`. This resolution authorizes the
+implementation change only; it does not authorize formal training.

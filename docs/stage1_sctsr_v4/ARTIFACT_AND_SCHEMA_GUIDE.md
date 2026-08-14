@@ -33,6 +33,23 @@
 Common parent 没有正式 val_op endpoint；branch 必须有。Logical child index 对 E1-E120
 只引用 parent 的物理产物，不复制后伪装成 child 自己生成。
 
+### 2.1 R2 addendum 构造证据
+
+R2 `POOL_MANIFEST.json` 和 `QUOTA_AUDIT.json` 中的 `pool_build_audit` 必须逐字段
+相同并包含：policy、selection seed、candidate/excluded/selected count、T overlap、
+三字段 exact 布尔值、四字段非 exact 布尔值、唯一 relaxed field、378 条
+`displacement_records` 和 ledger digest。每条 displacement 保存：
+
+```text
+selected_sample_id, y_true, historical_dynamic_bucket, oof_fold,
+requested_oof_group_id, selected_oof_group_id, selection_counter_hash
+```
+
+机器 validator 必须重算 displacement ledger digest、row count、requested/selected
+group 不同、pool identity digest 和 group TV=0.126。`R2_U`、`R2_F` 和 fallback 的
+schedule/pool binding 必须回指同一 R2 `POOL_MANIFEST.json`；复制后改路径但保持不同
+manifest SHA 不能冒充共享 pool。
+
 ## 3. Occurrence ledger（49 fields）
 
 每个 optimizer-visible base/replay occurrence 一行：
