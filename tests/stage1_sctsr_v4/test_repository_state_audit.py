@@ -138,6 +138,30 @@ def test_repository_audit_uses_git_blob_identity_when_clean_worktree_line_ending
     assert evidence["worktree_sha256"]
 
 
+def test_repository_audit_does_not_treat_fresh_checkout_mtime_as_content_identity(tmp_path):
+    base, source = _repository(tmp_path)
+    relative = "artifacts/legacy/04_run_queue_v2/queue.json"
+    path = tmp_path / relative
+    future = datetime(2100, 1, 1, tzinfo=timezone.utc).timestamp()
+    os.utime(path, (future, future))
+
+    report = audit_repository_state(
+        tmp_path,
+        baseline_commit=base,
+        implementation_start_commit=source,
+        implementation_source_commit=source,
+        allowed_prefixes=("stage1_sctsr_v4/",),
+        allowed_files=(),
+        protected_prefixes=("stage1_gapvalue240/", "stage1_dynamic_replay_v3/", "YOLOv11/ultralytics/"),
+        legacy_markers=("/04_run_queue_v2/",),
+    )
+
+    evidence = report["legacy_evidence"]["files"][0]
+    assert evidence["content_identity_unchanged"] is True
+    assert evidence["mtime_before_implementation_start"] is False
+    assert evidence["mtime_verification_status"] == "INFORMATIONAL_NOT_CONTENT_IDENTITY"
+
+
 def test_repository_audit_rejects_protected_source_change(tmp_path):
     base, source = _repository(tmp_path)
     (tmp_path / "stage1_gapvalue240/frozen.py").write_text("VALUE = 9\n", encoding="utf-8")

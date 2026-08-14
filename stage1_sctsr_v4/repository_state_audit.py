@@ -221,10 +221,15 @@ def audit_repository_state(
         # Git commit timestamps have one-second resolution while NTFS mtimes are
         # sub-second.  Treat the commit's whole recorded second as pre-start.
         mtime_cutoff = start_time + timedelta(seconds=1)
-        if baseline_oid != source_oid or baseline_sha != source_sha or normalized_worktree_oid != source_oid or modified >= mtime_cutoff:
+        content_identity_unchanged = bool(
+            baseline_oid == source_oid
+            and baseline_sha == source_sha
+            and normalized_worktree_oid == source_oid
+        )
+        if not content_identity_unchanged:
             raise SctsrError(
                 ErrorCode.SOURCE_TREE_MISMATCH,
-                "Protected legacy Git identity, normalized worktree content, or mtime changed during v4 implementation",
+                "Protected legacy Git identity or normalized worktree content changed during v4 implementation",
                 observed={
                     "path": relative,
                     "source_git_blob_oid": source_oid,
@@ -235,7 +240,6 @@ def audit_repository_state(
                 expected={
                     "baseline_git_blob_oid": baseline_oid,
                     "baseline_blob_sha256": baseline_sha,
-                    "mtime_before_utc": mtime_cutoff.isoformat(),
                 },
             )
         legacy_files.append(
@@ -254,6 +258,12 @@ def audit_repository_state(
                 "mtime_utc": modified.isoformat(),
                 "implementation_start_utc": start_time.isoformat(),
                 "implementation_start_mtime_cutoff_utc": mtime_cutoff.isoformat(),
+                # Git does not preserve mtimes across clone, checkout, or linked
+                # worktree creation.  Preserve the observed timestamp, but never
+                # promote it to content-identity evidence or claim it is unchanged.
+                "mtime_before_implementation_start": modified < mtime_cutoff,
+                "mtime_verification_status": "INFORMATIONAL_NOT_CONTENT_IDENTITY",
+                "content_identity_unchanged": content_identity_unchanged,
                 "unchanged": True,
             }
         )
