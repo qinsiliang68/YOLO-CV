@@ -1,0 +1,6 @@
+command: uv run --isolated --python 3.11 --extra dev pytest tests\stage1_sctsr_v4\test_engineering_canary.py -q
+exit_code: 0
+captured_at_local: 2026-08-14
+
+...                                                                      [100%]
+3 passed in 3.49s

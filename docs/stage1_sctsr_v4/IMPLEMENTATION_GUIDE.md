@@ -172,7 +172,31 @@ uv run python scripts/stage1_sctsr_v4/run_synthetic_canary.py `
 
 默认环境已有 PyArrow 时不应使用 portable fallback。Canary 真实执行 tiny model forward/backward/optimizer/EMA/checkpoint、八臂 schedule、96 点 frontier 和四种故障注入，但所有产物必须标记 `SYNTHETIC_NOT_SCIENTIFIC_RESULT`。
 
-## 11. 开发验收命令
+## 11. 本地真实图工程 canary
+
+该入口只读取 `train_manifest.csv` 与 `normal_train_manifest.csv` 的前两条，逐图重算
+bytes/SHA，加载已冻结 `yolo11l-cls.pt`，执行一个 4 张 base + 1 张 replay 的工程
+microbatch。它不会构造正式 120,000-row DataLoader、不会生成 seed/release/assignment，
+也不能估计模型效果：
+
+```powershell
+uv run --isolated --python 3.11 --extra dev `
+  python scripts/stage1_sctsr_v4/run_engineering_canary.py `
+  --repository-root C:\GitHub\YOLO-CV `
+  --dataset-root C:\GitHub\YOLO-CV\data\final_sewerml_dataset `
+  --artifact-root <NEW_EMPTY_ENGINEERING_CANARY_ROOT> `
+  --training-seed 20260814 `
+  --device cuda:0 `
+  --output <OUTSIDE_ARTIFACT_ROOT_RECEIPT.json>
+```
+
+成功必须同时证明：真实训练图/权重 SHA、base/replay forward/backward、恰好一次
+optimizer/EMA、replay RNG/BN 恢复、真实 Zstd Parquet、完整 checkpoint round-trip、
+损坏 checkpoint 拒绝、半写 generation quarantine 和 FN=0..95 共 96 点。权威结果
+必须写成 `ENGINEERING_CANARY_NOT_SCIENTIFIC_RESULT`，且七个正式副作用字段全为
+JSON `false`。此 microbatch 的秒数不能外推正式 epoch 或 3090 campaign 工期。
+
+## 12. 开发验收命令
 
 ```powershell
 uv run pytest tests/stage1_sctsr_v4 -q

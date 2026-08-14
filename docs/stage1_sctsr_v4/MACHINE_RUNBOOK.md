@@ -138,7 +138,18 @@ uv run --python <PYTHON_VERSION> python scripts/stage1_sctsr_v4/validate_run_int
 正式 runner 仍会独立从实际输入重新派生 context；上述自检 PASS 不能替代 runner
 比较。任何 job 参数或 token bytes变化都必须生成新的 acknowledgement。
 
-## 5. Common parent START 模板
+## 5. 正式授权前真实图工程 canary
+
+在任何 release、seed 或正式 runner 之前，只能用
+`scripts/stage1_sctsr_v4/run_engineering_canary.py` 执行一个训练角色真实图 microbatch。
+完整命令和判定字段见 `IMPLEMENTATION_GUIDE.md` 第 11 节。训练机 AI 必须确认输出
+语义为 `ENGINEERING_CANARY_NOT_SCIENTIFIC_RESULT`，并确认 `formal_training_started`、
+`assignments_generated`、`engineering_gate_generated`、`pilot_release_generated`、
+`blind_holdout_opened`、`test_accessed`、`method_effectiveness_claimed` 全部为 JSON
+`false`。该 PASS 只解除“本机能否读图、跑一步和写恢复产物”的工程疑问，不解除
+R2、release、seed 或科学合同阻断。
+
+## 6. Common parent START 模板
 
 以下模板中的每个 `<...>` 都必须由签名 job 参数单替换；出现任何占位符即停止：
 
@@ -169,7 +180,7 @@ uv run --python <PYTHON_VERSION> python scripts/stage1_sctsr_v4/run_common_paren
 `--run-intent-acknowledgement` 与 `--runbook-manifest` 都是 mandatory 参数。runner
 在 claim token 和构造 trainer 前独立验证二者；任一缺失、过期或 context 不同即失败。
 
-## 6. Branch START 模板
+## 7. Branch START 模板
 
 ```powershell
 uv run --python <PYTHON_VERSION> python scripts/stage1_sctsr_v4/run_branch.py `
@@ -206,7 +217,7 @@ uv run --python <PYTHON_VERSION> python scripts/stage1_sctsr_v4/run_branch.py `
 NR 没有 identity pool；单 pool arm 传一次；T→R2 传 T 和 R2 各一次。不得用参数
 顺序猜 primary/fallback，manifest role 和 schedule 会共同验证。
 
-## 7. 运行中监控
+## 8. 运行中监控
 
 训练机只监控，不修改训练：
 
@@ -222,7 +233,7 @@ NR 没有 identity pool；单 pool arm 传一次；T→R2 传 T 和 R2 各一次
 不得因 GPU utilization 偶尔下降而增加 workers、prefetch、batch 或并发进程。不得
 因为磁盘压力删除已完成 generation。异常按 stop rule 处理。
 
-## 8. START 与 RESUME 不可混用
+## 9. START 与 RESUME 不可混用
 
 - START：output root 不存在，token action=`START`；
 - RESUME：已有未终结 run、完整 contiguous prefix、独立 token action=`RESUME`、
@@ -243,7 +254,7 @@ RESUME 命令参数与 START 相同，另加：
 RESUME 必须先以 `--action RESUME`、新 execution token、last valid checkpoint SHA 和
 receipt-chain digest重新运行第 4 节 acknowledgement 命令；不得复用 START 确认书。
 
-## 9. Job 结束后的固定命令
+## 10. Job 结束后的固定命令
 
 ```powershell
 uv run --python <PYTHON_VERSION> python scripts/stage1_sctsr_v4/validate_run.py `
@@ -254,7 +265,7 @@ uv run --python <PYTHON_VERSION> python scripts/stage1_sctsr_v4/validate_run.py 
 不要在正式模式加 `--allow-synthetic-columnar-fallback`。然后由独立审查者运行
 closeout；训练机自身的“完成”消息不能替代 closeout。
 
-## 10. 本机退出时必须汇报
+## 11. 本机退出时必须汇报
 
 - job parameters 和所有输入 SHA；
 - start/end UTC；

@@ -1,0 +1,14 @@
+command: uv run --isolated --python 3.11 --extra dev pytest tests\stage1_sctsr_v4\test_engineering_canary.py -q
+exit_code: 1
+captured_at_local: 2026-08-14
+
+=================================== ERRORS ====================================
+______ ERROR collecting tests/stage1_sctsr_v4/test_engineering_canary.py ______
+ImportError while importing test module
+tests\stage1_sctsr_v4\test_engineering_canary.py:8: in <module>
+    from stage1_sctsr_v4.engineering_canary import (
+E   ModuleNotFoundError: No module named 'stage1_sctsr_v4.engineering_canary'
+=========================== short test summary info ===========================
+ERROR tests/stage1_sctsr_v4/test_engineering_canary.py
+!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!
+1 error in 0.11s
