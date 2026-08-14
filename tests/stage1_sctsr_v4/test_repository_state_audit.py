@@ -62,6 +62,54 @@ def test_repository_audit_binds_allowed_changes_and_legacy_sha_mtime(tmp_path):
     assert report["legacy_evidence"]["file_count"] == 1
 
 
+def test_default_scope_allows_registered_v4_preregistration_evidence_only(tmp_path):
+    base, implementation_start = _repository(tmp_path)
+    _git(tmp_path, "config", "core.longpaths", "true")
+    registered_relative = (
+        "artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/"
+        "03_preregistration_v4_sctsr/assets/DATASET_CONTENT_LEDGER_BUILD_RECEIPT_v1.json"
+    )
+    registered = windows_safe_resolved_path(tmp_path / registered_relative)
+    registered.parent.mkdir(parents=True, exist_ok=True)
+    registered.write_text('{"status":"PASS"}\n', encoding="utf-8")
+    source = _commit(tmp_path, "registered v4 preregistration evidence")
+    old = datetime(2000, 1, 1, tzinfo=timezone.utc).timestamp()
+    os.utime(tmp_path / "artifacts/legacy/04_run_queue_v2/queue.json", (old, old))
+
+    report = audit_repository_state(
+        tmp_path,
+        baseline_commit=base,
+        implementation_start_commit=implementation_start,
+        implementation_source_commit=source,
+    )
+
+    changed = {row["relative_path"] for row in report["changed_file_ledger"]["files"]}
+    assert registered_relative in changed
+
+
+def test_default_scope_rejects_unregistered_neighboring_experiment_artifact(tmp_path):
+    base, implementation_start = _repository(tmp_path)
+    _git(tmp_path, "config", "core.longpaths", "true")
+    unregistered = windows_safe_resolved_path(
+        tmp_path
+        / "artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807"
+        / "03_preregistration_v5_unapproved/claim.json"
+    )
+    unregistered.parent.mkdir(parents=True, exist_ok=True)
+    unregistered.write_text('{"status":"PASS"}\n', encoding="utf-8")
+    source = _commit(tmp_path, "unregistered neighboring artifact")
+
+    with pytest.raises(SctsrError) as caught:
+        audit_repository_state(
+            tmp_path,
+            baseline_commit=base,
+            implementation_start_commit=implementation_start,
+            implementation_source_commit=source,
+        )
+
+    assert caught.value.code is ErrorCode.SOURCE_TREE_MISMATCH
+
+
 def test_repository_audit_uses_git_blob_identity_when_clean_worktree_line_endings_differ(tmp_path):
     base, source = _repository(tmp_path)
     relative = "artifacts/legacy/04_run_queue_v2/queue.json"

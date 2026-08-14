@@ -19,6 +19,7 @@ DEFAULT_ALLOWED_PREFIXES = (
     "tests/stage1_sctsr_v4/",
     "docs/stage1_sctsr_v4/",
     "integrations/ultralytics/",
+    "artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/03_preregistration_v4_sctsr/",
     "artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/08_reports/sctsr_v4_",
 )
 DEFAULT_ALLOWED_FILES = (
