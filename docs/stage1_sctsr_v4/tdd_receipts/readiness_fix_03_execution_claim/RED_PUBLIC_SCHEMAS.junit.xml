@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="2" skipped="0" tests="2" time="0.109" timestamp="2026-08-14T19:45:06.847914+08:00" hostname="zhangdawei"><testcase classname="tests.stage1_sctsr_v4.test_schema_registry" name="test_schema_registry_registers_one_attempt_formal_execution_schemas" time="0.000"><failure message="KeyError: 'formal_execution_token'">def test_schema_registry_registers_one_attempt_formal_execution_schemas():
+&gt;       assert REQUIRED_SCHEMAS["formal_execution_token"] == "stage1.sctsr.formal_execution_token.v1"
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'formal_execution_token'
+
+tests\stage1_sctsr_v4\test_schema_registry.py:35: KeyError</failure></testcase><testcase classname="tests.stage1_sctsr_v4.test_formal_execution_claim" name="test_repository_execution_templates_are_inactive_and_complete" time="0.000"><failure message="FileNotFoundError: [Errno 2] No such file or directory: 'C:\\Users\\28898\\AppData\\Local\\Temp\\YOLO-CV-sctsr-v4-readiness-fix-f285754\\configs\\stage1_sctsr_v4\\formal_execution_token_schema_v1.json'">repository_root = WindowsPath('C:/Users/28898/AppData/Local/Temp/YOLO-CV-sctsr-v4-readiness-fix-f285754')
+
+    def test_repository_execution_templates_are_inactive_and_complete(repository_root):
+        token = json.loads(
+&gt;           (repository_root / "configs" / "stage1_sctsr_v4" / "formal_execution_token_schema_v1.json").read_text(
+                encoding="utf-8"
+            )
+        )
+
+tests\stage1_sctsr_v4\test_formal_execution_claim.py:261: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+..\..\..\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\pathlib.py:1058: in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = WindowsPath('C:/Users/28898/AppData/Local/Temp/YOLO-CV-sctsr-v4-readiness-fix-f285754/configs/stage1_sctsr_v4/formal_execution_token_schema_v1.json')
+mode = 'r', buffering = -1, encoding = 'utf-8', errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+&gt;       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: 'C:\\Users\\28898\\AppData\\Local\\Temp\\YOLO-CV-sctsr-v4-readiness-fix-f285754\\configs\\stage1_sctsr_v4\\formal_execution_token_schema_v1.json'
+
+..\..\..\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\pathlib.py:1044: FileNotFoundError</failure></testcase></testsuite></testsuites>

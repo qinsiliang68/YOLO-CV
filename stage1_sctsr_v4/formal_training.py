@@ -17,6 +17,11 @@ from .epoch_transaction import EpochTransaction, GenerationIdentity, validate_re
 from .errors import ErrorCode, SctsrError
 from .evidence_runtime import EpochEvidenceRecorder, ReplayHistoryState, SampleEvidence, sample_evidence_from_trainer
 from .filesystem import windows_safe_resolved_path
+from .formal_execution import (
+    build_execution_job_bindings,
+    publish_execution_claim_snapshot,
+    validate_execution_claim_binding,
+)
 from .logical_artifact_index import LogicalArtifactEntry, LogicalArtifactIndex
 from .recovery import FormalResumeContext
 from .replay_step_plan import build_replay_step_plan
@@ -699,6 +704,8 @@ def _publish_formal_run_manifest_and_indexes(
     arm_id: str,
     release_authorization: str | Path | Mapping[str, Any],
     release_expected_bindings: Mapping[str, str],
+    execution_claim_binding: Mapping[str, Any],
+    execution_claim_snapshot: Mapping[str, Any],
 ) -> dict[str, Any]:
     from .run_validation import build_artifact_index
     from .serialization import load_json
@@ -731,6 +738,10 @@ def _publish_formal_run_manifest_and_indexes(
         "release_expected_bindings": dict(release_expected_bindings),
         "formal_input_snapshot_digest": formal_input_snapshot["snapshot_digest"],
         "formal_input_external_binding_digest": formal_input_snapshot["external_binding_digest"],
+        "execution_id": execution_claim_binding["execution_id"],
+        "execution_claim_sha256": execution_claim_binding["claim_sha256"],
+        "execution_job_binding_digest": execution_claim_binding["job_binding_digest"],
+        "execution_attempt_snapshot_digest": execution_claim_snapshot["snapshot_digest"],
         "formal_training_authorized": True,
         "formal_training_started": True,
         "engineering_gate_generated": False,
@@ -764,6 +775,7 @@ def run_prepared_common_parent(
     release_verification_secret: bytes | str | None = None,
     prepared_trainer_binding: Mapping[str, Any] | None = None,
     formal_input_binding: Mapping[str, Any] | None = None,
+    execution_claim_binding: Mapping[str, Any] | None = None,
     resume_context: FormalResumeContext | None = None,
 ) -> dict[str, Any]:
     """Run the formal E1-E120 no-replay common parent on a prepared trainer.
@@ -782,6 +794,27 @@ def run_prepared_common_parent(
         expected_bindings=release_expected_bindings,
         verification_secret=release_verification_secret,
     )
+    execution_job = build_execution_job_bindings(
+        action="RESUME" if resume_context is not None else "START",
+        run_role="COMMON_PARENT",
+        logical_run_id=f"PARENT_{identity.training_seed}",
+        arm_id="COMMON_PARENT_NR",
+        training_seed=identity.training_seed,
+        output_root=output_root,
+        parent_checkpoint_sha256=identity.initial_checkpoint_sha256,
+        resume_checkpoint_sha256="0" * 64 if resume_context is None else resume_context.checkpoint_sha256,
+        lineage_digest=stable_digest({"role": "NOT_APPLICABLE_COMMON_PARENT"}),
+        schedule_digest=stable_digest({"role": "COMMON_PARENT_NR", "epochs": [1, 120]}),
+        resume_from_receipt_digest="0" * 64 if resume_context is None else resume_context.receipt_chain_digest,
+    )
+    if execution_mode == "formal":
+        if execution_claim_binding is None:
+            raise SctsrError(ErrorCode.FORMAL_EXECUTION_TOKEN_INVALID, "Formal parent lacks an atomic execution claim")
+        validate_execution_claim_binding(
+            execution_claim_binding,
+            expected_job_bindings=execution_job,
+            require_token_file=True,
+        )
     sizes = _base_batch_sizes(trainer)
     evidence_enabled = _evidence_enabled(execution_mode, collect_epoch_evidence)
     sample_evidence = sample_evidence_from_trainer(trainer) if evidence_enabled else {}
@@ -816,6 +849,11 @@ def run_prepared_common_parent(
             original_binding=original_trainer_binding,
             resume_binding=dict(prepared_trainer_binding or {}),
         )
+    execution_claim_snapshot = (
+        publish_execution_claim_snapshot(root, dict(execution_claim_binding), expected_job_bindings=execution_job)
+        if execution_mode == "formal"
+        else None
+    )
     if execution_mode == "formal" and resume_context is None:
         formal_input_snapshot = publish_formal_input_snapshot(root, dict(formal_input_binding))
         atomic_write_json(root / "FORMAL_IDENTITY.json", asdict(identity))
@@ -919,6 +957,8 @@ def run_prepared_common_parent(
         "resume_binding_receipt_digest": resume_binding_receipt_digest,
         "resumed_from_epoch": None if resume_context is None else resume_context.last_complete_epoch,
         "formal_input_snapshot_digest": None if formal_input_snapshot is None else formal_input_snapshot["snapshot_digest"],
+        "execution_id": None if execution_claim_binding is None else execution_claim_binding.get("execution_id"),
+        "execution_attempt_snapshot_digest": None if execution_claim_snapshot is None else execution_claim_snapshot["snapshot_digest"],
     }
     atomic_write_json(root / "PARENT_RECEIPT.json", receipt)
     if execution_mode == "formal":
@@ -932,6 +972,8 @@ def run_prepared_common_parent(
             arm_id="COMMON_PARENT_NR",
             release_authorization=release_authorization,
             release_expected_bindings=release_expected_bindings,
+            execution_claim_binding=dict(execution_claim_binding or {}),
+            execution_claim_snapshot=dict(execution_claim_snapshot or {}),
         )
         receipt = {**receipt, "final_indexes": final_indexes}
         atomic_write_json(root / "PARENT_RECEIPT.json", receipt)
@@ -953,6 +995,7 @@ def run_prepared_branch(
     parent_artifact_index_binding: Mapping[str, Any] | None = None,
     prepared_trainer_binding: Mapping[str, Any] | None = None,
     formal_input_binding: Mapping[str, Any] | None = None,
+    execution_claim_binding: Mapping[str, Any] | None = None,
     resume_context: FormalResumeContext | None = None,
 ) -> dict[str, Any]:
     identity.validate(formal=execution_mode == "formal")
@@ -964,6 +1007,27 @@ def run_prepared_branch(
         verification_secret=release_verification_secret,
     )
     parent_sha = sha256_file(parent_checkpoint)
+    execution_job = build_execution_job_bindings(
+        action="RESUME" if resume_context is not None else "START",
+        run_role="BRANCH",
+        logical_run_id=lineage.logical_run_id,
+        arm_id=schedule.arm_id.value,
+        training_seed=identity.training_seed,
+        output_root=output_root,
+        parent_checkpoint_sha256=parent_sha,
+        resume_checkpoint_sha256="0" * 64 if resume_context is None else resume_context.checkpoint_sha256,
+        lineage_digest=lineage.lineage_digest,
+        schedule_digest=schedule.plan_digest,
+        resume_from_receipt_digest="0" * 64 if resume_context is None else resume_context.receipt_chain_digest,
+    )
+    if execution_mode == "formal":
+        if execution_claim_binding is None:
+            raise SctsrError(ErrorCode.FORMAL_EXECUTION_TOKEN_INVALID, "Formal branch lacks an atomic execution claim")
+        validate_execution_claim_binding(
+            execution_claim_binding,
+            expected_job_bindings=execution_job,
+            require_token_file=True,
+        )
     parent_receipt = _validate_parent_completion_receipt(
         parent_checkpoint,
         parent_sha,
@@ -1029,6 +1093,11 @@ def run_prepared_branch(
             original_binding=original_trainer_binding,
             resume_binding=dict(prepared_trainer_binding or {}),
         )
+    execution_claim_snapshot = (
+        publish_execution_claim_snapshot(root, dict(execution_claim_binding), expected_job_bindings=execution_job)
+        if execution_mode == "formal"
+        else None
+    )
     if execution_mode == "formal" and resume_context is None:
         formal_input_snapshot = publish_formal_input_snapshot(root, dict(formal_input_binding))
         atomic_write_json(root / "FORMAL_IDENTITY.json", asdict(identity))
@@ -1162,6 +1231,8 @@ def run_prepared_branch(
         "resume_binding_receipt_digest": resume_binding_receipt_digest,
         "resumed_from_epoch": None if resume_context is None else resume_context.last_complete_epoch,
         "formal_input_snapshot_digest": None if formal_input_snapshot is None else formal_input_snapshot["snapshot_digest"],
+        "execution_id": None if execution_claim_binding is None else execution_claim_binding.get("execution_id"),
+        "execution_attempt_snapshot_digest": None if execution_claim_snapshot is None else execution_claim_snapshot["snapshot_digest"],
     }
     atomic_write_json(root / "BRANCH_RECEIPT.json", receipt)
     if execution_mode == "formal":
@@ -1175,6 +1246,8 @@ def run_prepared_branch(
             arm_id=schedule.arm_id.value,
             release_authorization=release_authorization,
             release_expected_bindings=release_expected_bindings,
+            execution_claim_binding=dict(execution_claim_binding or {}),
+            execution_claim_snapshot=dict(execution_claim_snapshot or {}),
         )
         receipt = {**receipt, "final_indexes": final_indexes}
         atomic_write_json(root / "BRANCH_RECEIPT.json", receipt)

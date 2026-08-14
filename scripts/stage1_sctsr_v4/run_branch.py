@@ -9,6 +9,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 from stage1_sctsr_v4.arm_spec import ArmId
 from stage1_sctsr_v4.cli_support import add_execution_arguments, add_output_argument, require_receipt_outside_artifact_root, run_cli
 from stage1_sctsr_v4.errors import ErrorCode, SctsrError
+from stage1_sctsr_v4.formal_execution import build_execution_job_bindings, claim_formal_execution
 from stage1_sctsr_v4.formal_cli import (
     build_prepared_trainer,
     load_formal_identity,
@@ -68,6 +69,8 @@ def main() -> int:
             "parent_artifact_index": arguments.parent_artifact_index,
             "release_authorization": arguments.release_authorization,
             "release_trust_policy": arguments.release_trust_policy,
+            "execution_token": arguments.execution_token,
+            "execution_claim_root": arguments.execution_claim_root,
             "source_tree_manifest": arguments.source_tree_manifest,
             "contract": arguments.contract,
             "arms": arguments.arms,
@@ -108,12 +111,12 @@ def main() -> int:
             parent_checkpoint=arguments.parent_checkpoint,
             parent_artifact_index=arguments.parent_artifact_index,
         )
+        parent_sha = sha256_file(arguments.parent_checkpoint)
         resume_context = None
         trainer_setup_root = arguments.output_root
         if arguments.resume:
             if arguments.resume_setup_root is None:
                 raise SctsrError(ErrorCode.RESUME_GENERATION_MISMATCH, "--resume requires --resume-setup-root")
-            parent_sha = sha256_file(arguments.parent_checkpoint)
             resume_context = prepare_formal_resume_context(
                 run_root=arguments.output_root,
                 expected_run_id=lineage.logical_run_id,
@@ -154,6 +157,28 @@ def main() -> int:
                 )
         elif arguments.resume_setup_root is not None:
             raise SctsrError(ErrorCode.RESUME_GENERATION_MISMATCH, "--resume-setup-root is forbidden without --resume")
+        execution_job = build_execution_job_bindings(
+            action="RESUME" if arguments.resume else "START",
+            run_role="BRANCH",
+            logical_run_id=lineage.logical_run_id,
+            arm_id=schedule.arm_id.value,
+            training_seed=identity.training_seed,
+            output_root=arguments.output_root,
+            parent_checkpoint_sha256=parent_sha,
+            resume_checkpoint_sha256="0" * 64 if resume_context is None else resume_context.checkpoint_sha256,
+            lineage_digest=lineage.lineage_digest,
+            schedule_digest=schedule.plan_digest,
+            resume_from_receipt_digest="0" * 64 if resume_context is None else resume_context.receipt_chain_digest,
+        )
+        execution_claim = claim_formal_execution(
+            arguments.execution_token,
+            claim_registry_root=arguments.execution_claim_root,
+            release=arguments.release_authorization,
+            release_trust_policy=arguments.release_trust_policy,
+            expected_release_bindings=authorization["expected_bindings"],
+            release_manifest_sha256=authorization["release_manifest_sha256"],
+            expected_job_bindings=execution_job,
+        )
         trainer, binding, trainer_binding = build_prepared_trainer(
             repository_root=arguments.repository_root,
             identity_manifest=arguments.identity_manifest,
@@ -179,6 +204,7 @@ def main() -> int:
             parent_artifact_index_binding=parent_binding,
             prepared_trainer_binding=trainer_binding,
             formal_input_binding=authorization["formal_input_binding"],
+            execution_claim_binding=execution_claim,
             resume_context=resume_context,
             execution_mode="formal",
         )
@@ -226,6 +252,7 @@ def main() -> int:
             "upstream_binding_digest": binding.binding_digest,
             "prepared_trainer_binding": trainer_binding,
             "formal_authorization": authorization,
+            "execution_claim": execution_claim,
             "identity_pool_binding": pool_binding,
             "parent_artifact_index_binding": parent_binding,
             "resume_context": None if resume_context is None else resume_context.as_dict(),

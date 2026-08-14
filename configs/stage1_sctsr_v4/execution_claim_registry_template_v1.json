@@ -1,0 +1,7 @@
+{
+  "schema_version": "stage1.sctsr.execution_claim_registry.v1",
+  "registry_id": "FUTURE_OWNER_PROVISIONED_SHARED_REGISTRY",
+  "mode": "SHARED_MULTI_MACHINE_EXCLUSIVE_CREATE",
+  "state": "INACTIVE_TEMPLATE",
+  "experiment_id": "dynamic_replay_budget_efficiency_20260807"
+}

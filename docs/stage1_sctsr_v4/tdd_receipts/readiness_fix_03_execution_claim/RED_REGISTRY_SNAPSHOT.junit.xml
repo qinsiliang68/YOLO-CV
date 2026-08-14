@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="0.125" timestamp="2026-08-14T19:48:26.952044+08:00" hostname="zhangdawei"><testcase classname="tests.stage1_sctsr_v4.test_formal_execution_claim" name="test_claim_and_token_are_snapshotted_and_tamper_is_rejected" time="0.048"><failure message="AssertionError: assert False&#10; +  where False = is_file()&#10; +    where is_file = (WindowsPath('C:/Users/28898/AppData/Local/Temp/pytest-of-28898/pytest-1679/test_claim_and_token_are_snaps0/run/00_contract/execution_attempts/EXEC_PARENT_101_START') / 'EXECUTION_CLAIM_REGISTRY.json').is_file">tmp_path = WindowsPath('C:/Users/28898/AppData/Local/Temp/pytest-of-28898/pytest-1679/test_claim_and_token_are_snaps0')
+
+    def test_claim_and_token_are_snapshotted_and_tamper_is_rejected(tmp_path):
+        release, trust, bindings = _release()
+        claim_root, registry = _claim_registry(tmp_path)
+        job = _job(tmp_path)
+        token = _token(release, registry, job)
+        token_path = tmp_path / "EXECUTION_TOKEN.json"
+        atomic_write_json(token_path, token)
+        claim = claim_formal_execution(
+            token_path,
+            claim_registry_root=claim_root,
+            release=release,
+            release_trust_policy=trust,
+            expected_release_bindings=bindings,
+            release_manifest_sha256=stable_digest(release),
+            expected_job_bindings=job,
+            verification_secret=SECRET,
+            now_utc=NOW,
+        )
+        run_root = tmp_path / "run"
+    
+        validated = validate_execution_claim_binding(claim, expected_job_bindings=job)
+        snapshot = publish_execution_claim_snapshot(run_root, claim, expected_job_bindings=job)
+    
+        assert validated["status"] == "CLAIMED"
+        assert snapshot["execution_id"] == token["execution_id"]
+        attempt_root = run_root / "00_contract" / "execution_attempts" / token["execution_id"]
+        assert (attempt_root / "EXECUTION_TOKEN.json").is_file()
+        assert (attempt_root / "EXECUTION_CLAIM.json").is_file()
+&gt;       assert (attempt_root / "EXECUTION_CLAIM_REGISTRY.json").is_file()
+E       AssertionError: assert False
+E        +  where False = is_file()
+E        +    where is_file = (WindowsPath('C:/Users/28898/AppData/Local/Temp/pytest-of-28898/pytest-1679/test_claim_and_token_are_snaps0/run/00_contract/execution_attempts/EXEC_PARENT_101_START') / 'EXECUTION_CLAIM_REGISTRY.json').is_file
+
+tests\stage1_sctsr_v4\test_formal_execution_claim.py:289: AssertionError</failure></testcase></testsuite></testsuites>

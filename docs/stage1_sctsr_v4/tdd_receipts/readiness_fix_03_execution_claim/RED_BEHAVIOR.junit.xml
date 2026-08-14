@@ -1,0 +1,342 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="11" skipped="0" tests="11" time="5.557" timestamp="2026-08-14T19:37:27.478796+08:00" hostname="zhangdawei"><testcase classname="tests.stage1_sctsr_v4.test_formal_execution_claim" name="test_execution_token_binds_release_registry_and_exact_job" time="0.009"><failure message="NotImplementedError: failure-first scaffold">tmp_path = WindowsPath('C:/Users/28898/AppData/Local/Temp/pytest-of-28898/pytest-1674/test_execution_token_binds_rel0')
+
+    def test_execution_token_binds_release_registry_and_exact_job(tmp_path):
+        release, trust, bindings = _release()
+        _root, registry = _claim_registry(tmp_path)
+        job = _job(tmp_path)
+        token = _token(release, registry, job)
+    
+&gt;       verified = _verify(token, release, trust, bindings, registry, job)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\stage1_sctsr_v4\test_formal_execution_claim.py:144: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\stage1_sctsr_v4\test_formal_execution_claim.py:125: in _verify
+    return verify_formal_execution_token(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+_args = ({'action': 'START', 'arm_id': 'COMMON_PARENT_NR', 'authorization': 'SIGNED_SCTSR_V4_FORMAL_EXECUTION', 'claim_registry_digest': '5070F7AE7972D6F7B514D7649EC99810BE7554640CB7F7A1C8289F4D27465637', ...},)
+_kwargs = {'claim_registry': {'experiment_id': 'dynamic_replay_budget_efficiency_20260807', 'mode': 'SHARED_MULTI_MACHINE_EXCLUS...FFFFFFFFFFFFFFFFFFFFFFFFFF', ...}, 'now_utc': datetime.datetime(2026, 8, 14, 12, 0, tzinfo=datetime.timezone.utc), ...}
+
+    def verify_formal_execution_token(*_args: Any, **_kwargs: Any) -&gt; Mapping[str, Any]:
+&gt;       raise NotImplementedError("failure-first scaffold")
+E       NotImplementedError: failure-first scaffold
+
+stage1_sctsr_v4\formal_execution.py:35: NotImplementedError</failure></testcase><testcase classname="tests.stage1_sctsr_v4.test_formal_execution_claim" name="test_execution_token_rejects_job_substitution[arm_id-T_U]" time="0.006"><failure message="NotImplementedError: failure-first scaffold">tmp_path = WindowsPath('C:/Users/28898/AppData/Local/Temp/pytest-of-28898/pytest-1674/test_execution_token_rejects_j0')
+field = 'arm_id', replacement = 'T_U'
+
+    @pytest.mark.parametrize(
+        ("field", "replacement"),
+        [
+            ("arm_id", "T_U"),
+            ("training_seed", 102),
+            ("output_root_digest", "9" * 64),
+            ("action", "RESUME"),
+            ("resume_from_receipt_digest", "4" * 64),
+        ],
+    )
+    def test_execution_token_rejects_job_substitution(tmp_path, field, replacement):
+        release, trust, bindings = _release()
+        _root, registry = _claim_registry(tmp_path)
+        signed_job = _job(tmp_path)
+        token = _token(release, registry, signed_job)
+        expected_job = {**signed_job, field: replacement}
+    
+        with pytest.raises(SctsrError) as caught:
+&gt;           _verify(token, release, trust, bindings, registry, expected_job)
+
+tests\stage1_sctsr_v4\test_formal_execution_claim.py:168: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\stage1_sctsr_v4\test_formal_execution_claim.py:125: in _verify
+    return verify_formal_execution_token(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+_args = ({'action': 'START', 'arm_id': 'COMMON_PARENT_NR', 'authorization': 'SIGNED_SCTSR_V4_FORMAL_EXECUTION', 'claim_registry_digest': '5070F7AE7972D6F7B514D7649EC99810BE7554640CB7F7A1C8289F4D27465637', ...},)
+_kwargs = {'claim_registry': {'experiment_id': 'dynamic_replay_budget_efficiency_20260807', 'mode': 'SHARED_MULTI_MACHINE_EXCLUS...FFFFFFFFFFFFFFFFFFFFFFFFFF', ...}, 'now_utc': datetime.datetime(2026, 8, 14, 12, 0, tzinfo=datetime.timezone.utc), ...}
+
+    def verify_formal_execution_token(*_args: Any, **_kwargs: Any) -&gt; Mapping[str, Any]:
+&gt;       raise NotImplementedError("failure-first scaffold")
+E       NotImplementedError: failure-first scaffold
+
+stage1_sctsr_v4\formal_execution.py:35: NotImplementedError</failure></testcase><testcase classname="tests.stage1_sctsr_v4.test_formal_execution_claim" name="test_execution_token_rejects_job_substitution[training_seed-102]" time="0.010"><failure message="NotImplementedError: failure-first scaffold">tmp_path = WindowsPath('C:/Users/28898/AppData/Local/Temp/pytest-of-28898/pytest-1674/test_execution_token_rejects_j1')
+field = 'training_seed', replacement = 102
+
+    @pytest.mark.parametrize(
+        ("field", "replacement"),
+        [
+            ("arm_id", "T_U"),
+            ("training_seed", 102),
+            ("output_root_digest", "9" * 64),
+            ("action", "RESUME"),
+            ("resume_from_receipt_digest", "4" * 64),
+        ],
+    )
+    def test_execution_token_rejects_job_substitution(tmp_path, field, replacement):
+        release, trust, bindings = _release()
+        _root, registry = _claim_registry(tmp_path)
+        signed_job = _job(tmp_path)
+        token = _token(release, registry, signed_job)
+        expected_job = {**signed_job, field: replacement}
+    
+        with pytest.raises(SctsrError) as caught:
+&gt;           _verify(token, release, trust, bindings, registry, expected_job)
+
+tests\stage1_sctsr_v4\test_formal_execution_claim.py:168: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\stage1_sctsr_v4\test_formal_execution_claim.py:125: in _verify
+    return verify_formal_execution_token(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+_args = ({'action': 'START', 'arm_id': 'COMMON_PARENT_NR', 'authorization': 'SIGNED_SCTSR_V4_FORMAL_EXECUTION', 'claim_registry_digest': '5070F7AE7972D6F7B514D7649EC99810BE7554640CB7F7A1C8289F4D27465637', ...},)
+_kwargs = {'claim_registry': {'experiment_id': 'dynamic_replay_budget_efficiency_20260807', 'mode': 'SHARED_MULTI_MACHINE_EXCLUS...FFFFFFFFFFFFFFFFFFFFFFFFFF', ...}, 'now_utc': datetime.datetime(2026, 8, 14, 12, 0, tzinfo=datetime.timezone.utc), ...}
+
+    def verify_formal_execution_token(*_args: Any, **_kwargs: Any) -&gt; Mapping[str, Any]:
+&gt;       raise NotImplementedError("failure-first scaffold")
+E       NotImplementedError: failure-first scaffold
+
+stage1_sctsr_v4\formal_execution.py:35: NotImplementedError</failure></testcase><testcase classname="tests.stage1_sctsr_v4.test_formal_execution_claim" name="test_execution_token_rejects_job_substitution[output_root_digest-9999999999999999999999999999999999999999999999999999999999999999]" time="0.006"><failure message="NotImplementedError: failure-first scaffold">tmp_path = WindowsPath('C:/Users/28898/AppData/Local/Temp/pytest-of-28898/pytest-1674/test_execution_token_rejects_j2')
+field = 'output_root_digest'
+replacement = '9999999999999999999999999999999999999999999999999999999999999999'
+
+    @pytest.mark.parametrize(
+        ("field", "replacement"),
+        [
+            ("arm_id", "T_U"),
+            ("training_seed", 102),
+            ("output_root_digest", "9" * 64),
+            ("action", "RESUME"),
+            ("resume_from_receipt_digest", "4" * 64),
+        ],
+    )
+    def test_execution_token_rejects_job_substitution(tmp_path, field, replacement):
+        release, trust, bindings = _release()
+        _root, registry = _claim_registry(tmp_path)
+        signed_job = _job(tmp_path)
+        token = _token(release, registry, signed_job)
+        expected_job = {**signed_job, field: replacement}
+    
+        with pytest.raises(SctsrError) as caught:
+&gt;           _verify(token, release, trust, bindings, registry, expected_job)
+
+tests\stage1_sctsr_v4\test_formal_execution_claim.py:168: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\stage1_sctsr_v4\test_formal_execution_claim.py:125: in _verify
+    return verify_formal_execution_token(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+_args = ({'action': 'START', 'arm_id': 'COMMON_PARENT_NR', 'authorization': 'SIGNED_SCTSR_V4_FORMAL_EXECUTION', 'claim_registry_digest': '5070F7AE7972D6F7B514D7649EC99810BE7554640CB7F7A1C8289F4D27465637', ...},)
+_kwargs = {'claim_registry': {'experiment_id': 'dynamic_replay_budget_efficiency_20260807', 'mode': 'SHARED_MULTI_MACHINE_EXCLUS...FFFFFFFFFFFFFFFFFFFFFFFFFF', ...}, 'now_utc': datetime.datetime(2026, 8, 14, 12, 0, tzinfo=datetime.timezone.utc), ...}
+
+    def verify_formal_execution_token(*_args: Any, **_kwargs: Any) -&gt; Mapping[str, Any]:
+&gt;       raise NotImplementedError("failure-first scaffold")
+E       NotImplementedError: failure-first scaffold
+
+stage1_sctsr_v4\formal_execution.py:35: NotImplementedError</failure></testcase><testcase classname="tests.stage1_sctsr_v4.test_formal_execution_claim" name="test_execution_token_rejects_job_substitution[action-RESUME]" time="0.006"><failure message="NotImplementedError: failure-first scaffold">tmp_path = WindowsPath('C:/Users/28898/AppData/Local/Temp/pytest-of-28898/pytest-1674/test_execution_token_rejects_j3')
+field = 'action', replacement = 'RESUME'
+
+    @pytest.mark.parametrize(
+        ("field", "replacement"),
+        [
+            ("arm_id", "T_U"),
+            ("training_seed", 102),
+            ("output_root_digest", "9" * 64),
+            ("action", "RESUME"),
+            ("resume_from_receipt_digest", "4" * 64),
+        ],
+    )
+    def test_execution_token_rejects_job_substitution(tmp_path, field, replacement):
+        release, trust, bindings = _release()
+        _root, registry = _claim_registry(tmp_path)
+        signed_job = _job(tmp_path)
+        token = _token(release, registry, signed_job)
+        expected_job = {**signed_job, field: replacement}
+    
+        with pytest.raises(SctsrError) as caught:
+&gt;           _verify(token, release, trust, bindings, registry, expected_job)
+
+tests\stage1_sctsr_v4\test_formal_execution_claim.py:168: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\stage1_sctsr_v4\test_formal_execution_claim.py:125: in _verify
+    return verify_formal_execution_token(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+_args = ({'action': 'START', 'arm_id': 'COMMON_PARENT_NR', 'authorization': 'SIGNED_SCTSR_V4_FORMAL_EXECUTION', 'claim_registry_digest': '5070F7AE7972D6F7B514D7649EC99810BE7554640CB7F7A1C8289F4D27465637', ...},)
+_kwargs = {'claim_registry': {'experiment_id': 'dynamic_replay_budget_efficiency_20260807', 'mode': 'SHARED_MULTI_MACHINE_EXCLUS...FFFFFFFFFFFFFFFFFFFFFFFFFF', ...}, 'now_utc': datetime.datetime(2026, 8, 14, 12, 0, tzinfo=datetime.timezone.utc), ...}
+
+    def verify_formal_execution_token(*_args: Any, **_kwargs: Any) -&gt; Mapping[str, Any]:
+&gt;       raise NotImplementedError("failure-first scaffold")
+E       NotImplementedError: failure-first scaffold
+
+stage1_sctsr_v4\formal_execution.py:35: NotImplementedError</failure></testcase><testcase classname="tests.stage1_sctsr_v4.test_formal_execution_claim" name="test_execution_token_rejects_job_substitution[resume_from_receipt_digest-4444444444444444444444444444444444444444444444444444444444444444]" time="0.006"><failure message="NotImplementedError: failure-first scaffold">tmp_path = WindowsPath('C:/Users/28898/AppData/Local/Temp/pytest-of-28898/pytest-1674/test_execution_token_rejects_j4')
+field = 'resume_from_receipt_digest'
+replacement = '4444444444444444444444444444444444444444444444444444444444444444'
+
+    @pytest.mark.parametrize(
+        ("field", "replacement"),
+        [
+            ("arm_id", "T_U"),
+            ("training_seed", 102),
+            ("output_root_digest", "9" * 64),
+            ("action", "RESUME"),
+            ("resume_from_receipt_digest", "4" * 64),
+        ],
+    )
+    def test_execution_token_rejects_job_substitution(tmp_path, field, replacement):
+        release, trust, bindings = _release()
+        _root, registry = _claim_registry(tmp_path)
+        signed_job = _job(tmp_path)
+        token = _token(release, registry, signed_job)
+        expected_job = {**signed_job, field: replacement}
+    
+        with pytest.raises(SctsrError) as caught:
+&gt;           _verify(token, release, trust, bindings, registry, expected_job)
+
+tests\stage1_sctsr_v4\test_formal_execution_claim.py:168: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\stage1_sctsr_v4\test_formal_execution_claim.py:125: in _verify
+    return verify_formal_execution_token(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+_args = ({'action': 'START', 'arm_id': 'COMMON_PARENT_NR', 'authorization': 'SIGNED_SCTSR_V4_FORMAL_EXECUTION', 'claim_registry_digest': '5070F7AE7972D6F7B514D7649EC99810BE7554640CB7F7A1C8289F4D27465637', ...},)
+_kwargs = {'claim_registry': {'experiment_id': 'dynamic_replay_budget_efficiency_20260807', 'mode': 'SHARED_MULTI_MACHINE_EXCLUS...FFFFFFFFFFFFFFFFFFFFFFFFFF', ...}, 'now_utc': datetime.datetime(2026, 8, 14, 12, 0, tzinfo=datetime.timezone.utc), ...}
+
+    def verify_formal_execution_token(*_args: Any, **_kwargs: Any) -&gt; Mapping[str, Any]:
+&gt;       raise NotImplementedError("failure-first scaffold")
+E       NotImplementedError: failure-first scaffold
+
+stage1_sctsr_v4\formal_execution.py:35: NotImplementedError</failure></testcase><testcase classname="tests.stage1_sctsr_v4.test_formal_execution_claim" name="test_same_execution_token_can_be_claimed_only_once" time="0.006"><failure message="NotImplementedError: failure-first scaffold">tmp_path = WindowsPath('C:/Users/28898/AppData/Local/Temp/pytest-of-28898/pytest-1674/test_same_execution_token_can_0')
+
+    def test_same_execution_token_can_be_claimed_only_once(tmp_path):
+        release, trust, bindings = _release()
+        claim_root, registry = _claim_registry(tmp_path)
+        job = _job(tmp_path)
+        token = _token(release, registry, job)
+        kwargs = {
+            "release": release,
+            "release_trust_policy": trust,
+            "expected_release_bindings": bindings,
+            "release_manifest_sha256": stable_digest(release),
+            "expected_job_bindings": job,
+            "verification_secret": SECRET,
+            "now_utc": NOW,
+        }
+    
+&gt;       first = claim_formal_execution(token, claim_registry_root=claim_root, **kwargs)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\stage1_sctsr_v4\test_formal_execution_claim.py:188: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+_args = ({'action': 'START', 'arm_id': 'COMMON_PARENT_NR', 'authorization': 'SIGNED_SCTSR_V4_FORMAL_EXECUTION', 'claim_registry_digest': '5070F7AE7972D6F7B514D7649EC99810BE7554640CB7F7A1C8289F4D27465637', ...},)
+_kwargs = {'claim_registry_root': WindowsPath('C:/Users/28898/AppData/Local/Temp/pytest-of-28898/pytest-1674/test_same_execution...FFFFFFFFFFFFFFFFFFFFFFFFFF', ...}, 'now_utc': datetime.datetime(2026, 8, 14, 12, 0, tzinfo=datetime.timezone.utc), ...}
+
+    def claim_formal_execution(*_args: Any, **_kwargs: Any) -&gt; Mapping[str, Any]:
+&gt;       raise NotImplementedError("failure-first scaffold")
+E       NotImplementedError: failure-first scaffold
+
+stage1_sctsr_v4\formal_execution.py:39: NotImplementedError</failure></testcase><testcase classname="tests.stage1_sctsr_v4.test_formal_execution_claim" name="test_one_matrix_release_may_authorize_distinct_job_tokens" time="0.006"><failure message="NotImplementedError: failure-first scaffold">tmp_path = WindowsPath('C:/Users/28898/AppData/Local/Temp/pytest-of-28898/pytest-1674/test_one_matrix_release_may_au0')
+
+    def test_one_matrix_release_may_authorize_distinct_job_tokens(tmp_path):
+        release, trust, bindings = _release()
+        claim_root, registry = _claim_registry(tmp_path)
+        first_job = _job(tmp_path, logical_run_id="PARENT_101", training_seed=101)
+        second_job = _job(tmp_path, logical_run_id="PARENT_102", training_seed=102)
+        first_token = _token(release, registry, first_job, execution_id="EXEC_PARENT_101_START")
+        second_token = _token(release, registry, second_job, execution_id="EXEC_PARENT_102_START")
+    
+&gt;       first = claim_formal_execution(
+            first_token,
+            claim_registry_root=claim_root,
+            release=release,
+            release_trust_policy=trust,
+            expected_release_bindings=bindings,
+            release_manifest_sha256=stable_digest(release),
+            expected_job_bindings=first_job,
+            verification_secret=SECRET,
+            now_utc=NOW,
+        )
+
+tests\stage1_sctsr_v4\test_formal_execution_claim.py:205: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+_args = ({'action': 'START', 'arm_id': 'COMMON_PARENT_NR', 'authorization': 'SIGNED_SCTSR_V4_FORMAL_EXECUTION', 'claim_registry_digest': '5070F7AE7972D6F7B514D7649EC99810BE7554640CB7F7A1C8289F4D27465637', ...},)
+_kwargs = {'claim_registry_root': WindowsPath('C:/Users/28898/AppData/Local/Temp/pytest-of-28898/pytest-1674/test_one_matrix_rel...FFFFFFFFFFFFFFFFFFFFFFFFFF', ...}, 'now_utc': datetime.datetime(2026, 8, 14, 12, 0, tzinfo=datetime.timezone.utc), ...}
+
+    def claim_formal_execution(*_args: Any, **_kwargs: Any) -&gt; Mapping[str, Any]:
+&gt;       raise NotImplementedError("failure-first scaffold")
+E       NotImplementedError: failure-first scaffold
+
+stage1_sctsr_v4\formal_execution.py:39: NotImplementedError</failure></testcase><testcase classname="tests.stage1_sctsr_v4.test_formal_execution_claim" name="test_corrupt_existing_claim_is_never_overwritten" time="0.006"><failure message="NotImplementedError: failure-first scaffold">tmp_path = WindowsPath('C:/Users/28898/AppData/Local/Temp/pytest-of-28898/pytest-1674/test_corrupt_existing_claim_is0')
+
+    def test_corrupt_existing_claim_is_never_overwritten(tmp_path):
+        release, trust, bindings = _release()
+        claim_root, registry = _claim_registry(tmp_path)
+        job = _job(tmp_path)
+        token = _token(release, registry, job)
+        nonce_digest = hashlib.sha256(token["nonce"].encode("utf-8")).hexdigest().upper()
+        claim_path = claim_root / "claims" / f"{nonce_digest}.claim.json"
+        claim_path.write_bytes(b'{"partial":')
+    
+        with pytest.raises(SctsrError) as caught:
+&gt;           claim_formal_execution(
+                token,
+                claim_registry_root=claim_root,
+                release=release,
+                release_trust_policy=trust,
+                expected_release_bindings=bindings,
+                release_manifest_sha256=stable_digest(release),
+                expected_job_bindings=job,
+                verification_secret=SECRET,
+                now_utc=NOW,
+            )
+
+tests\stage1_sctsr_v4\test_formal_execution_claim.py:242: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+_args = ({'action': 'START', 'arm_id': 'COMMON_PARENT_NR', 'authorization': 'SIGNED_SCTSR_V4_FORMAL_EXECUTION', 'claim_registry_digest': '5070F7AE7972D6F7B514D7649EC99810BE7554640CB7F7A1C8289F4D27465637', ...},)
+_kwargs = {'claim_registry_root': WindowsPath('C:/Users/28898/AppData/Local/Temp/pytest-of-28898/pytest-1674/test_corrupt_existi...FFFFFFFFFFFFFFFFFFFFFFFFFF', ...}, 'now_utc': datetime.datetime(2026, 8, 14, 12, 0, tzinfo=datetime.timezone.utc), ...}
+
+    def claim_formal_execution(*_args: Any, **_kwargs: Any) -&gt; Mapping[str, Any]:
+&gt;       raise NotImplementedError("failure-first scaffold")
+E       NotImplementedError: failure-first scaffold
+
+stage1_sctsr_v4\formal_execution.py:39: NotImplementedError</failure></testcase><testcase classname="tests.stage1_sctsr_v4.test_cli_contract_hardening" name="test_branch_cli_exposes_identity_pool_and_parent_artifact_index" time="3.809"><failure message="AssertionError: assert '--execution-token' in 'usage: run_branch.py [-h] --repository-root REPOSITORY_ROOT --output-root\n                     OUTPUT_ROOT --parent-...--runtime-config RUNTIME_CONFIG\n  --seed-registry SEED_REGISTRY\n  --output OUTPUT       Explicit JSON receipt path\n'&#10; +  where 'usage: run_branch.py [-h] --repository-root REPOSITORY_ROOT --output-root\n                     OUTPUT_ROOT --parent-...--runtime-config RUNTIME_CONFIG\n  --seed-registry SEED_REGISTRY\n  --output OUTPUT       Explicit JSON receipt path\n' = CompletedProcess(args=['C:\\Users\\28898\\AppData\\Local\\uv\\cache\\builds-v0\\.tmprL4VMY\\Scripts\\python.exe', 'C:\...nfig RUNTIME_CONFIG\n  --seed-registry SEED_REGISTRY\n  --output OUTPUT       Explicit JSON receipt path\n', stderr='').stdout">repository_root = WindowsPath('C:/Users/28898/AppData/Local/Temp/YOLO-CV-sctsr-v4-readiness-fix-f285754')
+
+    def test_branch_cli_exposes_identity_pool_and_parent_artifact_index(repository_root):
+        result = _run(repository_root, repository_root / "scripts" / "stage1_sctsr_v4" / "run_branch.py", "--help")
+        assert result.returncode == 0
+        assert "--identity-pool" in result.stdout
+        assert "--parent-artifact-index" in result.stdout
+&gt;       assert "--execution-token" in result.stdout
+E       AssertionError: assert '--execution-token' in 'usage: run_branch.py [-h] --repository-root REPOSITORY_ROOT --output-root\n                     OUTPUT_ROOT --parent-...--runtime-config RUNTIME_CONFIG\n  --seed-registry SEED_REGISTRY\n  --output OUTPUT       Explicit JSON receipt path\n'
+E        +  where 'usage: run_branch.py [-h] --repository-root REPOSITORY_ROOT --output-root\n                     OUTPUT_ROOT --parent-...--runtime-config RUNTIME_CONFIG\n  --seed-registry SEED_REGISTRY\n  --output OUTPUT       Explicit JSON receipt path\n' = CompletedProcess(args=['C:\\Users\\28898\\AppData\\Local\\uv\\cache\\builds-v0\\.tmprL4VMY\\Scripts\\python.exe', 'C:\...nfig RUNTIME_CONFIG\n  --seed-registry SEED_REGISTRY\n  --output OUTPUT       Explicit JSON receipt path\n', stderr='').stdout
+
+tests\stage1_sctsr_v4\test_cli_contract_hardening.py:27: AssertionError</failure></testcase><testcase classname="tests.stage1_sctsr_v4.test_cli_contract_hardening" name="test_formal_parent_fails_before_output_without_execution_token_or_claim_registry" time="1.576"><failure message="AssertionError: assert False&#10; +  where False = &lt;built-in method issubset of set object at 0x00000221890A3840&gt;(['arms', 'asset_registry', 'contract', 'formal_identity', 'identity_manifest', 'release_authorization', ...])&#10; +    where &lt;built-in method issubset of set object at 0x00000221890A3840&gt; = {'execution_claim_root', 'execution_token'}.issubset">repository_root = WindowsPath('C:/Users/28898/AppData/Local/Temp/YOLO-CV-sctsr-v4-readiness-fix-f285754')
+tmp_path = WindowsPath('C:/Users/28898/AppData/Local/Temp/pytest-of-28898/pytest-1674/test_formal_parent_fails_befor0')
+
+    def test_formal_parent_fails_before_output_without_execution_token_or_claim_registry(repository_root, tmp_path):
+        receipt = tmp_path / "formal_parent_rejected.json"
+        output_root = tmp_path / "must_not_exist"
+        result = _run(
+            repository_root,
+            repository_root / "scripts" / "stage1_sctsr_v4" / "run_common_parent.py",
+            "--repository-root",
+            repository_root,
+            "--output-root",
+            output_root,
+            "--training-seed",
+            101,
+            "--execution-mode",
+            "formal",
+            "--output",
+            receipt,
+        )
+    
+        assert result.returncode != 0
+        payload = json.loads(receipt.read_text(encoding="utf-8"))
+&gt;       assert {"execution_token", "execution_claim_root"}.issubset(payload["error"]["observed"])
+E       AssertionError: assert False
+E        +  where False = &lt;built-in method issubset of set object at 0x00000221890A3840&gt;(['arms', 'asset_registry', 'contract', 'formal_identity', 'identity_manifest', 'release_authorization', ...])
+E        +    where &lt;built-in method issubset of set object at 0x00000221890A3840&gt; = {'execution_claim_root', 'execution_token'}.issubset
+
+tests\stage1_sctsr_v4\test_cli_contract_hardening.py:51: AssertionError</failure></testcase></testsuite></testsuites>

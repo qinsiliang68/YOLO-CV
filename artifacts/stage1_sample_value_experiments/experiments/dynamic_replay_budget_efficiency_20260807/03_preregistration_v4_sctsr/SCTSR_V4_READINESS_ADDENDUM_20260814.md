@@ -57,12 +57,34 @@ sha256=B4AE826649C8924388B118B0738A341A36013ACEE0B0418B2814E2F3A6C8D4F0
 
 该规则保持“只有完整验证的 generation 才能恢复”的原科学语义，同时消除 rename 后孤儿 complete 与半写 receipt。index 和 pointer 是可从不可变 receipt/generation 重建的 secondary metadata，不是独立科学真值。
 
-## 4. 尚未授权事项
+## 4. 矩阵 release 与单次进程执行权分离
+
+### 4.1 发现
+
+签名的 formal release 冻结整轮实验共同的 source、contract、assets、runtime 和 seed registry，可以合法覆盖多台训练机和多个 arm。它本身不是某一个进程的唯一作业凭证。旧实现仅重复验证同一 release；因此两个进程能够用同一 arm、seed、output 语义重复进入 trainer 构造，release nonce 也没有被任何共享状态原子消费。单机输出目录的 `exist_ok=false` 不能阻止两台机器在不同本地目录执行同一个逻辑作业。
+
+### 4.2 规范性决定
+
+从本补充合同起，正式启动分为两层权限：
+
+1. **matrix release**：一次签名，绑定本轮共同科学身份；允许签发多个不同作业的一次性令牌，不在每个 child 上重复定义科学合同；
+2. **formal execution token**：每个进程尝试一份，最多有效 24 小时，并完整绑定 matrix release 文件 SHA/nonce、共享 claim registry、`START` 或 `RESUME`、run role、logical run ID、arm、training seed、绝对 output root digest、parent/resume checkpoint SHA、lineage、schedule 和 resume receipt chain；
+3. `START` 令牌不得包含 resume checkpoint 或 receipt；任何恢复必须由 authority 针对已验证的恢复点重新签发 `RESUME` 令牌；
+4. 同一 execution nonce 必须在 trainer 构造之前通过共享 registry 的 exclusive-create 原子消费；已有 claim 即永久拒绝，哪怕已有文件损坏或上一次进程尚未产生 epoch；不得覆盖、删除后重试或把旧 START 令牌用于 RESUME；
+5. claim、execution token 和 claim registry descriptor 的 path、bytes、SHA、digest 及精确 job binding 都必须再次验证，并复制到 run 的 `00_contract/execution_attempts/<execution_id>/`；任一外部字节改变均 fail closed；
+6. 十台训练机必须指向同一个具备跨主机排他创建语义的共享 claim registry。每台机器各用本地 registry、只共享 JSON、依赖最终输出目录冲突或由操作员口头分配，都不满足该条件；
+7. 正式 release 签发前，必须在实际共享文件系统上执行跨至少两台机器的并发 exclusive-create 探针，证明同一 nonce 恰有一个成功者；该现场能力不能由本地线程测试替代。
+
+公开 schema 为 `stage1.sctsr.formal_execution_token.v1`、`stage1.sctsr.formal_execution_claim.v1`、`stage1.sctsr.execution_claim_registry.v1` 和 `stage1.sctsr.execution_attempt_snapshot.v1`。仓库内 token 和 registry 文件只是 `formal_execution_authorized=false` / `INACTIVE_TEMPLATE` 模板，不是生产权限或生产 registry。
+
+该修复不改变任何 arm、样本、预算、schedule、seed 或评价 estimand；它只确保一个已登记逻辑作业不会被并发或误恢复执行两次。正式 claim registry 尚未由 owner 在训练环境中 provision，正式 execution token 也未签发，因此本节代码完成不构成训练授权。
+
+## 5. 尚未授权事项
 
 以下内容仍保持阻断，直到本文件后续章节和对应机器验证给出明确结论：
 
 - 当前严格 R2 quota 不可行；
-- 正式作业级一次性执行令牌尚未定案；
+- 正式作业级一次性执行协议已定案，但共享 claim registry 尚未现场 provision/探测，正式 execution token 尚未签发；
 - 独立 `val_target` 不存在，因此 A 保持 `BLOCKED_BY_VAL_TARGET`；
 - 未签发正式 release、正式 seeds 或训练作业；
 - SCTSR 方法效果未知。

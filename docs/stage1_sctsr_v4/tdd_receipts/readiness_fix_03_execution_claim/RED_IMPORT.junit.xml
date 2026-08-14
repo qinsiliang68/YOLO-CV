@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="1" failures="0" skipped="0" tests="1" time="0.135" timestamp="2026-08-14T19:36:59.156260+08:00" hostname="zhangdawei"><testcase classname="" name="tests.stage1_sctsr_v4.test_formal_execution_claim" time="0.000"><error message="collection failure">ImportError while importing test module 'C:\Users\28898\AppData\Local\Temp\YOLO-CV-sctsr-v4-readiness-fix-f285754\tests\stage1_sctsr_v4\test_formal_execution_claim.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+..\..\..\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\importlib\__init__.py:126: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests\stage1_sctsr_v4\test_formal_execution_claim.py:10: in &lt;module&gt;
+    from stage1_sctsr_v4.formal_execution import (
+E   ModuleNotFoundError: No module named 'stage1_sctsr_v4.formal_execution'</error></testcase></testsuite></testsuites>

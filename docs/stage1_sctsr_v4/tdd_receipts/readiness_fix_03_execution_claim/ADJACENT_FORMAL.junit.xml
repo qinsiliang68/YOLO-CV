@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="20" time="10.797" timestamp="2026-08-14T19:46:21.367536+08:00" hostname="zhangdawei"><testcase classname="tests.stage1_sctsr_v4.test_formal_training" name="test_parent_and_branch_orchestration_preserve_parent_and_never_mislabel_synthetic" time="2.335" /><testcase classname="tests.stage1_sctsr_v4.test_formal_resume" name="test_formal_resume_restores_last_complete_checkpoint_history_and_quarantines_partial" time="0.867" /><testcase classname="tests.stage1_sctsr_v4.test_formal_resume" name="test_formal_resume_rejects_checkpoint_rng_not_bound_by_epoch_summary" time="0.094" /><testcase classname="tests.stage1_sctsr_v4.test_formal_resume" name="test_formal_resume_rejects_static_asset_or_generation_chain_mismatch" time="0.072" /><testcase classname="tests.stage1_sctsr_v4.test_formal_resume" name="test_formal_resume_rejects_already_complete_run" time="0.101" /><testcase classname="tests.stage1_sctsr_v4.test_formal_resume" name="test_branch_runner_continues_at_resume_epoch_without_overwriting_completed_generation" time="0.180"><failure message="stage1_sctsr_v4.errors.SctsrError: FORMAL_EXECUTION_TOKEN_INVALID: Formal branch lacks an atomic execution claim">monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x0000017CC6904D90&gt;
+tmp_path = WindowsPath('C:/Users/28898/AppData/Local/Temp/pytest-of-28898/pytest-1677/test_branch_runner_continues_a0')
+
+    def test_branch_runner_continues_at_resume_epoch_without_overwriting_completed_generation(monkeypatch, tmp_path):
+        import stage1_sctsr_v4.formal_training as formal
+    
+        root = tmp_path / "run"
+        completed_checkpoint, start_generation = _build_completed_epoch(root)
+        completed_sha = sha256_file(completed_checkpoint)
+        context = _prepare(root, start_generation=start_generation)
+        identity = FormalIdentity(
+            training_seed=SEED,
+            canonical_training_lock_sha256=LOCK_SHA,
+            initial_checkpoint_sha256=INITIAL_SHA,
+            base_manifest_sha256=BASE_SHA,
+            source_tree_digest=SOURCE_SHA,
+            runtime_config_digest=RUNTIME_SHA,
+            asset_registry_digest=ASSET_SHA,
+            contract_digest=CONTRACT_SHA,
+            seed_registry_digest="5" * 64,
+        )
+        parent_root = tmp_path / "parent"
+        parent_root.mkdir()
+        parent_checkpoint = parent_root / "epoch_0120.pt"
+        parent_sha = save_checkpoint_atomic(parent_checkpoint, _checkpoint_payload(120))
+        atomic_write_json(
+            parent_root / "PARENT_RECEIPT.json",
+            {
+                "status": "FORMAL_PARENT_COMPLETE",
+                "parent_id": f"PARENT_{SEED}",
+                "training_seed": SEED,
+                "checkpoint_sha256": parent_sha,
+                "epoch_end": 120,
+                "best_pt_used": False,
+                "epoch_evidence_enabled": True,
+            },
+        )
+        records = tuple(
+            IdentityRecord(f"id-{index}", index % 2, "T_STRESS", "hard", index % 2, f"bucket-{index}")
+            for index in range(5)
+        )
+        groups = {f"G{index}": (records[index],) for index in range(5)}
+        schedule = build_schedule(
+            ArmId.T_U,
+            primary_groups=groups,
+            primary_digest=identity_digest(records),
+            base_denominator=200,
+        )
+        lineage = BranchLineage.create(
+            logical_run_id=RUN_ID,
+            parent_id=f"PARENT_{SEED}",
+            parent_checkpoint_path=parent_checkpoint.as_posix(),
+            parent_checkpoint_sha256=parent_sha,
+            training_seed=SEED,
+            arm_id=ARM_ID,
+            child_source_tree_digest=SOURCE_SHA,
+            child_contract_digest=CONTRACT_SHA,
+        )
+        release_bindings = {"contract_digest": CONTRACT_SHA}
+        original_binding = {
+            "schema_version": "stage1.sctsr.prepared_trainer_binding.v1",
+            "upstream_binding_digest": "6" * 64,
+            "canonical_training_lock_sha256": LOCK_SHA,
+            "initial_checkpoint_sha256": INITIAL_SHA,
+            "scientific_overrides_digest": "7" * 64,
+            "identity_manifest_binding": {"binding_digest": "8" * 64},
+            "dataset_binding": {"binding_digest": "9" * 64},
+            "training_seed": SEED,
+            "output_root": root.as_posix(),
+        }
+        original_binding["binding_digest"] = stable_digest(original_binding)
+        resume_binding = {
+            **original_binding,
+            "output_root": (root / "10_resume_setup" / "epoch_0122.generation_1").as_posix(),
+        }
+        resume_binding.pop("binding_digest")
+        resume_binding["binding_digest"] = stable_digest(resume_binding)
+        pool_binding = {"binding_digest": "A" * 64}
+        parent_binding = {"binding_digest": "B" * 64}
+        atomic_write_json(root / "FORMAL_IDENTITY.json", asdict(identity))
+        atomic_write_json(root / "FORMAL_AUTHORIZATION_BINDING.json", release_bindings)
+        atomic_write_json(root / "PREPARED_TRAINER_BINDING.json", original_binding)
+        atomic_write_json(root / "BRANCH_LINEAGE.json", asdict(lineage))
+        atomic_write_json(root / "SCHEDULE.json", schedule_to_dict(schedule))
+        atomic_write_json(root / "IDENTITY_POOL_BINDING.json", pool_binding)
+        atomic_write_json(root / "PARENT_ARTIFACT_INDEX_BINDING.json", parent_binding)
+    
+        observed_epochs: list[int] = []
+    
+        def fake_transactional_epoch(*, epoch, global_step_start, replay_plan, root, **_kwargs):
+            observed_epochs.append(epoch)
+            checkpoint = root / f"fake_resume_epoch_{epoch:04d}.pt"
+            checkpoint.write_bytes(f"checkpoint-{epoch}".encode("ascii"))
+            checkpoint_sha = sha256_file(checkpoint)
+            return (
+                {
+                    "optimizer_steps": 1,
+                    "replay_occurrences": replay_plan.planned_replay_occurrences,
+                    "global_step_end": global_step_start + 1,
+                    "base_occurrences": 128,
+                    "ema_updates_delta": 1,
+                    "base_order_digest": "C" * 64,
+                    "base_augmentation_digest": "D" * 64,
+                },
+                {
+                    "checkpoint_path": checkpoint.as_posix(),
+                    "checkpoint_sha256": checkpoint_sha,
+                    "generation_digest": stable_digest({"epoch": epoch}),
+                },
+            )
+    
+        monkeypatch.setattr(formal, "require_synthetic_or_authorized", lambda *_args, **_kwargs: None)
+        monkeypatch.setattr(formal, "_base_batch_sizes", lambda _trainer: (128,))
+        monkeypatch.setattr(formal, "CANONICAL_BASE_STEPS", 1)
+        monkeypatch.setattr(formal, "sample_evidence_from_trainer", lambda _trainer: {})
+        monkeypatch.setattr(formal, "prepare_counter_domain_base_loader", lambda *_args, **_kwargs: object())
+        monkeypatch.setattr(formal, "_run_transactional_epoch", fake_transactional_epoch)
+        monkeypatch.setattr(formal, "_publish_complete_logical_timeline", lambda **_kwargs: {"status": "UNIT_ONLY"})
+        monkeypatch.setattr(formal, "_publish_formal_run_manifest_and_indexes", lambda **_kwargs: {"status": "UNIT_ONLY"})
+        monkeypatch.setattr(
+            formal,
+            "validate_formal_input_snapshot",
+            lambda *_args, **_kwargs: {"snapshot_digest": "E" * 64},
+        )
+    
+&gt;       receipt = run_prepared_branch(
+            trainer=FakeTrainer(),
+            identity=identity,
+            parent_checkpoint=parent_checkpoint,
+            lineage=lineage,
+            schedule=schedule,
+            replay_batch_provider=lambda *_args: {},
+            output_root=root,
+            release_authorization={"unit": True},
+            execution_mode="formal",
+            release_expected_bindings=release_bindings,
+            identity_pool_binding=pool_binding,
+            parent_artifact_index_binding=parent_binding,
+            prepared_trainer_binding=resume_binding,
+            formal_input_binding={"binding_digest": "F" * 64},
+            resume_context=context,
+        )
+
+tests\stage1_sctsr_v4\test_formal_resume.py:417: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+    def run_prepared_branch(
+        *, trainer: Any, identity: FormalIdentity, parent_checkpoint: str | Path,
+        lineage: BranchLineage, schedule: SchedulePlan,
+        replay_batch_provider: Callable[[Sequence[str], int, int, int], Mapping[str, Any]],
+        output_root: str | Path, release_authorization: str | Path,
+        execution_mode: str = "formal", collect_epoch_evidence: bool | None = None,
+        release_trust_policy: str | Path | Mapping[str, Any] | None = None,
+        release_expected_bindings: Mapping[str, str] | None = None,
+        release_verification_secret: bytes | str | None = None,
+        identity_pool_binding: Mapping[str, Any] | None = None,
+        parent_artifact_index_binding: Mapping[str, Any] | None = None,
+        prepared_trainer_binding: Mapping[str, Any] | None = None,
+        formal_input_binding: Mapping[str, Any] | None = None,
+        execution_claim_binding: Mapping[str, Any] | None = None,
+        resume_context: FormalResumeContext | None = None,
+    ) -&gt; dict[str, Any]:
+        identity.validate(formal=execution_mode == "formal")
+        require_synthetic_or_authorized(
+            execution_mode,
+            release_authorization,
+            trust_policy=release_trust_policy,
+            expected_bindings=release_expected_bindings,
+            verification_secret=release_verification_secret,
+        )
+        parent_sha = sha256_file(parent_checkpoint)
+        execution_job = build_execution_job_bindings(
+            action="RESUME" if resume_context is not None else "START",
+            run_role="BRANCH",
+            logical_run_id=lineage.logical_run_id,
+            arm_id=schedule.arm_id.value,
+            training_seed=identity.training_seed,
+            output_root=output_root,
+            parent_checkpoint_sha256=parent_sha,
+            resume_checkpoint_sha256="0" * 64 if resume_context is None else resume_context.checkpoint_sha256,
+            lineage_digest=lineage.lineage_digest,
+            schedule_digest=schedule.plan_digest,
+            resume_from_receipt_digest="0" * 64 if resume_context is None else resume_context.receipt_chain_digest,
+        )
+        if execution_mode == "formal":
+            if execution_claim_binding is None:
+&gt;               raise SctsrError(ErrorCode.FORMAL_EXECUTION_TOKEN_INVALID, "Formal branch lacks an atomic execution claim")
+E               stage1_sctsr_v4.errors.SctsrError: FORMAL_EXECUTION_TOKEN_INVALID: Formal branch lacks an atomic execution claim
+
+stage1_sctsr_v4\formal_training.py:1025: SctsrError</failure></testcase><testcase classname="tests.stage1_sctsr_v4.test_formal_resume" name="test_formal_runner_cli_exposes_explicit_resume_and_isolated_setup_flags[run_common_parent.py]" time="1.581" /><testcase classname="tests.stage1_sctsr_v4.test_formal_resume" name="test_formal_runner_cli_exposes_explicit_resume_and_isolated_setup_flags[run_branch.py]" time="1.555" /><testcase classname="tests.stage1_sctsr_v4.test_formal_release" name="test_sa_034_valid_owner_mac_requires_complete_frozen_bindings" time="0.000" /><testcase classname="tests.stage1_sctsr_v4.test_formal_release" name="test_sa_035_expired_release_is_rejected_even_with_valid_mac" time="0.000" /><testcase classname="tests.stage1_sctsr_v4.test_formal_release" name="test_sa_036_release_binding_mismatch_is_rejected" time="0.000" /><testcase classname="tests.stage1_sctsr_v4.test_formal_input_snapshot" name="test_external_file_binding_rejects_replaced_authorization_input" time="0.033" /><testcase classname="tests.stage1_sctsr_v4.test_formal_input_snapshot" name="test_formal_input_snapshot_copies_and_binds_every_authorization_file" time="0.064" /><testcase classname="tests.stage1_sctsr_v4.test_formal_input_snapshot" name="test_prepared_trainer_external_file_revalidation_rejects_identity_manifest_drift" time="0.018" /><testcase classname="tests.stage1_sctsr_v4.test_formal_input_bindings" name="test_pool_artifacts_bind_schedule_bytes_and_roles" time="0.267" /><testcase classname="tests.stage1_sctsr_v4.test_formal_input_bindings" name="test_pool_artifacts_reject_schedule_digest_substitution" time="0.128" /><testcase classname="tests.stage1_sctsr_v4.test_formal_input_bindings" name="test_formal_branch_rejects_nonformal_parent_receipt" time="0.008" /><testcase classname="tests.stage1_sctsr_v4.test_formal_input_bindings" name="test_formal_run_root_accepts_only_fresh_upstream_trainer_subtree" time="0.002" /><testcase classname="tests.stage1_sctsr_v4.test_no_formal_side_effects" name="test_overlay_contains_no_formal_queue_or_release" time="0.004" /><testcase classname="tests.stage1_sctsr_v4.test_no_formal_side_effects" name="test_full_checkout_preserves_protected_historical_and_upstream_modules" time="0.000" /></testsuite></testsuites>

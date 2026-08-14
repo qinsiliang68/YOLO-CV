@@ -475,6 +475,29 @@ def _validate_formal_tree(root: Path, manifest: Mapping[str, Any]) -> dict[str, 
     _require(manifest.get("test_accessed") is False and manifest.get("best_pt_used") is False, "Formal run accessed test or best.pt")
     role = manifest.get("run_role")
     _require(role in {"COMMON_PARENT", "BRANCH"}, "Formal run role is unregistered", observed=role)
+    execution_id = manifest.get("execution_id")
+    execution_snapshot_digest = manifest.get("execution_attempt_snapshot_digest")
+    execution_job_digest = manifest.get("execution_job_binding_digest")
+    execution_claim_sha = manifest.get("execution_claim_sha256")
+    _require(
+        all(
+            isinstance(value, str) and bool(value)
+            for value in (execution_id, execution_snapshot_digest, execution_job_digest, execution_claim_sha)
+        ),
+        "Formal run is missing its execution attempt evidence",
+    )
+    try:
+        from .formal_execution import validate_execution_attempt_snapshot
+
+        execution_evidence = validate_execution_attempt_snapshot(
+            root,
+            execution_id=execution_id,
+            expected_snapshot_digest=execution_snapshot_digest,
+            expected_job_binding_digest=execution_job_digest,
+            expected_claim_sha256=execution_claim_sha,
+        )
+    except SctsrError as exc:
+        raise _closeout_failure("Formal execution attempt evidence is invalid", observed=str(exc)) from exc
     identity_path = root / "FORMAL_IDENTITY.json"
     binding_path = root / "FORMAL_AUTHORIZATION_BINDING.json"
     trainer_binding_path = root / "PREPARED_TRAINER_BINDING.json"
@@ -895,6 +918,8 @@ def _validate_formal_tree(root: Path, manifest: Mapping[str, Any]) -> dict[str, 
     return {
         "formal_semantic_status": "PASS",
         "run_role": role,
+        "execution_id": execution_id,
+        "execution_attempt_snapshot_digest": execution_evidence["snapshot_digest"],
         "epoch_transaction_count": len(transactions),
         "receipt_chain_digest": chain["receipt_chain_digest"],
         "total_optimizer_visible_occurrences": total_occurrences,

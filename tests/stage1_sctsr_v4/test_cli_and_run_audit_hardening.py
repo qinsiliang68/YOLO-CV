@@ -167,6 +167,32 @@ def test_formal_runner_cli_exposes_trust_and_binding_arguments(repository_root):
         assert "--seed-registry" in result.stdout
 
 
+def test_formal_closeout_rejects_missing_execution_attempt_snapshot(tmp_path):
+    from stage1_sctsr_v4.run_validation import _validate_formal_tree
+
+    manifest = {
+        "schema_version": "stage1.sctsr.formal_run_manifest.v1",
+        "execution_mode": "formal",
+        "formal_training_authorized": True,
+        "formal_training_started": True,
+        "engineering_gate_generated": False,
+        "assignments_generated": False,
+        "pilot_release_generated": False,
+        "blind_holdout_opened": False,
+        "selector_trained": False,
+        "method_effectiveness_claimed": False,
+        "test_accessed": False,
+        "best_pt_used": False,
+        "run_role": "COMMON_PARENT",
+    }
+
+    with pytest.raises(SctsrError) as caught:
+        _validate_formal_tree(tmp_path, manifest)
+
+    assert caught.value.code is ErrorCode.CLOSEOUT_NOT_VALIDATED
+    assert "execution attempt" in str(caught.value).lower()
+
+
 def test_formal_identity_template_cannot_be_loaded_as_a_prepared_identity(repository_root):
     with pytest.raises(SctsrError) as caught:
         load_formal_identity(repository_root / "configs" / "stage1_sctsr_v4" / "formal_identity_template_v1.json")

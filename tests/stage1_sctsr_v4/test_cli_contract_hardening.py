@@ -24,6 +24,32 @@ def test_branch_cli_exposes_identity_pool_and_parent_artifact_index(repository_r
     assert result.returncode == 0
     assert "--identity-pool" in result.stdout
     assert "--parent-artifact-index" in result.stdout
+    assert "--execution-token" in result.stdout
+    assert "--execution-claim-root" in result.stdout
+
+
+def test_formal_parent_fails_before_output_without_execution_token_or_claim_registry(repository_root, tmp_path):
+    receipt = tmp_path / "formal_parent_rejected.json"
+    output_root = tmp_path / "must_not_exist"
+    result = _run(
+        repository_root,
+        repository_root / "scripts" / "stage1_sctsr_v4" / "run_common_parent.py",
+        "--repository-root",
+        repository_root,
+        "--output-root",
+        output_root,
+        "--training-seed",
+        101,
+        "--execution-mode",
+        "formal",
+        "--output",
+        receipt,
+    )
+
+    assert result.returncode != 0
+    payload = json.loads(receipt.read_text(encoding="utf-8"))
+    assert {"execution_token", "execution_claim_root"}.issubset(payload["error"]["observed"])
+    assert not output_root.exists()
 
 
 def test_formal_endpoint_model_split_and_batch_are_frozen_in_runtime_policy(repository_root):

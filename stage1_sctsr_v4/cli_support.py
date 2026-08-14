@@ -19,6 +19,8 @@ def add_execution_arguments(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--execution-mode", choices=("synthetic", "formal"), default="synthetic")
     parser.add_argument("--release-authorization", type=Path, default=None)
     parser.add_argument("--release-trust-policy", type=Path, default=None)
+    parser.add_argument("--execution-token", type=Path, default=None)
+    parser.add_argument("--execution-claim-root", type=Path, default=None)
     parser.add_argument("--source-tree-manifest", type=Path, default=None)
     parser.add_argument("--contract", type=Path, default=None)
     parser.add_argument("--arms", type=Path, default=None)
