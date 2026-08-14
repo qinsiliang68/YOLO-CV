@@ -12,7 +12,7 @@ from typing import Any, Iterable
 
 from .checkpointing import load_checkpoint
 from .columnar import read_columnar, validate_columnar_file
-from .epoch_transaction import validate_receipt_chain
+from .epoch_transaction import reconcile_epoch_publications, validate_receipt_chain
 from .errors import ErrorCode, SctsrError
 from .evidence_runtime import ReplayHistoryState
 from .filesystem import windows_safe_resolved_path
@@ -375,6 +375,18 @@ def prepare_formal_resume_context(
     if not (1 <= int(epoch_start) <= int(epoch_end) <= 200):
         raise SctsrError(ErrorCode.RESUME_GENERATION_MISMATCH, "Formal resume epoch range is invalid")
 
+    reconcile_epoch_publications(
+        transaction_root,
+        quarantine_root,
+        expected_run_id=expected_run_id,
+        expected_identity={
+            "arm_id": expected_arm_id,
+            "training_seed": expected_training_seed,
+            "source_tree_digest": expected_source_tree_digest,
+            "contract_digest": expected_contract_digest,
+            "asset_registry_digest": expected_asset_registry_digest,
+        },
+    )
     pointer_path = root / "ROLLING_RECOVERY_POINTER.json"
     pointer = validate_recovery_pointer(pointer_path)
     pointer_complete = _require_contained(Path(pointer["complete_path"]), transaction_root, role="Recovery pointer")
@@ -616,7 +628,18 @@ def prepare_resume(
     minimum_free_bytes: int,
     disk_path: str | Path,
 ) -> dict[str, Any]:
-    quarantined = quarantine_inprogress(transaction_root, quarantine_root, reason="RESUME_PRECHECK_PARTIAL")
+    reconcile_epoch_publications(
+        transaction_root,
+        quarantine_root,
+        expected_run_id=expected_identity.logical_run_id,
+        expected_identity={
+            "arm_id": expected_identity.arm_id,
+            "training_seed": expected_identity.training_seed,
+            "source_tree_digest": expected_identity.source_tree_digest,
+            "contract_digest": expected_identity.contract_digest,
+            "asset_registry_digest": expected_identity.asset_registry_digest,
+        },
+    )
     pointer = validate_recovery_pointer(pointer_path)
     identity = pointer.get("identity")
     if not isinstance(identity, dict):
@@ -634,6 +657,7 @@ def prepare_resume(
         receipt_chain_digest=str(pointer["receipt_chain_digest"]),
     )
     observed.validate(expected_identity)
+    quarantined = quarantine_inprogress(transaction_root, quarantine_root, reason="RESUME_PRECHECK_PARTIAL")
     free = shutil.disk_usage(Path(disk_path)).free
     if free < minimum_free_bytes:
         raise SctsrError(ErrorCode.DISK_SPACE_PRECHECK_FAILED, "Insufficient disk space for safe epoch resume", observed=free, expected=minimum_free_bytes)

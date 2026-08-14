@@ -43,7 +43,21 @@ sha256=B4AE826649C8924388B118B0738A341A36013ACEE0B0418B2814E2F3A6C8D4F0
 
 该订正不改变数据行、样本身份、标签、fold、group、T/R1/R2 构造、训练预算、训练 seed 或评价规则，因此不能被解释为方法调整或结果选择。
 
-## 3. 尚未授权事项
+## 3. Epoch 发布事务的原子 commit point
+
+原任务书 12.1 节规定 rename、append-only receipt、artifact index 和 rolling pointer 的顺序，但“任一步骤失败均移动 inprogress”无法覆盖 rename 已成功、目录已不再叫 inprogress 的故障窗口。本补充合同对该窗口作如下唯一化解释：
+
+1. `epoch_XXXX.generation_N.inprogress` 验证通过并 rename 为 `.complete`，此时仍不是 canonical completion；
+2. receipt 不再原地追加半行，而是把已验证的旧链加新行作为完整字节串执行原子替换；
+3. 新 receipt 行原子出现是该 generation 的持久 commit point；
+4. commit point 前失败，rename 后的目录必须进入 quarantine，receipt/index/pointer 均不得前进；
+5. commit point 后若 index 或 pointer 失败，generation 已进入 append-only 证据链，禁止删除或 quarantine；当前训练立即停止，程序必须从完整 receipt 链和逐文件 SHA 验证后的 `.complete` generation 确定性重建 index 与 pointer；
+6. 任意恢复或下一 epoch begin 前，都必须先执行 publication reconciliation；无 receipt 的 `.complete` 隔离，有 receipt 的 `.complete` 必须验证后重建 secondary metadata；
+7. receipt 损坏、receipt 指向根目录外、receipt 与 generation SHA 不一致、run/arm/seed/source/contract/assets 身份不一致时 fail closed，不得自动修复或移动别人的证据。
+
+该规则保持“只有完整验证的 generation 才能恢复”的原科学语义，同时消除 rename 后孤儿 complete 与半写 receipt。index 和 pointer 是可从不可变 receipt/generation 重建的 secondary metadata，不是独立科学真值。
+
+## 4. 尚未授权事项
 
 以下内容仍保持阻断，直到本文件后续章节和对应机器验证给出明确结论：
 

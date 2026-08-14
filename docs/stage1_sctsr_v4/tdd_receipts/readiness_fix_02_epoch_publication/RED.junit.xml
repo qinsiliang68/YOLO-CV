@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="4" skipped="0" tests="4" time="3.294" timestamp="2026-08-14T19:25:56.829016+08:00" hostname="zhangdawei"><testcase classname="tests.stage1_sctsr_v4.test_epoch_publication_recovery" name="test_post_rename_pre_receipt_failure_quarantines_complete" time="0.039"><failure message="AssertionError: assert not True&#10; +  where True = exists()&#10; +    where exists = WindowsPath('C:/Users/28898/AppData/Local/Temp/pytest-of-28898/pytest-1668/test_post_rename_pre_receipt_f0/03_epoch_transactions/epoch_0121.generation_1.complete').exists&#10; +      where WindowsPath('C:/Users/28898/AppData/Local/Temp/pytest-of-28898/pytest-1668/test_post_rename_pre_receipt_f0/03_epoch_transactions/epoch_0121.generation_1.complete') = EpochTransaction(root=WindowsPath('C:/Users/28898/AppData/Local/Temp/pytest-of-28898/pytest-1668/test_post_rename_pre_.../pytest-1668/test_post_rename_pre_receipt_f0/03_epoch_transactions/epoch_0121.generation_1.complete'), _committed=True).complete">monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x0000014DFC1E2F10&gt;
+tmp_path = WindowsPath('C:/Users/28898/AppData/Local/Temp/pytest-of-28898/pytest-1668/test_post_rename_pre_receipt_f0')
+
+    def test_post_rename_pre_receipt_failure_quarantines_complete(monkeypatch, tmp_path):
+        transaction = _started_transaction(tmp_path)
+    
+        def fail_receipt(*_args, **_kwargs):
+            raise OSError("injected receipt publication failure")
+    
+        monkeypatch.setattr(transaction, "_append_receipt", fail_receipt)
+        with pytest.raises(OSError, match="injected receipt"):
+            transaction.commit()
+    
+        assert not transaction.inprogress.exists()
+&gt;       assert not transaction.complete.exists()
+E       AssertionError: assert not True
+E        +  where True = exists()
+E        +    where exists = WindowsPath('C:/Users/28898/AppData/Local/Temp/pytest-of-28898/pytest-1668/test_post_rename_pre_receipt_f0/03_epoch_transactions/epoch_0121.generation_1.complete').exists
+E        +      where WindowsPath('C:/Users/28898/AppData/Local/Temp/pytest-of-28898/pytest-1668/test_post_rename_pre_receipt_f0/03_epoch_transactions/epoch_0121.generation_1.complete') = EpochTransaction(root=WindowsPath('C:/Users/28898/AppData/Local/Temp/pytest-of-28898/pytest-1668/test_post_rename_pre_.../pytest-1668/test_post_rename_pre_receipt_f0/03_epoch_transactions/epoch_0121.generation_1.complete'), _committed=True).complete
+
+tests\stage1_sctsr_v4\test_epoch_publication_recovery.py:30: AssertionError</failure></testcase><testcase classname="tests.stage1_sctsr_v4.test_epoch_publication_recovery" name="test_post_receipt_index_failure_repairs_secondary_metadata" time="0.025"><failure message="stage1_sctsr_v4.errors.SctsrError: RESUME_GENERATION_MISMATCH: Recovery pointer is missing or corrupt">path = WindowsPath('C:/Users/28898/AppData/Local/Temp/pytest-of-28898/pytest-1668/test_post_receipt_index_failur0/ROLLING_RECOVERY_POINTER.json')
+
+    def validate_recovery_pointer(path: str | Path) -&gt; dict[str, Any]:
+        pointer_path = Path(path)
+        try:
+&gt;           data = json.loads(pointer_path.read_text(encoding="utf-8"))
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+stage1_sctsr_v4\recovery.py:214: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+..\..\..\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\pathlib.py:1058: in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = WindowsPath('C:/Users/28898/AppData/Local/Temp/pytest-of-28898/pytest-1668/test_post_receipt_index_failur0/ROLLING_RECOVERY_POINTER.json')
+mode = 'r', buffering = -1, encoding = 'utf-8', errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+&gt;       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: 'C:\\Users\\28898\\AppData\\Local\\Temp\\pytest-of-28898\\pytest-1668\\test_post_receipt_index_failur0\\ROLLING_RECOVERY_POINTER.json'
+
+..\..\..\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\pathlib.py:1044: FileNotFoundError
+
+The above exception was the direct cause of the following exception:
+
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x0000014D881A0A10&gt;
+tmp_path = WindowsPath('C:/Users/28898/AppData/Local/Temp/pytest-of-28898/pytest-1668/test_post_receipt_index_failur0')
+
+    def test_post_receipt_index_failure_repairs_secondary_metadata(monkeypatch, tmp_path):
+        transaction = _started_transaction(tmp_path)
+        original = transaction._update_artifact_index
+        calls = 0
+    
+        def fail_index_once(*args, **kwargs):
+            nonlocal calls
+            calls += 1
+            if calls == 1:
+                raise OSError("injected index publication failure")
+            return original(*args, **kwargs)
+    
+        monkeypatch.setattr(transaction, "_update_artifact_index", fail_index_once)
+        with pytest.raises(OSError, match="injected index"):
+            transaction.commit()
+    
+        assert transaction.complete.is_dir()
+        assert not list((tmp_path / "09_quarantine").glob("*.quarantined.*"))
+        assert validate_receipt_chain(transaction.receipt_path)["row_count"] == 1
+&gt;       pointer = validate_recovery_pointer(transaction.recovery_pointer_path)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\stage1_sctsr_v4\test_epoch_publication_recovery.py:60: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+path = WindowsPath('C:/Users/28898/AppData/Local/Temp/pytest-of-28898/pytest-1668/test_post_receipt_index_failur0/ROLLING_RECOVERY_POINTER.json')
+
+    def validate_recovery_pointer(path: str | Path) -&gt; dict[str, Any]:
+        pointer_path = Path(path)
+        try:
+            data = json.loads(pointer_path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError) as exc:
+&gt;           raise SctsrError(ErrorCode.RESUME_GENERATION_MISMATCH, "Recovery pointer is missing or corrupt", artifact_path=str(pointer_path)) from exc
+E           stage1_sctsr_v4.errors.SctsrError: RESUME_GENERATION_MISMATCH: Recovery pointer is missing or corrupt
+
+stage1_sctsr_v4\recovery.py:216: SctsrError</failure></testcase><testcase classname="tests.stage1_sctsr_v4.test_epoch_publication_recovery" name="test_post_index_pointer_failure_repairs_pointer" time="0.028"><failure message="stage1_sctsr_v4.errors.SctsrError: RESUME_GENERATION_MISMATCH: Recovery pointer is missing or corrupt">path = WindowsPath('C:/Users/28898/AppData/Local/Temp/pytest-of-28898/pytest-1668/test_post_index_pointer_failur0/ROLLING_RECOVERY_POINTER.json')
+
+    def validate_recovery_pointer(path: str | Path) -&gt; dict[str, Any]:
+        pointer_path = Path(path)
+        try:
+&gt;           data = json.loads(pointer_path.read_text(encoding="utf-8"))
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+stage1_sctsr_v4\recovery.py:214: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+..\..\..\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\pathlib.py:1058: in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = WindowsPath('C:/Users/28898/AppData/Local/Temp/pytest-of-28898/pytest-1668/test_post_index_pointer_failur0/ROLLING_RECOVERY_POINTER.json')
+mode = 'r', buffering = -1, encoding = 'utf-8', errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+&gt;       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: 'C:\\Users\\28898\\AppData\\Local\\Temp\\pytest-of-28898\\pytest-1668\\test_post_index_pointer_failur0\\ROLLING_RECOVERY_POINTER.json'
+
+..\..\..\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\pathlib.py:1044: FileNotFoundError
+
+The above exception was the direct cause of the following exception:
+
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x0000014D8889C050&gt;
+tmp_path = WindowsPath('C:/Users/28898/AppData/Local/Temp/pytest-of-28898/pytest-1668/test_post_index_pointer_failur0')
+
+    def test_post_index_pointer_failure_repairs_pointer(monkeypatch, tmp_path):
+        transaction = _started_transaction(tmp_path)
+        original = epoch_transaction.atomic_write_json
+        failed = False
+    
+        def fail_pointer_once(path, value):
+            nonlocal failed
+            if Path(path).name == "ROLLING_RECOVERY_POINTER.json" and not failed:
+                failed = True
+                raise OSError("injected pointer publication failure")
+            return original(path, value)
+    
+        monkeypatch.setattr(epoch_transaction, "atomic_write_json", fail_pointer_once)
+        with pytest.raises(OSError, match="injected pointer"):
+            transaction.commit()
+    
+        assert transaction.complete.is_dir()
+        assert validate_receipt_chain(transaction.receipt_path)["row_count"] == 1
+&gt;       assert validate_recovery_pointer(transaction.recovery_pointer_path)["epoch"] == 121
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\stage1_sctsr_v4\test_epoch_publication_recovery.py:84: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+path = WindowsPath('C:/Users/28898/AppData/Local/Temp/pytest-of-28898/pytest-1668/test_post_index_pointer_failur0/ROLLING_RECOVERY_POINTER.json')
+
+    def validate_recovery_pointer(path: str | Path) -&gt; dict[str, Any]:
+        pointer_path = Path(path)
+        try:
+            data = json.loads(pointer_path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError) as exc:
+&gt;           raise SctsrError(ErrorCode.RESUME_GENERATION_MISMATCH, "Recovery pointer is missing or corrupt", artifact_path=str(pointer_path)) from exc
+E           stage1_sctsr_v4.errors.SctsrError: RESUME_GENERATION_MISMATCH: Recovery pointer is missing or corrupt
+
+stage1_sctsr_v4\recovery.py:216: SctsrError</failure></testcase><testcase classname="tests.stage1_sctsr_v4.test_epoch_publication_recovery" name="test_next_begin_quarantines_unreceipted_complete_left_by_process_death" time="0.006"><failure message="AssertionError: assert not True&#10; +  where True = exists()&#10; +    where exists = WindowsPath('C:/Users/28898/AppData/Local/Temp/pytest-of-28898/pytest-1668/test_next_begin_quarantines_un0/03_epoch_transactions/epoch_0121.generation_1.complete').exists">tmp_path = WindowsPath('C:/Users/28898/AppData/Local/Temp/pytest-of-28898/pytest-1668/test_next_begin_quarantines_un0')
+
+    def test_next_begin_quarantines_unreceipted_complete_left_by_process_death(tmp_path):
+        transaction_root = tmp_path / "03_epoch_transactions"
+        orphan = transaction_root / "epoch_0121.generation_1.complete"
+        orphan.mkdir(parents=True)
+        (orphan / "crash-marker.bin").write_bytes(b"power-loss-after-rename")
+    
+        next_transaction = EpochTransaction(transaction_root, "run-1", 122, 1).begin()
+    
+        assert next_transaction.inprogress.is_dir()
+&gt;       assert not orphan.exists()
+E       AssertionError: assert not True
+E        +  where True = exists()
+E        +    where exists = WindowsPath('C:/Users/28898/AppData/Local/Temp/pytest-of-28898/pytest-1668/test_next_begin_quarantines_un0/03_epoch_transactions/epoch_0121.generation_1.complete').exists
+
+tests\stage1_sctsr_v4\test_epoch_publication_recovery.py:96: AssertionError</failure></testcase></testsuite></testsuites>

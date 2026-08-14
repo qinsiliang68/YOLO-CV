@@ -1,0 +1,48 @@
+{
+  "schema_version": "stage1.sctsr.tdd_receipt.v1",
+  "rollback_unit": "readiness_fix_02_epoch_publication_recovery",
+  "execution_mode": "unit_and_recovery_validation_only",
+  "formal_training_started": false,
+  "red": {
+    "command": "uv run --isolated --python 3.11 --extra dev pytest tests/stage1_sctsr_v4/test_epoch_publication_recovery.py -q --junitxml=docs/stage1_sctsr_v4/tdd_receipts/readiness_fix_02_epoch_publication/RED.junit.xml",
+    "exit_code": 1,
+    "observed": "4 failed: orphan complete before receipt, missing pointer after index failure, missing pointer after pointer failure, and unreceipted complete not quarantined on next begin",
+    "expected_failure_count": 4,
+    "junit": {
+      "path": "docs/stage1_sctsr_v4/tdd_receipts/readiness_fix_02_epoch_publication/RED.junit.xml",
+      "bytes": 12802,
+      "sha256": "FC24C2E9E4D573EBD36A33916F615BAACB2279BE3878B2894084B4460D656470"
+    }
+  },
+  "green": {
+    "command": "uv run --isolated --python 3.11 --extra dev pytest tests/stage1_sctsr_v4/test_epoch_publication_recovery.py -q --junitxml=docs/stage1_sctsr_v4/tdd_receipts/readiness_fix_02_epoch_publication/GREEN.junit.xml",
+    "exit_code": 0,
+    "observed": "4 passed in 3.26s",
+    "junit": {
+      "path": "docs/stage1_sctsr_v4/tdd_receipts/readiness_fix_02_epoch_publication/GREEN.junit.xml",
+      "bytes": 874,
+      "sha256": "6993B4F104024598A80882A8CC063DD80B4C1E3C750DAA3F50461D6BCD6B7507"
+    }
+  },
+  "related_green": {
+    "command": "uv run --isolated --python 3.11 --extra dev pytest tests/stage1_sctsr_v4/test_epoch_transaction.py tests/stage1_sctsr_v4/test_evidence_transaction_hardening.py tests/stage1_sctsr_v4/test_recovery.py tests/stage1_sctsr_v4/test_formal_resume.py tests/stage1_sctsr_v4/test_epoch_publication_recovery.py -q --junitxml=docs/stage1_sctsr_v4/tdd_receipts/readiness_fix_02_epoch_publication/RELATED_GREEN.junit.xml",
+    "exit_code": 0,
+    "observed": "57 passed in 10.87s",
+    "junit": {
+      "path": "docs/stage1_sctsr_v4/tdd_receipts/readiness_fix_02_epoch_publication/RELATED_GREEN.junit.xml",
+      "bytes": 9792,
+      "sha256": "53862B33F270EC1901F746F4A8BB90717BA9082D79D52BC04A656D3BB6525AC6"
+    }
+  },
+  "compileall": {
+    "command": "uv run --isolated --python 3.11 --extra dev python -m compileall -q stage1_sctsr_v4/epoch_transaction.py stage1_sctsr_v4/recovery.py tests/stage1_sctsr_v4/test_epoch_publication_recovery.py",
+    "exit_code": 0
+  },
+  "durability_contract": {
+    "atomic_commit_point": "ATOMically_replaced_receipt_chain_with_new_complete_row",
+    "before_commit_point": "quarantine renamed generation and do not advance receipt/index/pointer",
+    "after_commit_point": "preserve immutable generation and receipt; rebuild index/pointer after validation; stop current execution",
+    "windows_path_policy": "extended-length paths for I/O; normalized absolute paths for identity comparison and receipts"
+  },
+  "result": "PASS"
+}
