@@ -10,7 +10,7 @@
 
 冻结 T 为 3,000 IDs，digest 是 `85D462C1D95F30FB8B519162BBAD762CC4E9506A185C07D719145F07FE003B4B`。在排除 T 后，按 `(label, dynamic bucket, OOF fold, oof_group_id)` 精确匹配有 172 个 joint strata 缺口，累计短缺 378 个 occurrence。
 
-实现正确行为是抛出 `R2_QUOTA_INFEASIBLE`。在 owner 批准 `SPECIFICATION_CHANGE_REQUEST_R2_INFEASIBLE.md` 前，八臂正式矩阵不能施工；不得用放宽 quota、nearest bucket、replacement、T overlap 或标签替换绕过。
+实现正确行为是抛出 `R2_QUOTA_INFEASIBLE`。2026-08-14 的冻结资产审计已提出唯一推荐修订：保持 3,000 unique、零 overlap 和 `(label, dynamic bucket, OOF fold)` exact，四字段先按可用容量填满，再在相同三字段 cell 内随机填充不可避免的 378 个 deficit；group TV 为容量下界 0.126。该提案尚未 owner 接受，也尚未激活为 formal matcher。此前不得用放宽 quota、nearest bucket、replacement、T overlap 或标签替换绕过。详见 `SPECIFICATION_CHANGE_REQUEST_R2_INFEASIBLE.md` 和 canonical `08_reports/sctsr_v4_r2_specification_audit_20260814/`。
 
 ## 3. v3 回归口径矛盾
 

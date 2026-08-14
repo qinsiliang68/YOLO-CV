@@ -1,6 +1,6 @@
 # SCTSR v4 R2 specification change request
 
-Status: `OPEN_HARD_BLOCKER`
+Status: `AUDITED_PROPOSAL_AVAILABLE_OWNER_DECISION_REQUIRED`
 
 This request does not relax the implementation and does not authorize training. It records a contradiction between the frozen taskbook claim and the currently registered assets.
 
@@ -41,3 +41,19 @@ Exactly one preregistered change is required before formal R2 construction can p
 3. add a new frozen canonical-base asset containing at least the missing zero-overlap normal identities in the two groups, while preserving every other data-role and leakage constraint.
 
 Repetition, replacement sampling, T overlap, defect-label substitution, nearest-group matching, and quota tolerance are rejected because they violate the current taskbook.
+
+## 2026-08-14 candidate comparison update
+
+The frozen 120,000-row audit now compares all listed choices instead of merely
+recording the contradiction. Canonical evidence is under:
+
+`artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/08_reports/sctsr_v4_r2_specification_audit_20260814/`
+
+The only recommended amendment is a zero-overlap, 3,000-unique construction
+that remains exact on `(label, dynamic bucket, OOF fold)`, exhausts every
+available exact four-field cell, and randomly fills only the unavoidable 378
+capacity deficits inside the same three-field cell. Its four-field/group total
+variation is the capacity lower bound `378/3000 = 0.126`; direct drop-group
+random produces `0.392333...`. This is a proposal, not an active formal policy.
+Until owner acceptance and a separate TDD implementation commit,
+`build_registered_r2` must continue to raise `R2_QUOTA_INFEASIBLE`.

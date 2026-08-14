@@ -79,11 +79,27 @@ sha256=B4AE826649C8924388B118B0738A341A36013ACEE0B0418B2814E2F3A6C8D4F0
 
 该修复不改变任何 arm、样本、预算、schedule、seed 或评价 estimand；它只确保一个已登记逻辑作业不会被并发或误恢复执行两次。正式 claim registry 尚未由 owner 在训练环境中 provision，正式 execution token 也未签发，因此本节代码完成不构成训练授权。
 
-## 5. 尚未授权事项
+## 5. R2 不可行性审计与待接受的最小规格修订
+
+冻结 T 的 3,000 个身份全部为正常类 `learnable_hard`。排除 T 后，原 `(label, dynamic bucket, OOF fold, oof_group_id)` 四字段 exact quota 有 172 个不足 cell、累计缺 378 个 occurrence；其中 30 个 cell 候选为零，涉及 61 个 occurrence。故 replacement 仍无解；允许 overlap 至少污染 378 个对照身份，selection seed `20260812` 下从完整 base 作 exact random 会重叠 1,285/3,000；只保留可匹配 T 会把 treatment 减为 2,622 并改变 2.5% pool/schedule。
+
+候选规格机器审计位于 `08_reports/sctsr_v4_r2_specification_audit_20260814/`。唯一推荐但尚未激活的修订是：
+
+1. 仍删除所有 T IDs，保持 3,000 unique 和零 overlap；
+2. label、historical dynamic bucket、OOF fold 三字段联合 quota 必须 exact；
+3. 先逐四字段 cell 用完 `min(required, available)`，再只在相同三字段 cell 内用独立 counter-random 填不可避免 deficit；
+4. 不 replacement、不 nearest group、不使用 group 数值距离、不读取 terminal field；
+5. 四字段 displacement 必须等于数据容量下界 378，`oof_group_id` total variation 必须为 0.126；
+6. 最终候选 pool digest 预期为 `075FC31FE487D3646E89BA1043E5124D9FE49CE9FCC61C1A8041A9CB8196BECC`；
+7. R1 继续作为共同主要对照，R2 的 12.6% filename-bucket surrogate 残余失衡必须披露；只胜 R2、不胜 R1 不足以声称 utility。
+
+该修订改变 R2 的条件化 estimand，因此不能由代码静默启用。owner 接受本节前，formal matcher 继续抛出 `R2_QUOTA_INFEASIBLE`；接受后也必须另做失败优先实现提交并重新冻结 pool/schema/validator，仍不自动授权训练。
+
+## 6. 尚未授权事项
 
 以下内容仍保持阻断，直到本文件后续章节和对应机器验证给出明确结论：
 
-- 当前严格 R2 quota 不可行；
+- 当前严格 R2 quota 不可行；最小修订已有可复现提案，但尚未 owner 激活和实现为 formal policy；
 - 正式作业级一次性执行协议已定案，但共享 claim registry 尚未现场 provision/探测，正式 execution token 尚未签发；
 - 独立 `val_target` 不存在，因此 A 保持 `BLOCKED_BY_VAL_TARGET`；
 - 未签发正式 release、正式 seeds 或训练作业；

@@ -36,3 +36,7 @@ def test_schema_registry_registers_one_attempt_formal_execution_schemas():
     assert REQUIRED_SCHEMAS["formal_execution_claim"] == "stage1.sctsr.formal_execution_claim.v1"
     assert REQUIRED_SCHEMAS["execution_claim_registry"] == "stage1.sctsr.execution_claim_registry.v1"
     assert REQUIRED_SCHEMAS["execution_attempt_snapshot"] == "stage1.sctsr.execution_attempt_snapshot.v1"
+
+
+def test_schema_registry_registers_r2_specification_audit():
+    assert REQUIRED_SCHEMAS["r2_specification_audit"] == "stage1.sctsr.r2_specification_audit.v1"

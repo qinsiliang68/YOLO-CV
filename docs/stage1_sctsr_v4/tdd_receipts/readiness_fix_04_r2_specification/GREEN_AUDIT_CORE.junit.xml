@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="3" time="4.806" timestamp="2026-08-14T20:11:57.192348+08:00" hostname="zhangdawei"><testcase classname="tests.stage1_sctsr_v4.test_r2_specification_audit" name="test_minimum_displacement_candidate_is_unique_zero_overlap_and_coarse_exact" time="0.000" /><testcase classname="tests.stage1_sctsr_v4.test_r2_specification_audit" name="test_registered_r2_audit_reproduces_shortage_and_compares_falsifiable_options" time="4.214"><failure message="assert 0.3923333333333333 == 0.387 ± 3.9e-07&#10;  &#10;  comparison failed&#10;  Obtained: 0.3923333333333333&#10;  Expected: 0.387 ± 3.9e-07">registered_inputs = FormalPoolInputs(base_records=(IdentityRecord(sample_id='Det/images/normal_train/00145723.png', y_true=0, replay_role=...B11E3A4FA91AC450E51BA627BA9', asset_registry_digest='CE27CFDA2691B225B5391631BF0F618B17CF46917C8A7353A62944801C8B4BFB')
+
+    def test_registered_r2_audit_reproduces_shortage_and_compares_falsifiable_options(registered_inputs):
+        audit = audit_r2_specifications(
+            registered_inputs.base_records,
+            registered_inputs.t_pool.records,
+            selection_seed=20260812,
+        )
+    
+        assert audit["status"] == "SPECIFICATION_CHANGE_REQUIRED"
+        assert audit["treatment"]["unique_count"] == 3000
+        assert audit["strict_exact"]["shortage_strata"] == 172
+        assert audit["strict_exact"]["shortage_occurrences"] == 378
+        assert audit["strict_exact"]["zero_available_strata"] == 30
+        assert audit["strict_exact"]["zero_available_occurrences"] == 61
+        assert audit["options"]["exact_with_replacement"]["status"] == "INFEASIBLE"
+        assert audit["options"]["matchable_t_subset"]["unique_count"] == 2622
+&gt;       assert audit["options"]["drop_group_hash_random"]["group_total_variation"] == pytest.approx(0.387)
+E       assert 0.3923333333333333 == 0.387 ± 3.9e-07
+E         
+E         comparison failed
+E         Obtained: 0.3923333333333333
+E         Expected: 0.387 ± 3.9e-07
+
+tests\stage1_sctsr_v4\test_r2_specification_audit.py:57: AssertionError</failure></testcase><testcase classname="tests.stage1_sctsr_v4.test_schema_registry" name="test_schema_registry_registers_r2_specification_audit" time="0.000" /></testsuite></testsuites>
