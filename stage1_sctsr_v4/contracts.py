@@ -8,8 +8,14 @@ from .arm_spec import default_phase1_arms
 from .baseline_reference import MAIN_COMMIT, TASKBOOK_BLOB_SHA, TASKBOOK_PATH
 from .errors import ErrorCode, SctsrError
 from .formal_release import verify_formal_release
+from .r2_addendum import (
+    R2_APPROVED_IDENTITY_DIGEST,
+    R2_APPROVED_SELECTION_SEED,
+    R2_MINIMUM_OOF_GROUP_DISPLACEMENT_POLICY,
+    validate_r2_matching_policy_mapping,
+)
 from .rate_spec import F_RATE, IDENTITY_POOL_RATE, U_RATE, ZERO_RATE
-from .serialization import load_json, stable_digest
+from .serialization import load_json, sha256_file, stable_digest
 
 
 @dataclass(frozen=True, slots=True)
@@ -55,6 +61,40 @@ def validate_contract_mapping(contract: Mapping[str, Any], arms: list[Mapping[st
         raise SctsrError(ErrorCode.DENOMINATOR_IDENTITY_MISMATCH, "Replay CE denominator is the canonical base batch size 128")
     if contract.get("replay_microbatch_max_fraction") != {"numerator": 1, "denominator": 4}:
         raise SctsrError(ErrorCode.REPLAY_MICROBATCH_CAP_EXCEEDED, "Replay microbatch cap is fixed at one quarter of the base batch")
+    r2_policy = contract.get("r2_matching_policy")
+    expected_r2_fields = {
+        "path",
+        "sha256",
+        "policy_digest",
+        "policy_id",
+        "selection_seed",
+        "expected_identity_digest",
+    }
+    if not isinstance(r2_policy, Mapping) or set(r2_policy) != expected_r2_fields:
+        raise SctsrError(
+            ErrorCode.SCHEMA_VALIDATION_FAILED,
+            "Contract does not exactly bind the owner-approved R2 addendum",
+            failing_field="r2_matching_policy",
+        )
+    expected_r2_values = {
+        "path": "configs/stage1_sctsr_v4/r2_matching_policy_v1.json",
+        "policy_id": R2_MINIMUM_OOF_GROUP_DISPLACEMENT_POLICY,
+        "selection_seed": R2_APPROVED_SELECTION_SEED,
+        "expected_identity_digest": R2_APPROVED_IDENTITY_DIGEST,
+    }
+    for field, expected_value in expected_r2_values.items():
+        if r2_policy.get(field) != expected_value:
+            raise SctsrError(
+                ErrorCode.CONFIGURATION_MISMATCH,
+                "Contract R2 addendum binding differs from the approved policy",
+                failing_field=f"r2_matching_policy.{field}",
+                observed=r2_policy.get(field),
+                expected=expected_value,
+            )
+    for field in ("sha256", "policy_digest"):
+        token = str(r2_policy.get(field, ""))
+        if len(token) != 64 or token != token.upper() or any(character not in "0123456789ABCDEF" for character in token):
+            raise SctsrError(ErrorCode.IDENTITY_DIGEST_MISMATCH, "Contract R2 addendum binding is not canonical SHA-256", failing_field=f"r2_matching_policy.{field}")
 
     expected_rates = {
         "identity_pool": IDENTITY_POOL_RATE.as_dict(),
@@ -100,15 +140,30 @@ def validate_contract_mapping(contract: Mapping[str, Any], arms: list[Mapping[st
         "val_target_blocked": "PASS",
         "weighted_qrad_forbidden": "PASS",
         "formal_checkpoint_e200": "PASS",
+        "r2_addendum_bound": "PASS",
         "phase1_arms": "PASS" if arms is not None else "NOT_LOADED",
     }
     return ContractValidationResult("PASS", stable_digest(contract), checks)
 
 
 def validate_contract_files(contract_path: str | Path, arms_path: str | Path | None = None) -> ContractValidationResult:
-    contract = load_json(contract_path)
+    contract_source = Path(contract_path).resolve()
+    contract = load_json(contract_source)
     arms = load_json(arms_path).get("arms") if arms_path else None
-    return validate_contract_mapping(contract, arms)
+    result = validate_contract_mapping(contract, arms)
+    binding = contract["r2_matching_policy"]
+    repository_root = contract_source.parents[2]
+    policy_path = (repository_root / str(binding["path"])).resolve()
+    try:
+        policy_path.relative_to(repository_root)
+    except ValueError as exc:
+        raise SctsrError(ErrorCode.SCHEMA_VALIDATION_FAILED, "R2 policy path escapes repository root") from exc
+    if not policy_path.is_file() or sha256_file(policy_path) != binding["sha256"]:
+        raise SctsrError(ErrorCode.IDENTITY_DIGEST_MISMATCH, "R2 policy bytes differ from the contract binding", artifact_path=str(policy_path))
+    policy = validate_r2_matching_policy_mapping(load_json(policy_path))
+    if policy["policy_digest"] != binding["policy_digest"]:
+        raise SctsrError(ErrorCode.IDENTITY_DIGEST_MISMATCH, "R2 policy semantic digest differs from the contract binding")
+    return result
 
 
 def require_synthetic_or_authorized(

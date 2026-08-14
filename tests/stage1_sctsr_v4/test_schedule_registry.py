@@ -33,3 +33,5 @@ def test_sa_074_cross_arm_registry_binds_t_r1_r2_and_parity(synthetic_fixture, p
     assert result["status"] == "PASS"
     assert result["base_denominator"] == synthetic_fixture.base_denominator
     assert len(result["schedule_digests"]) == 8
+    assert result["shared_r2_pool_digest"] == synthetic_fixture.r2_result.pool.spec.identity_digest
+    assert result["r2_arms"] == ["R2_U", "R2_F", "T_TO_R2_AT_160"]

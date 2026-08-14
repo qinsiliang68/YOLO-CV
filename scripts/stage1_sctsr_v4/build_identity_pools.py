@@ -16,8 +16,9 @@ from stage1_sctsr_v4.errors import ErrorCode, SctsrError
 from stage1_sctsr_v4.identity_pool import partition_five_groups
 from stage1_sctsr_v4.formal_pool_inputs import build_registered_r1, build_registered_r2, load_formal_pool_inputs
 from stage1_sctsr_v4.random_controls import counter_hash
+from stage1_sctsr_v4.r2_addendum import validate_r2_matching_policy_mapping
 from stage1_sctsr_v4.selection_ledger import write_selection_partition
-from stage1_sctsr_v4.serialization import atomic_write_json, sha256_file
+from stage1_sctsr_v4.serialization import atomic_write_json, load_json, sha256_file
 from stage1_sctsr_v4.synthetic_fixture import build_synthetic_fixture
 from stage1_sctsr_v4.terminal_field_guard import TerminalFieldGuard
 
@@ -33,7 +34,7 @@ def _canonical_sha(value: str, *, field: str) -> str:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Build T, R1, or strict zero-overlap exact-quota R2 identity pools")
+    parser = argparse.ArgumentParser(description="Build T, R1, or owner-approved zero-overlap minimum-group-displacement R2 identity pools")
     parser.add_argument("--pool", choices=CHOICES, required=True)
     parser.add_argument("--output-dir", type=Path, required=True)
     parser.add_argument("--synthetic", action="store_true")
@@ -44,6 +45,7 @@ def main() -> int:
     parser.add_argument("--base-manifest-sha", default="UNREGISTERED")
     parser.add_argument("--source-manifest-sha", default="UNREGISTERED")
     parser.add_argument("--selection-seed", type=int, default=20260812)
+    parser.add_argument("--r2-policy", type=Path, help="Required canonical owner-approved policy for formal R2 only")
     parser.add_argument("--validate-only", action="store_true")
     add_output_argument(parser)
     arguments = parser.parse_args()
@@ -65,6 +67,8 @@ def main() -> int:
             raise SctsrError(ErrorCode.ATOMIC_TRANSACTION_INCOMPLETE, "Identity-pool destination already exists", artifact_path=str(arguments.output_dir))
 
         if arguments.synthetic:
+            if arguments.r2_policy is not None:
+                raise SctsrError(ErrorCode.CONFIGURATION_MISMATCH, "Synthetic pools may not claim the formal R2 addendum policy")
             os.environ["SCTSR_ALLOW_SYNTHETIC_COLUMNAR_FALLBACK"] = "1"
             fixture = build_synthetic_fixture(training_seed=arguments.selection_seed)
             base = fixture.base_records
@@ -92,6 +96,36 @@ def main() -> int:
             if arguments.base_records is not None or arguments.t_records is not None:
                 raise SctsrError(ErrorCode.TERMINAL_FIELD_ACCESS_FORBIDDEN, "Formal pool construction may not accept arbitrary base/T tables; use the registered asset projection")
             repository_root = arguments.repository_root.resolve()
+            r2_policy_binding = None
+            if arguments.pool == "R2_MATCHED_RANDOM":
+                if arguments.r2_policy is None:
+                    raise SctsrError(ErrorCode.CONFIGURATION_MISMATCH, "Formal R2 construction requires --r2-policy")
+                expected_policy_path = (repository_root / "configs/stage1_sctsr_v4/r2_matching_policy_v1.json").resolve()
+                policy_path = arguments.r2_policy.resolve()
+                if policy_path != expected_policy_path or not policy_path.is_file():
+                    raise SctsrError(
+                        ErrorCode.CONFIGURATION_MISMATCH,
+                        "Formal R2 policy must be the canonical repository file, not a copy or alternate path",
+                        observed=policy_path.as_posix(),
+                        expected=expected_policy_path.as_posix(),
+                    )
+                policy = validate_r2_matching_policy_mapping(load_json(policy_path))
+                if arguments.selection_seed != policy["selection_seed"]:
+                    raise SctsrError(
+                        ErrorCode.CONFIGURATION_MISMATCH,
+                        "R2 CLI selection seed differs from the owner-approved policy",
+                        observed=arguments.selection_seed,
+                        expected=policy["selection_seed"],
+                    )
+                r2_policy_binding = {
+                    "path": policy_path.as_posix(),
+                    "bytes": policy_path.stat().st_size,
+                    "sha256": sha256_file(policy_path),
+                    "policy_digest": policy["policy_digest"],
+                    "policy_id": policy["policy_id"],
+                }
+            elif arguments.r2_policy is not None:
+                raise SctsrError(ErrorCode.CONFIGURATION_MISMATCH, "--r2-policy may only be supplied for R2_MATCHED_RANDOM")
             registry = load_asset_registry(arguments.asset_registry)
             inputs = load_formal_pool_inputs(registry, repository_root)
             expected_source_sha = inputs.t_pool.spec.source_manifest_sha256 if arguments.pool == "T_STRESS" else inputs.preterminal_source_sha256
@@ -129,6 +163,8 @@ def main() -> int:
                 "t_source_manifest_path": inputs.t_pool.spec.source_manifest_path,
                 "t_source_manifest_sha256": inputs.t_pool.spec.source_manifest_sha256,
             }
+            if r2_policy_binding is not None:
+                source_bindings["r2_matching_policy"] = r2_policy_binding
 
         groups = partition_five_groups(result, base_denominator=denominator)
         membership = [

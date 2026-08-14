@@ -26,6 +26,14 @@
     "selector_trained": false
   },
   "optimizer_step_policy": "BASE_STEP_LOCK",
+  "r2_matching_policy": {
+    "expected_identity_digest": "075FC31FE487D3646E89BA1043E5124D9FE49CE9FCC61C1A8041A9CB8196BECC",
+    "path": "configs/stage1_sctsr_v4/r2_matching_policy_v1.json",
+    "policy_digest": "33B4681FFF92360FD253AE7B0CC92CC0A2D7E27AEAB65A238730600ECEFE7D4F",
+    "policy_id": "MINIMUM_OOF_GROUP_DISPLACEMENT_ZERO_OVERLAP_V1",
+    "selection_seed": 20260812,
+    "sha256": "E58E9D7093C6148687472769A1781AA0F3985A76C8C4269DF143C5D1B565EA3C"
+  },
   "rates": {
     "front_loaded_active": {
       "denominator": 1000,

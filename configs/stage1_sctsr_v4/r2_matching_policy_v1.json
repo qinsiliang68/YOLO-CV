@@ -1,0 +1,35 @@
+{
+  "applies_to_arms": [
+    "R2_U",
+    "R2_F",
+    "T_TO_R2_AT_160"
+  ],
+  "approved_at": "2026-08-15",
+  "construction": "EXHAUST_EXACT_CELLS_THEN_COUNTER_HASH_FILL_WITHIN_SAME_EXACT_THREE_FIELD_CELL",
+  "exact_fields": [
+    "y_true",
+    "historical_dynamic_bucket",
+    "oof_fold"
+  ],
+  "expected_group_total_variation": 0.126,
+  "expected_identity_digest": "075FC31FE487D3646E89BA1043E5124D9FE49CE9FCC61C1A8041A9CB8196BECC",
+  "formal_training_authorized": false,
+  "minimum_displacement_count": 378,
+  "overlap_with_t": 0,
+  "owner_decision": "APPROVED_2026-08-15",
+  "policy_digest": "33B4681FFF92360FD253AE7B0CC92CC0A2D7E27AEAB65A238730600ECEFE7D4F",
+  "policy_id": "MINIMUM_OOF_GROUP_DISPLACEMENT_ZERO_OVERLAP_V1",
+  "relaxed_fields": [
+    "oof_group_id"
+  ],
+  "residual_risk": "OOF_GROUP_IS_FILENAME_BUCKET_SURROGATE_NOT_TRUE_VIDEO_ID_R1_REMAINS_CO_PRIMARY_CONTROL",
+  "schema_version": "stage1.sctsr.r2_matching_policy.v1",
+  "selection_seed": 20260812,
+  "shared_identity_pool_required": true,
+  "supersedes_taskbook_requirements": [
+    "SA-051",
+    "SA-053",
+    "SA-054"
+  ],
+  "unique_count": 3000
+}

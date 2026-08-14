@@ -22,6 +22,7 @@ from .dataset_adapter import load_identity_manifest
 from .dataset_content_ledger import registered_dataset_manifest_asset_ids, validate_registered_dataset_content
 from .evidence_runtime import SampleEvidence
 from .rate_spec import DenominatorRole, RateSemantic, ReplayRateSpec
+from .r2_addendum import validate_approved_r2_build
 from .schedule import SchedulePlan
 from .selection_ledger import validate_selection_rows
 from .seed_registry import SeedRegistry
@@ -414,7 +415,11 @@ def _load_identity_pool_artifact(
         if quota.get("terminal_field_status") != "TERMINAL_FIELDS_NOT_LOADED" or quota.get("overlap_with_t") != 0:
             raise SctsrError(ErrorCode.TERMINAL_FIELD_ACCESS_FORBIDDEN, "R2 quota audit does not prove terminal-field exclusion and zero overlap")
         if expected_base_denominator == 120_000 and not isinstance(raw.get("audit"), Mapping):
-            raise SctsrError(ErrorCode.R2_QUOTA_INFEASIBLE, "Formal R2 artifact lacks its exact-quota construction audit")
+            raise SctsrError(ErrorCode.R2_QUOTA_INFEASIBLE, "Formal R2 artifact lacks its approved-addendum construction audit")
+        if expected_base_denominator == 120_000:
+            if quota.get("pool_build_audit") != raw["audit"]:
+                raise SctsrError(ErrorCode.IDENTITY_DIGEST_MISMATCH, "R2 quota audit and pool manifest disagree on construction evidence")
+            validate_approved_r2_build(spec_raw, raw["audit"])
     return pool, {name: tuple(values) for name, values in groups.items()}, {
         "manifest_path": path.as_posix(),
         "manifest_sha256": sha256_file(path),

@@ -10,6 +10,11 @@ from .asset_registry import AssetRegistry, validate_asset_registry
 from .errors import ErrorCode, SctsrError
 from .identity_pool import IdentityPool, IdentityRecord, T_SELECTION_SEMANTIC, make_pool
 from .random_controls import PoolBuildResult, build_r1_global_random, build_r2_matched_random
+from .r2_addendum import (
+    R2_APPROVED_IDENTITY_DIGEST,
+    R2_APPROVED_SELECTION_SEED,
+    R2_MINIMUM_OOF_GROUP_DISPLACEMENT_POLICY,
+)
 from .serialization import stable_digest
 from .terminal_field_guard import TerminalFieldGuard
 
@@ -147,6 +152,14 @@ def build_registered_r1(inputs: FormalPoolInputs, *, base_denominator: int, sele
 
 
 def build_registered_r2(inputs: FormalPoolInputs, *, base_denominator: int, selection_seed: int) -> PoolBuildResult:
+    if selection_seed != R2_APPROVED_SELECTION_SEED:
+        raise SctsrError(
+            ErrorCode.CONFIGURATION_MISMATCH,
+            "Formal R2 construction must use the owner-approved frozen selection seed",
+            failing_field="selection_seed",
+            observed=selection_seed,
+            expected=R2_APPROVED_SELECTION_SEED,
+        )
     rows: list[dict[str, Any]] = [
         {
             "sample_id": record.sample_id,
@@ -161,7 +174,7 @@ def build_registered_r2(inputs: FormalPoolInputs, *, base_denominator: int, sele
         }
         for record in inputs.base_records
     ]
-    return build_r2_matched_random(
+    result = build_r2_matched_random(
         rows,
         t_pool=inputs.t_pool,
         base_denominator=base_denominator,
@@ -169,4 +182,13 @@ def build_registered_r2(inputs: FormalPoolInputs, *, base_denominator: int, sele
         source_manifest_sha256=inputs.preterminal_source_sha256,
         selection_seed=selection_seed,
         guard=TerminalFieldGuard(),
+        matching_policy=R2_MINIMUM_OOF_GROUP_DISPLACEMENT_POLICY,
     )
+    if result.pool.spec.identity_digest != R2_APPROVED_IDENTITY_DIGEST:
+        raise SctsrError(
+            ErrorCode.IDENTITY_DIGEST_MISMATCH,
+            "Materialized R2 identity differs from the owner-approved addendum",
+            observed=result.pool.spec.identity_digest,
+            expected=R2_APPROVED_IDENTITY_DIGEST,
+        )
+    return result

@@ -89,6 +89,7 @@ def test_pool_cli_cannot_accept_an_absolute_base_denominator(repository_root):
     result = _run(repository_root, repository_root / "scripts" / "stage1_sctsr_v4" / "build_identity_pools.py", "--help")
     assert result.returncode == 0
     assert "--base-denominator" not in result.stdout
+    assert "--r2-policy" in result.stdout
 
 
 def test_validate_schedule_rejects_partial_formal_matrix(repository_root, tmp_path, phase1_schedules):
@@ -134,6 +135,64 @@ def test_build_identity_pool_rejects_placeholder_formal_hashes(repository_root, 
     )
     assert result.returncode != 0
     assert json.loads(receipt.read_text(encoding="utf-8"))["error"]["code"] == ErrorCode.IDENTITY_DIGEST_MISMATCH.value
+    assert not output_dir.exists()
+
+
+def test_formal_r2_pool_cli_requires_the_registered_addendum_policy(repository_root, tmp_path):
+    receipt = tmp_path / "receipt.json"
+    output_dir = tmp_path / "pool"
+    result = _run(
+        repository_root,
+        repository_root / "scripts" / "stage1_sctsr_v4" / "build_identity_pools.py",
+        "--pool",
+        "R2_MATCHED_RANDOM",
+        "--repository-root",
+        repository_root,
+        "--asset-registry",
+        repository_root / "configs" / "stage1_sctsr_v4" / "asset_registry_v1.json",
+        "--base-manifest-sha",
+        "A" * 64,
+        "--source-manifest-sha",
+        "B" * 64,
+        "--output-dir",
+        output_dir,
+        "--output",
+        receipt,
+    )
+    assert result.returncode != 0
+    assert json.loads(receipt.read_text(encoding="utf-8"))["error"]["code"] == ErrorCode.CONFIGURATION_MISMATCH.value
+    assert not output_dir.exists()
+
+
+def test_formal_r2_pool_cli_rejects_a_policy_copy(repository_root, tmp_path):
+    policy_copy = tmp_path / "r2_matching_policy_v1.json"
+    policy_copy.write_bytes(
+        (repository_root / "configs" / "stage1_sctsr_v4" / "r2_matching_policy_v1.json").read_bytes()
+    )
+    receipt = tmp_path / "receipt.json"
+    output_dir = tmp_path / "pool"
+    result = _run(
+        repository_root,
+        repository_root / "scripts" / "stage1_sctsr_v4" / "build_identity_pools.py",
+        "--pool",
+        "R2_MATCHED_RANDOM",
+        "--repository-root",
+        repository_root,
+        "--asset-registry",
+        repository_root / "configs" / "stage1_sctsr_v4" / "asset_registry_v1.json",
+        "--base-manifest-sha",
+        "A" * 64,
+        "--source-manifest-sha",
+        "B" * 64,
+        "--r2-policy",
+        policy_copy,
+        "--output-dir",
+        output_dir,
+        "--output",
+        receipt,
+    )
+    assert result.returncode != 0
+    assert json.loads(receipt.read_text(encoding="utf-8"))["error"]["code"] == ErrorCode.CONFIGURATION_MISMATCH.value
     assert not output_dir.exists()
 
 
