@@ -178,8 +178,8 @@
     {
       "asset_id": "oof_metadata",
       "relative_path": "artifacts/stage1_oof_folds_10fold_20260617/metadata.json",
-      "sha256": "759B7D7E01506694FA508C6F2B040B510458E91056E9192A9F1D0F9101A6F97C",
-      "bytes": 1076,
+      "sha256": "B4AE826649C8924388B118B0738A341A36013ACEE0B0418B2814E2F3A6C8D4F0",
+      "bytes": 1049,
       "role": "OOF_GROUP_METADATA",
       "required": true,
       "row_count": 120000,

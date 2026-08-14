@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="0.077" timestamp="2026-08-14T19:19:20.526292+08:00" hostname="zhangdawei"><testcase classname="tests.stage1_sctsr_v4.test_asset_hardening" name="test_clean_checkout_oof_metadata_is_byte_bound_to_registry" time="0.001"><failure message="assert 1049 == 1076&#10; +  where 1049 = len(b'{\n  &quot;created_at_local&quot;: &quot;2026-07-08T21:42:26&quot;,\n  &quot;dataset_root&quot;: &quot;C:\\\\Github\\\\YOLO-CV\\\\data\\\\final_sewerml...ch fold trains on the other 9/10 rows and writes its own 1/10 holdout as both holdout_* and val_model_* manifests.&quot;\n}')">repository_root = WindowsPath('C:/Users/28898/AppData/Local/Temp/YOLO-CV-sctsr-v4-readiness-fix-f285754')
+
+    def test_clean_checkout_oof_metadata_is_byte_bound_to_registry(repository_root):
+        """The registry must describe the LF-normalized bytes Git actually checks out."""
+    
+        registry = load_json(repository_root / "configs/stage1_sctsr_v4/asset_registry_v1.json")
+        record = next(item for item in registry["assets"] if item["asset_id"] == "oof_metadata")
+        metadata_path = repository_root / record["relative_path"]
+        raw = metadata_path.read_bytes()
+    
+        assert b"\r\n" not in raw
+&gt;       assert len(raw) == record["bytes"] == 1049
+E       assert 1049 == 1076
+E        +  where 1049 = len(b'{\n  "created_at_local": "2026-07-08T21:42:26",\n  "dataset_root": "C:\\\\Github\\\\YOLO-CV\\\\data\\\\final_sewerml...ch fold trains on the other 9/10 rows and writes its own 1/10 holdout as both holdout_* and val_model_* manifests."\n}')
+
+tests\stage1_sctsr_v4\test_asset_hardening.py:182: AssertionError</failure></testcase></testsuite></testsuites>

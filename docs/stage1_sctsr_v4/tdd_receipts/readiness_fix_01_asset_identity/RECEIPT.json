@@ -1,0 +1,47 @@
+{
+  "schema_version": "stage1.sctsr.tdd_receipt.v1",
+  "rollback_unit": "readiness_fix_01_clean_checkout_asset_identity",
+  "execution_mode": "unit_and_asset_validation_only",
+  "formal_training_started": false,
+  "red": {
+    "command": "uv run --isolated --python 3.11 --extra dev pytest tests/stage1_sctsr_v4/test_asset_hardening.py::test_clean_checkout_oof_metadata_is_byte_bound_to_registry -q --junitxml=docs/stage1_sctsr_v4/tdd_receipts/readiness_fix_01_asset_identity/RED.junit.xml",
+    "exit_code": 1,
+    "observed": "LF checkout contained 1049 bytes while the registry declared 1076 CRLF bytes",
+    "expected_failure": "AssertionError: assert 1049 == 1076",
+    "junit": {
+      "path": "docs/stage1_sctsr_v4/tdd_receipts/readiness_fix_01_asset_identity/RED.junit.xml",
+      "bytes": 1818,
+      "sha256": "4B2475861C7586F83DF14C60F91DF7A0EF6B67E865DBF42AFE567BF87C61908F"
+    }
+  },
+  "green": {
+    "command": "uv run --isolated --python 3.11 --extra dev pytest tests/stage1_sctsr_v4/test_asset_hardening.py::test_clean_checkout_oof_metadata_is_byte_bound_to_registry -q --junitxml=docs/stage1_sctsr_v4/tdd_receipts/readiness_fix_01_asset_identity/GREEN.junit.xml",
+    "exit_code": 0,
+    "observed": "1 passed in 0.05s",
+    "junit": {
+      "path": "docs/stage1_sctsr_v4/tdd_receipts/readiness_fix_01_asset_identity/GREEN.junit.xml",
+      "bytes": 392,
+      "sha256": "C0A7B762EC752BEE89143934D5A30FD051E7800CD12F09B707DEAF778697BBF1"
+    }
+  },
+  "related_green": {
+    "command": "uv run --isolated --python 3.11 --extra dev pytest tests/stage1_sctsr_v4/test_asset_registry.py tests/stage1_sctsr_v4/test_asset_hardening.py tests/stage1_sctsr_v4/test_formal_pool_inputs.py -q --junitxml=docs/stage1_sctsr_v4/tdd_receipts/readiness_fix_01_asset_identity/RELATED_GREEN.junit.xml",
+    "exit_code": 0,
+    "observed": "14 passed in 5.18s",
+    "junit": {
+      "path": "docs/stage1_sctsr_v4/tdd_receipts/readiness_fix_01_asset_identity/RELATED_GREEN.junit.xml",
+      "bytes": 2186,
+      "sha256": "A72038D69D5A58D8FCEF083A25DCF07603E9070B9077581011CDCEA8B2577E77"
+    }
+  },
+  "asset_identity": {
+    "relative_path": "artifacts/stage1_oof_folds_10fold_20260617/metadata.json",
+    "old_worktree_crlf_bytes": 1076,
+    "old_worktree_crlf_sha256": "759B7D7E01506694FA508C6F2B040B510458E91056E9192A9F1D0F9101A6F97C",
+    "tracked_lf_bytes": 1049,
+    "tracked_lf_sha256": "B4AE826649C8924388B118B0738A341A36013ACEE0B0418B2814E2F3A6C8D4F0",
+    "parsed_json_semantically_equal": true
+  },
+  "environment_note": "The clean worktree did not contain the gitignored yolo11l-cls.pt. A local hard link was created only after its bytes and SHA matched the registry; it is ignored and is not part of this commit.",
+  "result": "PASS"
+}

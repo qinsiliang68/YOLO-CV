@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import csv
 import hashlib
+import json
 
 import pytest
 
@@ -11,7 +12,7 @@ from stage1_sctsr_v4.asset_registry import (
     load_registered_split_labels,
     validate_asset_registry,
 )
-from stage1_sctsr_v4.serialization import atomic_write_json, load_json
+from stage1_sctsr_v4.serialization import atomic_write_json, load_json, sha256_file
 from stage1_sctsr_v4.errors import ErrorCode, SctsrError
 
 
@@ -167,3 +168,24 @@ def test_test_split_may_not_be_registered_for_sctsr_v4(tmp_path):
     with pytest.raises(SctsrError) as caught:
         validate_asset_registry(registry, tmp_path)
     assert caught.value.code is ErrorCode.TEST_ACCESS_FORBIDDEN
+
+
+def test_clean_checkout_oof_metadata_is_byte_bound_to_registry(repository_root):
+    """The registry must describe the LF-normalized bytes Git actually checks out."""
+
+    registry = load_json(repository_root / "configs/stage1_sctsr_v4/asset_registry_v1.json")
+    record = next(item for item in registry["assets"] if item["asset_id"] == "oof_metadata")
+    metadata_path = repository_root / record["relative_path"]
+    raw = metadata_path.read_bytes()
+
+    assert b"\r\n" not in raw
+    assert len(raw) == record["bytes"] == 1049
+    assert sha256_file(metadata_path) == record["sha256"] == (
+        "B4AE826649C8924388B118B0738A341A36013ACEE0B0418B2814E2F3A6C8D4F0"
+    )
+
+    metadata = json.loads(raw)
+    assert metadata["seed"] == 20260606
+    assert metadata["n_folds"] == 10
+    assert metadata["total_rows"] == 120_000
+    assert metadata["group_sources"] == {"numeric_filename_bucket": 1156}
