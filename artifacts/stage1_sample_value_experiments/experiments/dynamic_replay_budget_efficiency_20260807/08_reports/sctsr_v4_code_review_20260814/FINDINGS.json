@@ -1,0 +1,275 @@
+{
+  "schema_version": "stage1.sctsr.code_review_findings.v1",
+  "review_identity": {
+    "baseline_commit": "a70ba60485dd32c2f8b4268b8f28ea2d3549f42f",
+    "implementation_freeze_commit": "e9b6df61b0eb02e1d32c29175644f1c2af545afc",
+    "delivery_commit": "f285754108c7b8e37afd7f5f0fa58fe8fb23d38a",
+    "taskbook_blob_sha": "b201d021712e9c6614e119d35f0e14bdf405c6be",
+    "reviewer_role": "CODEX_PRIMARY_AGENT_SELF_REVIEW_NOT_INDEPENDENT"
+  },
+  "summary": {
+    "open_p0": 0,
+    "open_p1": 3,
+    "open_p2": 1,
+    "open_p3": 1,
+    "resolved": 0,
+    "confirmed_not_a_bug": 0
+  },
+  "findings": [
+    {
+      "finding_id": "SCTSR-RV4-001",
+      "severity": "P1",
+      "title": "Clean checkout changes the registered OOF metadata bytes and makes both supported Python suites fail",
+      "category": "ASSET_IDENTITY_PORTABILITY",
+      "status": "OPEN",
+      "source_locations": [
+        {
+          "path": ".gitattributes",
+          "start_line": 4,
+          "end_line": 4,
+          "role": "Git normalizes every JSON file to LF"
+        },
+        {
+          "path": "configs/stage1_sctsr_v4/asset_registry_v1.json",
+          "start_line": 179,
+          "end_line": 182,
+          "role": "Registry binds the CRLF representation of oof_metadata"
+        },
+        {
+          "path": "stage1_sctsr_v4/asset_registry.py",
+          "start_line": 208,
+          "end_line": 213,
+          "role": "Formal asset validation enforces byte count and SHA"
+        }
+      ],
+      "violated_taskbook_clause": {
+        "path": "artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/03_preregistration_v4_sctsr/SCTSR_EXPERT_IMPLEMENTATION_TASKBOOK.md",
+        "lines": [
+          "136-140: oof_metadata is frozen at 1,076 bytes and SHA 759B...F97C",
+          "1536-1538: validate_assets must verify path, size and SHA",
+          "2125-2130: formal release requires a clean, fully manifested source tree"
+        ]
+      },
+      "reproduction_command": ".\\.venv\\Scripts\\python.exe artifacts\\stage1_sample_value_experiments\\experiments\\dynamic_replay_budget_efficiency_20260807\\08_reports\\sctsr_v4_code_review_20260814\\repro\\repro_clean_checkout_asset_identity.py --comparison-root C:\\GitHub\\YOLO-CV",
+      "reproduction_exit_code": 1,
+      "reproduction_evidence": {
+        "stdout_path": "commands/asset_id/stdout.log",
+        "stdout_sha256": "E05861F737B2B60DA1AB278615F9B3883277D5F650B00AE9E5667BCC077899B9",
+        "python311_suite_path": "commands/full_v4_python311_assets_bound/stdout.log",
+        "python312_suite_path": "commands/full_v4_python312_clean/stdout.log"
+      },
+      "expected": "A clean Git checkout contains the exact bytes registered for every required formal asset, so all 340 v4 tests can run on Python 3.11 and 3.12.",
+      "observed": {
+        "registry": {
+          "bytes": 1076,
+          "sha256": "759B7D7E01506694FA508C6F2B040B510458E91056E9192A9F1D0F9101A6F97C"
+        },
+        "clean_checkout": {
+          "bytes": 1049,
+          "sha256": "B4AE826649C8924388B118B0738A341A36013ACEE0B0418B2814E2F3A6C8D4F0"
+        },
+        "stale_windows_worktree": {
+          "bytes": 1076,
+          "sha256": "759B7D7E01506694FA508C6F2B040B510458E91056E9192A9F1D0F9101A6F97C"
+        },
+        "python311": "337 passed, 3 errors",
+        "python312": "337 passed, 3 errors"
+      },
+      "impact_scope": "Every clean clone/worktree fails registered T, R1 and R2 construction before trainer creation. The implementation cannot satisfy the requested dual-Python 340-pass acceptance and is not portable across Git checkouts.",
+      "required_fix": "Choose one canonical representation. Prefer committing LF bytes and updating the registered size/SHA and taskbook addendum consistently; alternatively mark only this immutable asset as binary/no-conversion and commit the intended CRLF bytes. Add a test that creates a fresh Git worktree and validates every required asset there.",
+      "regression_test_suggestion": "Failure-first integration test: clone or git-worktree-add the frozen commit into an empty directory, run validate_assets and the three formal_pool_inputs tests, and assert the clean-checkout bytes equal the registry bytes on Windows and Linux.",
+      "training_readiness_effect": "BLOCKS_FORMAL_TRAINING"
+    },
+    {
+      "finding_id": "SCTSR-RV4-002",
+      "severity": "P1",
+      "title": "A failure after the complete rename leaves an unreceipted canonical-looking generation outside quarantine",
+      "category": "ATOMIC_PUBLISH_RECOVERY",
+      "status": "OPEN",
+      "source_locations": [
+        {
+          "path": "stage1_sctsr_v4/epoch_transaction.py",
+          "start_line": 248,
+          "end_line": 265,
+          "role": "The directory is renamed to .complete before receipt, index and rolling pointer publication"
+        },
+        {
+          "path": "stage1_sctsr_v4/epoch_transaction.py",
+          "start_line": 271,
+          "end_line": 278,
+          "role": "Exception cleanup only quarantines an existing .inprogress directory"
+        }
+      ],
+      "violated_taskbook_clause": {
+        "path": "artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/03_preregistration_v4_sctsr/SCTSR_EXPERT_IMPLEMENTATION_TASKBOOK.md",
+        "lines": [
+          "1267-1278: registered publish order",
+          "1280-1286: any failed step must not update the canonical pointer and must quarantine the partial generation",
+          "1305-1318: resume requires a fully complete prefix and quarantined partial state",
+          "2369-2384: atomic-write and recovery self-audit"
+        ]
+      },
+      "reproduction_command": ".\\.venv\\Scripts\\python.exe artifacts\\stage1_sample_value_experiments\\experiments\\dynamic_replay_budget_efficiency_20260807\\08_reports\\sctsr_v4_code_review_20260814\\repro\\repro_post_publish_receipt_failure.py",
+      "reproduction_exit_code": 1,
+      "reproduction_evidence": {
+        "stdout_path": "commands/post_publish_receipt_failure_repro/stdout.log",
+        "stdout_sha256": "CDE1568F1D7B2955ED1012C1E62257D3220EC0788939A61451E6C4CD2E235F5A"
+      },
+      "expected": {
+        "complete_exists": false,
+        "quarantined_generation_count": 1,
+        "previous_complete_prefix_remains_resumable": true
+      },
+      "observed": {
+        "injected_failure": "OSError: INJECTED_DISK_FULL_AFTER_COMPLETE_RENAME",
+        "complete_exists": true,
+        "inprogress_exists": false,
+        "quarantined_generation_count": 0,
+        "receipt_exists": false,
+        "artifact_index_exists": false,
+        "recovery_pointer_exists": false
+      },
+      "impact_scope": "Disk-full, kill or I/O failure during receipt/index/pointer publication can strand a run with a .complete directory that is not part of the canonical receipt chain. Resume then fails closed but cannot automatically reconcile or quarantine the orphan, requiring manual intervention and risking operator confusion about canonical completion.",
+      "required_fix": "Introduce a recoverable publish journal or equivalent two-phase reconciliation. On failure after rename, atomically quarantine the orphan complete generation or make recovery prove and finish the pending publication without overwriting prior evidence. The canonical pointer must remain on the previous fully receipted generation.",
+      "regression_test_suggestion": "Add failure-first tests injecting exceptions immediately after rename and independently at receipt append, artifact-index publish and rolling-pointer publish. Each must assert no orphan canonical generation, unchanged prior pointer, append-only prior evidence and deterministic resume from the last fully published epoch.",
+      "training_readiness_effect": "BLOCKS_FORMAL_TRAINING"
+    },
+    {
+      "finding_id": "SCTSR-RV4-003",
+      "severity": "P1",
+      "title": "A valid signed formal release can be verified repeatedly because nonce consumption is not enforced",
+      "category": "FORMAL_AUTHORIZATION_REPLAY_PROTECTION",
+      "status": "OPEN",
+      "source_locations": [
+        {
+          "path": "stage1_sctsr_v4/formal_release.py",
+          "start_line": 130,
+          "end_line": 136,
+          "role": "Nonce is only checked for type and minimum length"
+        },
+        {
+          "path": "stage1_sctsr_v4/formal_release.py",
+          "start_line": 175,
+          "end_line": 186,
+          "role": "Signature is verified and the release is returned without an anti-replay state transition"
+        },
+        {
+          "path": "scripts/stage1_sctsr_v4/run_branch.py",
+          "start_line": 88,
+          "end_line": 99,
+          "role": "Authorization is correctly checked before trainer construction, but verification is repeatable"
+        }
+      ],
+      "violated_taskbook_clause": {
+        "path": "artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/03_preregistration_v4_sctsr/SCTSR_EXPERT_IMPLEMENTATION_TASKBOOK.md",
+        "lines": [
+          "1581-1584: formal mode requires a future signed release",
+          "Review plan section 2A: duplicate nonce must fail before trainer construction"
+        ],
+        "specification_note": "The taskbook does not define whether one signed release is matrix-wide or single-use. The approved review plan explicitly requires duplicate nonce rejection, so this is both an implementation acceptance failure and a release-contract ambiguity."
+      },
+      "reproduction_command": ".\\.venv\\Scripts\\python.exe artifacts\\stage1_sample_value_experiments\\experiments\\dynamic_replay_budget_efficiency_20260807\\08_reports\\sctsr_v4_code_review_20260814\\repro\\repro_duplicate_nonce.py",
+      "reproduction_exit_code": 1,
+      "reproduction_evidence": {
+        "stdout_path": "commands/duplicate_nonce_replay_repro/stdout.log",
+        "stdout_sha256": "CE44B7D5E9ABDF1807D937818048FF76711A9EC59614D9D2ACAA2392C607643C"
+      },
+      "expected": "The second use of the same signed release_id/nonce is rejected before any trainer is constructed.",
+      "observed": "The same valid signed release was verified twice; the second verification returned successfully and no nonce-consumption ledger exists.",
+      "impact_scope": "A duplicated or retried formal invocation can pass authorization more than once. Without a job-scoped idempotency contract this can create duplicate scientific runs, duplicate exposure accounting or ambiguous canonical completion.",
+      "required_fix": "Freeze the authorization granularity. If releases are job-scoped, bind them to run_id/arm_id/training_seed and atomically consume a nonce in an append-only ledger before trainer construction. If a release is intentionally matrix-wide, add signed per-job execution tokens and an idempotent job-consumption ledger, and amend the taskbook/review requirement accordingly.",
+      "regression_test_suggestion": "Failure-first tests for duplicate nonce, duplicate release_id with a new nonce, process restart, concurrent double-consume and a crash between consume and trainer construction. Verify exactly one canonical authorization consumption and no trainer side effect on rejected attempts.",
+      "training_readiness_effect": "BLOCKS_FORMAL_TRAINING"
+    },
+    {
+      "finding_id": "SCTSR-RV4-004",
+      "severity": "P2",
+      "title": "The taskbook states exact R2 quotas are feasible, but the frozen registered assets prove 172 shortfall strata",
+      "category": "PREREGISTRATION_ASSET_CONTRADICTION",
+      "status": "OPEN",
+      "source_locations": [
+        {
+          "path": "artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/03_preregistration_v4_sctsr/SCTSR_EXPERT_IMPLEMENTATION_TASKBOOK.md",
+          "start_line": 190,
+          "end_line": 192,
+          "role": "Taskbook claims zero-overlap exact matching is feasible"
+        },
+        {
+          "path": "stage1_sctsr_v4/random_controls.py",
+          "start_line": 107,
+          "end_line": 124,
+          "role": "Implementation correctly projects guarded fields and fails closed on any exact quota shortage"
+        }
+      ],
+      "violated_taskbook_clause": {
+        "path": "artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/03_preregistration_v4_sctsr/SCTSR_EXPERT_IMPLEMENTATION_TASKBOOK.md",
+        "lines": [
+          "190-192: factual feasibility assertion",
+          "673-677: T and identity assets must remain frozen",
+          "R2 contract: matching may not relax"
+        ]
+      },
+      "reproduction_command": ".\\.venv\\Scripts\\python.exe artifacts\\stage1_sample_value_experiments\\experiments\\dynamic_replay_budget_efficiency_20260807\\08_reports\\sctsr_v4_code_review_20260814\\repro\\repro_real_r2_infeasible.py --repository-root C:\\GitHub\\YOLO-CV",
+      "reproduction_exit_code": 0,
+      "reproduction_evidence": {
+        "stdout_path": "commands/real_r2_infeasible_registered_bytes/stdout.log",
+        "stdout_sha256": "2015DC52F5118C0BD8A49BCDD084801C3819CF786676D2B382A8447C6046CDA8"
+      },
+      "expected": "A zero-overlap R2 pool of 3,000 identities satisfies every label + dynamic_bucket + oof_fold + oof_group_id quota.",
+      "observed": {
+        "base_count": 120000,
+        "t_count": 3000,
+        "t_identity_digest": "85D462C1D95F30FB8B519162BBAD762CC4E9506A185C07D719145F07FE003B4B",
+        "error_code": "R2_QUOTA_INFEASIBLE",
+        "shortfall_strata": 172,
+        "shortfall_occurrences": 378,
+        "matcher_behavior": "CORRECT_FAIL_CLOSED_NO_RELAXATION"
+      },
+      "impact_scope": "The phase-1 eight-arm matrix cannot be instantiated from the frozen assets. This is not a matcher implementation defect; it is a contradicted preregistration/data premise and a hard formal-readiness blocker.",
+      "required_fix": "Do not weaken matching silently. Freeze either a new pre-terminal asset/matching variable with sufficient support or a signed preregistration addendum that changes the R2 estimand and fairness contract. Recompute T/R2 identities and all digests before release.",
+      "regression_test_suggestion": "Retain the current fail-closed 172/378 golden reproduction. Any proposed new asset/spec must add a separate golden test proving exact quota equality, zero overlap and terminal-field non-access from a clean checkout.",
+      "training_readiness_effect": "BLOCKS_FORMAL_TRAINING_DATA_SPECIFICATION"
+    },
+    {
+      "finding_id": "SCTSR-RV4-005",
+      "severity": "P3",
+      "title": "Clean-worktree v3 regression count is 181 passed and 3 skipped, not the planned 183 passed and 1 skipped",
+      "category": "HISTORICAL_REGRESSION_EVIDENCE_DRIFT",
+      "status": "OPEN",
+      "source_locations": [
+        {
+          "path": "tests/stage1_dynamic_replay_v3/test_global_completion_audit_v2.py",
+          "start_line": 27,
+          "end_line": 27,
+          "role": "Desktop-mirror evidence-dependent skip"
+        },
+        {
+          "path": "tests/stage1_dynamic_replay_v3/test_literature_anchor_promotion_v2.py",
+          "start_line": 43,
+          "end_line": 84,
+          "role": "Two tests skip without 21 local anchor source files"
+        }
+      ],
+      "violated_taskbook_clause": {
+        "path": "artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/03_preregistration_v4_sctsr/SCTSR_EXPERT_IMPLEMENTATION_TASKBOOK.md",
+        "lines": [
+          "1888-1892: skips require explicit reasons and raw logs",
+          "2464: historical taskbook expected at least 231 passed"
+        ],
+        "review_plan_override": "The approved review plan says the v3 count mismatch is recorded but does not independently reject SCTSR v4 code quality."
+      },
+      "reproduction_command": "uv run --isolated --python 3.11 --extra dev pytest tests\\stage1_dynamic_replay_v3 -q -rs",
+      "reproduction_exit_code": 0,
+      "reproduction_evidence": {
+        "stdout_path": "commands/full_v3_python311_skip_reasons/stdout.log",
+        "stdout_sha256": "AB9AAE8D03A8DFFB4E6496D17AF11EBF3C367E488AD1FE48F54CA131A31C2A6B"
+      },
+      "expected": "183 passed, 1 skipped under the current review-plan accounting.",
+      "observed": "181 passed, 3 skipped; all three skips name missing local evidence inputs.",
+      "impact_scope": "Historical regression evidence is not identical to the planned count in an isolated clean worktree. The v3 suite still exits zero and the protected v3 source tree has zero diff, so this does not independently fail v4 implementation quality.",
+      "required_fix": "Either bind and supply the three local evidence prerequisites in a reproducible test profile, or revise the expected clean-checkout v3 count with explicit environment-dependent skip accounting.",
+      "regression_test_suggestion": "Add a machine-readable v3 test-profile manifest listing required external evidence, expected pass/skip counts and SHA-bound skip reasons.",
+      "training_readiness_effect": "DOES_NOT_INDEPENDENTLY_BLOCK_V4_CODE_QUALITY"
+    }
+  ]
+}
