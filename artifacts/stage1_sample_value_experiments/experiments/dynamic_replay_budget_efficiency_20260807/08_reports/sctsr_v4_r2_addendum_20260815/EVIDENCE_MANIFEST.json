@@ -1,0 +1,63 @@
+{
+  "schema_version": "stage1.sctsr.r2_addendum_evidence_manifest.v1",
+  "status": "PASS",
+  "root": "artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/08_reports/sctsr_v4_r2_addendum_20260815",
+  "files": [
+    {
+      "path": "COMMAND_INDEX.json",
+      "bytes": 3912,
+      "sha256": "E179FC09911398EE8B6B3F50D060150A9DEEC9EB0E0986E5334489AA7790A8C7"
+    },
+    {
+      "path": "R2_ADDENDUM_IMPLEMENTATION_REPORT.md",
+      "bytes": 3773,
+      "sha256": "EEE1D6D1EE31C5E60F20DB1BF909EE183637C3215176363AA72FF9800B010AB5"
+    },
+    {
+      "path": "R2_ADDENDUM_VALIDATION.json",
+      "bytes": 3273,
+      "sha256": "0E5C2BA48BD12E80ED63B130C8844F651F581583112ECFEC1033F9F88DCD5763"
+    },
+    {
+      "path": "commands/compileall_python311.log",
+      "bytes": 32,
+      "sha256": "71424CF52B5C16084E8ADC86193A794A2EE61E9EDFB534D073EA85E31DA2A141"
+    },
+    {
+      "path": "commands/compileall_python312.log",
+      "bytes": 32,
+      "sha256": "D5C948A970B2C83720796C4354579A6B0B61D827E90D1E5B94DB4F733C77C044"
+    },
+    {
+      "path": "commands/formal_r2_materialization.log",
+      "bytes": 837,
+      "sha256": "5C4C351A259817DBC866ACFD8CD12E9987508BCE5EB3251A0B384240ADF06A90"
+    },
+    {
+      "path": "commands/real_schedule_fairness.log",
+      "bytes": 711,
+      "sha256": "8063CF597CDD2A616B46660507FCDEEEF75F33264FC46C6879941ADED32EB80E"
+    },
+    {
+      "path": "commands/uv_lock_check.log",
+      "bytes": 32,
+      "sha256": "DCE546571A9F8CCFC9BFAC8B4E1C11A8129C30F97D7752F1819FDF7068917308"
+    },
+    {
+      "path": "commands/v3_regression_python311.log",
+      "bytes": 910,
+      "sha256": "53D19E9B8BBB709904774E0C8074C6816A45D2F6A0C094D9844236CDD9983959"
+    },
+    {
+      "path": "commands/v4_python311.log",
+      "bytes": 550,
+      "sha256": "DEB6AD683DDC8050F81C2448E221BE494D9B7A907B5A0B17787EA68CE21BC9A6"
+    },
+    {
+      "path": "commands/v4_python312.log",
+      "bytes": 550,
+      "sha256": "AF0C9E713F01F6DB3F4B6A1C5C93E47FE2352D77A708AF2B28F7D3750A6F5B42"
+    }
+  ],
+  "self_excluded": true
+}

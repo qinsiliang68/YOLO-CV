@@ -1,0 +1,95 @@
+{
+  "schema_version": "stage1.sctsr.r2_addendum_command_index.v1",
+  "status": "PASS",
+  "implementation_commit": "e940199",
+  "commands": [
+    {
+      "command_id": "C001_UV_LOCK",
+      "command": "uv lock --check",
+      "exit_code": 0,
+      "observed": "PASS",
+      "log": {
+        "path": "commands/uv_lock_check.log",
+        "bytes": 32,
+        "sha256": "DCE546571A9F8CCFC9BFAC8B4E1C11A8129C30F97D7752F1819FDF7068917308"
+      }
+    },
+    {
+      "command_id": "C002_V4_PYTHON311",
+      "command": "uv run --isolated --python 3.11 --extra dev pytest tests/stage1_sctsr_v4 -q",
+      "exit_code": 0,
+      "observed": "404 passed",
+      "log": {
+        "path": "commands/v4_python311.log",
+        "bytes": 550,
+        "sha256": "DEB6AD683DDC8050F81C2448E221BE494D9B7A907B5A0B17787EA68CE21BC9A6"
+      }
+    },
+    {
+      "command_id": "C003_V4_PYTHON312",
+      "command": "uv run --isolated --python 3.12 --extra dev pytest tests/stage1_sctsr_v4 -q",
+      "exit_code": 0,
+      "observed": "404 passed",
+      "log": {
+        "path": "commands/v4_python312.log",
+        "bytes": 550,
+        "sha256": "AF0C9E713F01F6DB3F4B6A1C5C93E47FE2352D77A708AF2B28F7D3750A6F5B42"
+      }
+    },
+    {
+      "command_id": "C004_COMPILEALL_PYTHON311",
+      "command": "uv run --isolated --python 3.11 --extra dev python -m compileall -q stage1_sctsr_v4 scripts/stage1_sctsr_v4 integrations/ultralytics tests/stage1_sctsr_v4",
+      "exit_code": 0,
+      "observed": "PASS",
+      "log": {
+        "path": "commands/compileall_python311.log",
+        "bytes": 32,
+        "sha256": "71424CF52B5C16084E8ADC86193A794A2EE61E9EDFB534D073EA85E31DA2A141"
+      }
+    },
+    {
+      "command_id": "C005_COMPILEALL_PYTHON312",
+      "command": "uv run --isolated --python 3.12 --extra dev python -m compileall -q stage1_sctsr_v4 scripts/stage1_sctsr_v4 integrations/ultralytics tests/stage1_sctsr_v4",
+      "exit_code": 0,
+      "observed": "PASS",
+      "log": {
+        "path": "commands/compileall_python312.log",
+        "bytes": 32,
+        "sha256": "D5C948A970B2C83720796C4354579A6B0B61D827E90D1E5B94DB4F733C77C044"
+      }
+    },
+    {
+      "command_id": "C006_V3_REGRESSION",
+      "command": "uv run --isolated --python 3.11 --extra dev pytest tests/stage1_dynamic_replay_v3 -q -rs",
+      "exit_code": 0,
+      "observed": "181 passed, 3 skipped",
+      "log": {
+        "path": "commands/v3_regression_python311.log",
+        "bytes": 910,
+        "sha256": "53D19E9B8BBB709904774E0C8074C6816A45D2F6A0C094D9844236CDD9983959"
+      }
+    },
+    {
+      "command_id": "C007_FORMAL_R2_MATERIALIZATION",
+      "command": "uv run --python 3.11 python scripts/stage1_sctsr_v4/build_identity_pools.py --pool R2_MATCHED_RANDOM --repository-root . --asset-registry configs/stage1_sctsr_v4/asset_registry_v1.json --base-manifest-sha AB045D7ADF3BBEBAE380A749A73DABCFBA7DB926533B76A90B944F819239283C --source-manifest-sha AB882AEB2CDE5C96185EB93B7D3DFFF624ED4B11E3A4FA91AC450E51BA627BA9 --selection-seed 20260812 --r2-policy configs/stage1_sctsr_v4/r2_matching_policy_v1.json",
+      "exit_code": 0,
+      "observed": "3000 unique; overlap 0; 378 oof_group_id displacements; formal_training_started=false",
+      "log": {
+        "path": "commands/formal_r2_materialization.log",
+        "bytes": 837,
+        "sha256": "5C4C351A259817DBC866ACFD8CD12E9987508BCE5EB3251A0B384240ADF06A90"
+      }
+    },
+    {
+      "command_id": "C008_REAL_SCHEDULE_FAIRNESS",
+      "command": "inline Python 3.11 materialization of R2_U, R2_F and T_TO_R2_AT_160 from registered 120000-row assets",
+      "exit_code": 0,
+      "observed": "same R2 IDs; U/F each 48000 occurrences and multiplicity 16; fallback same_r2_ids=true",
+      "log": {
+        "path": "commands/real_schedule_fairness.log",
+        "bytes": 711,
+        "sha256": "8063CF597CDD2A616B46660507FCDEEEF75F33264FC46C6879941ADED32EB80E"
+      }
+    }
+  ]
+}
