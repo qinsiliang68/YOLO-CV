@@ -1,0 +1,70 @@
+{
+  "schema_version": "stage1.sctsr.rtx3090_capacity_estimate.v1",
+  "status": "PLANNING_ESTIMATE_NOT_A_FORMAL_BENCHMARK",
+  "historical_source": {
+    "archive_path": "artifacts/stage1_cls_sweep_20260616/node-192.168.100.13/full_yolo11l_cls_20260615-123305/train_log.txt.zip",
+    "archive_bytes": 2017680,
+    "archive_sha256": "13A5FB06CC719620D4DEC281821E8BF02548F5C2C0B86E01E67D7D74E55717F9",
+    "member": "train_log.txt",
+    "member_bytes": 25327892,
+    "environment": {
+      "gpu": "NVIDIA GeForce RTX 3090 24576 MiB",
+      "python": "3.11.15",
+      "torch": "2.11.0+cu128",
+      "ultralytics": "8.4.66"
+    },
+    "observed_200_epoch_hours": 12.998,
+    "observed_epoch_200_step_count": 938,
+    "observed_epoch_200_elapsed": "3:25"
+  },
+  "frozen_matrix_math": {
+    "common_parent_epochs_per_seed": 120,
+    "branch_epochs_per_arm": 80,
+    "branch_count_per_seed": 8,
+    "base_epoch_equivalents_per_seed": 760,
+    "base_gpu_hours_per_seed": 49.3924,
+    "parent_gpu_hours_per_seed": 7.7988,
+    "branch_gpu_hours_per_arm": 5.1992,
+    "replay_occurrences_per_seed": 312000,
+    "replay_base_epoch_equivalents_per_seed": 2.6,
+    "replay_occurrence_breakdown": {
+      "R1_U": 48000,
+      "R2_U": 48000,
+      "T_U": 48000,
+      "R2_F": 48000,
+      "T_F": 48000,
+      "T_TO_R2_AT_160": 48000,
+      "T_TO_NR_AT_160": 24000,
+      "NR": 0
+    }
+  },
+  "ten_rtx3090_estimates": [
+    {
+      "phase": "DISCOVERY_8_SEEDS",
+      "base_gpu_hours": 395.1392,
+      "dependency_aware_ideal_makespan_hours": 44.1932,
+      "operational_planning_range_hours": [53, 65],
+      "operational_planning_range_days": [2.2, 2.7]
+    },
+    {
+      "phase": "CONFIRMATION_14_SEEDS",
+      "base_gpu_hours": 691.4936,
+      "dependency_aware_ideal_makespan_hours": 70.19,
+      "operational_planning_range_hours": [84, 101],
+      "operational_planning_range_days": [3.5, 4.2]
+    },
+    {
+      "phase": "DISCOVERY_AND_CONFIRMATION_22_SEEDS",
+      "base_gpu_hours": 1086.6328,
+      "dependency_aware_ideal_makespan_hours": 109.18,
+      "operational_planning_range_hours": [137, 166],
+      "operational_planning_range_days": [5.7, 6.9]
+    }
+  ],
+  "limitations": [
+    "The historical run is a plain yolo11l classification baseline, not a full SCTSR branch benchmark.",
+    "Replay forward/backward, Parquet evidence, endpoint evaluation, disk contention and inter-machine queue overhead are represented only by the planning margin.",
+    "The local real-image engineering canary ran on an RTX 4060 and is mechanics evidence, not a 3090 throughput predictor.",
+    "A full-epoch RTX 3090 engineering benchmark is required after the R2 addendum and release identity are frozen."
+  ]
+}

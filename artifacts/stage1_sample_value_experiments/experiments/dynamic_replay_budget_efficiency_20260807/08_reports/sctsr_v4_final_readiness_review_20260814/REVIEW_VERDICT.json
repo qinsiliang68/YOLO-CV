@@ -1,0 +1,72 @@
+{
+  "schema_version": "stage1.sctsr.final_readiness_verdict.v1",
+  "review_identity": {
+    "baseline_commit": "a70ba60485dd32c2f8b4268b8f28ea2d3549f42f",
+    "implementation_freeze_commit": "e9b6df61b0eb02e1d32c29175644f1c2af545afc",
+    "delivery_commit": "f285754108c7b8e37afd7f5f0fa58fe8fb23d38a",
+    "reviewed_and_fixed_source_commit": "9a2f41ec6864764314f57e776a64f7e12ac771a2",
+    "taskbook_blob_sha": "b201d021712e9c6614e119d35f0e14bdf405c6be",
+    "reviewer_role": "CODEX_PRIMARY_AGENT_SELF_REVIEW_NOT_INDEPENDENT"
+  },
+  "code_review": {
+    "status": "CODE_REVIEW_PASS_NOT_TRAINING_AUTHORIZATION",
+    "pass": true,
+    "criteria": {
+      "open_p0": 0,
+      "open_p1": 0,
+      "python311_v4": "395 passed in 80.84s",
+      "python312_v4": "395 passed in 83.80s",
+      "v4_core_skips": 0,
+      "v3_regression": "181 passed, 3 skipped in 5.16s",
+      "v3_skip_accounting_explicit": true,
+      "compileall_python311": "PASS",
+      "compileall_python312": "PASS",
+      "uv_lock_check": "PASS",
+      "git_diff_check": "PASS",
+      "protected_history_content_changes": 0,
+      "source_tree_manifest": "PASS",
+      "repository_state_audit": "PASS",
+      "synthetic_same_runtime_determinism": "PASS",
+      "real_data_real_weight_engineering_canary": "PASS"
+    },
+    "meaning": "The reviewed source correctly implements the fail-closed mechanics that are currently specified. This status is explicitly not permission to start formal training and is not evidence that SCTSR is effective."
+  },
+  "formal_training_readiness": {
+    "status": "BLOCKED",
+    "authorized": false,
+    "hard_blockers": [
+      {
+        "code": "R2_QUOTA_INFEASIBLE",
+        "finding_id": "SCTSR-RV4-004",
+        "shortfall_strata": 172,
+        "shortfall_occurrences": 378,
+        "zero_candidate_strata": 30,
+        "zero_candidate_occurrences": 61,
+        "required_action": "Research owner must approve and hash-freeze a preregistration addendum. The recommended candidate is minimum-displacement zero-overlap matching, but it changes the R2 estimand and has not been authorized."
+      },
+      {
+        "code": "FORMAL_CONTROL_PLANE_NOT_PROVISIONED",
+        "required_action": "Provision the signed matrix release, frozen 8-seed discovery registry, per-job one-use tokens and a shared canonical execution-claim registry only after R2 is frozen."
+      }
+    ],
+    "phase_specific_hold": {
+      "code": "BLOCKED_BY_VAL_TARGET",
+      "scope": "A/gradient-alignment and later Q/R/A/D phases only",
+      "phase1_timing_matrix_effect": "NOT_A_PHASE1_BLOCKER",
+      "required_action": "Do not enable A until an independent, group-disjoint, SHA-frozen val_target is registered."
+    },
+    "next_decision": "Approve one R2 addendum or reject the eight-arm matrix. No code path may silently choose on behalf of the research owner."
+  },
+  "side_effects": {
+    "formal_training_started": false,
+    "formal_seed_generated": false,
+    "assignments_generated": false,
+    "engineering_gate_generated": false,
+    "pilot_release_generated": false,
+    "blind_holdout_opened": false,
+    "test_accessed": false,
+    "selector_trained": false,
+    "method_effectiveness_claimed": false,
+    "synthetic_registered_as_scientific": false
+  }
+}

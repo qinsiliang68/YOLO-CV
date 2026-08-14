@@ -1,0 +1,158 @@
+{
+  "schema_version": "stage1.sctsr.final_review_command_index.v1",
+  "reviewed_source_commit": "9a2f41ec6864764314f57e776a64f7e12ac771a2",
+  "working_directory": "C:/Users/28898/AppData/Local/Temp/sctsr-v4-fix-short",
+  "status": "PASS_WITH_EXPLICIT_SCIENTIFIC_BLOCKER",
+  "commands": [
+    {
+      "command_id": "C001_UV_LOCK",
+      "command": "uv lock --check",
+      "exit_code": 0,
+      "observed": "PASS; uv resolved the locked environment without changing uv.lock.",
+      "evidence": [
+        {"path": "commands/uv_lock_check_head_9a2f41e.stdout.log", "bytes": 0, "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"},
+        {"path": "commands/uv_lock_check_head_9a2f41e.stderr.log", "bytes": 592, "sha256": "9B9B9E8E57672936841ACB28E5B82C235B0288B17A1A7C797BE6936696D01DE2"}
+      ]
+    },
+    {
+      "command_id": "C002_V4_PYTHON311",
+      "command": "uv run --isolated --python 3.11 --extra dev pytest tests/stage1_sctsr_v4 -q",
+      "exit_code": 0,
+      "observed": "395 passed in 80.84s; zero skips.",
+      "evidence": [
+        {"path": "commands/pytest_v4_python311_head_9a2f41e.stdout.log", "bytes": 1038, "sha256": "ED4AE351E86525F73C6D1857BFDBF84734CBD222A8B6E4A81FEA9D4B4132735C"},
+        {"path": "commands/pytest_v4_python311_head_9a2f41e.stderr.log", "bytes": 728, "sha256": "21D5F16E8576C9A5257F7F0822D6EEC4C422F5493CE87B7950A1A77BC1243471"}
+      ]
+    },
+    {
+      "command_id": "C003_V4_PYTHON312",
+      "command": "uv run --isolated --python 3.12 --extra dev pytest tests/stage1_sctsr_v4 -q",
+      "exit_code": 0,
+      "observed": "395 passed in 83.80s; zero skips.",
+      "evidence": [
+        {"path": "commands/pytest_v4_python312_head_9a2f41e.stdout.log", "bytes": 1038, "sha256": "535B7821C7B2C35A97CEE427367385380D4F0D845225299377AB7EAC0DD457DA"},
+        {"path": "commands/pytest_v4_python312_head_9a2f41e.stderr.log", "bytes": 728, "sha256": "4930C56DB015AB82F6989FC0E2E30B05644FC5CB5FAAB6931435AC410F9D270B"}
+      ]
+    },
+    {
+      "command_id": "C004_COMPILEALL_PYTHON311",
+      "command": "uv run --isolated --python 3.11 --extra dev python -m compileall -q stage1_sctsr_v4 scripts/stage1_sctsr_v4 integrations/ultralytics tests/stage1_sctsr_v4",
+      "exit_code": 0,
+      "observed": "PASS",
+      "evidence": [
+        {"path": "commands/compileall_python311_head_9a2f41e.stdout.log", "bytes": 0, "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"},
+        {"path": "commands/compileall_python311_head_9a2f41e.stderr.log", "bytes": 728, "sha256": "A66D1DA58678AF0DBFB2ADB2DC82C195EAEC477D6AA4F04B80A8154F90C553BE"}
+      ]
+    },
+    {
+      "command_id": "C005_COMPILEALL_PYTHON312",
+      "command": "uv run --isolated --python 3.12 --extra dev python -m compileall -q stage1_sctsr_v4 scripts/stage1_sctsr_v4 integrations/ultralytics tests/stage1_sctsr_v4",
+      "exit_code": 0,
+      "observed": "PASS",
+      "evidence": [
+        {"path": "commands/compileall_python312_head_9a2f41e.stdout.log", "bytes": 0, "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"},
+        {"path": "commands/compileall_python312_head_9a2f41e.stderr.log", "bytes": 728, "sha256": "463C35F87DA77590FE076A41877D9E2B78DCE521E2DC36C83F900154C26103DB"}
+      ]
+    },
+    {
+      "command_id": "C006_V3_REGRESSION",
+      "command": "uv run --isolated --python 3.11 --extra dev pytest tests/stage1_dynamic_replay_v3 -q -rs",
+      "exit_code": 0,
+      "observed": "181 passed, 3 skipped in 5.16s; all three external-evidence skip reasons are in stdout.",
+      "evidence": [
+        {"path": "commands/pytest_v3_python311_head_9a2f41e.stdout.log", "bytes": 1626, "sha256": "7C3BD10119791C872D04C8D9CDDC44EEF9B055BA7C8CF8E68F5ABBF24755593D"},
+        {"path": "commands/pytest_v3_python311_head_9a2f41e.stderr.log", "bytes": 728, "sha256": "558CC60A21C42B8652A4BF206C002DF73ED1E1631A205D3CC1462E2A4FC19152"}
+      ]
+    },
+    {
+      "command_id": "C007_GIT_DIFF_CHECK",
+      "command": "git diff --check",
+      "exit_code": 0,
+      "observed": "PASS; empty stdout/stderr.",
+      "evidence": [
+        {"path": "commands/git_diff_check_head_9a2f41e.stdout.log", "bytes": 0, "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"},
+        {"path": "commands/git_diff_check_head_9a2f41e.stderr.log", "bytes": 0, "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"}
+      ]
+    },
+    {
+      "command_id": "C008_PROTECTED_TREE_DIFF",
+      "command": "git diff --name-only a70ba60485dd32c2f8b4268b8f28ea2d3549f42f..9a2f41ec6864764314f57e776a64f7e12ac771a2 -- stage1_gapvalue240 stage1_dynamic_replay_v3 YOLOv11/ultralytics",
+      "exit_code": 0,
+      "observed": "Zero protected-tree path changes.",
+      "evidence": [
+        {"path": "commands/protected_tree_diff_head_9a2f41e.stdout.log", "bytes": 0, "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"},
+        {"path": "commands/protected_tree_diff_head_9a2f41e.stderr.log", "bytes": 0, "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"}
+      ]
+    },
+    {
+      "command_id": "C009_SOURCE_TREE_MANIFEST",
+      "command": "uv run --python 3.11 scripts/stage1_sctsr_v4/build_source_tree_manifest.py --repository-root . --manifest-output artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/08_reports/sctsr_v4_final_readiness_review_20260814/SOURCE_TREE_MANIFEST.json --output artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/08_reports/sctsr_v4_final_readiness_review_20260814/commands/source_tree_manifest.receipt.json",
+      "exit_code": 0,
+      "observed": "PASS; 347 files; clean 9a2f41e; source digest E4F8...2D65.",
+      "evidence": [
+        {"path": "SOURCE_TREE_MANIFEST.json", "bytes": 61014, "sha256": "A3790956E9F5C23A16414C7E4CB3619FA0ADBAB8AE805B81F1F019139867B426"},
+        {"path": "commands/source_tree_manifest.receipt.json", "bytes": 747, "sha256": "E1935272ED54FBC007B1C95C0D8EEEFB7103D1D444A6893F64C13F8DFD487FEA"}
+      ]
+    },
+    {
+      "command_id": "C010_REPOSITORY_STATE_AUDIT",
+      "command": "uv run --python 3.11 scripts/stage1_sctsr_v4/audit_repository_state.py --repository-root . --baseline-commit a70ba60485dd32c2f8b4268b8f28ea2d3549f42f --implementation-start-commit e9b6df61b0eb02e1d32c29175644f1c2af545afc --implementation-source-commit 9a2f41ec6864764314f57e776a64f7e12ac771a2 --state-output artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/08_reports/sctsr_v4_final_readiness_review_20260814/REPOSITORY_STATE_AUDIT.json --changed-file-ledger-output artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/08_reports/sctsr_v4_final_readiness_review_20260814/CHANGED_FILE_LEDGER.json --output artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/08_reports/sctsr_v4_final_readiness_review_20260814/commands/repository_state_audit.receipt.json",
+      "exit_code": 0,
+      "observed": "PASS; 35 protected legacy files content-identical; all active-v4 formal side effects false.",
+      "evidence": [
+        {"path": "REPOSITORY_STATE_AUDIT.json", "bytes": 1524512, "sha256": "70DA703A12014446A5C59E80EBABA8005EBEB6D6C1B5A7B1DFC902D7E1B02FCB"},
+        {"path": "CHANGED_FILE_LEDGER.json", "bytes": 1484730, "sha256": "78ABCEB817CDB035E592026FCE4C252663173212FF55D57065E76454B3B7FDED"},
+        {"path": "commands/repository_state_audit.receipt.json", "bytes": 800, "sha256": "5F951E41D4EBAF44645D59A445E433B93D0D7278269CEC608C7DB81334E54833"}
+      ]
+    },
+    {
+      "command_id": "C011_DATASET_FULL_PHYSICAL_VALIDATION",
+      "command": "uv run --python 3.11 scripts/stage1_sctsr_v4/validate_dataset_content.py --registry configs/stage1_sctsr_v4/asset_registry_v1.json --repository-root . --dataset-root C:/GitHub/YOLO-CV/data/final_sewerml_dataset --output docs/stage1_sctsr_v4/tdd_receipts/readiness_fix_05_dataset_content_identity/FULL_PHYSICAL_VALIDATION.json",
+      "exit_code": 0,
+      "observed": "PASS; 384,000 physical files and 82,637,967,451 image bytes verified; no test access.",
+      "evidence": [
+        {"path": "docs/stage1_sctsr_v4/tdd_receipts/readiness_fix_05_dataset_content_identity/FULL_PHYSICAL_VALIDATION.json", "bytes": 3403, "sha256": "9DF8C3B8D818231634209045C8B8CE0B144F485DCACCB1DE718BAC0AE3ED450A"}
+      ]
+    },
+    {
+      "command_id": "C012_R2_SPECIFICATION_AUDIT",
+      "command": "uv run --python 3.11 scripts/stage1_sctsr_v4/audit_r2_specification.py --repository-root . --asset-registry configs/stage1_sctsr_v4/asset_registry_v1.json --selection-seed 20260812 --audit-output artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/08_reports/sctsr_v4_final_readiness_review_20260814/R2_SPECIFICATION_AUDIT.json --output artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/08_reports/sctsr_v4_final_readiness_review_20260814/commands/r2_specification_audit.receipt.json",
+      "exit_code": 0,
+      "observed": "Audit execution PASS; scientific activation status SPECIFICATION_CHANGE_REQUIRED; 172/378 exact shortfall.",
+      "evidence": [
+        {"path": "R2_SPECIFICATION_AUDIT.json", "bytes": 41581, "sha256": "0467E607D91C0A56DBF7CB12E4BD2B7DE66EE7FCD6ECC58222A593E743FA91A7"},
+        {"path": "commands/r2_specification_audit.receipt.json", "bytes": 1017, "sha256": "70EBE9C3E4D2E719C511A29036784D145F6990FC13FB70D75B90407510D2E66A"}
+      ]
+    },
+    {
+      "command_id": "C013_SYNTHETIC_CANARY_FINAL_1",
+      "command": "uv run --python 3.11 scripts/stage1_sctsr_v4/run_synthetic_canary.py --artifact-root C:/Users/28898/AppData/Local/Temp/SCTSR_V4_SYNTH_FINAL_1_9A2F41E --repository-root . --training-seed 20260812 --output artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/08_reports/sctsr_v4_final_readiness_review_20260814/commands/synthetic_canary_final_1.receipt.json",
+      "exit_code": 0,
+      "observed": "PASS; all eight arms; 179 artifacts; six injected failures; not scientific.",
+      "evidence": [
+        {"path": "commands/synthetic_canary_final_1.receipt.json", "bytes": 1301, "sha256": "2485F51DF4E1FEE331CA93B06F827EC74BACF5941E967EE9A63CED45C688413D"}
+      ]
+    },
+    {
+      "command_id": "C014_SYNTHETIC_CANARY_FINAL_2",
+      "command": "uv run --python 3.11 scripts/stage1_sctsr_v4/run_synthetic_canary.py --artifact-root C:/Users/28898/AppData/Local/Temp/SCTSR_V4_SYNTH_FINAL_2_9A2F41E --repository-root . --training-seed 20260812 --output artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/08_reports/sctsr_v4_final_readiness_review_20260814/commands/synthetic_canary_final_2.receipt.json",
+      "exit_code": 0,
+      "observed": "PASS; training-relevant artifacts byte-identical to C013.",
+      "evidence": [
+        {"path": "commands/synthetic_canary_final_2.receipt.json", "bytes": 1301, "sha256": "4142A9D74029A3AA9BFE4E3A7F54CE2E2E92C2F53635C8E57D8ADBC3CC7F0150"},
+        {"path": "DETERMINISM_COMPARISON.json", "role": "comparison summary"}
+      ]
+    },
+    {
+      "command_id": "C015_REAL_ENGINEERING_CANARY",
+      "command": "uv run --python 3.11 scripts/stage1_sctsr_v4/run_engineering_canary.py --artifact-root C:/Users/28898/AppData/Local/Temp/SCTSR_V4_REAL_ENGINEERING_CANARY_9A2F41E_FINAL --repository-root . --dataset-root C:/GitHub/YOLO-CV/data/final_sewerml_dataset --training-seed 20260814 --device cuda:0 --output artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/08_reports/sctsr_v4_final_readiness_review_20260814/commands/real_engineering_canary_final.receipt.json",
+      "exit_code": 0,
+      "observed": "PASS on RTX 4060 using four real Sewer-ML training images and real yolo11l weight; one base/replay optimizer+EMA step, Zstd Parquet, checkpoint reload, 96-point frontier and fault recovery.",
+      "evidence": [
+        {"path": "commands/real_engineering_canary_final.receipt.json", "bytes": 9696, "sha256": "5BDB8A3305F55BE0B4D46B7A7AB897758273413A4F3BEC541B8EC4893C415F01"},
+        {"path": "commands/real_engineering_canary_final.stdout.log", "bytes": 404, "sha256": "B70522D84EF594DC5C819C87044C5C4406323167AE07DB31C5B0994FB83ECC60"},
+        {"path": "commands/real_engineering_canary_final.stderr.log", "bytes": 0, "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"}
+      ]
+    }
+  ]
+}

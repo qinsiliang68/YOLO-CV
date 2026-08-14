@@ -1,0 +1,63 @@
+{
+  "schema_version": "stage1.sctsr.final_review_determinism.v1",
+  "implementation_source_commit": "9a2f41ec6864764314f57e776a64f7e12ac771a2",
+  "reviewer_role": "CODEX_PRIMARY_AGENT_SELF_REVIEW_NOT_INDEPENDENT",
+  "status": "PASS_TRAINING_RELEVANT_ARTIFACTS_DETERMINISTIC",
+  "comparison_contract": {
+    "same_interpreter_process_family": true,
+    "same_python": "3.11.14",
+    "same_training_seed": true,
+    "same_source_tree_digest": true,
+    "same_input_fixture": true,
+    "raw_receipt_bytes_required_equal": false,
+    "reason_raw_receipts_may_differ": "Output root, PID, timing and artifact-index absolute paths are provenance fields and are intentionally not normalized away."
+  },
+  "runs": [
+    {
+      "run": "FINAL_1",
+      "output_root": "C:/Users/28898/AppData/Local/Temp/SCTSR_V4_SYNTH_FINAL_1_9A2F41E",
+      "receipt_path": "commands/synthetic_canary_final_1.receipt.json",
+      "receipt_bytes": 1301,
+      "receipt_sha256": "2485F51DF4E1FEE331CA93B06F827EC74BACF5941E967EE9A63CED45C688413D"
+    },
+    {
+      "run": "FINAL_2",
+      "output_root": "C:/Users/28898/AppData/Local/Temp/SCTSR_V4_SYNTH_FINAL_2_9A2F41E",
+      "receipt_path": "commands/synthetic_canary_final_2.receipt.json",
+      "receipt_bytes": 1301,
+      "receipt_sha256": "4142A9D74029A3AA9BFE4E3A7F54CE2E2E92C2F53635C8E57D8ADBC3CC7F0150"
+    }
+  ],
+  "equal_identities": {
+    "source_tree_digest": "E4F8BECDB4C31296B5B945CB093584EC5BE5348AE151E5BA76728A7699862D65",
+    "parent_checkpoint_sha256": "4F7552C290CB50AF979390CCE436F98518C1548B57B4D6DDB6B4E3A250AD89D9",
+    "arms_completed": [
+      "NR",
+      "R1_U",
+      "R2_F",
+      "R2_U",
+      "T_F",
+      "T_TO_NR_AT_160",
+      "T_TO_R2_AT_160",
+      "T_U"
+    ],
+    "artifact_count_excluding_root_index": 179,
+    "failure_injection_count": 6
+  },
+  "byte_comparisons": {
+    "checkpoint_files": {"equal": 11, "compared": 11, "pass": true},
+    "asset_files": {"equal": 1, "compared": 1, "pass": true},
+    "selection_ledgers": {"equal": 3, "compared": 3, "pass": true},
+    "prediction_artifacts": {"equal": 8, "compared": 8, "pass": true},
+    "evaluation_artifacts": {"equal": 24, "compared": 24, "pass": true}
+  },
+  "side_effects": {
+    "formal_training_started": false,
+    "assignments_generated": false,
+    "engineering_gate_generated": false,
+    "pilot_release_generated": false,
+    "blind_holdout_opened": false,
+    "test_accessed": false,
+    "method_effectiveness_claimed": false
+  }
+}

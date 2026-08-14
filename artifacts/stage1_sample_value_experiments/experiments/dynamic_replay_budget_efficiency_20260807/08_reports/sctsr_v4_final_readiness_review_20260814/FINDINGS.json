@@ -1,0 +1,267 @@
+{
+  "schema_version": "stage1.sctsr.final_review_findings.v1",
+  "review_identity": {
+    "reviewed_source_commit": "9a2f41ec6864764314f57e776a64f7e12ac771a2",
+    "taskbook_blob_sha": "b201d021712e9c6614e119d35f0e14bdf405c6be",
+    "reviewer_role": "CODEX_PRIMARY_AGENT_SELF_REVIEW_NOT_INDEPENDENT"
+  },
+  "summary": {
+    "open_p0": 0,
+    "open_p1": 0,
+    "open_p2": 1,
+    "open_p3": 1,
+    "resolved": 11,
+    "confirmed_not_a_bug": 0,
+    "code_quality_blocked": false,
+    "formal_training_blocked": true
+  },
+  "findings": [
+    {
+      "finding_id": "SCTSR-RV4-001",
+      "severity": "P1",
+      "status": "RESOLVED",
+      "title": "Clean checkout changed OOF metadata bytes and broke formal pool construction",
+      "taskbook_clause": "All formal assets must be path/bytes/SHA bound and portable to a clean checkout.",
+      "source_locations": [
+        {"path": ".gitattributes", "lines": "4-10"},
+        {"path": "configs/stage1_sctsr_v4/asset_registry_v1.json", "lines": "179-182"},
+        {"path": "stage1_sctsr_v4/asset_registry.py", "lines": "208-213"},
+        {"path": "tests/stage1_sctsr_v4/test_asset_hardening.py", "lines": "173-191"}
+      ],
+      "reproduction_command": "uv run --isolated --python 3.11 --extra dev pytest tests/stage1_sctsr_v4/test_asset_hardening.py::test_clean_checkout_oof_metadata_is_byte_bound_to_registry -q",
+      "expected": "A fresh Git checkout contains the exact registered OOF bytes.",
+      "observed_before": "Registry expected 1,076-byte CRLF bytes while a clean checkout produced 1,049-byte LF bytes; both supported suites had three asset errors.",
+      "fix": "Canonicalized the immutable OOF metadata representation and updated byte/SHA bindings with a clean-worktree regression test.",
+      "fix_commit": "f8a531c7cce1a7e08ff8d5a9eceb495aab82c89a",
+      "observed_after": "Python 3.11 and 3.12 full v4 suites both pass 395 tests from the clean review worktree."
+    },
+    {
+      "finding_id": "SCTSR-RV4-002",
+      "severity": "P1",
+      "status": "RESOLVED",
+      "title": "Post-rename publication failure could leave an unreceipted complete generation",
+      "taskbook_clause": "A failed generation must not look canonical and must be quarantined or deterministically reconciled.",
+      "source_locations": [
+        {"path": "stage1_sctsr_v4/epoch_transaction.py", "lines": "483-568"},
+        {"path": "stage1_sctsr_v4/epoch_transaction.py", "lines": "128-305"},
+        {"path": "tests/stage1_sctsr_v4/test_epoch_publication_recovery.py", "lines": "19-100"}
+      ],
+      "reproduction_command": "uv run --python 3.11 pytest tests/stage1_sctsr_v4/test_epoch_publication_recovery.py -q",
+      "expected": "A failure before receipt publication leaves no orphan canonical generation and preserves the previous pointer.",
+      "observed_before": "A .complete directory could survive without a receipt, index or recovery pointer.",
+      "fix": "Added post-rename quarantine plus post-receipt secondary-metadata reconciliation; prior canonical evidence remains append-only.",
+      "fix_commit": "220cb0b627c608596823c6a708a0120865a4c8f5",
+      "observed_after": "Injected failures after rename, after receipt and before pointer publication all preserve a recoverable canonical prefix."
+    },
+    {
+      "finding_id": "SCTSR-RV4-003",
+      "severity": "P1",
+      "status": "RESOLVED",
+      "title": "Formal authorization was repeatable because a signed release nonce was not consumed",
+      "taskbook_clause": "A duplicate formal job must fail before trainer construction and must not be bypassable by copying local state.",
+      "source_locations": [
+        {"path": "stage1_sctsr_v4/formal_execution.py", "lines": "334-465"},
+        {"path": "stage1_sctsr_v4/formal_execution.py", "lines": "467-525"},
+        {"path": "tests/stage1_sctsr_v4/test_formal_execution_claim.py", "lines": "145-388"}
+      ],
+      "reproduction_command": "uv run --python 3.11 pytest tests/stage1_sctsr_v4/test_formal_execution_claim.py -q",
+      "expected": "Exactly one claimant wins for each signed job token, including concurrent and restarted attempts.",
+      "observed_before": "The same signed release could be verified repeatedly; there was no atomic one-use job claim.",
+      "fix": "Introduced signed per-job execution tokens, O_EXCL one-use claims, immutable snapshots and an owner-provisioned shared-root binding that rejects cloned registries.",
+      "fix_commits": [
+        "1cb93b98e61840510781df59272e2b23f8460cf2",
+        "44d353acdded1b537d45c5d657fe2f4126d6cd64"
+      ],
+      "observed_after": "Duplicate, concurrent, corrupt, copied-root and job-substitution cases fail before trainer creation."
+    },
+    {
+      "finding_id": "SCTSR-RV4-004",
+      "severity": "P2",
+      "status": "OPEN",
+      "title": "Frozen exact zero-overlap R2 specification is mathematically infeasible",
+      "taskbook_clause": "R2 must have 3,000 unique IDs, zero T overlap and exact label/dynamic/fold/oof_group quotas; matching may not silently relax.",
+      "source_locations": [
+        {"path": "stage1_sctsr_v4/random_controls.py", "lines": "97-168"},
+        {"path": "stage1_sctsr_v4/r2_specification_audit.py", "lines": "1-358"},
+        {"path": "docs/stage1_sctsr_v4/SPECIFICATION_CHANGE_REQUEST_R2_INFEASIBLE.md", "lines": "1-59"},
+        {"path": "artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/08_reports/sctsr_v4_final_readiness_review_20260814/R2_SPECIFICATION_AUDIT.json", "lines": "machine-readable"}
+      ],
+      "reproduction_command": "uv run --python 3.11 scripts/stage1_sctsr_v4/audit_r2_specification.py --repository-root . --output artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/08_reports/sctsr_v4_final_readiness_review_20260814/R2_SPECIFICATION_AUDIT.json",
+      "expected": "All 959 joint strata have enough zero-overlap candidates for a 3,000-ID R2 pool.",
+      "observed": {
+        "t_unique": 3000,
+        "t_identity_digest": "85D462C1D95F30FB8B519162BBAD762CC4E9506A185C07D719145F07FE003B4B",
+        "shortage_strata": 172,
+        "shortage_occurrences": 378,
+        "zero_candidate_strata": 30,
+        "zero_candidate_occurrences": 61,
+        "matcher_behavior": "CORRECT_FAIL_CLOSED_NO_RELAXATION"
+      },
+      "impact_scope": "The formal eight-arm matrix cannot be instantiated. This is a scientific specification/data-support contradiction, not a matcher code defect.",
+      "required_fix": "Research owner must sign and hash-freeze an addendum. The audited recommendation keeps 3,000 unique IDs and zero overlap, matches label/dynamic/fold exactly, and uses minimum oof_group displacement for the unavoidable 378 occurrences; this changes the estimand and is not auto-approved.",
+      "training_readiness_effect": "HARD_BLOCKER"
+    },
+    {
+      "finding_id": "SCTSR-RV4-005",
+      "severity": "P3",
+      "status": "OPEN",
+      "title": "Clean-worktree v3 regression count differs from the old review-plan count",
+      "taskbook_clause": "Historical regression skips must be explicitly accounted; this mismatch does not independently reject v4.",
+      "source_locations": [
+        {"path": "tests/stage1_dynamic_replay_v3/test_global_completion_audit_v2.py", "lines": "27"},
+        {"path": "tests/stage1_dynamic_replay_v3/test_literature_anchor_promotion_v2.py", "lines": "43-84"}
+      ],
+      "reproduction_command": "uv run --isolated --python 3.11 --extra dev pytest tests/stage1_dynamic_replay_v3 -q -rs",
+      "expected": "The prior review plan said 183 passed, 1 skipped.",
+      "observed": "181 passed, 3 skipped; one skip needs the registered Desktop mirror and two need 21 local literature-anchor source files.",
+      "impact_scope": "Historical evidence-profile drift only; protected v3 source has zero content changes and the suite exits zero.",
+      "required_fix": "Optionally freeze a machine-readable v3 external-evidence test profile. Not required to accept v4 code quality."
+    },
+    {
+      "finding_id": "SCTSR-RV4-006",
+      "severity": "P1",
+      "status": "RESOLVED",
+      "title": "Formal asset identity did not prove physical image bytes",
+      "taskbook_clause": "Wrong-file, same-name substitution must be detected before formal dataset iteration.",
+      "source_locations": [
+        {"path": "stage1_sctsr_v4/dataset_content_ledger.py", "lines": "258-507"},
+        {"path": "tests/stage1_sctsr_v4/test_dataset_content_ledger.py", "lines": "78-237"},
+        {"path": "configs/stage1_sctsr_v4/asset_registry_v1.json", "lines": "247-259"}
+      ],
+      "reproduction_command": "uv run --python 3.11 pytest tests/stage1_sctsr_v4/test_dataset_content_ledger.py -q",
+      "expected": "Every registered image is bound by path, bytes and SHA, not only filename/label.",
+      "observed_before": "Manifest identity alone could not distinguish a physical-byte substitution at the same path.",
+      "fix": "Added a 384,000-row Zstd Parquet content ledger and full physical validation.",
+      "fix_commit": "cfc41a1dcbd0ac0e8a0119ceb7984f5df49612c8",
+      "observed_after": {
+        "files_verified": 384000,
+        "physical_bytes_verified": 82637967451,
+        "ledger_bytes": 19350859,
+        "ledger_sha256": "B2B61509AB4451C881FE7E9D0AAFB3F9D3CC0981A78AB9337C54C320E3E96D2C",
+        "content_identity_digest": "EDA93977CE43E946D4C795A8FBA30BF39B6AF510034276E739BC51D88DB1DD6E"
+      }
+    },
+    {
+      "finding_id": "SCTSR-RV4-007",
+      "severity": "P1",
+      "status": "RESOLVED",
+      "title": "Cleanup failure could hide the primary epoch failure or skip quarantine",
+      "taskbook_clause": "OOM/NaN/kill/disk failure must preserve the root cause and attempt all cleanup paths.",
+      "source_locations": [
+        {"path": "stage1_sctsr_v4/formal_training.py", "lines": "414-430"},
+        {"path": "tests/stage1_sctsr_v4/test_formal_epoch_cleanup.py", "lines": "29-93"}
+      ],
+      "reproduction_command": "uv run --python 3.11 pytest tests/stage1_sctsr_v4/test_formal_epoch_cleanup.py -q",
+      "expected": "Primary failure remains raised; recorder and transaction cleanup are both attempted and cleanup errors are attached as notes.",
+      "observed_before": "One cleanup exception could prevent the next cleanup action or replace the actual training failure.",
+      "fix": "Centralized best-effort cleanup while preserving the primary exception.",
+      "fix_commit": "a845e22152bdac6de1c976dd9855c9acab7feb2e",
+      "observed_after": "Injected telemetry and quarantine failures are both recorded without losing the root failure."
+    },
+    {
+      "finding_id": "SCTSR-RV4-008",
+      "severity": "P1",
+      "status": "RESOLVED",
+      "title": "Training machine could start a formal job without byte-bound proof that the operator understood the experiment",
+      "taskbook_clause": "A training-machine AI must know the scientific intent, exact job identity, forbidden actions and success/failure semantics before token claim and trainer construction.",
+      "source_locations": [
+        {"path": "stage1_sctsr_v4/run_intent.py", "lines": "56-589"},
+        {"path": "tests/stage1_sctsr_v4/test_run_intent_acknowledgement.py", "lines": "76-253"},
+        {"path": "docs/stage1_sctsr_v4/MACHINE_RUNBOOK.md", "lines": "1-283"}
+      ],
+      "reproduction_command": "uv run --python 3.11 pytest tests/stage1_sctsr_v4/test_run_intent_acknowledgement.py -q",
+      "expected": "Formal parent/branch entry rejects missing, stale, false, substituted or drifted acknowledgement before data iteration.",
+      "observed_before": "Documentation existed, but execution did not require a fresh byte-bound acknowledgement tied to the exact job and runbook.",
+      "fix": "Added a 23-field context, 16 mandatory understanding statements, seven-day freshness, immutable snapshots and closeout validation.",
+      "fix_commit": "fb91ad4f99665647fda90d65107773968a56886d",
+      "observed_after": "Formal runners validate the acknowledgement before token claim/trainer construction; false or drifted context fails closed."
+    },
+    {
+      "finding_id": "SCTSR-RV4-009",
+      "severity": "P2",
+      "status": "RESOLVED",
+      "title": "Engineering canary confused vectorized event count with occurrence-row count",
+      "taskbook_clause": "Canary must prove base/replay occurrence accounting without inventing scientific evidence.",
+      "source_locations": [
+        {"path": "stage1_sctsr_v4/engineering_canary.py", "lines": "435-518"},
+        {"path": "tests/stage1_sctsr_v4/test_engineering_canary.py", "lines": "80-108"}
+      ],
+      "reproduction_command": "uv run --python 3.11 pytest tests/stage1_sctsr_v4/test_engineering_canary.py -q",
+      "expected": "Two vectorized events expand to five occurrence rows: four BASE plus one REPLAY.",
+      "observed_before": "The canary asserted event cardinality as though each sample generated one event.",
+      "fix": "Separated vectorized sink events from occurrence-level Parquet rows.",
+      "fix_commit": "fdd8b9d431f488230b5919a0cd16beaab13e6f1d",
+      "observed_after": "Real canary reports base_occurrences=4, replay_occurrences=1, optimizer_step_count=1 and ema_update_count=1."
+    },
+    {
+      "finding_id": "SCTSR-RV4-010",
+      "severity": "P2",
+      "status": "RESOLVED",
+      "title": "Engineering canary did not fail closed on malformed prediction/frontier outputs",
+      "taskbook_clause": "A green canary must validate its own Parquet, checkpoint, prediction and 96-point frontier outputs.",
+      "source_locations": [
+        {"path": "stage1_sctsr_v4/engineering_canary.py", "lines": "195-231"},
+        {"path": "stage1_sctsr_v4/engineering_canary.py", "lines": "515-766"},
+        {"path": "tests/stage1_sctsr_v4/test_engineering_canary.py", "lines": "80-108"}
+      ],
+      "reproduction_command": "uv run --python 3.11 pytest tests/stage1_sctsr_v4/test_engineering_canary.py::test_engineering_canary_report_is_fail_closed -q",
+      "expected": "Missing or invalid evaluation output makes the canary fail.",
+      "observed_before": "Mechanics could report PASS without validating every endpoint invariant.",
+      "fix": "Added output identity, Zstd Parquet, 96-point frontier and recovery validation.",
+      "fix_commit": "d2da4598a3203e7c3ff8921937e019402c42c8ca",
+      "observed_after": "The final real canary validates 5 occurrence rows, 4 predictions, 96 frontier rows and independent threshold semantics."
+    },
+    {
+      "finding_id": "SCTSR-RV4-011",
+      "severity": "P1",
+      "status": "RESOLVED",
+      "title": "Resolved Windows junction paths could be double-prefixed into an invalid extended UNC path",
+      "taskbook_clause": "Registered long paths must survive atomic write, Parquet publication, quarantine and complete canary validation on Windows.",
+      "source_locations": [
+        {"path": "stage1_sctsr_v4/filesystem.py", "lines": "7-35"},
+        {"path": "tests/stage1_sctsr_v4/test_windows_long_paths.py", "lines": "18-94"}
+      ],
+      "reproduction_command": "uv run --python 3.11 pytest tests/stage1_sctsr_v4/test_windows_long_paths.py -q",
+      "expected": "An already extended path remains extended once and is accepted by the full synthetic canary.",
+      "observed_before": "Path.resolve() could yield //?/C:/..., which was prefixed again as an invalid UNC path.",
+      "fix": "Recognize extended syntax both before and after resolve; never add a second prefix.",
+      "fix_commit": "af95071c215e515505702c2e51ab1a6297fe7bb5",
+      "observed_after": "All five Windows long-path tests pass, including a complete canary beyond MAX_PATH."
+    },
+    {
+      "finding_id": "SCTSR-RV4-012",
+      "severity": "P2",
+      "status": "RESOLVED",
+      "title": "Repository audit rejected legitimate registered v4 preregistration evidence",
+      "taskbook_clause": "The audit must allow only the exact v4 preregistration namespace and reject neighboring unapproved experiment artifacts.",
+      "source_locations": [
+        {"path": "stage1_sctsr_v4/repository_state_audit.py", "lines": "15-24"},
+        {"path": "tests/stage1_sctsr_v4/test_repository_state_audit.py", "lines": "65-110"}
+      ],
+      "reproduction_command": "uv run --python 3.11 pytest tests/stage1_sctsr_v4/test_repository_state_audit.py::test_default_scope_allows_registered_v4_preregistration_evidence_only tests/stage1_sctsr_v4/test_repository_state_audit.py::test_default_scope_rejects_unregistered_neighboring_experiment_artifact -q",
+      "expected": "Exact v4 assets/addenda are allowed; v5 or neighboring paths fail.",
+      "observed_before": "The newly registered dataset ledger/addendum made the audit fail despite being in the approved experiment directory.",
+      "fix": "Added only the exact 03_preregistration_v4_sctsr prefix and a negative neighboring-path test.",
+      "fix_commit": "e3ed482145d02c0cb20cc3d5aad5dbd828278d76",
+      "observed_after": "Repository audit passes the registered v4 scope and still rejects unapproved neighboring namespaces."
+    },
+    {
+      "finding_id": "SCTSR-RV4-013",
+      "severity": "P2",
+      "status": "RESOLVED",
+      "title": "Fresh-checkout mtime was incorrectly treated as protected-history content identity",
+      "taskbook_clause": "Protected historical code and artifacts must be proven unchanged by content identity; checkout time is not content identity.",
+      "source_locations": [
+        {"path": "stage1_sctsr_v4/repository_state_audit.py", "lines": "207-268"},
+        {"path": "tests/stage1_sctsr_v4/test_repository_state_audit.py", "lines": "113-162"},
+        {"path": "docs/stage1_sctsr_v4/PROTECTED_HISTORY_IDENTITY.md", "lines": "1-34"}
+      ],
+      "reproduction_command": "uv run --python 3.11 pytest tests/stage1_sctsr_v4/test_repository_state_audit.py::test_repository_audit_does_not_treat_fresh_checkout_mtime_as_content_identity -q",
+      "expected": "Identical baseline/source Git blobs and normalized worktree blobs pass regardless of checkout mtime.",
+      "observed_before": "A clean worktree created after implementation start looked modified solely because Git does not preserve mtimes.",
+      "fix": "Bound baseline/source blob OIDs, blob SHAs and normalized worktree OID; retained mtime only as INFORMATIONAL_NOT_CONTENT_IDENTITY.",
+      "fix_commit": "9a2f41ec6864764314f57e776a64f7e12ac771a2",
+      "observed_after": "Protected-history content audit passes and the protected-tree diff is byte-empty."
+    }
+  ]
+}
