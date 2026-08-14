@@ -458,7 +458,10 @@ def run_real_engineering_canary(
         raise SctsrError(ErrorCode.OPTIMIZER_STEP_SKIPPED, "Engineering canary model parameters did not change")
     if optimizer_calls["count"] != 1 or step_result["optimizer_steps"] != 1 or step_result["ema_updates_delta"] != 1:
         raise SctsrError(ErrorCode.REPLAY_ADDED_OPTIMIZER_STEP, "Engineering canary optimizer/EMA count is not exactly one")
-    if len(step_receipts) != 1 or len(occurrence_events) != len(samples) + 1:
+    # The production sink receives one vectorized event per BASE/REPLAY
+    # microbatch.  It is expanded into one Parquet row per occurrence below;
+    # event cardinality is therefore two, while row cardinality is 4 + 1.
+    if len(step_receipts) != 1 or len(occurrence_events) != 2:
         raise SctsrError(ErrorCode.ARTIFACT_VALIDATION_FAILED, "Engineering canary runtime evidence row counts are wrong")
 
     source_manifest = build_source_tree_manifest(
@@ -697,7 +700,7 @@ def run_real_engineering_canary(
         "source_tree_digest": source_digest,
         "source_tree_git_head": source_manifest.get("git_head"),
         "source_tree_git_dirty": source_manifest.get("git_dirty"),
-        "forward_passed": len(occurrence_events) == len(samples) + 1,
+        "forward_passed": len(occurrence_events) == 2,
         "base_backward_passed": any(row.occurrence_role == "BASE" for row in occurrence_events),
         "replay_backward_passed": any(row.occurrence_role == "REPLAY" for row in occurrence_events),
         "optimizer_step_count": optimizer_calls["count"],

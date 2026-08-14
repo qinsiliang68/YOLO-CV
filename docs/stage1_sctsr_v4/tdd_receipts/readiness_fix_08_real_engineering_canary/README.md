@@ -40,3 +40,10 @@ The first attempt to overwrite `RUNBOOK_MANIFEST_v1.json` was also deliberately
 rejected by the immutable-publication contract.  The exact failure receipt is
 preserved as `FAILED_IMMUTABLE_V1_REBUILD.json`; refreshed documents are bound
 by a new v2 manifest instead of rewriting v1 history.
+
+The first physical GPU run then exposed a canary-only cardinality assertion:
+the production sink correctly emitted one vectorized BASE event and one
+vectorized REPLAY event, while the assertion incorrectly expected one event per
+sample. `REAL_RUN_RED_EVENT_CARDINALITY.json` preserves that failure. The fix
+keeps event count at two and independently expands/validates five occurrence
+rows in canonical Parquet.
