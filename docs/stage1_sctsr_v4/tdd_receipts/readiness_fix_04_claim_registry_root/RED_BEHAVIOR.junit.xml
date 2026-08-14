@@ -1,0 +1,278 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="7" skipped="0" tests="13" time="0.325" timestamp="2026-08-14T20:26:19.352238+08:00" hostname="zhangdawei"><testcase classname="tests.stage1_sctsr_v4.test_formal_execution_claim" name="test_execution_token_binds_release_registry_and_exact_job" time="0.009"><failure message="stage1_sctsr_v4.errors.SctsrError: FORMAL_EXECUTION_TOKEN_INVALID: Execution claim registry schema fields are invalid">tmp_path = WindowsPath('C:/Users/28898/AppData/Local/Temp/pytest-of-28898/pytest-1689/test_execution_token_binds_rel0')
+
+    def test_execution_token_binds_release_registry_and_exact_job(tmp_path):
+        release, trust, bindings = _release()
+        _root, registry = _claim_registry(tmp_path)
+        job = _job(tmp_path)
+        token = _token(release, registry, job)
+    
+&gt;       verified = _verify(token, release, trust, bindings, registry, job)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\stage1_sctsr_v4\test_formal_execution_claim.py:151: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\stage1_sctsr_v4\test_formal_execution_claim.py:132: in _verify
+    return verify_formal_execution_token(
+stage1_sctsr_v4\formal_execution.py:208: in verify_formal_execution_token
+    registry = _validate_claim_registry(claim_registry)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+stage1_sctsr_v4\formal_execution.py:167: in _validate_claim_registry
+    _fail(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+message = 'Execution claim registry schema fields are invalid'
+
+    def _fail(message: str, *, field: str | None = None, observed: Any = None, expected: Any = None) -&gt; None:
+&gt;       raise SctsrError(
+            ErrorCode.FORMAL_EXECUTION_TOKEN_INVALID,
+            message,
+            failing_field=field,
+            observed=observed,
+            expected=expected,
+            required_action="Provide a new owner-signed one-attempt execution token bound to this exact job.",
+        )
+E       stage1_sctsr_v4.errors.SctsrError: FORMAL_EXECUTION_TOKEN_INVALID: Execution claim registry schema fields are invalid
+
+stage1_sctsr_v4\formal_execution.py:139: SctsrError</failure></testcase><testcase classname="tests.stage1_sctsr_v4.test_formal_execution_claim" name="test_execution_token_rejects_job_substitution[arm_id-T_U]" time="0.006" /><testcase classname="tests.stage1_sctsr_v4.test_formal_execution_claim" name="test_execution_token_rejects_job_substitution[training_seed-102]" time="0.006" /><testcase classname="tests.stage1_sctsr_v4.test_formal_execution_claim" name="test_execution_token_rejects_job_substitution[output_root_digest-9999999999999999999999999999999999999999999999999999999999999999]" time="0.006" /><testcase classname="tests.stage1_sctsr_v4.test_formal_execution_claim" name="test_execution_token_rejects_job_substitution[action-RESUME]" time="0.006" /><testcase classname="tests.stage1_sctsr_v4.test_formal_execution_claim" name="test_execution_token_rejects_job_substitution[resume_from_receipt_digest-4444444444444444444444444444444444444444444444444444444444444444]" time="0.006" /><testcase classname="tests.stage1_sctsr_v4.test_formal_execution_claim" name="test_same_execution_token_can_be_claimed_only_once" time="0.014"><failure message="stage1_sctsr_v4.errors.SctsrError: FORMAL_EXECUTION_TOKEN_INVALID: Execution claim registry schema fields are invalid">tmp_path = WindowsPath('C:/Users/28898/AppData/Local/Temp/pytest-of-28898/pytest-1689/test_same_execution_token_can_0')
+
+    def test_same_execution_token_can_be_claimed_only_once(tmp_path):
+        release, trust, bindings = _release()
+        claim_root, registry = _claim_registry(tmp_path)
+        job = _job(tmp_path)
+        token = _token(release, registry, job)
+        kwargs = {
+            "release": release,
+            "release_trust_policy": trust,
+            "expected_release_bindings": bindings,
+            "release_manifest_sha256": stable_digest(release),
+            "expected_job_bindings": job,
+            "verification_secret": SECRET,
+            "now_utc": NOW,
+        }
+    
+&gt;       first = claim_formal_execution(token, claim_registry_root=claim_root, **kwargs)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\stage1_sctsr_v4\test_formal_execution_claim.py:195: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+stage1_sctsr_v4\formal_execution.py:378: in claim_formal_execution
+    verified = verify_formal_execution_token(
+stage1_sctsr_v4\formal_execution.py:208: in verify_formal_execution_token
+    registry = _validate_claim_registry(claim_registry)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+stage1_sctsr_v4\formal_execution.py:167: in _validate_claim_registry
+    _fail(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+message = 'Execution claim registry schema fields are invalid'
+
+    def _fail(message: str, *, field: str | None = None, observed: Any = None, expected: Any = None) -&gt; None:
+&gt;       raise SctsrError(
+            ErrorCode.FORMAL_EXECUTION_TOKEN_INVALID,
+            message,
+            failing_field=field,
+            observed=observed,
+            expected=expected,
+            required_action="Provide a new owner-signed one-attempt execution token bound to this exact job.",
+        )
+E       stage1_sctsr_v4.errors.SctsrError: FORMAL_EXECUTION_TOKEN_INVALID: Execution claim registry schema fields are invalid
+
+stage1_sctsr_v4\formal_execution.py:139: SctsrError</failure></testcase><testcase classname="tests.stage1_sctsr_v4.test_formal_execution_claim" name="test_execution_token_cannot_be_reused_from_a_cloned_claim_registry" time="0.014"><failure message="stage1_sctsr_v4.errors.SctsrError: FORMAL_EXECUTION_TOKEN_INVALID: Execution claim registry schema fields are invalid">tmp_path = WindowsPath('C:/Users/28898/AppData/Local/Temp/pytest-of-28898/pytest-1689/test_execution_token_cannot_be0')
+
+    def test_execution_token_cannot_be_reused_from_a_cloned_claim_registry(tmp_path):
+        release, trust, bindings = _release()
+        claim_root, registry = _claim_registry(tmp_path)
+        job = _job(tmp_path)
+        token = _token(release, registry, job)
+        kwargs = {
+            "release": release,
+            "release_trust_policy": trust,
+            "expected_release_bindings": bindings,
+            "release_manifest_sha256": stable_digest(release),
+            "expected_job_bindings": job,
+            "verification_secret": SECRET,
+            "now_utc": NOW,
+        }
+&gt;       claim_formal_execution(token, claim_registry_root=claim_root, **kwargs)
+
+tests\stage1_sctsr_v4\test_formal_execution_claim.py:218: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+stage1_sctsr_v4\formal_execution.py:378: in claim_formal_execution
+    verified = verify_formal_execution_token(
+stage1_sctsr_v4\formal_execution.py:208: in verify_formal_execution_token
+    registry = _validate_claim_registry(claim_registry)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+stage1_sctsr_v4\formal_execution.py:167: in _validate_claim_registry
+    _fail(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+message = 'Execution claim registry schema fields are invalid'
+
+    def _fail(message: str, *, field: str | None = None, observed: Any = None, expected: Any = None) -&gt; None:
+&gt;       raise SctsrError(
+            ErrorCode.FORMAL_EXECUTION_TOKEN_INVALID,
+            message,
+            failing_field=field,
+            observed=observed,
+            expected=expected,
+            required_action="Provide a new owner-signed one-attempt execution token bound to this exact job.",
+        )
+E       stage1_sctsr_v4.errors.SctsrError: FORMAL_EXECUTION_TOKEN_INVALID: Execution claim registry schema fields are invalid
+
+stage1_sctsr_v4\formal_execution.py:139: SctsrError</failure></testcase><testcase classname="tests.stage1_sctsr_v4.test_formal_execution_claim" name="test_concurrent_claimers_have_exactly_one_winner" time="0.016"><failure message="AssertionError: assert 0 == 1&#10; +  where 0 = &lt;built-in method count of list object at 0x000002BB0416C900&gt;('CLAIMED')&#10; +    where &lt;built-in method count of list object at 0x000002BB0416C900&gt; = [&lt;ErrorCode.FORMAL_EXECUTION_TOKEN_INVALID: 'FORMAL_EXECUTION_TOKEN_INVALID'&gt;, &lt;ErrorCode.FORMAL_EXECUTION_TOKEN_INVAL...: 'FORMAL_EXECUTION_TOKEN_INVALID'&gt;, &lt;ErrorCode.FORMAL_EXECUTION_TOKEN_INVALID: 'FORMAL_EXECUTION_TOKEN_INVALID'&gt;, ...].count">tmp_path = WindowsPath('C:/Users/28898/AppData/Local/Temp/pytest-of-28898/pytest-1689/test_concurrent_claimers_have_0')
+
+    def test_concurrent_claimers_have_exactly_one_winner(tmp_path):
+        release, trust, bindings = _release()
+        claim_root, registry = _claim_registry(tmp_path)
+        job = _job(tmp_path)
+        token = _token(release, registry, job)
+        barrier = threading.Barrier(8)
+    
+        def attempt(_index):
+            barrier.wait()
+            try:
+                claim_formal_execution(
+                    token,
+                    claim_registry_root=claim_root,
+                    release=release,
+                    release_trust_policy=trust,
+                    expected_release_bindings=bindings,
+                    release_manifest_sha256=stable_digest(release),
+                    expected_job_bindings=job,
+                    verification_secret=SECRET,
+                    now_utc=NOW,
+                )
+            except SctsrError as error:
+                return error.code
+            return "CLAIMED"
+    
+        with ThreadPoolExecutor(max_workers=8) as pool:
+            results = list(pool.map(attempt, range(8)))
+    
+&gt;       assert results.count("CLAIMED") == 1
+E       AssertionError: assert 0 == 1
+E        +  where 0 = &lt;built-in method count of list object at 0x000002BB0416C900&gt;('CLAIMED')
+E        +    where &lt;built-in method count of list object at 0x000002BB0416C900&gt; = [&lt;ErrorCode.FORMAL_EXECUTION_TOKEN_INVALID: 'FORMAL_EXECUTION_TOKEN_INVALID'&gt;, &lt;ErrorCode.FORMAL_EXECUTION_TOKEN_INVAL...: 'FORMAL_EXECUTION_TOKEN_INVALID'&gt;, &lt;ErrorCode.FORMAL_EXECUTION_TOKEN_INVALID: 'FORMAL_EXECUTION_TOKEN_INVALID'&gt;, ...].count
+
+tests\stage1_sctsr_v4\test_formal_execution_claim.py:260: AssertionError</failure></testcase><testcase classname="tests.stage1_sctsr_v4.test_formal_execution_claim" name="test_one_matrix_release_may_authorize_distinct_job_tokens" time="0.013"><failure message="stage1_sctsr_v4.errors.SctsrError: FORMAL_EXECUTION_TOKEN_INVALID: Execution claim registry schema fields are invalid">tmp_path = WindowsPath('C:/Users/28898/AppData/Local/Temp/pytest-of-28898/pytest-1689/test_one_matrix_release_may_au0')
+
+    def test_one_matrix_release_may_authorize_distinct_job_tokens(tmp_path):
+        release, trust, bindings = _release()
+        claim_root, registry = _claim_registry(tmp_path)
+        first_job = _job(tmp_path, logical_run_id="PARENT_101", training_seed=101)
+        second_job = _job(tmp_path, logical_run_id="PARENT_102", training_seed=102)
+        first_token = _token(release, registry, first_job, execution_id="EXEC_PARENT_101_START")
+        second_token = _token(release, registry, second_job, execution_id="EXEC_PARENT_102_START")
+    
+&gt;       first = claim_formal_execution(
+            first_token,
+            claim_registry_root=claim_root,
+            release=release,
+            release_trust_policy=trust,
+            expected_release_bindings=bindings,
+            release_manifest_sha256=stable_digest(release),
+            expected_job_bindings=first_job,
+            verification_secret=SECRET,
+            now_utc=NOW,
+        )
+
+tests\stage1_sctsr_v4\test_formal_execution_claim.py:273: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+stage1_sctsr_v4\formal_execution.py:378: in claim_formal_execution
+    verified = verify_formal_execution_token(
+stage1_sctsr_v4\formal_execution.py:208: in verify_formal_execution_token
+    registry = _validate_claim_registry(claim_registry)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+stage1_sctsr_v4\formal_execution.py:167: in _validate_claim_registry
+    _fail(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+message = 'Execution claim registry schema fields are invalid'
+
+    def _fail(message: str, *, field: str | None = None, observed: Any = None, expected: Any = None) -&gt; None:
+&gt;       raise SctsrError(
+            ErrorCode.FORMAL_EXECUTION_TOKEN_INVALID,
+            message,
+            failing_field=field,
+            observed=observed,
+            expected=expected,
+            required_action="Provide a new owner-signed one-attempt execution token bound to this exact job.",
+        )
+E       stage1_sctsr_v4.errors.SctsrError: FORMAL_EXECUTION_TOKEN_INVALID: Execution claim registry schema fields are invalid
+
+stage1_sctsr_v4\formal_execution.py:139: SctsrError</failure></testcase><testcase classname="tests.stage1_sctsr_v4.test_formal_execution_claim" name="test_corrupt_existing_claim_is_never_overwritten" time="0.013"><failure message="AssertionError: assert &lt;ErrorCode.FORMAL_EXECUTION_TOKEN_INVALID: 'FORMAL_EXECUTION_TOKEN_INVALID'&gt; is &lt;ErrorCode.FORMAL_EXECUTION_TOKEN_ALREADY_CLAIMED: 'FORMAL_EXECUTION_TOKEN_ALREADY_CLAIMED'&gt;&#10; +  where &lt;ErrorCode.FORMAL_EXECUTION_TOKEN_INVALID: 'FORMAL_EXECUTION_TOKEN_INVALID'&gt; = SctsrError(code=&lt;ErrorCode.FORMAL_EXECUTION_TOKEN_INVALID: 'FORMAL_EXECUTION_TOKEN_INVALID'&gt;, message='Execution claim...e=False, required_action='Provide a new owner-signed one-attempt execution token bound to this exact job.', details={}).code&#10; +    where SctsrError(code=&lt;ErrorCode.FORMAL_EXECUTION_TOKEN_INVALID: 'FORMAL_EXECUTION_TOKEN_INVALID'&gt;, message='Execution claim...e=False, required_action='Provide a new owner-signed one-attempt execution token bound to this exact job.', details={}) = &lt;ExceptionInfo SctsrError(code=&lt;ErrorCode.FORMAL_EXECUTION_TOKEN_INVALID: 'FORMAL_EXECUTION_TOKEN_INVALID'&gt;, message='...required_action='Provide a new owner-signed one-attempt execution token bound to this exact job.', details={}) tblen=5&gt;.value&#10; +  and   &lt;ErrorCode.FORMAL_EXECUTION_TOKEN_ALREADY_CLAIMED: 'FORMAL_EXECUTION_TOKEN_ALREADY_CLAIMED'&gt; = ErrorCode.FORMAL_EXECUTION_TOKEN_ALREADY_CLAIMED">tmp_path = WindowsPath('C:/Users/28898/AppData/Local/Temp/pytest-of-28898/pytest-1689/test_corrupt_existing_claim_is0')
+
+    def test_corrupt_existing_claim_is_never_overwritten(tmp_path):
+        release, trust, bindings = _release()
+        claim_root, registry = _claim_registry(tmp_path)
+        job = _job(tmp_path)
+        token = _token(release, registry, job)
+        nonce_digest = hashlib.sha256(token["nonce"].encode("utf-8")).hexdigest().upper()
+        claim_path = claim_root / "claims" / f"{nonce_digest}.claim.json"
+        claim_path.write_bytes(b'{"partial":')
+    
+        with pytest.raises(SctsrError) as caught:
+            claim_formal_execution(
+                token,
+                claim_registry_root=claim_root,
+                release=release,
+                release_trust_policy=trust,
+                expected_release_bindings=bindings,
+                release_manifest_sha256=stable_digest(release),
+                expected_job_bindings=job,
+                verification_secret=SECRET,
+                now_utc=NOW,
+            )
+    
+&gt;       assert caught.value.code is ErrorCode.FORMAL_EXECUTION_TOKEN_ALREADY_CLAIMED
+E       AssertionError: assert &lt;ErrorCode.FORMAL_EXECUTION_TOKEN_INVALID: 'FORMAL_EXECUTION_TOKEN_INVALID'&gt; is &lt;ErrorCode.FORMAL_EXECUTION_TOKEN_ALREADY_CLAIMED: 'FORMAL_EXECUTION_TOKEN_ALREADY_CLAIMED'&gt;
+E        +  where &lt;ErrorCode.FORMAL_EXECUTION_TOKEN_INVALID: 'FORMAL_EXECUTION_TOKEN_INVALID'&gt; = SctsrError(code=&lt;ErrorCode.FORMAL_EXECUTION_TOKEN_INVALID: 'FORMAL_EXECUTION_TOKEN_INVALID'&gt;, message='Execution claim...e=False, required_action='Provide a new owner-signed one-attempt execution token bound to this exact job.', details={}).code
+E        +    where SctsrError(code=&lt;ErrorCode.FORMAL_EXECUTION_TOKEN_INVALID: 'FORMAL_EXECUTION_TOKEN_INVALID'&gt;, message='Execution claim...e=False, required_action='Provide a new owner-signed one-attempt execution token bound to this exact job.', details={}) = &lt;ExceptionInfo SctsrError(code=&lt;ErrorCode.FORMAL_EXECUTION_TOKEN_INVALID: 'FORMAL_EXECUTION_TOKEN_INVALID'&gt;, message='...required_action='Provide a new owner-signed one-attempt execution token bound to this exact job.', details={}) tblen=5&gt;.value
+E        +  and   &lt;ErrorCode.FORMAL_EXECUTION_TOKEN_ALREADY_CLAIMED: 'FORMAL_EXECUTION_TOKEN_ALREADY_CLAIMED'&gt; = ErrorCode.FORMAL_EXECUTION_TOKEN_ALREADY_CLAIMED
+
+tests\stage1_sctsr_v4\test_formal_execution_claim.py:322: AssertionError</failure></testcase><testcase classname="tests.stage1_sctsr_v4.test_formal_execution_claim" name="test_claim_and_token_are_snapshotted_and_tamper_is_rejected" time="0.024"><failure message="stage1_sctsr_v4.errors.SctsrError: FORMAL_EXECUTION_TOKEN_INVALID: Execution claim registry schema fields are invalid">tmp_path = WindowsPath('C:/Users/28898/AppData/Local/Temp/pytest-of-28898/pytest-1689/test_claim_and_token_are_snaps0')
+
+    def test_claim_and_token_are_snapshotted_and_tamper_is_rejected(tmp_path):
+        release, trust, bindings = _release()
+        claim_root, registry = _claim_registry(tmp_path)
+        job = _job(tmp_path)
+        token = _token(release, registry, job)
+        token_path = tmp_path / "EXECUTION_TOKEN.json"
+        atomic_write_json(token_path, token)
+&gt;       claim = claim_formal_execution(
+            token_path,
+            claim_registry_root=claim_root,
+            release=release,
+            release_trust_policy=trust,
+            expected_release_bindings=bindings,
+            release_manifest_sha256=stable_digest(release),
+            expected_job_bindings=job,
+            verification_secret=SECRET,
+            now_utc=NOW,
+        )
+
+tests\stage1_sctsr_v4\test_formal_execution_claim.py:333: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+stage1_sctsr_v4\formal_execution.py:378: in claim_formal_execution
+    verified = verify_formal_execution_token(
+stage1_sctsr_v4\formal_execution.py:208: in verify_formal_execution_token
+    registry = _validate_claim_registry(claim_registry)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+stage1_sctsr_v4\formal_execution.py:167: in _validate_claim_registry
+    _fail(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+message = 'Execution claim registry schema fields are invalid'
+
+    def _fail(message: str, *, field: str | None = None, observed: Any = None, expected: Any = None) -&gt; None:
+&gt;       raise SctsrError(
+            ErrorCode.FORMAL_EXECUTION_TOKEN_INVALID,
+            message,
+            failing_field=field,
+            observed=observed,
+            expected=expected,
+            required_action="Provide a new owner-signed one-attempt execution token bound to this exact job.",
+        )
+E       stage1_sctsr_v4.errors.SctsrError: FORMAL_EXECUTION_TOKEN_INVALID: Execution claim registry schema fields are invalid
+
+stage1_sctsr_v4\formal_execution.py:139: SctsrError</failure></testcase><testcase classname="tests.stage1_sctsr_v4.test_formal_execution_claim" name="test_repository_execution_templates_are_inactive_and_complete" time="0.001" /></testsuite></testsuites>

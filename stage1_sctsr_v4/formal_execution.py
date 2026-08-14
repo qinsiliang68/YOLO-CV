@@ -38,7 +38,7 @@ JOB_BINDING_FIELDS = (
 )
 MAX_EXECUTION_TOKEN_LIFETIME = timedelta(hours=24)
 REQUIRED_CLAIM_REGISTRY_FIELDS = frozenset(
-    {"schema_version", "registry_id", "mode", "state", "experiment_id"}
+    {"schema_version", "registry_id", "mode", "state", "experiment_id", "registry_root_digest"}
 )
 REQUIRED_EXECUTION_TOKEN_FIELDS = frozenset(
     {
@@ -181,6 +181,7 @@ def _validate_claim_registry(value: Mapping[str, Any]) -> Mapping[str, Any]:
     mismatch = {field: {"observed": value.get(field), "expected": target} for field, target in expected.items() if value.get(field) != target}
     if mismatch or not isinstance(value.get("registry_id"), str) or len(str(value["registry_id"])) < 16:
         _fail("Execution claim registry is not the active SCTSR shared registry", field="claim_registry", observed=mismatch or value.get("registry_id"))
+    _sha256(value.get("registry_root_digest"), field="registry_root_digest", allow_zero=False)
     return value
 
 
@@ -375,6 +376,14 @@ def claim_formal_execution(
     registry_descriptor = load_json(descriptor_path)
     if not isinstance(registry_descriptor, Mapping):
         _fail("Execution claim registry descriptor is not an object", field="claim_registry")
+    expected_registry_root_digest = output_root_digest(root)
+    if registry_descriptor.get("registry_root_digest") != expected_registry_root_digest:
+        _fail(
+            "Execution claim registry descriptor was copied away from its owner-provisioned shared root",
+            field="registry_root_digest",
+            observed=registry_descriptor.get("registry_root_digest"),
+            expected=expected_registry_root_digest,
+        )
     verified = verify_formal_execution_token(
         token_manifest,
         release=release,

@@ -4,6 +4,8 @@
 
 正式入口先验证 HMAC-SHA256 release、trust key、nonce/expiry 和七个签名绑定：baseline commit、taskbook blob、source tree、contract、assets、runtime、seed registry。当前 trust registry 为空，所以 formal 必须在 trainer 构建和数据访问前拒绝。
 
+矩阵 release 不能直接启动训练。每次 START/RESUME 还必须使用一个 owner 签名、只允许消费一次的 execution token。十台机器必须访问同一个共享 claim registry；`CLAIM_REGISTRY.json.registry_root_digest` 绑定该共享根的规范化绝对路径。把 descriptor 和空 `claims/` 复制到另一台机器的本地目录不会产生第二个合法 registry，同一 token 在克隆目录中必须失败。正式部署应使用所有机器解析一致的 UNC 共享路径，并在签发 token 前验证 exclusive-create 语义。
+
 source tree 不只记录文件列表，还覆盖 v4 source/scripts/configs/tests/docs、Ultralytics overlay、依赖锁、任务书和实际导入的六个 upstream 文件。正式验证重新扫描 include roots、重算 bytes/SHA、核对当前 Git HEAD 和 tracked-clean 状态；include root 内新增未登记文件会失败。
 
 ## 2. 数据角色平面

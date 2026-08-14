@@ -80,6 +80,7 @@ def _claim_registry(tmp_path):
         "mode": "SHARED_MULTI_MACHINE_EXCLUSIVE_CREATE",
         "state": "ACTIVE",
         "experiment_id": "dynamic_replay_budget_efficiency_20260807",
+        "registry_root_digest": output_root_digest(root),
     }
     atomic_write_json(root / "CLAIM_REGISTRY.json", descriptor)
     (root / "claims").mkdir()
@@ -198,6 +199,34 @@ def test_same_execution_token_can_be_claimed_only_once(tmp_path):
     assert first["status"] == "CLAIMED"
     assert caught.value.code is ErrorCode.FORMAL_EXECUTION_TOKEN_ALREADY_CLAIMED
     assert len(list((claim_root / "claims").glob("*.claim.json"))) == 1
+
+
+def test_execution_token_cannot_be_reused_from_a_cloned_claim_registry(tmp_path):
+    release, trust, bindings = _release()
+    claim_root, registry = _claim_registry(tmp_path)
+    job = _job(tmp_path)
+    token = _token(release, registry, job)
+    kwargs = {
+        "release": release,
+        "release_trust_policy": trust,
+        "expected_release_bindings": bindings,
+        "release_manifest_sha256": stable_digest(release),
+        "expected_job_bindings": job,
+        "verification_secret": SECRET,
+        "now_utc": NOW,
+    }
+    claim_formal_execution(token, claim_registry_root=claim_root, **kwargs)
+
+    cloned_root = tmp_path / "cloned_claim_registry"
+    cloned_root.mkdir()
+    atomic_write_json(cloned_root / "CLAIM_REGISTRY.json", registry)
+    (cloned_root / "claims").mkdir()
+
+    with pytest.raises(SctsrError) as caught:
+        claim_formal_execution(token, claim_registry_root=cloned_root, **kwargs)
+
+    assert caught.value.code is ErrorCode.FORMAL_EXECUTION_TOKEN_INVALID
+    assert not list((cloned_root / "claims").glob("*.claim.json"))
 
 
 def test_concurrent_claimers_have_exactly_one_winner(tmp_path):
@@ -397,4 +426,5 @@ def test_repository_execution_templates_are_inactive_and_complete(repository_roo
         "mode": "SHARED_MULTI_MACHINE_EXCLUSIVE_CREATE",
         "state": "INACTIVE_TEMPLATE",
         "experiment_id": "dynamic_replay_budget_efficiency_20260807",
+        "registry_root_digest": "REPLACE_WITH_SHA256_OF_CANONICAL_SHARED_REGISTRY_ABSOLUTE_ROOT",
     }
