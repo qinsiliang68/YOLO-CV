@@ -1,0 +1,86 @@
+{
+  "schema_version": "stage1.sctsr.code_review_verdict.v1",
+  "review_identity": {
+    "baseline_commit": "a70ba60485dd32c2f8b4268b8f28ea2d3549f42f",
+    "implementation_freeze_commit": "e9b6df61b0eb02e1d32c29175644f1c2af545afc",
+    "delivery_commit": "f285754108c7b8e37afd7f5f0fa58fe8fb23d38a",
+    "taskbook_blob_sha": "b201d021712e9c6614e119d35f0e14bdf405c6be",
+    "reviewer_role": "CODEX_PRIMARY_AGENT_SELF_REVIEW_NOT_INDEPENDENT"
+  },
+  "code_review": {
+    "status": "CODE_REVIEW_FAIL_P1_OPEN_NOT_TRAINING_AUTHORIZATION",
+    "pass": false,
+    "criteria": {
+      "python311_all_340_passed": false,
+      "python311_observed": "337 passed, 3 errors",
+      "python312_all_340_passed": false,
+      "python312_observed": "337 passed, 3 errors",
+      "open_p0_count": 0,
+      "open_p1_count": 3,
+      "no_open_p0_or_p1": false,
+      "protected_directories_zero_change": true,
+      "source_tree_manifest_recomputed_clean": true,
+      "real_data_engineering_canary_passed": true,
+      "synthetic_same_runtime_determinism_passed": true,
+      "critical_regression_subset": "74 passed",
+      "compileall_python311": "PASS",
+      "compileall_python312": "PASS",
+      "uv_lock_check": "PASS",
+      "git_diff_check": "PASS"
+    },
+    "open_finding_ids": [
+      "SCTSR-RV4-001",
+      "SCTSR-RV4-002",
+      "SCTSR-RV4-003",
+      "SCTSR-RV4-004",
+      "SCTSR-RV4-005"
+    ],
+    "required_before_code_review_pass": [
+      "Resolve SCTSR-RV4-001 and prove 340/340 on clean Python 3.11 and 3.12 worktrees.",
+      "Resolve SCTSR-RV4-002 with post-rename failure-first transaction tests.",
+      "Resolve or formally amend the authorization contract for SCTSR-RV4-003.",
+      "Run the same skeptical review on the fix branch; do not convert this review branch into a fix branch."
+    ]
+  },
+  "formal_training_readiness": {
+    "status": "BLOCKED",
+    "authorized": false,
+    "blockers": [
+      {
+        "code": "OPEN_P1_IMPLEMENTATION_FINDINGS",
+        "finding_ids": [
+          "SCTSR-RV4-001",
+          "SCTSR-RV4-002",
+          "SCTSR-RV4-003"
+        ]
+      },
+      {
+        "code": "R2_QUOTA_INFEASIBLE",
+        "shortfall_strata": 172,
+        "shortfall_occurrences": 378,
+        "matching_relaxation_allowed": false
+      },
+      {
+        "code": "BLOCKED_BY_VAL_TARGET",
+        "reason": "No independent identity- and group-disjoint SHA-frozen val_target is registered."
+      },
+      {
+        "code": "FORMAL_RELEASE_NOT_AUTHORIZED",
+        "reason": "No current signed formal release or formal seed registry exists."
+      }
+    ]
+  },
+  "side_effects": {
+    "formal_training_started": false,
+    "formal_seed_generated": false,
+    "assignments_generated": false,
+    "engineering_gate_generated": false,
+    "pilot_release_generated": false,
+    "blind_holdout_opened": false,
+    "test_accessed": false,
+    "val_op_accessed": false,
+    "selector_trained": false,
+    "method_effectiveness_claimed": false
+  },
+  "scope_statement": "This verdict assesses taskbook implementation and engineering behavior only. It does not assess or claim SCTSR method effectiveness and it is not formal training authorization."
+}
