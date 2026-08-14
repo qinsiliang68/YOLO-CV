@@ -1,0 +1,161 @@
+........................................................................ [ 21%]
+........................................................................ [ 42%]
+.....................EEE................................................ [ 63%]
+........................................................................ [ 84%]
+....................................................                     [100%]
+=================================== ERRORS ====================================
+_ ERROR at setup of test_sa_045_registered_t_is_exact_3000_id_frozen_stress_set _
+
+repository_root = WindowsPath('C:/Users/28898/AppData/Local/Temp/YOLO-CV-sctsr-v4-review-f285754')
+
+    @pytest.fixture(scope="module")
+    def registered_inputs(repository_root):
+        registry = load_asset_registry(repository_root / "configs/stage1_sctsr_v4/asset_registry_v1.json")
+>       return load_formal_pool_inputs(registry, repository_root)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\stage1_sctsr_v4\test_formal_pool_inputs.py:18: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+stage1_sctsr_v4\formal_pool_inputs.py:53: in load_formal_pool_inputs
+    validate_asset_registry(registry, root)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+registry = AssetRegistry(schema_version='stage1.sctsr.asset_registry.v1', base_denominator=120000, assets=(AssetRecord(asset_id='...del_defect_manifest', 'val_model_normal_manifest')), ('val_op', ('val_op_defect_manifest', 'val_op_normal_manifest'))))
+repository_root = WindowsPath('C:/Users/28898/AppData/Local/Temp/YOLO-CV-sctsr-v4-review-f285754')
+
+    def validate_asset_registry(registry: AssetRegistry, repository_root: str | Path, *, verify_large_files: bool = True) -> dict[str, Any]:
+        if registry.schema_version != "stage1.sctsr.asset_registry.v1":
+            raise SctsrError(ErrorCode.SCHEMA_VALIDATION_FAILED, "Unknown asset registry schema")
+        if registry.base_denominator <= 0:
+            raise SctsrError(ErrorCode.DENOMINATOR_IDENTITY_MISMATCH, "Asset registry base denominator must be positive")
+        if registry.val_target_available:
+            raise SctsrError(ErrorCode.BLOCKED_BY_VAL_TARGET, "Current repository does not have an independent val_target")
+        root = Path(repository_root).resolve()
+        results: list[dict[str, Any]] = []
+        seen_ids: set[str] = set()
+        evidence_by_id: dict[str, _ContentEvidence] = {}
+        for record in registry.assets:
+            if record.asset_id in seen_ids:
+                raise SctsrError(ErrorCode.ASSET_VALIDATION_FAILED, "Duplicate asset_id", observed=record.asset_id)
+            seen_ids.add(record.asset_id)
+            path = (root / record.relative_path).resolve()
+            try:
+                path.relative_to(root)
+            except ValueError as exc:
+                raise SctsrError(ErrorCode.ASSET_VALIDATION_FAILED, "Asset path escapes repository root", artifact_path=str(path)) from exc
+            if not path.exists():
+                if record.required:
+                    raise SctsrError(ErrorCode.ASSET_VALIDATION_FAILED, "Required frozen asset is missing", artifact_path=str(path))
+                results.append({"asset_id": record.asset_id, "status": "OPTIONAL_MISSING"})
+                continue
+            observed_bytes = path.stat().st_size
+            if observed_bytes != record.bytes:
+>               raise SctsrError(ErrorCode.ASSET_VALIDATION_FAILED, "Asset byte count mismatch", artifact_path=str(path), observed=observed_bytes, expected=record.bytes)
+E               stage1_sctsr_v4.errors.SctsrError: ASSET_VALIDATION_FAILED: Asset byte count mismatch
+
+stage1_sctsr_v4\asset_registry.py:210: SctsrError
+_ ERROR at setup of test_sa_046_registered_r1_uses_all_120000_base_candidates _
+
+repository_root = WindowsPath('C:/Users/28898/AppData/Local/Temp/YOLO-CV-sctsr-v4-review-f285754')
+
+    @pytest.fixture(scope="module")
+    def registered_inputs(repository_root):
+        registry = load_asset_registry(repository_root / "configs/stage1_sctsr_v4/asset_registry_v1.json")
+>       return load_formal_pool_inputs(registry, repository_root)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\stage1_sctsr_v4\test_formal_pool_inputs.py:18: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+stage1_sctsr_v4\formal_pool_inputs.py:53: in load_formal_pool_inputs
+    validate_asset_registry(registry, root)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+registry = AssetRegistry(schema_version='stage1.sctsr.asset_registry.v1', base_denominator=120000, assets=(AssetRecord(asset_id='...del_defect_manifest', 'val_model_normal_manifest')), ('val_op', ('val_op_defect_manifest', 'val_op_normal_manifest'))))
+repository_root = WindowsPath('C:/Users/28898/AppData/Local/Temp/YOLO-CV-sctsr-v4-review-f285754')
+
+    def validate_asset_registry(registry: AssetRegistry, repository_root: str | Path, *, verify_large_files: bool = True) -> dict[str, Any]:
+        if registry.schema_version != "stage1.sctsr.asset_registry.v1":
+            raise SctsrError(ErrorCode.SCHEMA_VALIDATION_FAILED, "Unknown asset registry schema")
+        if registry.base_denominator <= 0:
+            raise SctsrError(ErrorCode.DENOMINATOR_IDENTITY_MISMATCH, "Asset registry base denominator must be positive")
+        if registry.val_target_available:
+            raise SctsrError(ErrorCode.BLOCKED_BY_VAL_TARGET, "Current repository does not have an independent val_target")
+        root = Path(repository_root).resolve()
+        results: list[dict[str, Any]] = []
+        seen_ids: set[str] = set()
+        evidence_by_id: dict[str, _ContentEvidence] = {}
+        for record in registry.assets:
+            if record.asset_id in seen_ids:
+                raise SctsrError(ErrorCode.ASSET_VALIDATION_FAILED, "Duplicate asset_id", observed=record.asset_id)
+            seen_ids.add(record.asset_id)
+            path = (root / record.relative_path).resolve()
+            try:
+                path.relative_to(root)
+            except ValueError as exc:
+                raise SctsrError(ErrorCode.ASSET_VALIDATION_FAILED, "Asset path escapes repository root", artifact_path=str(path)) from exc
+            if not path.exists():
+                if record.required:
+                    raise SctsrError(ErrorCode.ASSET_VALIDATION_FAILED, "Required frozen asset is missing", artifact_path=str(path))
+                results.append({"asset_id": record.asset_id, "status": "OPTIONAL_MISSING"})
+                continue
+            observed_bytes = path.stat().st_size
+            if observed_bytes != record.bytes:
+>               raise SctsrError(ErrorCode.ASSET_VALIDATION_FAILED, "Asset byte count mismatch", artifact_path=str(path), observed=observed_bytes, expected=record.bytes)
+E               stage1_sctsr_v4.errors.SctsrError: ASSET_VALIDATION_FAILED: Asset byte count mismatch
+
+stage1_sctsr_v4\asset_registry.py:210: SctsrError
+_ ERROR at setup of test_sa_053_registered_r2_fails_closed_on_proven_exact_quota_shortage _
+
+repository_root = WindowsPath('C:/Users/28898/AppData/Local/Temp/YOLO-CV-sctsr-v4-review-f285754')
+
+    @pytest.fixture(scope="module")
+    def registered_inputs(repository_root):
+        registry = load_asset_registry(repository_root / "configs/stage1_sctsr_v4/asset_registry_v1.json")
+>       return load_formal_pool_inputs(registry, repository_root)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\stage1_sctsr_v4\test_formal_pool_inputs.py:18: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+stage1_sctsr_v4\formal_pool_inputs.py:53: in load_formal_pool_inputs
+    validate_asset_registry(registry, root)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+registry = AssetRegistry(schema_version='stage1.sctsr.asset_registry.v1', base_denominator=120000, assets=(AssetRecord(asset_id='...del_defect_manifest', 'val_model_normal_manifest')), ('val_op', ('val_op_defect_manifest', 'val_op_normal_manifest'))))
+repository_root = WindowsPath('C:/Users/28898/AppData/Local/Temp/YOLO-CV-sctsr-v4-review-f285754')
+
+    def validate_asset_registry(registry: AssetRegistry, repository_root: str | Path, *, verify_large_files: bool = True) -> dict[str, Any]:
+        if registry.schema_version != "stage1.sctsr.asset_registry.v1":
+            raise SctsrError(ErrorCode.SCHEMA_VALIDATION_FAILED, "Unknown asset registry schema")
+        if registry.base_denominator <= 0:
+            raise SctsrError(ErrorCode.DENOMINATOR_IDENTITY_MISMATCH, "Asset registry base denominator must be positive")
+        if registry.val_target_available:
+            raise SctsrError(ErrorCode.BLOCKED_BY_VAL_TARGET, "Current repository does not have an independent val_target")
+        root = Path(repository_root).resolve()
+        results: list[dict[str, Any]] = []
+        seen_ids: set[str] = set()
+        evidence_by_id: dict[str, _ContentEvidence] = {}
+        for record in registry.assets:
+            if record.asset_id in seen_ids:
+                raise SctsrError(ErrorCode.ASSET_VALIDATION_FAILED, "Duplicate asset_id", observed=record.asset_id)
+            seen_ids.add(record.asset_id)
+            path = (root / record.relative_path).resolve()
+            try:
+                path.relative_to(root)
+            except ValueError as exc:
+                raise SctsrError(ErrorCode.ASSET_VALIDATION_FAILED, "Asset path escapes repository root", artifact_path=str(path)) from exc
+            if not path.exists():
+                if record.required:
+                    raise SctsrError(ErrorCode.ASSET_VALIDATION_FAILED, "Required frozen asset is missing", artifact_path=str(path))
+                results.append({"asset_id": record.asset_id, "status": "OPTIONAL_MISSING"})
+                continue
+            observed_bytes = path.stat().st_size
+            if observed_bytes != record.bytes:
+>               raise SctsrError(ErrorCode.ASSET_VALIDATION_FAILED, "Asset byte count mismatch", artifact_path=str(path), observed=observed_bytes, expected=record.bytes)
+E               stage1_sctsr_v4.errors.SctsrError: ASSET_VALIDATION_FAILED: Asset byte count mismatch
+
+stage1_sctsr_v4\asset_registry.py:210: SctsrError
+=========================== short test summary info ===========================
+ERROR tests/stage1_sctsr_v4/test_formal_pool_inputs.py::test_sa_045_registered_t_is_exact_3000_id_frozen_stress_set
+ERROR tests/stage1_sctsr_v4/test_formal_pool_inputs.py::test_sa_046_registered_r1_uses_all_120000_base_candidates
+ERROR tests/stage1_sctsr_v4/test_formal_pool_inputs.py::test_sa_053_registered_r2_fails_closed_on_proven_exact_quota_shortage
+337 passed, 3 errors in 65.83s (0:01:05)

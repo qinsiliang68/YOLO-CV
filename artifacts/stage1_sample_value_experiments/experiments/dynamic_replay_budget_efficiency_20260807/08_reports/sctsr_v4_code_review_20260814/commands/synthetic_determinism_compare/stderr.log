@@ -1,0 +1,18 @@
+Installed 57 packages in 2.68s
+Traceback (most recent call last):
+  File "C:\Users\28898\AppData\Local\Temp\YOLO-CV-sctsr-v4-review-f285754\artifacts\stage1_sample_value_experiments\experiments\dynamic_replay_budget_efficiency_20260807\08_reports\sctsr_v4_implementation_audit_20260813\tools\compare_synthetic_canaries.py", line 63, in <module>
+    raise SystemExit(main())
+                     ^^^^^^
+  File "C:\Users\28898\AppData\Local\Temp\YOLO-CV-sctsr-v4-review-f285754\artifacts\stage1_sample_value_experiments\experiments\dynamic_replay_budget_efficiency_20260807\08_reports\sctsr_v4_implementation_audit_20260813\tools\compare_synthetic_canaries.py", line 26, in main
+    left_receipt = load(arguments.left / "08_receipts/SYNTHETIC_CANARY_RECEIPT.json")
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\28898\AppData\Local\Temp\YOLO-CV-sctsr-v4-review-f285754\artifacts\stage1_sample_value_experiments\experiments\dynamic_replay_budget_efficiency_20260807\08_reports\sctsr_v4_implementation_audit_20260813\tools\compare_synthetic_canaries.py", line 17, in load
+    return json.loads(path.read_text(encoding="utf-8"))
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\28898\AppData\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\pathlib.py", line 1058, in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\28898\AppData\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\pathlib.py", line 1044, in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: 'C:\\Users\\28898\\AppData\\Local\\Temp\\YOLO-CV-sctsr-v4-review-f285754\\artifacts\\stage1_sample_value_experiments\\experiments\\dynamic_replay_budget_efficiency_20260807\\08_reports\\sctsr_v4_code_review_20260814\\runtime\\synthetic_a\\08_receipts\\SYNTHETIC_CANARY_RECEIPT.json'

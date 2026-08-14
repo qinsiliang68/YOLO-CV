@@ -1,0 +1,2 @@
+# Raw command logs are byte-level evidence. Do not apply platform newline conversion.
+*.log binary

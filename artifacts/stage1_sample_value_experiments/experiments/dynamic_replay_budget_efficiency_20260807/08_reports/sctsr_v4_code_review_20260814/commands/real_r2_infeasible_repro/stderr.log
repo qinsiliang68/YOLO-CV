@@ -1,0 +1,12 @@
+Traceback (most recent call last):
+  File "C:\Users\28898\AppData\Local\Temp\YOLO-CV-sctsr-v4-review-f285754\artifacts\stage1_sample_value_experiments\experiments\dynamic_replay_budget_efficiency_20260807\08_reports\sctsr_v4_code_review_20260814\repro\repro_real_r2_infeasible.py", line 43, in <module>
+    raise SystemExit(main())
+                     ^^^^^^
+  File "C:\Users\28898\AppData\Local\Temp\YOLO-CV-sctsr-v4-review-f285754\artifacts\stage1_sample_value_experiments\experiments\dynamic_replay_budget_efficiency_20260807\08_reports\sctsr_v4_code_review_20260814\repro\repro_real_r2_infeasible.py", line 18, in main
+    inputs = load_formal_pool_inputs(registry, root)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\28898\AppData\Local\Temp\YOLO-CV-sctsr-v4-review-f285754\stage1_sctsr_v4\formal_pool_inputs.py", line 53, in load_formal_pool_inputs
+    validate_asset_registry(registry, root)
+  File "C:\Users\28898\AppData\Local\Temp\YOLO-CV-sctsr-v4-review-f285754\stage1_sctsr_v4\asset_registry.py", line 210, in validate_asset_registry
+    raise SctsrError(ErrorCode.ASSET_VALIDATION_FAILED, "Asset byte count mismatch", artifact_path=str(path), observed=observed_bytes, expected=record.bytes)
+stage1_sctsr_v4.errors.SctsrError: ASSET_VALIDATION_FAILED: Asset byte count mismatch

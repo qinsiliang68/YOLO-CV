@@ -1,0 +1,85 @@
+{
+  "schema_version": "stage1.sctsr.real_data_engineering_canary.review_snapshot.v1",
+  "status": "PASS",
+  "semantic": "REAL_DATA_ENGINEERING_CANARY_NOT_SCIENTIFIC_RESULT",
+  "scientific_result": false,
+  "source_receipt": {
+    "path_at_review_time": "C:/Users/28898/AppData/Local/Temp/sctsr_review_realdata_f285754_20260814/REAL_DATA_ENGINEERING_CANARY_RECEIPT.json",
+    "bytes": 7467,
+    "sha256": "A00AAC65DE0DD17A383753498003234ADC8F26BEC123886B43DF2619864FD481"
+  },
+  "implementation_source_commit": "f285754108c7b8e37afd7f5f0fa58fe8fb23d38a",
+  "source_tree_digest": "A987B90A869FEBEB2B0797FDE06638C9C1B4541CB25400B3FFC567970779ECA5",
+  "runtime": {
+    "python": "3.11.14",
+    "torch": "2.11.0+cu128",
+    "cuda": "12.8",
+    "device": "cuda:0",
+    "device_name": "NVIDIA GeForce RTX 4060",
+    "training_wall_seconds": 2.7947497999994084,
+    "peak_cuda_memory_allocated_bytes": 334462976,
+    "peak_cuda_memory_reserved_bytes": 367001600
+  },
+  "inputs": {
+    "real_sewer_ml_image_count": 5,
+    "real_yolo11l_loaded": true,
+    "real_classification_trainer_used": true,
+    "input_manifest_bytes": 3292,
+    "input_manifest_sha256": "38DEC99AC2DB55EB6FD7F4BFB5C9CC548F6D0FC1A493AF3BD07A097B562DEE6C"
+  },
+  "mechanism_checks": {
+    "forward_base_and_replay": true,
+    "one_optimizer_step": true,
+    "base_replay_exposure_conserved": true,
+    "bn_replay_restored": true,
+    "rng_replay_restored": true,
+    "ema_updated": true,
+    "real_zstd_parquet": true,
+    "checkpoint_reloaded": true,
+    "atomic_generation_complete": true,
+    "partial_epoch_quarantined": true,
+    "recovery_pointer_valid": true,
+    "receipt_chain_valid": true,
+    "prediction_rows_complete": true,
+    "frontier_has_96_points": true
+  },
+  "artifact_bindings": {
+    "checkpoint": {
+      "bytes": 154740417,
+      "sha256": "6560D8ABA0A05379D9D9D428AD1929C81B8C0D93A1D1B4388B1C33A3BBEF773F"
+    },
+    "occurrence_parquet_sha256": "E90461DDA658F02B272859CE23A6CA0CC09E5E46D01106E2AD7EA3E63EE4DFBC",
+    "optimizer_step_parquet_sha256": "5FBDCF5F9D92C7F82FFECD6E33DCDC09B5B792EDC0AD00696BBEFAF4AA4C9421",
+    "exposure_parquet_sha256": "0EFF3E4CA85E756DA1FAD8CA8D1BCC7AB6BAD29B3A60B57232AC7BD7330A3F1C",
+    "telemetry_parquet_sha256": "2B254B82073C50A4350E982CF8458D11E9A54A8FEBB3F386E416205FAE256F25",
+    "prediction_parquet_sha256": "F6D47A9E959C2BCAB7D1A6FAA3679035900193B4FFCC1E1132282F34CE869D09",
+    "frontier_parquet_sha256": "E06F0EDB17FA698D375B26C140E22938B8049079909952A665C29CF2960ABEAA"
+  },
+  "frontier": {
+    "row_count": 96,
+    "normal_count": 3,
+    "defect_count": 2,
+    "tie_group_count": 5,
+    "raw_frontier_normalized_auc": 0.9929824561403509,
+    "tn_at_fn95": 3,
+    "fn_at_tn68253": null,
+    "target_tn_reachable": false
+  },
+  "formal_side_effects": {
+    "formal_training_started": false,
+    "formal_seed_generated": false,
+    "assignment_generated": false,
+    "engineering_gate_generated": false,
+    "pilot_release_generated": false,
+    "blind_holdout_opened": false,
+    "test_accessed": false,
+    "val_op_accessed": false,
+    "selector_trained": false
+  },
+  "limitations": [
+    "One optimizer-step engineering canary only; not a 200-epoch run.",
+    "Executed on the local RTX 4060, not the target RTX 3090 fleet.",
+    "Does not estimate formal training duration or method effectiveness.",
+    "The 154 MB checkpoint remains in the external temporary canary root and is bound here only by bytes and SHA."
+  ]
+}

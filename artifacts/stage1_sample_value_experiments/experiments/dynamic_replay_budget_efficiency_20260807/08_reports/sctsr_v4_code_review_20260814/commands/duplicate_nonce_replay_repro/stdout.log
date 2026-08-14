@@ -1,0 +1,1 @@
+{"check": "duplicate_release_nonce_rejected", "expected": "second verification rejects already-seen release_id/nonce", "first_release_id": "REVIEW_DUPLICATE_NONCE", "nonce": "0123456789ABCDEF0123456789ABCDEF", "observed": "second verification accepted", "schema_version": "stage1.sctsr.review.reproduction.v1", "second_error": null, "status": "FAIL"}
