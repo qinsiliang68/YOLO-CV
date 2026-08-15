@@ -322,9 +322,16 @@ def validate_materialized_dataset_bytes(
     *,
     role: str,
     dataset_root: str | Path | None = None,
+    materialized_data_root: str | Path | None = None,
     evidence_path: str | Path | None = None,
 ) -> dict[str, Any]:
-    """Hash the exact physical files exposed by an upstream dataset."""
+    """Hash the exact physical files exposed by an upstream dataset.
+
+    ``dataset_root`` is the immutable canonical image root referenced by the
+    registered content ledger. ``materialized_data_root`` is the separate
+    Ultralytics classification view containing ``train/`` and ``val/``
+    hardlinks. When omitted, the legacy same-root layout is used.
+    """
 
     identities = getattr(dataset, "identities", None)
     physical_paths = getattr(dataset, "physical_source_paths", None)
@@ -341,16 +348,21 @@ def validate_materialized_dataset_bytes(
     evidence: list[dict[str, Any]] = []
     total_bytes = 0
     canonical_root = None if dataset_root is None else Path(dataset_root).resolve()
+    materialized_root = (
+        canonical_root
+        if materialized_data_root is None
+        else Path(materialized_data_root).resolve()
+    )
     selected_paths: set[Path] = set()
     scan_roots: set[Path] = set()
     for identity, raw_path in zip(identities, physical_paths, strict=True):
         sample_id = str(identity.sample_id)
         expected = expected_content.get(sample_id)
         path = Path(str(raw_path)).resolve()
-        if canonical_root is not None and path != canonical_root and canonical_root not in path.parents:
+        if materialized_root is not None and path != materialized_root and materialized_root not in path.parents:
             raise SctsrError(
                 ErrorCode.DATASET_CONTENT_MISMATCH,
-                "Materialized loader path escapes the registered dataset root",
+                "Materialized loader path escapes the authorized classification data root",
                 artifact_path=str(path),
             )
         if expected is None or not path.is_file():
@@ -427,12 +439,14 @@ def validate_materialized_dataset_bytes(
             if entry.is_dir() and not any(resolved in selected.parents for selected in selected_paths):
                 raise SctsrError(ErrorCode.DATASET_CONTENT_MISMATCH, "Materialized dataset contains an unregistered extra directory", artifact_path=str(entry))
     payload = {
-        "schema_version": "stage1.sctsr.materialized_dataset_binding.v2",
+        "schema_version": "stage1.sctsr.materialized_dataset_binding.v3",
         "status": "PASS",
         "role": role,
         "row_count": len(evidence),
         "physical_bytes_verified": total_bytes,
         "dataset_root": "NOT_BOUND" if canonical_root is None else canonical_root.as_posix(),
+        "canonical_dataset_root": "NOT_BOUND" if canonical_root is None else canonical_root.as_posix(),
+        "materialized_data_root": "NOT_BOUND" if materialized_root is None else materialized_root.as_posix(),
         "materialized_roots": sorted(path.as_posix() for path in scan_roots),
         "materialized_content_digest": stable_digest(
             sorted(evidence, key=lambda row: row["sample_id"])
@@ -459,7 +473,7 @@ def validate_materialized_dataset_bytes(
 def revalidate_materialized_dataset_binding(binding: Mapping[str, Any]) -> dict[str, Any]:
     """Re-hash every prepared loader file from its immutable row ledger."""
 
-    if binding.get("schema_version") != "stage1.sctsr.materialized_dataset_binding.v2":
+    if binding.get("schema_version") != "stage1.sctsr.materialized_dataset_binding.v3":
         raise SctsrError(ErrorCode.SCHEMA_VALIDATION_FAILED, "Materialized dataset binding schema is not registered")
     core = {key: value for key, value in binding.items() if key != "binding_digest"}
     if binding.get("binding_digest") != stable_digest(core):
@@ -478,6 +492,13 @@ def revalidate_materialized_dataset_binding(binding: Mapping[str, Any]) -> dict[
     rows = read_columnar(path)
     observed: list[dict[str, Any]] = []
     selected_paths = {Path(str(row["loader_path_resolved"])).resolve() for row in rows}
+    materialized_data_root_value = str(binding.get("materialized_data_root", "NOT_BOUND"))
+    materialized_data_root = None if materialized_data_root_value == "NOT_BOUND" else Path(materialized_data_root_value).resolve()
+    if materialized_data_root is not None and any(
+        selected != materialized_data_root and materialized_data_root not in selected.parents
+        for selected in selected_paths
+    ):
+        raise SctsrError(ErrorCode.DATASET_CONTENT_MISMATCH, "A materialized dataset row escapes the bound classification data root")
     materialized_roots = {Path(str(value)).resolve() for value in binding.get("materialized_roots", ())}
     if not materialized_roots:
         raise SctsrError(ErrorCode.DATASET_CONTENT_MISMATCH, "Materialized dataset binding has no scan roots")

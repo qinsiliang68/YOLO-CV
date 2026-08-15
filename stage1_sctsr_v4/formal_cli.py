@@ -693,6 +693,7 @@ def validate_prepared_trainer_datasets(
     registry: Any,
     repository_root: Path,
     dataset_root: Path,
+    canonical_dataset_root: Path,
     evidence_root: Path,
 ) -> dict[str, Any]:
     """Prove upstream train/validation loaders expose only registered roles."""
@@ -724,14 +725,16 @@ def validate_prepared_trainer_datasets(
         train_dataset,
         content,
         role="train",
-        dataset_root=dataset_root,
+        dataset_root=canonical_dataset_root,
+        materialized_data_root=dataset_root,
         evidence_path=evidence_root / "train_materialized_files.parquet",
     )
     val_content_binding = validate_materialized_dataset_bytes(
         val_dataset,
         content,
         role="val_model",
-        dataset_root=dataset_root,
+        dataset_root=canonical_dataset_root,
+        materialized_data_root=dataset_root,
         evidence_path=evidence_root / "val_model_materialized_files.parquet",
     )
     return {
@@ -740,6 +743,8 @@ def validate_prepared_trainer_datasets(
         "train_steps": len(trainer.train_loader),
         "val_model_rows": len(observed),
         "val_role": "VAL_MODEL_STUDY_ONLY_NOT_METHOD_SELECTION",
+        "canonical_dataset_root": canonical_dataset_root.resolve().as_posix(),
+        "materialized_data_root": dataset_root.resolve().as_posix(),
         "train_materialized_content_binding": train_content_binding,
         "val_model_materialized_content_binding": val_content_binding,
         "test_accessed": False,
@@ -1143,10 +1148,15 @@ def build_prepared_trainer(
     data_root = (root / data_root).resolve() if not data_root.is_absolute() else data_root.resolve()
     if not data_root.is_dir():
         raise SctsrError(ErrorCode.ASSET_VALIDATION_FAILED, "Prepared classification data root is missing", artifact_path=str(data_root))
+    canonical_manifest = (root / assets["canonical_base_defect_manifest"].relative_path).resolve()
+    canonical_dataset_root = canonical_manifest.parent.parent
+    normal_canonical_manifest = (root / assets["canonical_base_normal_manifest"].relative_path).resolve()
+    if normal_canonical_manifest.parent.parent != canonical_dataset_root:
+        raise SctsrError(ErrorCode.ASSET_VALIDATION_FAILED, "Canonical base manifests resolve to different dataset roots")
     dataset_content_binding = validate_registered_dataset_content(
         registry=registry,
         repository_root=root,
-        dataset_root=data_root,
+        dataset_root=canonical_dataset_root,
         required_manifest_asset_ids=registered_dataset_manifest_asset_ids(registry),
         verify_physical_files=True,
     )
@@ -1191,6 +1201,7 @@ def build_prepared_trainer(
             registry=registry,
             repository_root=root,
             dataset_root=data_root,
+            canonical_dataset_root=canonical_dataset_root,
             evidence_root=output / "trainer" / "sctsr_materialized_bindings",
         )
     except BaseException as exc:

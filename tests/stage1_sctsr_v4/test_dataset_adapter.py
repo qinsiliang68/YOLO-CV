@@ -217,7 +217,7 @@ def test_materialized_binding_rejects_unregistered_extra_file(tmp_path: Path):
 
 def test_materialized_binding_requires_hardlink_to_canonical_source(tmp_path: Path):
     canonical = tmp_path / "dataset" / "Det" / "images" / "normal_train" / "a.png"
-    staged = tmp_path / "dataset" / "train" / "no_target" / "a.png"
+    staged = tmp_path / "classification_view" / "train" / "no_target" / "a.png"
     canonical.parent.mkdir(parents=True)
     staged.parent.mkdir(parents=True)
     canonical.write_bytes(b"same-bytes")
@@ -247,6 +247,7 @@ def test_materialized_binding_requires_hardlink_to_canonical_source(tmp_path: Pa
             content,
             role="train",
             dataset_root=tmp_path / "dataset",
+            materialized_data_root=tmp_path / "classification_view",
             evidence_path=tmp_path / "binding" / "train.parquet",
         )
     assert caught.value.code is ErrorCode.DATASET_CONTENT_MISMATCH
@@ -254,7 +255,7 @@ def test_materialized_binding_requires_hardlink_to_canonical_source(tmp_path: Pa
 
 def test_materialized_binding_rejects_extra_file_added_after_setup(tmp_path: Path):
     canonical = tmp_path / "dataset" / "Det" / "images" / "normal_train" / "a.png"
-    staged = tmp_path / "dataset" / "train" / "no_target" / "a.png"
+    staged = tmp_path / "classification_view" / "train" / "no_target" / "a.png"
     canonical.parent.mkdir(parents=True)
     staged.parent.mkdir(parents=True)
     canonical.write_bytes(b"frozen")
@@ -282,6 +283,7 @@ def test_materialized_binding_rejects_extra_file_added_after_setup(tmp_path: Pat
         content,
         role="train",
         dataset_root=tmp_path / "dataset",
+        materialized_data_root=tmp_path / "classification_view",
         evidence_path=tmp_path / "binding" / "train.parquet",
     )
     (staged.parent / "added_after_setup.png").write_bytes(b"unregistered")
@@ -289,3 +291,42 @@ def test_materialized_binding_rejects_extra_file_added_after_setup(tmp_path: Pat
     with pytest.raises(SctsrError) as caught:
         revalidate_materialized_dataset_binding(binding)
     assert caught.value.code is ErrorCode.DATASET_CONTENT_MISMATCH
+
+
+def test_materialized_binding_accepts_separate_hardlink_only_classification_view(tmp_path: Path):
+    canonical = tmp_path / "dataset" / "Det" / "images" / "normal_train" / "a.png"
+    staged = tmp_path / "classification_view" / "train" / "no_target" / "a.png"
+    canonical.parent.mkdir(parents=True)
+    staged.parent.mkdir(parents=True)
+    canonical.write_bytes(b"frozen")
+    os.link(canonical, staged)
+
+    class PhysicalBase(torch.utils.data.Dataset):
+        samples = ((str(staged), 0),)
+
+        def __len__(self):
+            return 1
+
+        def __getitem__(self, index):
+            return {"img": torch.zeros((1, 2, 2)), "cls": torch.tensor(0)}
+
+    sample_id = "Det/images/normal_train/a.png"
+    wrapped = IdentityAugmentingDataset(PhysicalBase(), (DatasetIdentity(sample_id, 0, sample_id),))
+    content = {
+        sample_id: {
+            "image_bytes": canonical.stat().st_size,
+            "image_sha256": __import__("hashlib").sha256(canonical.read_bytes()).hexdigest().upper(),
+        }
+    }
+
+    binding = validate_materialized_dataset_bytes(
+        wrapped,
+        content,
+        role="train",
+        dataset_root=tmp_path / "dataset",
+        materialized_data_root=tmp_path / "classification_view",
+        evidence_path=tmp_path / "binding" / "train.parquet",
+    )
+    assert binding["canonical_dataset_root"] == (tmp_path / "dataset").resolve().as_posix()
+    assert binding["materialized_data_root"] == (tmp_path / "classification_view").resolve().as_posix()
+    assert revalidate_materialized_dataset_binding(binding)["status"] == "PASS"
