@@ -1,0 +1,42 @@
+{
+  "schema_version": "stage1.sctsr.deployment_hardening_verdict.v1",
+  "implementation_source_commit": "fc7367ab8efbc311b1efe5a5516ad5e0395f8c69",
+  "branch": "codex/sctsr-v4-deployment-hardening",
+  "status": "CODE_AND_ENGINEERING_READINESS_PASS",
+  "code_ready_for_formal_deployment": true,
+  "formal_training_authorized_by_this_review": false,
+  "formal_training_started": false,
+  "assignments_generated": false,
+  "engineering_gate_generated": false,
+  "pilot_release_generated": false,
+  "blind_holdout_opened": false,
+  "test_accessed": false,
+  "method_effectiveness_claimed": false,
+  "method_effectiveness": "NOT_TESTED",
+  "phase1_timing_stop_fallback_code_ready": true,
+  "a_gradient_alignment_status": "BLOCKED_BY_VAL_TARGET_DISABLED_NOT_PHASE1_BLOCKER",
+  "open_p0_findings": 0,
+  "open_p1_findings": 0,
+  "validation": {
+    "python_311_v4": "435 passed",
+    "python_312_v4": "435 passed",
+    "python_311_v3": "181 passed, 3 skipped",
+    "compileall_python_311": "PASS",
+    "compileall_python_312": "PASS",
+    "uv_lock_check": "PASS",
+    "git_diff_check": "PASS",
+    "synthetic_determinism": "PASS_TRAINING_RELEVANT_ARTIFACTS_DETERMINISTIC",
+    "real_image_real_yolo_cuda_canary": "PASS_ENGINEERING_CANARY_NOT_SCIENTIFIC_RESULT"
+  },
+  "owner_launch_inputs_required": [
+    "freeze_8_discovery_and_14_confirmation_seeds",
+    "select_assignment_seed_and_13_machine_ids",
+    "build_12_active_plus_1_buffer_deployment_plan",
+    "build_new_source_and_runbook_manifests",
+    "sign_formal_release",
+    "sign_one_use_start_or_resume_token_per_logical_job",
+    "provide_shared_execution_claim_registry"
+  ],
+  "launch_input_classification": "OPERATIONAL_AUTHORIZATION_NOT_CODE_DEFECT",
+  "reviewer_role": "CODEX_PRIMARY_AGENT_SELF_REVIEW_NOT_INDEPENDENT"
+}

@@ -1,0 +1,220 @@
+{
+  "schema_version": "stage1.sctsr.deployment_hardening_evidence_manifest.v1",
+  "implementation_source_commit": "fc7367ab8efbc311b1efe5a5516ad5e0395f8c69",
+  "identity_basis": "CANONICAL_GIT_INDEX_BLOB_BYTES_AFTER_GITATTRIBUTES_NORMALIZATION",
+  "manifest_self_excluded": true,
+  "file_count": 30,
+  "total_bytes": 48948,
+  "files": [
+    {
+      "relative_path": "COMMAND_INDEX.json",
+      "role": "REVIEW_EVIDENCE",
+      "bytes": 3446,
+      "sha256": "DCA8C03CAD0DE3254B2DF8E52332A7DA8F973C821E756DDFBFBCACD9BD61B22F",
+      "identity_basis": "GIT_INDEX_BLOB_BYTES"
+    },
+    {
+      "relative_path": "DEPLOYMENT_HARDENING_REPORT.md",
+      "role": "REVIEW_EVIDENCE",
+      "bytes": 9621,
+      "sha256": "AD711F0E48E2A22C21F911054EF32BA93EA09D7A94BD8A6337A885E80BFD52B7",
+      "identity_basis": "GIT_INDEX_BLOB_BYTES"
+    },
+    {
+      "relative_path": "DETERMINISM_COMPARISON.json",
+      "role": "REVIEW_EVIDENCE",
+      "bytes": 1870,
+      "sha256": "246F53E8C09977FEDB6082C4F53580D8E0D657F61340FFCC53A39E8517B757B7",
+      "identity_basis": "GIT_INDEX_BLOB_BYTES"
+    },
+    {
+      "relative_path": "FINDINGS.json",
+      "role": "REVIEW_EVIDENCE",
+      "bytes": 5321,
+      "sha256": "E3E2A5D59C1AC31FFECF31A32B7D67E1C4F6BF84513329BA6DED1BF1A699500C",
+      "identity_basis": "GIT_INDEX_BLOB_BYTES"
+    },
+    {
+      "relative_path": "READINESS_VERDICT.json",
+      "role": "REVIEW_EVIDENCE",
+      "bytes": 1779,
+      "sha256": "8178216D8078976B4645F95DBBC926B6492FF3C595D6CC4AC4A9804B41327E48",
+      "identity_basis": "GIT_INDEX_BLOB_BYTES"
+    },
+    {
+      "relative_path": "canary/ENGINEERING_CANARY_ARTIFACT_MANIFEST.json",
+      "role": "CANARY_EVIDENCE",
+      "bytes": 2980,
+      "sha256": "6DC400C583A6505B593267792A0EC958B180FCB939D8A61FB509ADCAC772244E",
+      "identity_basis": "GIT_INDEX_BLOB_BYTES"
+    },
+    {
+      "relative_path": "canary/ENGINEERING_CANARY_REPORT.json",
+      "role": "CANARY_EVIDENCE",
+      "bytes": 9431,
+      "sha256": "97F9E8D51CD7374B33E24CD1DB35F01AA349CC4DEE714447CB161B2B8613A92A",
+      "identity_basis": "GIT_INDEX_BLOB_BYTES"
+    },
+    {
+      "relative_path": "canary/real_engineering_canary.receipt.json",
+      "role": "CANARY_EVIDENCE",
+      "bytes": 9794,
+      "sha256": "73B5C9A348C8DDC575DAB6B98279B5370C2E3FBC533E1D5E4462A4E480BD0532",
+      "identity_basis": "GIT_INDEX_BLOB_BYTES"
+    },
+    {
+      "relative_path": "canary/synthetic_a.receipt.json",
+      "role": "CANARY_EVIDENCE",
+      "bytes": 1336,
+      "sha256": "089A5A4AF52CB72E280B7AB56FE1F3AAC6736E0F77B388B1B090EE9E1508BFF6",
+      "identity_basis": "GIT_INDEX_BLOB_BYTES"
+    },
+    {
+      "relative_path": "canary/synthetic_b.receipt.json",
+      "role": "CANARY_EVIDENCE",
+      "bytes": 1335,
+      "sha256": "399C06EE4309774EC0DF972985EDE97E9B88F05B92465A5D1292C83E06ECB579",
+      "identity_basis": "GIT_INDEX_BLOB_BYTES"
+    },
+    {
+      "relative_path": "commands/compileall_python311.exitcode",
+      "role": "COMMAND_EVIDENCE",
+      "bytes": 1,
+      "sha256": "5FECEB66FFC86F38D952786C6D696C79C2DBC239DD4E91B46729D73A27FB57E9",
+      "identity_basis": "GIT_INDEX_BLOB_BYTES"
+    },
+    {
+      "relative_path": "commands/compileall_python311.log",
+      "role": "COMMAND_EVIDENCE",
+      "bytes": 31,
+      "sha256": "720DCA7F97A9C802B35A4652739C6936BA0FCA726402B0E63108635642B279F2",
+      "identity_basis": "GIT_INDEX_BLOB_BYTES"
+    },
+    {
+      "relative_path": "commands/compileall_python312.exitcode",
+      "role": "COMMAND_EVIDENCE",
+      "bytes": 1,
+      "sha256": "5FECEB66FFC86F38D952786C6D696C79C2DBC239DD4E91B46729D73A27FB57E9",
+      "identity_basis": "GIT_INDEX_BLOB_BYTES"
+    },
+    {
+      "relative_path": "commands/compileall_python312.log",
+      "role": "COMMAND_EVIDENCE",
+      "bytes": 31,
+      "sha256": "C61F02BB3B83A936C9925ECFF00D17BEE40E4B17467FA9FAF5AA63396F39B49A",
+      "identity_basis": "GIT_INDEX_BLOB_BYTES"
+    },
+    {
+      "relative_path": "commands/git_diff_check.exitcode",
+      "role": "COMMAND_EVIDENCE",
+      "bytes": 1,
+      "sha256": "5FECEB66FFC86F38D952786C6D696C79C2DBC239DD4E91B46729D73A27FB57E9",
+      "identity_basis": "GIT_INDEX_BLOB_BYTES"
+    },
+    {
+      "relative_path": "commands/git_diff_check.log",
+      "role": "COMMAND_EVIDENCE",
+      "bytes": 0,
+      "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+      "identity_basis": "GIT_INDEX_BLOB_BYTES"
+    },
+    {
+      "relative_path": "commands/pytest_v3_python311.exitcode",
+      "role": "COMMAND_EVIDENCE",
+      "bytes": 1,
+      "sha256": "5FECEB66FFC86F38D952786C6D696C79C2DBC239DD4E91B46729D73A27FB57E9",
+      "identity_basis": "GIT_INDEX_BLOB_BYTES"
+    },
+    {
+      "relative_path": "commands/pytest_v3_python311.log",
+      "role": "COMMAND_EVIDENCE",
+      "bytes": 302,
+      "sha256": "4D7EB34D3BF2C2A9BFD22999D38756D432F5432BB7D3F491B0032596AF594469",
+      "identity_basis": "GIT_INDEX_BLOB_BYTES"
+    },
+    {
+      "relative_path": "commands/pytest_v4_python311.exitcode",
+      "role": "COMMAND_EVIDENCE",
+      "bytes": 1,
+      "sha256": "5FECEB66FFC86F38D952786C6D696C79C2DBC239DD4E91B46729D73A27FB57E9",
+      "identity_basis": "GIT_INDEX_BLOB_BYTES"
+    },
+    {
+      "relative_path": "commands/pytest_v4_python311.log",
+      "role": "COMMAND_EVIDENCE",
+      "bytes": 623,
+      "sha256": "A6B113B53D218A86F885031B4464272715F7C2024B104FB2E47936CE444D744E",
+      "identity_basis": "GIT_INDEX_BLOB_BYTES"
+    },
+    {
+      "relative_path": "commands/pytest_v4_python312.exitcode",
+      "role": "COMMAND_EVIDENCE",
+      "bytes": 1,
+      "sha256": "5FECEB66FFC86F38D952786C6D696C79C2DBC239DD4E91B46729D73A27FB57E9",
+      "identity_basis": "GIT_INDEX_BLOB_BYTES"
+    },
+    {
+      "relative_path": "commands/pytest_v4_python312.log",
+      "role": "COMMAND_EVIDENCE",
+      "bytes": 623,
+      "sha256": "831D5BC1BD409D9AA864AFBDF53F2D22D00EDD30710EC02DE07DC9D6B7568701",
+      "identity_basis": "GIT_INDEX_BLOB_BYTES"
+    },
+    {
+      "relative_path": "commands/real_engineering_canary.exitcode",
+      "role": "COMMAND_EVIDENCE",
+      "bytes": 1,
+      "sha256": "5FECEB66FFC86F38D952786C6D696C79C2DBC239DD4E91B46729D73A27FB57E9",
+      "identity_basis": "GIT_INDEX_BLOB_BYTES"
+    },
+    {
+      "relative_path": "commands/real_engineering_canary.log",
+      "role": "COMMAND_EVIDENCE",
+      "bytes": 136,
+      "sha256": "64ADBBCD6FB7DF31601187ABFA41F7D80AA18AEBCC7FD2ED25ECE29070ADE747",
+      "identity_basis": "GIT_INDEX_BLOB_BYTES"
+    },
+    {
+      "relative_path": "commands/synthetic_canary_a.exitcode",
+      "role": "COMMAND_EVIDENCE",
+      "bytes": 1,
+      "sha256": "5FECEB66FFC86F38D952786C6D696C79C2DBC239DD4E91B46729D73A27FB57E9",
+      "identity_basis": "GIT_INDEX_BLOB_BYTES"
+    },
+    {
+      "relative_path": "commands/synthetic_canary_a.log",
+      "role": "COMMAND_EVIDENCE",
+      "bytes": 124,
+      "sha256": "5266AE558C7E20551D7EB62BC18D870174C782E399B50D3A5C09FB78054CF33D",
+      "identity_basis": "GIT_INDEX_BLOB_BYTES"
+    },
+    {
+      "relative_path": "commands/synthetic_canary_b.exitcode",
+      "role": "COMMAND_EVIDENCE",
+      "bytes": 1,
+      "sha256": "5FECEB66FFC86F38D952786C6D696C79C2DBC239DD4E91B46729D73A27FB57E9",
+      "identity_basis": "GIT_INDEX_BLOB_BYTES"
+    },
+    {
+      "relative_path": "commands/synthetic_canary_b.log",
+      "role": "COMMAND_EVIDENCE",
+      "bytes": 124,
+      "sha256": "CDBBAB2AEA98DF67C79D5F4F07D05D289251C10317D243DF5A7004ED93AAE0FF",
+      "identity_basis": "GIT_INDEX_BLOB_BYTES"
+    },
+    {
+      "relative_path": "commands/uv_lock_check.exitcode",
+      "role": "COMMAND_EVIDENCE",
+      "bytes": 1,
+      "sha256": "5FECEB66FFC86F38D952786C6D696C79C2DBC239DD4E91B46729D73A27FB57E9",
+      "identity_basis": "GIT_INDEX_BLOB_BYTES"
+    },
+    {
+      "relative_path": "commands/uv_lock_check.log",
+      "role": "COMMAND_EVIDENCE",
+      "bytes": 31,
+      "sha256": "A9E71E1F36E305DAFC95DA85EAD314EBCAB2957F2E1F45CD2D270594ED9BE8B4",
+      "identity_basis": "GIT_INDEX_BLOB_BYTES"
+    }
+  ]
+}

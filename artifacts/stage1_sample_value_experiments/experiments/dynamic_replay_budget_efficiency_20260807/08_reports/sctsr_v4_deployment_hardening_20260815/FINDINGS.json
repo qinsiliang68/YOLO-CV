@@ -1,0 +1,92 @@
+{
+  "schema_version": "stage1.sctsr.deployment_hardening_findings.v1",
+  "implementation_source_commit": "fc7367ab8efbc311b1efe5a5516ad5e0395f8c69",
+  "summary": {
+    "total": 8,
+    "resolved": 8,
+    "open_p0": 0,
+    "open_p1": 0
+  },
+  "findings": [
+    {
+      "finding_id": "SCTSR-DH-001",
+      "severity": "P0",
+      "title": "Cross-role duplicate image bytes were accepted",
+      "status": "RESOLVED",
+      "source_refs": ["stage1_sctsr_v4/dataset_disjointness.py:190", "stage1_sctsr_v4/dataset_adapter.py:248"],
+      "observed_before": "384000 manifest rows contained 383887 unique image SHA-256 values and 76 cross-scientific-role groups",
+      "resolution": "Frozen SHA-level exclusions, content-unique T, and fail-closed role filtering",
+      "regression_tests": ["tests/stage1_sctsr_v4/test_dataset_disjointness.py", "tests/stage1_sctsr_v4/test_t_content_repair.py"]
+    },
+    {
+      "finding_id": "SCTSR-DH-002",
+      "severity": "P0",
+      "title": "Materialized training images were not byte-bound",
+      "status": "RESOLVED",
+      "source_refs": ["stage1_sctsr_v4/dataset_adapter.py:317"],
+      "observed_before": "basename and label could accept same-name same-label wrong image bytes",
+      "resolution": "Every materialized image is checked against registered path, label, byte count, and SHA-256",
+      "regression_tests": ["tests/stage1_sctsr_v4/test_dataset_adapter.py", "tests/stage1_sctsr_v4/test_dataset_disjointness.py"]
+    },
+    {
+      "finding_id": "SCTSR-DH-003",
+      "severity": "P0",
+      "title": "Endpoint could evaluate a different hard-coded dataset root",
+      "status": "RESOLVED",
+      "source_refs": ["stage1_sctsr_v4/prediction_runtime.py:307"],
+      "observed_before": "E200 endpoint did not bind the trainer-selected validated dataset root",
+      "resolution": "Endpoint receives, validates, records, and uses the same explicit dataset root",
+      "regression_tests": ["tests/stage1_sctsr_v4/test_prediction_runtime.py", "tests/stage1_sctsr_v4/test_dataset_disjointness.py"]
+    },
+    {
+      "finding_id": "SCTSR-DH-004",
+      "severity": "P0",
+      "title": "Different tokens could simultaneously claim one logical job",
+      "status": "RESOLVED",
+      "source_refs": ["stage1_sctsr_v4/formal_execution.py:167", "stage1_sctsr_v4/formal_execution.py:239", "stage1_sctsr_v4/formal_execution.py:581", "stage1_sctsr_v4/formal_execution.py:975"],
+      "observed_before": "CLAIMED CLAIMED 2",
+      "resolution": "Logical-job digest, serialized fence generations, heartbeat lease, and publish-time fence validation",
+      "regression_tests": ["tests/stage1_sctsr_v4/test_formal_execution_claim.py", "tests/stage1_sctsr_v4/test_formal_resume.py"]
+    },
+    {
+      "finding_id": "SCTSR-DH-005",
+      "severity": "P0",
+      "title": "Completion could be published before endpoint and final artifact index",
+      "status": "RESOLVED",
+      "source_refs": ["stage1_sctsr_v4/formal_completion.py:90", "stage1_sctsr_v4/formal_training.py:1363"],
+      "observed_before": "FORMAL_BRANCH_COMPLETE could survive a later endpoint failure and block resume",
+      "resolution": "Pending states plus one atomic canonical completion receipt after endpoint/index validation",
+      "regression_tests": ["tests/stage1_sctsr_v4/test_formal_completion_transaction.py", "tests/stage1_sctsr_v4/test_epoch_publication_recovery.py"]
+    },
+    {
+      "finding_id": "SCTSR-DH-006",
+      "severity": "P1",
+      "title": "No current 13-machine deployment plan existed",
+      "status": "RESOLVED_OWNER_SIMPLIFIED_POLICY",
+      "source_refs": ["stage1_sctsr_v4/deployment_plan.py:80", "stage1_sctsr_v4/deployment_plan.py:182", "stage1_sctsr_v4/deployment_plan.py:225"],
+      "observed_before": "No v4 mapping for 22 parents and 176 branches across 13 RTX 3090 machines",
+      "resolution": "Deterministic seeded random waves over 12 active machine IDs plus one unused buffer; no GPU UUID or file lock by owner decision",
+      "regression_tests": ["tests/stage1_sctsr_v4/test_deployment_plan.py"]
+    },
+    {
+      "finding_id": "SCTSR-DH-007",
+      "severity": "P1",
+      "title": "Registered CSV and evidence hashes depended on line-ending conversion",
+      "status": "RESOLVED",
+      "source_refs": [".gitattributes:13", "configs/stage1_sctsr_v4/asset_registry_v1.json"],
+      "observed_before": "GitHub LF archive bytes differed from Windows CRLF evidence identities",
+      "resolution": "Path-specific LF policy with manifests rebound to canonical Git blobs",
+      "regression_tests": ["tests/stage1_sctsr_v4/test_portable_text_identity.py"]
+    },
+    {
+      "finding_id": "SCTSR-DH-008",
+      "severity": "P1",
+      "title": "uv isolated temporary interpreter path polluted source and checkpoint identity",
+      "status": "RESOLVED",
+      "source_refs": ["stage1_sctsr_v4/source_identity.py:49"],
+      "observed_before": "Same code and seed produced different source-tree and parent checkpoint SHA solely from changing .tmp interpreter parent directory",
+      "resolution": "Interpreter identity uses stable executable name plus implementation/version/runtime dependency identity",
+      "regression_tests": ["tests/stage1_sctsr_v4/test_source_identity.py::test_source_identity_ignores_ephemeral_interpreter_parent_directory"]
+    }
+  ]
+}

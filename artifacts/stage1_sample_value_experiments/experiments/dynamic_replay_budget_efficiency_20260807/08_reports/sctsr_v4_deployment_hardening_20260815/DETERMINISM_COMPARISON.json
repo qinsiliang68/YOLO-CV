@@ -1,0 +1,68 @@
+{
+  "schema_version": "stage1.sctsr.deployment_hardening_determinism.v1",
+  "implementation_source_commit": "fc7367ab8efbc311b1efe5a5516ad5e0395f8c69",
+  "status": "PASS_TRAINING_RELEVANT_ARTIFACTS_DETERMINISTIC",
+  "comparison_contract": {
+    "same_python": "3.11.14",
+    "same_training_seed": true,
+    "raw_receipt_bytes_required_equal": false,
+    "reason_raw_receipts_may_differ": "Output root, PID, timing, quarantine timestamp, and absolute artifact-index paths are provenance fields."
+  },
+  "equal_identities": {
+    "source_tree_digest": "BD2A531278E55475AE5F2B6BA011C13D21791CB73AB7FB7C21AC78B8182508C4",
+    "parent_checkpoint_sha256": "150E68D52F4D08418CD37E90B18C6E303FF11A674BCAD26818488C471DB08B44",
+    "arms_completed": [
+      "NR",
+      "R1_U",
+      "R2_F",
+      "R2_U",
+      "T_F",
+      "T_TO_NR_AT_160",
+      "T_TO_R2_AT_160",
+      "T_U"
+    ],
+    "artifact_count_excluding_index": 179,
+    "failure_injection_count": 6
+  },
+  "byte_comparisons": {
+    "checkpoint_files": {
+      "compared": 11,
+      "equal": 11,
+      "pass": true,
+      "unequal_paths": []
+    },
+    "asset_files": {
+      "compared": 1,
+      "equal": 1,
+      "pass": true,
+      "unequal_paths": []
+    },
+    "selection_ledgers": {
+      "compared": 3,
+      "equal": 3,
+      "pass": true,
+      "unequal_paths": []
+    },
+    "prediction_artifacts": {
+      "compared": 8,
+      "equal": 8,
+      "pass": true,
+      "unequal_paths": []
+    },
+    "evaluation_artifacts": {
+      "compared": 24,
+      "equal": 24,
+      "pass": true,
+      "unequal_paths": []
+    }
+  },
+  "side_effects": {
+    "formal_training_started": false,
+    "assignments_generated": false,
+    "engineering_gate_generated": false,
+    "pilot_release_generated": false,
+    "blind_holdout_opened": false,
+    "method_effectiveness_claimed": false,
+    "selector_trained": false
+  }
+}

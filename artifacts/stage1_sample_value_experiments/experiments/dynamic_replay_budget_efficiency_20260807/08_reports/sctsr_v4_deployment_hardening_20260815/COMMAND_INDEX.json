@@ -1,0 +1,74 @@
+{
+  "schema_version": "stage1.sctsr.deployment_hardening_commands.v1",
+  "implementation_source_commit": "fc7367ab8efbc311b1efe5a5516ad5e0395f8c69",
+  "working_tree": "isolated clean worktree",
+  "commands": [
+    {
+      "command_id": "UV_LOCK_CHECK",
+      "command": "uv lock --check",
+      "exit_code": 0,
+      "stdout_stderr": "commands/uv_lock_check.log"
+    },
+    {
+      "command_id": "COMPILEALL_PY311",
+      "command": "uv run --isolated --python 3.11 --extra dev python -m compileall -q stage1_sctsr_v4 scripts/stage1_sctsr_v4 integrations/ultralytics tests/stage1_sctsr_v4",
+      "exit_code": 0,
+      "stdout_stderr": "commands/compileall_python311.log"
+    },
+    {
+      "command_id": "COMPILEALL_PY312",
+      "command": "uv run --isolated --python 3.12 --extra dev python -m compileall -q stage1_sctsr_v4 scripts/stage1_sctsr_v4 integrations/ultralytics tests/stage1_sctsr_v4",
+      "exit_code": 0,
+      "stdout_stderr": "commands/compileall_python312.log"
+    },
+    {
+      "command_id": "PYTEST_V4_PY311",
+      "command": "uv run --isolated --python 3.11 --extra dev pytest tests/stage1_sctsr_v4 -q",
+      "exit_code": 0,
+      "observed": "435 passed in 147.26s",
+      "stdout_stderr": "commands/pytest_v4_python311.log"
+    },
+    {
+      "command_id": "PYTEST_V4_PY312",
+      "command": "uv run --isolated --python 3.12 --extra dev pytest tests/stage1_sctsr_v4 -q",
+      "exit_code": 0,
+      "observed": "435 passed in 145.44s",
+      "stdout_stderr": "commands/pytest_v4_python312.log"
+    },
+    {
+      "command_id": "PYTEST_V3_PY311",
+      "command": "uv run --isolated --python 3.11 --extra dev pytest tests/stage1_dynamic_replay_v3 -q",
+      "exit_code": 0,
+      "observed": "181 passed, 3 skipped in 5.39s",
+      "stdout_stderr": "commands/pytest_v3_python311.log"
+    },
+    {
+      "command_id": "SYNTHETIC_CANARY_A",
+      "command": "uv run --isolated --python 3.11 --extra dev python scripts/stage1_sctsr_v4/run_synthetic_canary.py --artifact-root <TEMP>/synthetic_a --repository-root . --training-seed 20260815 --output <TEMP>/synthetic_a.receipt.json",
+      "exit_code": 0,
+      "stdout_stderr": "commands/synthetic_canary_a.log",
+      "receipt": "canary/synthetic_a.receipt.json"
+    },
+    {
+      "command_id": "SYNTHETIC_CANARY_B",
+      "command": "uv run --isolated --python 3.11 --extra dev python scripts/stage1_sctsr_v4/run_synthetic_canary.py --artifact-root <TEMP>/synthetic_b --repository-root . --training-seed 20260815 --output <TEMP>/synthetic_b.receipt.json",
+      "exit_code": 0,
+      "stdout_stderr": "commands/synthetic_canary_b.log",
+      "receipt": "canary/synthetic_b.receipt.json"
+    },
+    {
+      "command_id": "REAL_ENGINEERING_CANARY",
+      "command": "uv run --isolated --python 3.11 --extra dev python scripts/stage1_sctsr_v4/run_engineering_canary.py --artifact-root <TEMP>/real_engineering_canary --repository-root . --dataset-root C:/GitHub/YOLO-CV/data/final_sewerml_dataset --training-seed 20260815 --device cuda:0 --output <TEMP>/real_engineering_canary.receipt.json",
+      "exit_code": 0,
+      "stdout_stderr": "commands/real_engineering_canary.log",
+      "receipt": "canary/real_engineering_canary.receipt.json",
+      "report": "canary/ENGINEERING_CANARY_REPORT.json"
+    },
+    {
+      "command_id": "GIT_DIFF_CHECK",
+      "command": "git diff --check",
+      "exit_code": 0,
+      "stdout_stderr": "commands/git_diff_check.log"
+    }
+  ]
+}
