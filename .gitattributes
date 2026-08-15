@@ -10,6 +10,21 @@
 *.ps1 text eol=crlf
 *.bat text eol=crlf
 
+# SCTSR v4 formal CSV identities and the R2 review logs are SHA-bound.  Store
+# and check them out as LF on every platform so GitHub archives, Windows
+# worktrees, and Linux training nodes expose identical bytes.
+data/final_sewerml_dataset/manifests/train_manifest.csv text eol=lf
+data/final_sewerml_dataset/manifests/normal_train_manifest.csv text eol=lf
+data/final_sewerml_dataset/manifests/val_model_manifest.csv text eol=lf
+data/final_sewerml_dataset/manifests/normal_val_model_manifest.csv text eol=lf
+data/final_sewerml_dataset/manifests/val_cal_manifest.csv text eol=lf
+data/final_sewerml_dataset/manifests/normal_val_cal_manifest.csv text eol=lf
+data/final_sewerml_dataset/manifests/val_op_manifest.csv text eol=lf
+data/final_sewerml_dataset/manifests/normal_val_op_manifest.csv text eol=lf
+artifacts/stage1_oof_folds_10fold_20260617/train_oof_assignments.csv text eol=lf
+artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/03_preregistration_v4_sctsr/assets/*.csv text eol=lf
+artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/08_reports/sctsr_v4_r2_addendum_20260815/commands/*.log text eol=lf
+
 *.pdf binary
 *.png binary
 *.jpg binary
