@@ -40,7 +40,13 @@ def _runtime_environment(base: Path) -> dict[str, Any]:
             "status": "AVAILABLE",
             "version": platform.python_version(),
             "implementation": platform.python_implementation(),
-            "executable": Path(sys.executable).resolve().as_posix(),
+            # ``uv run --isolated`` materializes the same interpreter under a
+            # fresh random temporary directory on every invocation.  Binding
+            # that parent directory made identical source/runtime bytes yield
+            # different source-tree and checkpoint identities.  The executable
+            # name, implementation and exact version identify the interpreter
+            # contract without incorporating an ephemeral deployment path.
+            "executable": Path(sys.executable).name,
         },
         "platform": {
             "status": "AVAILABLE",

@@ -1,8 +1,10 @@
 import subprocess
+from pathlib import Path
 
 import pytest
 
 from stage1_sctsr_v4.errors import ErrorCode, SctsrError
+from stage1_sctsr_v4 import source_identity
 from stage1_sctsr_v4.source_identity import (
     build_source_tree_manifest,
     validate_source_tree_manifest,
@@ -55,6 +57,22 @@ def test_source_manifest_records_runtime_dependency_identity(tmp_path):
     assert environment["nvidia_driver"]["status"] in {"AVAILABLE", "UNAVAILABLE"}
     assert environment["ultralytics"]["status"] in {"AVAILABLE", "UNAVAILABLE"}
     assert len(manifest["runtime_environment_digest"]) == 64
+
+
+def test_source_identity_ignores_ephemeral_interpreter_parent_directory(tmp_path, monkeypatch):
+    package = tmp_path / "package"
+    package.mkdir()
+    (package / "module.py").write_text("VALUE = 1\n", encoding="utf-8")
+
+    monkeypatch.setattr(source_identity.sys, "executable", str(tmp_path / ".tmp-first" / "Scripts" / "python.exe"))
+    first = build_source_tree_manifest(tmp_path, ["package"])
+    monkeypatch.setattr(source_identity.sys, "executable", str(tmp_path / ".tmp-second" / "Scripts" / "python.exe"))
+    second = build_source_tree_manifest(tmp_path, ["package"])
+
+    assert Path(first["runtime_environment"]["python"]["executable"]).name == "python.exe"
+    assert first["runtime_environment"] == second["runtime_environment"]
+    assert first["runtime_environment_digest"] == second["runtime_environment_digest"]
+    assert first["source_tree_digest"] == second["source_tree_digest"]
 
 
 def test_clean_source_manifest_revalidates_current_git_head_and_worktree(tmp_path):
