@@ -352,6 +352,7 @@ def prepare_formal_resume_context(
     epoch_start: int,
     epoch_end: int,
     minimum_free_bytes: int,
+    _mutate: bool = True,
 ) -> FormalResumeContext:
     """Re-audit an interrupted formal run and return its exact continuation.
 
@@ -375,18 +376,19 @@ def prepare_formal_resume_context(
     if not (1 <= int(epoch_start) <= int(epoch_end) <= 200):
         raise SctsrError(ErrorCode.RESUME_GENERATION_MISMATCH, "Formal resume epoch range is invalid")
 
-    reconcile_epoch_publications(
-        transaction_root,
-        quarantine_root,
-        expected_run_id=expected_run_id,
-        expected_identity={
-            "arm_id": expected_arm_id,
-            "training_seed": expected_training_seed,
-            "source_tree_digest": expected_source_tree_digest,
-            "contract_digest": expected_contract_digest,
-            "asset_registry_digest": expected_asset_registry_digest,
-        },
-    )
+    if _mutate:
+        reconcile_epoch_publications(
+            transaction_root,
+            quarantine_root,
+            expected_run_id=expected_run_id,
+            expected_identity={
+                "arm_id": expected_arm_id,
+                "training_seed": expected_training_seed,
+                "source_tree_digest": expected_source_tree_digest,
+                "contract_digest": expected_contract_digest,
+                "asset_registry_digest": expected_asset_registry_digest,
+            },
+        )
     pointer_path = root / "ROLLING_RECOVERY_POINTER.json"
     pointer = validate_recovery_pointer(pointer_path)
     pointer_complete = _require_contained(Path(pointer["complete_path"]), transaction_root, role="Recovery pointer")
@@ -591,10 +593,13 @@ def prepare_formal_resume_context(
             expected=required_free_bytes,
         )
 
-    quarantined = tuple(
-        quarantine_inprogress(transaction_root, quarantine_root, reason="FORMAL_RESUME_PRECHECK_PARTIAL")
+    quarantined = (
+        tuple(quarantine_inprogress(transaction_root, quarantine_root, reason="FORMAL_RESUME_PRECHECK_PARTIAL"))
+        if _mutate
+        else ()
     )
-    # Recheck the canonical pointer after moving only uncommitted siblings.
+    # Recheck the canonical pointer after the full read-only audit and, for the
+    # mutating phase, after moving only uncommitted siblings.
     pointer_after = validate_recovery_pointer(pointer_path)
     if pointer_after["generation_digest"] != pointer["generation_digest"] or pointer_after["receipt_chain_digest"] != pointer["receipt_chain_digest"]:
         raise SctsrError(ErrorCode.RESUME_GENERATION_MISMATCH, "Canonical recovery pointer changed during resume preflight")
@@ -617,6 +622,16 @@ def prepare_formal_resume_context(
         history=history,
         quarantined_partial_paths=quarantined,
     )
+
+
+def inspect_formal_resume_context(**kwargs: Any) -> FormalResumeContext:
+    """Validate and bind resume state without moving or rewriting any artifact.
+
+    Formal runners use this preview to construct the signed RESUME job binding,
+    claim its logical-job fence, and only then invoke the mutating preparation.
+    """
+
+    return prepare_formal_resume_context(**kwargs, _mutate=False)
 
 
 def prepare_resume(

@@ -18,7 +18,7 @@ from stage1_sctsr_v4.fixed_step_runtime import ExponentialMovingAverage
 from stage1_sctsr_v4.formal_training import FormalIdentity, run_prepared_branch
 from stage1_sctsr_v4.identity_pool import IdentityRecord, identity_digest
 from stage1_sctsr_v4.occurrence_ledger import write_occurrence_partition
-from stage1_sctsr_v4.recovery import prepare_formal_resume_context
+from stage1_sctsr_v4.recovery import inspect_formal_resume_context, prepare_formal_resume_context
 from stage1_sctsr_v4.rng_isolation import capture_global_rng
 from stage1_sctsr_v4.serialization import sha256_file, stable_digest
 from stage1_sctsr_v4.schedule import build_schedule, schedule_to_dict
@@ -252,6 +252,45 @@ def test_formal_resume_restores_last_complete_checkpoint_history_and_quarantines
     assert len(state.quarantined_partial_paths) == 1
     assert not partial.exists()
     assert sha256_file(checkpoint) == checkpoint_sha_before
+
+
+def test_resume_inspection_is_read_only_until_execution_claim_succeeds(tmp_path):
+    root = tmp_path / "run"
+    _checkpoint, start_generation = _build_completed_epoch(root)
+    partial = root / "03_epoch_transactions" / "epoch_0122.generation_1.inprogress"
+    partial.mkdir()
+    half = partial / "half.json"
+    half.write_text("{", encoding="utf-8")
+
+    preview = inspect_formal_resume_context(
+        run_root=root,
+        expected_run_id=RUN_ID,
+        expected_arm_id=ARM_ID,
+        expected_training_seed=SEED,
+        expected_source_tree_digest=SOURCE_SHA,
+        expected_contract_digest=CONTRACT_SHA,
+        expected_asset_registry_digest=ASSET_SHA,
+        expected_previous_checkpoint_sha256=PARENT_SHA,
+        expected_previous_generation_digest=start_generation,
+        epoch_start=121,
+        epoch_end=200,
+        minimum_free_bytes=1,
+    )
+
+    assert preview.resume_epoch == 122
+    assert preview.quarantined_partial_paths == ()
+    assert partial.is_dir()
+    assert half.read_text(encoding="utf-8") == "{"
+
+
+@pytest.mark.parametrize("script_name", ["run_common_parent.py", "run_branch.py"])
+def test_formal_runner_claims_logical_job_before_mutating_resume_state(script_name, repository_root):
+    source = (repository_root / "scripts" / "stage1_sctsr_v4" / script_name).read_text(encoding="utf-8")
+    preview_call = source.index("resume_preview = inspect_formal_resume_context(")
+    claim_call = source.index("execution_claim = claim_formal_execution(")
+    mutate_call = source.index("resume_context = prepare_formal_resume_context(")
+
+    assert preview_call < claim_call < mutate_call
 
 
 def test_formal_resume_rejects_checkpoint_rng_not_bound_by_epoch_summary(tmp_path):

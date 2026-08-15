@@ -19,6 +19,7 @@ from .evidence_runtime import EpochEvidenceRecorder, ReplayHistoryState, SampleE
 from .filesystem import windows_safe_resolved_path
 from .formal_execution import (
     build_execution_job_bindings,
+    execution_fence_guard,
     publish_execution_claim_snapshot,
     validate_execution_claim_binding,
 )
@@ -453,6 +454,7 @@ def _run_transactional_epoch(
     previous_checkpoint_sha256: str,
     previous_generation_digest: str,
     base_rng_receipt: BaseEpochRngReceipt,
+    publication_guard: Callable[[], Any] | None = None,
 ) -> tuple[dict[str, Any], dict[str, Any]]:
     """Run, checkpoint, validate and publish exactly one epoch generation."""
 
@@ -520,7 +522,11 @@ def _run_transactional_epoch(
             ),
         )
         evidence_summary = recorder.finalize(runtime_result=result, checkpoint_sha256=checkpoint_sha)
-        generation_manifest = transaction.commit()
+        if publication_guard is None:
+            generation_manifest = transaction.commit()
+        else:
+            with publication_guard():
+                generation_manifest = transaction.commit()
     except BaseException as exc:
         _abort_failed_epoch(recorder=recorder, transaction=transaction, primary_error=exc)
         raise
@@ -949,6 +955,14 @@ def run_prepared_common_parent(
                 previous_checkpoint_sha256=previous_checkpoint_sha,
                 previous_generation_digest=previous_generation_digest,
                 base_rng_receipt=base_rng_receipt,
+                publication_guard=(
+                    lambda: execution_fence_guard(
+                        dict(execution_claim_binding or {}),
+                        expected_job_bindings=execution_job,
+                    )
+                    if execution_mode == "formal"
+                    else None
+                ),
             )
             previous_checkpoint_sha = final_evidence["checkpoint_sha256"]
             previous_generation_digest = final_evidence["generation_digest"]
@@ -1223,6 +1237,14 @@ def run_prepared_branch(
                 previous_checkpoint_sha256=previous_checkpoint_sha,
                 previous_generation_digest=previous_generation_digest,
                 base_rng_receipt=base_rng_receipt,
+                publication_guard=(
+                    lambda: execution_fence_guard(
+                        dict(execution_claim_binding or {}),
+                        expected_job_bindings=execution_job,
+                    )
+                    if execution_mode == "formal"
+                    else None
+                ),
             )
             previous_checkpoint_sha = evidence["checkpoint_sha256"]
             previous_generation_digest = evidence["generation_digest"]

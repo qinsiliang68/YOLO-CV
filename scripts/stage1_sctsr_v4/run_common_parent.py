@@ -11,7 +11,7 @@ from stage1_sctsr_v4.errors import ErrorCode, SctsrError
 from stage1_sctsr_v4.formal_execution import build_execution_job_bindings, claim_formal_execution
 from stage1_sctsr_v4.formal_cli import build_prepared_trainer, load_formal_identity, prepare_formal_authorization
 from stage1_sctsr_v4.formal_training import run_prepared_common_parent
-from stage1_sctsr_v4.recovery import prepare_formal_resume_context
+from stage1_sctsr_v4.recovery import inspect_formal_resume_context, prepare_formal_resume_context
 from stage1_sctsr_v4.run_intent import prepare_formal_run_intent_binding
 from stage1_sctsr_v4.serialization import load_json, stable_digest
 from stage1_sctsr_v4.synthetic_execution import run_synthetic_common_parent
@@ -77,27 +77,30 @@ def main() -> int:
             seed_registry_path=arguments.seed_registry,
         )
         resume_context = None
+        resume_preview = None
+        resume_kwargs = None
         trainer_setup_root = arguments.output_root
         if arguments.resume:
             if arguments.resume_setup_root is None:
                 raise SctsrError(ErrorCode.RESUME_GENERATION_MISMATCH, "--resume requires --resume-setup-root")
             runtime_policy = load_json(arguments.runtime_config)
-            resume_context = prepare_formal_resume_context(
-                run_root=arguments.output_root,
-                expected_run_id=f"PARENT_{identity.training_seed}",
-                expected_arm_id="COMMON_PARENT_NR",
-                expected_training_seed=identity.training_seed,
-                expected_source_tree_digest=identity.source_tree_digest,
-                expected_contract_digest=identity.effective_contract_digest,
-                expected_asset_registry_digest=identity.asset_registry_digest,
-                expected_previous_checkpoint_sha256=identity.initial_checkpoint_sha256,
-                expected_previous_generation_digest=stable_digest(
+            resume_kwargs = {
+                "run_root": arguments.output_root,
+                "expected_run_id": f"PARENT_{identity.training_seed}",
+                "expected_arm_id": "COMMON_PARENT_NR",
+                "expected_training_seed": identity.training_seed,
+                "expected_source_tree_digest": identity.source_tree_digest,
+                "expected_contract_digest": identity.effective_contract_digest,
+                "expected_asset_registry_digest": identity.asset_registry_digest,
+                "expected_previous_checkpoint_sha256": identity.initial_checkpoint_sha256,
+                "expected_previous_generation_digest": stable_digest(
                     {"role": "COMMON_PARENT_START", "initial_checkpoint_sha256": identity.initial_checkpoint_sha256}
                 ),
-                epoch_start=1,
-                epoch_end=120,
-                minimum_free_bytes=int(runtime_policy["minimum_resume_free_bytes"]),
-            )
+                "epoch_start": 1,
+                "epoch_end": 120,
+                "minimum_free_bytes": int(runtime_policy["minimum_resume_free_bytes"]),
+            }
+            resume_preview = inspect_formal_resume_context(**resume_kwargs)
             trainer_setup_root = arguments.resume_setup_root.resolve()
             allowed_setup_root = (arguments.output_root.resolve() / "10_resume_setup").resolve()
             try:
@@ -108,7 +111,7 @@ def main() -> int:
                     "Resume trainer setup root must be contained under <run>/10_resume_setup",
                     artifact_path=str(trainer_setup_root),
                 ) from exc
-            expected_leaf = f"epoch_{resume_context.resume_epoch:04d}.generation_1"
+            expected_leaf = f"epoch_{resume_preview.resume_epoch:04d}.generation_1"
             if trainer_setup_root.name != expected_leaf:
                 raise SctsrError(
                     ErrorCode.RESUME_GENERATION_MISMATCH,
@@ -126,10 +129,10 @@ def main() -> int:
             training_seed=identity.training_seed,
             output_root=arguments.output_root,
             parent_checkpoint_sha256=identity.initial_checkpoint_sha256,
-            resume_checkpoint_sha256="0" * 64 if resume_context is None else resume_context.checkpoint_sha256,
+            resume_checkpoint_sha256="0" * 64 if resume_preview is None else resume_preview.checkpoint_sha256,
             lineage_digest=stable_digest({"role": "NOT_APPLICABLE_COMMON_PARENT"}),
             schedule_digest=stable_digest({"role": "COMMON_PARENT_NR", "epochs": [1, 120]}),
-            resume_from_receipt_digest="0" * 64 if resume_context is None else resume_context.receipt_chain_digest,
+            resume_from_receipt_digest="0" * 64 if resume_preview is None else resume_preview.receipt_chain_digest,
         )
         run_intent_binding = prepare_formal_run_intent_binding(
             acknowledgement_path=arguments.run_intent_acknowledgement,
@@ -155,8 +158,8 @@ def main() -> int:
             release_manifest_path=arguments.release_authorization,
             execution_token_path=arguments.execution_token,
             claim_registry_root=arguments.execution_claim_root,
-            resume_checkpoint_sha256="0" * 64 if resume_context is None else resume_context.checkpoint_sha256,
-            resume_receipt_digest="0" * 64 if resume_context is None else resume_context.receipt_chain_digest,
+            resume_checkpoint_sha256="0" * 64 if resume_preview is None else resume_preview.checkpoint_sha256,
+            resume_receipt_digest="0" * 64 if resume_preview is None else resume_preview.receipt_chain_digest,
         )
         execution_claim = claim_formal_execution(
             arguments.execution_token,
@@ -167,6 +170,17 @@ def main() -> int:
             release_manifest_sha256=authorization["release_manifest_sha256"],
             expected_job_bindings=execution_job,
         )
+        if resume_kwargs is not None:
+            resume_context = prepare_formal_resume_context(**resume_kwargs)
+            if (
+                resume_context.checkpoint_sha256 != resume_preview.checkpoint_sha256
+                or resume_context.receipt_chain_digest != resume_preview.receipt_chain_digest
+                or resume_context.resume_epoch != resume_preview.resume_epoch
+            ):
+                raise SctsrError(
+                    ErrorCode.RESUME_GENERATION_MISMATCH,
+                    "Resume state changed between read-only inspection and fenced preparation",
+                )
         trainer, binding, trainer_binding = build_prepared_trainer(
             repository_root=arguments.repository_root,
             identity_manifest=arguments.identity_manifest,

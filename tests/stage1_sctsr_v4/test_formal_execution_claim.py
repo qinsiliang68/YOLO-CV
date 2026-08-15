@@ -15,6 +15,7 @@ from stage1_sctsr_v4.formal_execution import (
     EXECUTION_TOKEN_SCHEMA,
     JOB_BINDING_FIELDS,
     claim_formal_execution,
+    execution_fence_guard,
     execution_signature_payload,
     output_root_digest,
     publish_execution_claim_snapshot,
@@ -105,7 +106,16 @@ def _job(tmp_path, *, action="START", logical_run_id="PARENT_101", training_seed
     return values
 
 
-def _token(release, registry, job, *, execution_id="EXEC_PARENT_101_START", nonce=None):
+def _token(
+    release,
+    registry,
+    job,
+    *,
+    execution_id="EXEC_PARENT_101_START",
+    nonce=None,
+    issued_at_utc="2026-08-14T11:00:00Z",
+    expires_at_utc="2026-08-14T13:00:00Z",
+):
     token = {
         "schema_version": EXECUTION_TOKEN_SCHEMA,
         "authorization": "SIGNED_SCTSR_V4_FORMAL_EXECUTION",
@@ -114,8 +124,8 @@ def _token(release, registry, job, *, execution_id="EXEC_PARENT_101_START", nonc
         "key_id": release["key_id"],
         "signature_algorithm": "HMAC-SHA256",
         "signature": "",
-        "issued_at_utc": "2026-08-14T11:00:00Z",
-        "expires_at_utc": "2026-08-14T13:00:00Z",
+        "issued_at_utc": issued_at_utc,
+        "expires_at_utc": expires_at_utc,
         "nonce": nonce or f"EXECUTION_NONCE_{execution_id}_0123456789ABCDEF0123456789ABCDEF",
         "release_id": release["release_id"],
         "release_nonce": release["nonce"],
@@ -260,6 +270,169 @@ def test_concurrent_claimers_have_exactly_one_winner(tmp_path):
     assert results.count("CLAIMED") == 1
     assert results.count(ErrorCode.FORMAL_EXECUTION_TOKEN_ALREADY_CLAIMED) == 7
     assert len(list((claim_root / "claims").glob("*.claim.json"))) == 1
+
+
+def test_distinct_tokens_for_same_logical_job_cannot_both_claim(tmp_path):
+    release, trust, bindings = _release()
+    claim_root, registry = _claim_registry(tmp_path)
+    job = _job(tmp_path)
+    first_token = _token(
+        release,
+        registry,
+        job,
+        execution_id="EXEC_PARENT_101_START_A",
+        nonce="EXECUTION_NONCE_PARENT_101_START_A_0123456789ABCDEF",
+    )
+    second_token = _token(
+        release,
+        registry,
+        job,
+        execution_id="EXEC_PARENT_101_START_B",
+        nonce="EXECUTION_NONCE_PARENT_101_START_B_0123456789ABCDEF",
+    )
+    kwargs = {
+        "claim_registry_root": claim_root,
+        "release": release,
+        "release_trust_policy": trust,
+        "expected_release_bindings": bindings,
+        "release_manifest_sha256": stable_digest(release),
+        "expected_job_bindings": job,
+        "verification_secret": SECRET,
+        "now_utc": NOW,
+    }
+
+    first = claim_formal_execution(first_token, **kwargs)
+    with pytest.raises(SctsrError) as caught:
+        claim_formal_execution(second_token, **kwargs)
+
+    assert first["status"] == "CLAIMED"
+    assert caught.value.code is ErrorCode.LOGICAL_JOB_LEASE_ACTIVE
+    assert len(list((claim_root / "claims").glob("*.claim.json"))) == 1
+
+
+def test_resume_requires_stale_prior_lease_and_fences_old_attempt(tmp_path):
+    release, trust, bindings = _release()
+    claim_root, registry = _claim_registry(tmp_path)
+    start_job = _job(tmp_path)
+    start_token = _token(
+        release,
+        registry,
+        start_job,
+        execution_id="EXEC_PARENT_101_START_LONG",
+        nonce="EXECUTION_NONCE_PARENT_101_START_LONG_0123456789ABCDEF",
+        expires_at_utc="2026-08-14T23:00:00Z",
+    )
+    start_claim = claim_formal_execution(
+        start_token,
+        claim_registry_root=claim_root,
+        release=release,
+        release_trust_policy=trust,
+        expected_release_bindings=bindings,
+        release_manifest_sha256=stable_digest(release),
+        expected_job_bindings=start_job,
+        verification_secret=SECRET,
+        now_utc=NOW,
+    )
+    resume_job = _job(tmp_path, action="RESUME")
+    resume_token = _token(
+        release,
+        registry,
+        resume_job,
+        execution_id="EXEC_PARENT_101_RESUME",
+        nonce="EXECUTION_NONCE_PARENT_101_RESUME_0123456789ABCDEF",
+        expires_at_utc="2026-08-14T23:00:00Z",
+    )
+    resume_kwargs = {
+        "claim_registry_root": claim_root,
+        "release": release,
+        "release_trust_policy": trust,
+        "expected_release_bindings": bindings,
+        "release_manifest_sha256": stable_digest(release),
+        "expected_job_bindings": resume_job,
+        "verification_secret": SECRET,
+    }
+
+    with pytest.raises(SctsrError) as caught:
+        claim_formal_execution(resume_token, now_utc=NOW, **resume_kwargs)
+    assert caught.value.code is ErrorCode.LOGICAL_JOB_LEASE_ACTIVE
+
+    resumed = claim_formal_execution(
+        resume_token,
+        now_utc=datetime(2026, 8, 14, 19, tzinfo=timezone.utc),
+        **resume_kwargs,
+    )
+    assert resumed["fence_generation"] == start_claim["fence_generation"] + 1
+    with pytest.raises(SctsrError) as caught:
+        validate_execution_claim_binding(
+            start_claim,
+            expected_job_bindings=start_job,
+            require_token_file=False,
+        )
+    assert caught.value.code is ErrorCode.LOGICAL_JOB_FENCED
+    assert validate_execution_claim_binding(
+        resumed,
+        expected_job_bindings=resume_job,
+        require_token_file=False,
+    )["status"] == "CLAIMED"
+
+
+def test_epoch_publication_guard_rejects_superseded_attempt(tmp_path):
+    release, trust, bindings = _release()
+    claim_root, registry = _claim_registry(tmp_path)
+    start_job = _job(tmp_path)
+    start_token_path = tmp_path / "START_TOKEN.json"
+    atomic_write_json(
+        start_token_path,
+        _token(
+            release,
+            registry,
+            start_job,
+            execution_id="EXEC_PARENT_101_GUARD_START",
+            nonce="EXECUTION_NONCE_PARENT_101_GUARD_START_0123456789",
+            expires_at_utc="2026-08-14T23:00:00Z",
+        ),
+    )
+    common = {
+        "claim_registry_root": claim_root,
+        "release": release,
+        "release_trust_policy": trust,
+        "expected_release_bindings": bindings,
+        "release_manifest_sha256": stable_digest(release),
+        "verification_secret": SECRET,
+    }
+    start_claim = claim_formal_execution(
+        start_token_path,
+        expected_job_bindings=start_job,
+        now_utc=NOW,
+        **common,
+    )
+    resume_job = _job(tmp_path, action="RESUME")
+    resume_token_path = tmp_path / "RESUME_TOKEN.json"
+    atomic_write_json(
+        resume_token_path,
+        _token(
+            release,
+            registry,
+            resume_job,
+            execution_id="EXEC_PARENT_101_GUARD_RESUME",
+            nonce="EXECUTION_NONCE_PARENT_101_GUARD_RESUME_0123456789",
+            expires_at_utc="2026-08-14T23:00:00Z",
+        ),
+    )
+    resume_claim = claim_formal_execution(
+        resume_token_path,
+        expected_job_bindings=resume_job,
+        now_utc=datetime(2026, 8, 14, 19, tzinfo=timezone.utc),
+        **common,
+    )
+
+    with pytest.raises(SctsrError) as caught:
+        with execution_fence_guard(start_claim, expected_job_bindings=start_job):
+            pytest.fail("superseded attempt entered publication critical section")
+    assert caught.value.code is ErrorCode.LOGICAL_JOB_FENCED
+
+    with execution_fence_guard(resume_claim, expected_job_bindings=resume_job):
+        pass
 
 
 def test_one_matrix_release_may_authorize_distinct_job_tokens(tmp_path):
