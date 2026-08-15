@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 
 import pytest
@@ -144,7 +145,7 @@ def test_materialized_binding_detects_post_setup_byte_replacement(tmp_path: Path
     canonical.parent.mkdir(parents=True)
     staged.parent.mkdir(parents=True)
     canonical.write_bytes(b"frozen")
-    staged.write_bytes(b"frozen")
+    os.link(canonical, staged)
 
     class PhysicalBase(torch.utils.data.Dataset):
         samples = ((str(staged), 0),)
@@ -183,7 +184,7 @@ def test_materialized_binding_rejects_unregistered_extra_file(tmp_path: Path):
     canonical.parent.mkdir(parents=True)
     staged.parent.mkdir(parents=True)
     canonical.write_bytes(b"frozen")
-    staged.write_bytes(b"frozen")
+    os.link(canonical, staged)
     (staged.parent / "extra.png").write_bytes(b"extra")
 
     class PhysicalBase(torch.utils.data.Dataset):
@@ -211,4 +212,80 @@ def test_materialized_binding_rejects_unregistered_extra_file(tmp_path: Path):
             dataset_root=tmp_path / "dataset",
             evidence_path=tmp_path / "binding" / "train.parquet",
         )
+    assert caught.value.code is ErrorCode.DATASET_CONTENT_MISMATCH
+
+
+def test_materialized_binding_requires_hardlink_to_canonical_source(tmp_path: Path):
+    canonical = tmp_path / "dataset" / "Det" / "images" / "normal_train" / "a.png"
+    staged = tmp_path / "dataset" / "train" / "no_target" / "a.png"
+    canonical.parent.mkdir(parents=True)
+    staged.parent.mkdir(parents=True)
+    canonical.write_bytes(b"same-bytes")
+    staged.write_bytes(b"same-bytes")
+
+    class PhysicalBase(torch.utils.data.Dataset):
+        samples = ((str(staged), 0),)
+
+        def __len__(self):
+            return 1
+
+        def __getitem__(self, index):
+            return {"img": torch.zeros((1, 2, 2)), "cls": torch.tensor(0)}
+
+    sample_id = "Det/images/normal_train/a.png"
+    wrapped = IdentityAugmentingDataset(PhysicalBase(), (DatasetIdentity(sample_id, 0, sample_id),))
+    content = {
+        sample_id: {
+            "image_bytes": canonical.stat().st_size,
+            "image_sha256": __import__("hashlib").sha256(canonical.read_bytes()).hexdigest().upper(),
+        }
+    }
+
+    with pytest.raises(SctsrError) as caught:
+        validate_materialized_dataset_bytes(
+            wrapped,
+            content,
+            role="train",
+            dataset_root=tmp_path / "dataset",
+            evidence_path=tmp_path / "binding" / "train.parquet",
+        )
+    assert caught.value.code is ErrorCode.DATASET_CONTENT_MISMATCH
+
+
+def test_materialized_binding_rejects_extra_file_added_after_setup(tmp_path: Path):
+    canonical = tmp_path / "dataset" / "Det" / "images" / "normal_train" / "a.png"
+    staged = tmp_path / "dataset" / "train" / "no_target" / "a.png"
+    canonical.parent.mkdir(parents=True)
+    staged.parent.mkdir(parents=True)
+    canonical.write_bytes(b"frozen")
+    os.link(canonical, staged)
+
+    class PhysicalBase(torch.utils.data.Dataset):
+        samples = ((str(staged), 0),)
+
+        def __len__(self):
+            return 1
+
+        def __getitem__(self, index):
+            return {"img": torch.zeros((1, 2, 2)), "cls": torch.tensor(0)}
+
+    sample_id = "Det/images/normal_train/a.png"
+    wrapped = IdentityAugmentingDataset(PhysicalBase(), (DatasetIdentity(sample_id, 0, sample_id),))
+    content = {
+        sample_id: {
+            "image_bytes": canonical.stat().st_size,
+            "image_sha256": __import__("hashlib").sha256(canonical.read_bytes()).hexdigest().upper(),
+        }
+    }
+    binding = validate_materialized_dataset_bytes(
+        wrapped,
+        content,
+        role="train",
+        dataset_root=tmp_path / "dataset",
+        evidence_path=tmp_path / "binding" / "train.parquet",
+    )
+    (staged.parent / "added_after_setup.png").write_bytes(b"unregistered")
+
+    with pytest.raises(SctsrError) as caught:
+        revalidate_materialized_dataset_binding(binding)
     assert caught.value.code is ErrorCode.DATASET_CONTENT_MISMATCH

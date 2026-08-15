@@ -384,6 +384,14 @@ def validate_materialized_dataset_bytes(
             if not canonical_path.is_file() or canonical_path.stat().st_size != expected_bytes or sha256_file(canonical_path) != expected_sha:
                 raise SctsrError(ErrorCode.DATASET_CONTENT_MISMATCH, "Canonical source bytes differ from the frozen content ledger", observed=sample_id, artifact_path=str(canonical_path))
         stat_result = path.stat()
+        samefile_as_canonical = False if canonical_path is None else os.path.samefile(path, canonical_path)
+        if canonical_path is not None and not samefile_as_canonical:
+            raise SctsrError(
+                ErrorCode.DATASET_CONTENT_MISMATCH,
+                "Materialized loader file is not the registered canonical hardlink",
+                artifact_path=str(path),
+                expected=canonical_path.as_posix(),
+            )
         evidence.append(
             {
                 "role": role,
@@ -395,7 +403,7 @@ def validate_materialized_dataset_bytes(
                 "image_bytes": observed_bytes,
                 "image_sha256": observed_sha,
                 "physical_file_identity": f"{stat_result.st_dev}:{stat_result.st_ino}",
-                "samefile_as_canonical": False if canonical_path is None else os.path.samefile(path, canonical_path),
+                "samefile_as_canonical": samefile_as_canonical,
             }
         )
     for selected in selected_paths:
@@ -469,6 +477,25 @@ def revalidate_materialized_dataset_binding(binding: Mapping[str, Any]) -> dict[
     )
     rows = read_columnar(path)
     observed: list[dict[str, Any]] = []
+    selected_paths = {Path(str(row["loader_path_resolved"])).resolve() for row in rows}
+    materialized_roots = {Path(str(value)).resolve() for value in binding.get("materialized_roots", ())}
+    if not materialized_roots:
+        raise SctsrError(ErrorCode.DATASET_CONTENT_MISMATCH, "Materialized dataset binding has no scan roots")
+    for scan_root in materialized_roots:
+        if not scan_root.is_dir():
+            raise SctsrError(ErrorCode.DATASET_CONTENT_MISMATCH, "A materialized dataset scan root is missing", artifact_path=str(scan_root))
+        root_stat = scan_root.lstat()
+        if scan_root.is_symlink() or int(getattr(root_stat, "st_file_attributes", 0)) & 0x400:
+            raise SctsrError(ErrorCode.DATASET_CONTENT_MISMATCH, "Materialized dataset scan root became a symlink or reparse point", artifact_path=str(scan_root))
+        for entry in scan_root.rglob("*"):
+            resolved = entry.resolve()
+            attributes = int(getattr(entry.lstat(), "st_file_attributes", 0))
+            if entry.is_symlink() or attributes & 0x400:
+                raise SctsrError(ErrorCode.DATASET_CONTENT_MISMATCH, "Materialized dataset contains a symlink or reparse point", artifact_path=str(entry))
+            if entry.is_file() and resolved not in selected_paths:
+                raise SctsrError(ErrorCode.DATASET_CONTENT_MISMATCH, "Materialized dataset contains a post-setup unregistered file", artifact_path=str(entry))
+            if entry.is_dir() and not any(resolved in selected.parents for selected in selected_paths):
+                raise SctsrError(ErrorCode.DATASET_CONTENT_MISMATCH, "Materialized dataset contains a post-setup unregistered directory", artifact_path=str(entry))
     for row in rows:
         physical = Path(str(row["loader_path_resolved"])).resolve()
         if not physical.is_file():
