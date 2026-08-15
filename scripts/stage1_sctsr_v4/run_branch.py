@@ -24,7 +24,11 @@ from stage1_sctsr_v4.formal_cli import (
     validate_identity_pool_artifacts,
     validate_parent_artifact_index,
 )
-from stage1_sctsr_v4.formal_training import run_prepared_branch
+from stage1_sctsr_v4.formal_training import (
+    publish_formal_run_manifest_and_indexes,
+    run_prepared_branch,
+    validate_formal_run_runtime_identity,
+)
 from stage1_sctsr_v4.prediction_runtime import publish_formal_endpoint
 from stage1_sctsr_v4.recovery import inspect_formal_resume_context, prepare_formal_resume_context
 from stage1_sctsr_v4.run_intent import prepare_formal_run_intent_binding
@@ -264,7 +268,24 @@ def main() -> int:
         except BaseException as exc:
             mark_execution_failed(execution_claim, expected_job_bindings=execution_job, error=exc)
             raise
+        finalization_context = result.pop("_finalization_context")
         def finalize_branch():
+            final_indexes = publish_formal_run_manifest_and_indexes(
+                root=arguments.output_root.resolve(),
+                identity=identity,
+                run_role="BRANCH",
+                run_id=lineage.logical_run_id,
+                arm_id=schedule.arm_id.value,
+                release_authorization=arguments.release_authorization,
+                release_expected_bindings=authorization["expected_bindings"],
+                execution_claim_binding=execution_claim,
+                execution_claim_snapshot=finalization_context["execution_claim_snapshot"],
+                run_intent_snapshot=finalization_context["run_intent_snapshot"],
+                prepared_trainer_binding=trainer_binding,
+            )
+            branch_receipt_path = arguments.output_root / "BRANCH_RECEIPT.json"
+            branch_receipt = load_json(branch_receipt_path)
+            atomic_write_json(branch_receipt_path, {**branch_receipt, "final_indexes": final_indexes})
             endpoint_variant = str(runtime_policy["formal_endpoint_model_variant"])
             if endpoint_variant == "EMA":
                 endpoint_model = getattr(getattr(trainer, "ema", None), "ema", None)
@@ -302,7 +323,6 @@ def main() -> int:
                 model_variant=endpoint_variant,
                 batch_size=int(runtime_policy["formal_endpoint_batch_size"]),
             )
-            branch_receipt_path = arguments.output_root / "BRANCH_RECEIPT.json"
             branch_receipt = load_json(branch_receipt_path)
             atomic_write_json(
                 branch_receipt_path,
@@ -312,6 +332,7 @@ def main() -> int:
                     "formal_endpoint_evidence": endpoint,
                 },
             )
+            validate_formal_run_runtime_identity(arguments.output_root)
             from stage1_sctsr_v4.run_validation import build_artifact_index
 
             atomic_write_json(arguments.output_root / "ARTIFACT_INDEX.json", build_artifact_index(arguments.output_root))

@@ -59,6 +59,28 @@ def test_source_manifest_records_runtime_dependency_identity(tmp_path):
     assert len(manifest["runtime_environment_digest"]) == 64
 
 
+def test_source_manifest_validation_reprobes_live_runtime_and_rejects_drift(tmp_path, monkeypatch):
+    package = tmp_path / "package"
+    package.mkdir()
+    (package / "module.py").write_text("VALUE = 1\n", encoding="utf-8")
+    manifest = build_source_tree_manifest(tmp_path, ["package"])
+    observed_calls = 0
+    frozen = manifest["runtime_environment"]
+
+    def drifted_probe(_root):
+        nonlocal observed_calls
+        observed_calls += 1
+        changed = {**frozen, "nvidia_driver": {"status": "AVAILABLE", "versions": ["DRIFTED"]}}
+        return changed
+
+    monkeypatch.setattr(source_identity, "probe_runtime_environment", drifted_probe)
+    with pytest.raises(SctsrError) as caught:
+        validate_source_tree_manifest(manifest, tmp_path, require_clean=False)
+
+    assert observed_calls == 1
+    assert caught.value.code is ErrorCode.SOURCE_TREE_MISMATCH
+
+
 def test_source_identity_ignores_ephemeral_interpreter_parent_directory(tmp_path, monkeypatch):
     package = tmp_path / "package"
     package.mkdir()

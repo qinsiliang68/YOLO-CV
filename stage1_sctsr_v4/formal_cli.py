@@ -32,7 +32,7 @@ from .selection_ledger import validate_selection_rows
 from .seed_registry import SeedRegistry
 from .serialization import atomic_write_json, load_json, sha256_file, stable_digest
 from .source_identity import validate_source_tree_manifest
-from .training_system import UpstreamBinding, bind_upstream, prepare_classification_overrides
+from .training_system import UpstreamBinding, bind_upstream, prepare_classification_overrides, validate_sctsr_adapter_import
 
 
 FORMAL_AUTHORIZATION_INPUT_ROLES = (
@@ -748,6 +748,129 @@ def validate_prepared_trainer_datasets(
     }
 
 
+def validate_binary_classification_contract(trainer: Any, data_root: str | Path) -> dict[str, Any]:
+    """Fail before optimizer step zero unless every binary identity agrees."""
+
+    import torch
+
+    expected_classes = ["no_target", "target_defect"]
+    expected_class_to_idx = {"no_target": 0, "target_defect": 1}
+    expected_model_names = {0: "no_target", 1: "target_defect"}
+    root = Path(data_root).resolve()
+    trainer_data = getattr(trainer, "data", None)
+    if not isinstance(trainer_data, Mapping):
+        raise SctsrError(ErrorCode.CONFIGURATION_MISMATCH, "Prepared trainer has no classification data contract")
+    split_roots: dict[str, Path] = {}
+    for role in ("train", "val"):
+        split_value = trainer_data.get(role)
+        if not isinstance(split_value, (str, Path)):
+            raise SctsrError(ErrorCode.CONFIGURATION_MISMATCH, "Prepared trainer lacks a binary split root", failing_field=role)
+        split_root = Path(split_value).resolve()
+        try:
+            split_root.relative_to(root)
+        except ValueError as exc:
+            raise SctsrError(
+                ErrorCode.CONFIGURATION_MISMATCH,
+                "Prepared classification split escapes its authorized data root",
+                failing_field=role,
+                observed=split_root.as_posix(),
+                expected=root.as_posix(),
+            ) from exc
+        observed_directories = sorted(path.name for path in split_root.iterdir() if path.is_dir()) if split_root.is_dir() else []
+        if observed_directories != expected_classes:
+            raise SctsrError(
+                ErrorCode.CONFIGURATION_MISMATCH,
+                "Classification split directories are not exactly the frozen two classes",
+                failing_field=role,
+                observed=observed_directories,
+                expected=expected_classes,
+            )
+        split_roots[role] = split_root
+
+    datasets = {
+        "train": getattr(getattr(trainer, "train_loader", None), "dataset", None),
+        "val": getattr(getattr(trainer, "test_loader", None), "dataset", None),
+    }
+    class_counts: dict[str, dict[str, int]] = {}
+    dataset_identities: dict[str, Any] = {}
+    for role, dataset in datasets.items():
+        classes = list(getattr(dataset, "classes", []))
+        class_to_idx = dict(getattr(dataset, "class_to_idx", {}))
+        samples = getattr(dataset, "samples", None)
+        if classes != expected_classes or class_to_idx != expected_class_to_idx or not isinstance(samples, (list, tuple)):
+            raise SctsrError(
+                ErrorCode.CONFIGURATION_MISMATCH,
+                "Prepared dataset class identity is not the frozen binary mapping",
+                failing_field=role,
+                observed={"classes": classes, "class_to_idx": class_to_idx},
+                expected={"classes": expected_classes, "class_to_idx": expected_class_to_idx},
+            )
+        counts = {"0": 0, "1": 0}
+        for sample in samples:
+            if not isinstance(sample, (list, tuple)) or len(sample) < 2 or type(sample[1]) is not int or sample[1] not in {0, 1}:
+                raise SctsrError(ErrorCode.CONFIGURATION_MISMATCH, "Prepared dataset contains a non-binary label", failing_field=role)
+            counts[str(sample[1])] += 1
+        if min(counts.values()) <= 0:
+            raise SctsrError(ErrorCode.CONFIGURATION_MISMATCH, "Prepared dataset has an empty binary class", failing_field=role, observed=counts)
+        class_counts[role] = counts
+        dataset_identities[role] = {
+            "classes": classes,
+            "class_to_idx": class_to_idx,
+            "derived_nc": len(classes),
+            "row_count": len(samples),
+        }
+
+    raw_data_names = trainer_data.get("names")
+    data_names = dict(raw_data_names) if isinstance(raw_data_names, Mapping) else {}
+    if data_names != expected_model_names:
+        raise SctsrError(
+            ErrorCode.CONFIGURATION_MISMATCH,
+            "Trainer dataset names are not the frozen binary mapping",
+            observed=data_names,
+            expected=expected_model_names,
+        )
+    if trainer_data.get("nc") != 2:
+        raise SctsrError(ErrorCode.CONFIGURATION_MISMATCH, "Trainer dataset nc is not two", observed=trainer_data.get("nc"), expected=2)
+    model = getattr(trainer, "model", None)
+    raw_names = getattr(model, "names", None)
+    model_names = dict(raw_names) if isinstance(raw_names, Mapping) else {}
+    if model_names != expected_model_names:
+        raise SctsrError(
+            ErrorCode.CONFIGURATION_MISMATCH,
+            "Prepared model names are not the frozen binary mapping",
+            observed=model_names,
+            expected=expected_model_names,
+        )
+    model_nc = getattr(model, "nc", len(model_names))
+    if type(model_nc) is not int or model_nc != 2:
+        raise SctsrError(ErrorCode.CONFIGURATION_MISMATCH, "Prepared model nc is not two", observed=model_nc, expected=2)
+    linear_heads = [module for module in model.modules() if isinstance(module, torch.nn.Linear)] if hasattr(model, "modules") else []
+    if not linear_heads or int(linear_heads[-1].out_features) != 2:
+        raise SctsrError(
+            ErrorCode.CONFIGURATION_MISMATCH,
+            "Final classification head does not expose exactly two outputs",
+            observed=None if not linear_heads else int(linear_heads[-1].out_features),
+            expected=2,
+        )
+    core = {
+        "schema_version": "stage1.sctsr.binary_classification_binding.v1",
+        "status": "PASS",
+        "data_root": root.as_posix(),
+        "split_roots": {role: path.as_posix() for role, path in split_roots.items()},
+        "expected_classes": expected_classes,
+        "class_to_idx": expected_class_to_idx,
+        "class_counts": class_counts,
+        "datasets": dataset_identities,
+        "trainer_data_nc": 2,
+        "trainer_data_names": data_names,
+        "model_names": model_names,
+        "model_nc": model_nc,
+        "head_type": f"{type(linear_heads[-1]).__module__}.{type(linear_heads[-1]).__qualname__}",
+        "head_out_features": int(linear_heads[-1].out_features),
+    }
+    return {**core, "binary_contract_digest": stable_digest(core)}
+
+
 def load_formal_identity(path: str | Path) -> FormalIdentity:
     raw = load_json(path)
     if not isinstance(raw, Mapping) or set(raw) != _FORMAL_IDENTITY_FIELDS:
@@ -940,6 +1063,8 @@ def prepare_formal_authorization(
         "release_manifest_sha256": sha256_file(release_authorization),
         "trust_policy_sha256": sha256_file(release_trust_policy),
         "source_manifest_sha256": sha256_file(source_tree_manifest),
+        "runtime_environment_digest": source["runtime_environment_digest"],
+        "runtime_environment": source["runtime_environment"],
         "contract_path": Path(contract_path).resolve().as_posix(),
         "asset_registry_path": Path(asset_registry_path).resolve().as_posix(),
         "canonical_training_lock_path": (root / assets_by_id["canonical_training_lock"].relative_path).resolve().as_posix(),
@@ -1044,6 +1169,7 @@ def build_prepared_trainer(
         if value not in sys.path:
             sys.path.insert(0, value)
     module = importlib.import_module("sctsr_classification_trainer")
+    adapter_binding = validate_sctsr_adapter_import(binding, module)
     val_model_identities = tuple(
         DatasetIdentity(sample_id=sample_id, y_true=label, source_path=sample_id)
         for sample_id, label in sorted(load_registered_split_labels(registry, root, "val_model").items())
@@ -1059,6 +1185,7 @@ def build_prepared_trainer(
         # _do_train, which can auto-reduce batch and final-evaluate best.pt.
         trainer._setup_train()
         trainer.accumulate = 1
+        binary_contract_binding = validate_binary_classification_contract(trainer, data_root)
         dataset_binding = validate_prepared_trainer_datasets(
             trainer,
             registry=registry,
@@ -1097,6 +1224,7 @@ def build_prepared_trainer(
     trainer_binding = {
         "schema_version": "stage1.sctsr.prepared_trainer_binding.v1",
         "upstream_binding_digest": binding.binding_digest,
+        "adapter_import_binding": adapter_binding,
         "canonical_training_lock_path": lock_path.as_posix(),
         "canonical_training_lock_sha256": sha256_file(lock_path),
         "initial_checkpoint_path": model_path.as_posix(),
@@ -1114,6 +1242,7 @@ def build_prepared_trainer(
         "identity_manifest_binding": manifest_binding,
         "dataset_binding": dataset_binding,
         "dataset_content_binding": dataset_content_binding,
+        "binary_classification_binding": binary_contract_binding,
         "output_root": output.as_posix(),
         "training_seed": identity.training_seed,
         "formal_training_started": False,

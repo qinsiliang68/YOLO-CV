@@ -34,7 +34,16 @@ def _unavailable(reason_code: str) -> dict[str, str]:
     return {"status": "UNAVAILABLE", "reason_code": reason_code}
 
 
-def _runtime_environment(base: Path) -> dict[str, Any]:
+def probe_runtime_environment(repository_root: str | Path) -> dict[str, Any]:
+    """Probe the current process, accelerator stack, and registered adapters.
+
+    Absolute interpreter deployment parents are intentionally excluded so two
+    ``uv run --isolated`` environments with identical runtime bytes compare
+    equal. Repository source origins are recorded relative to the supplied
+    checkout and are paired with byte count and SHA-256.
+    """
+
+    base = Path(repository_root).resolve()
     environment: dict[str, Any] = {
         "python": {
             "status": "AVAILABLE",
@@ -118,6 +127,8 @@ def _runtime_environment(base: Path) -> dict[str, Any]:
             "version": local_version,
             "source": "FROZEN_REPOSITORY_SOURCE",
             "init_path": local_init.relative_to(base).as_posix(),
+            "init_bytes": local_init.stat().st_size,
+            "init_sha256": sha256_file(local_init),
         }
     else:
         try:
@@ -130,6 +141,26 @@ def _runtime_environment(base: Path) -> dict[str, Any]:
                 "version": installed_version,
                 "source": "INSTALLED_DISTRIBUTION_METADATA_ONLY",
             }
+    adapter = base / "integrations" / "ultralytics" / "sctsr_classification_trainer.py"
+    environment["sctsr_adapter"] = (
+        {
+            "status": "AVAILABLE",
+            "relative_origin": adapter.relative_to(base).as_posix(),
+            "bytes": adapter.stat().st_size,
+            "sha256": sha256_file(adapter),
+        }
+        if adapter.is_file() and not adapter.is_symlink()
+        else _unavailable("REGISTERED_SCTSR_ADAPTER_MISSING")
+    )
+    dependencies: dict[str, Mapping[str, str]] = {}
+    for distribution in ("numpy", "pillow", "pyarrow", "torchvision"):
+        try:
+            version = metadata.version(distribution)
+        except metadata.PackageNotFoundError:
+            dependencies[distribution] = _unavailable("DISTRIBUTION_NOT_INSTALLED")
+        else:
+            dependencies[distribution] = {"status": "AVAILABLE", "version": version}
+    environment["registered_dependencies"] = dependencies
     return environment
 
 
@@ -246,7 +277,7 @@ def build_source_tree_manifest(
     base = Path(root).resolve()
     roots, files = _scan_included_files(base, include_paths)
     external = list(external_references or [])
-    runtime_environment = _runtime_environment(base)
+    runtime_environment = probe_runtime_environment(base)
     git_status = _git(base, "status", "--porcelain")
     return {
         "schema_version": SOURCE_TREE_SCHEMA,
@@ -371,6 +402,21 @@ def validate_source_tree_manifest(
             observed=runtime_environment_digest,
             expected=raw.get("runtime_environment_digest"),
         )
+    live_runtime_environment = probe_runtime_environment(root)
+    live_runtime_environment_digest = stable_digest(live_runtime_environment)
+    if dict(live_runtime_environment) != dict(runtime_environment):
+        raise SctsrError(
+            ErrorCode.SOURCE_TREE_MISMATCH,
+            "Live runtime environment differs from the frozen source manifest",
+            observed={
+                "runtime_environment_digest": live_runtime_environment_digest,
+                "runtime_environment": live_runtime_environment,
+            },
+            expected={
+                "runtime_environment_digest": runtime_environment_digest,
+                "runtime_environment": dict(runtime_environment),
+            },
+        )
     digest = _content_digest(
         include_paths=include_paths,
         files=normalized,
@@ -418,6 +464,8 @@ def validate_source_tree_manifest(
         "file_count": len(normalized),
         "include_path_count": len(include_paths),
         "source_tree_digest": digest,
+        "runtime_environment_digest": live_runtime_environment_digest,
+        "runtime_environment": live_runtime_environment,
         "manifest_sha256": sha256_file(manifest) if not isinstance(manifest, Mapping) else None,
         "git_head": raw.get("git_head"),
         "git_dirty": raw.get("git_dirty"),

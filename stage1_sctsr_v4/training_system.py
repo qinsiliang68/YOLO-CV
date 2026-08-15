@@ -22,6 +22,9 @@ class UpstreamBinding:
     yolo_root: str
     source_git_blob_sha1: Mapping[str, str]
     source_file_sha256: Mapping[str, str]
+    adapter_relative_path: str
+    adapter_file_bytes: int
+    adapter_file_sha256: str
     binding_digest: str
 
 
@@ -48,16 +51,32 @@ def bind_upstream(repository_root: str | Path, *, verify_hashes: bool = True) ->
             raise SctsrError(ErrorCode.UPSTREAM_BINDING_FAILED, "Upstream Git blob SHA differs from frozen main", artifact_path=str(path), observed=observed, expected=expected[rel])
         git_blob_sha1[rel] = observed
         file_sha256[rel] = sha256_file(path)
+    adapter_relative_path = "integrations/ultralytics/sctsr_classification_trainer.py"
+    adapter_path = root / adapter_relative_path
+    if not adapter_path.is_file() or adapter_path.is_symlink():
+        raise SctsrError(
+            ErrorCode.UPSTREAM_BINDING_FAILED,
+            "Required SCTSR trainer adapter is missing or indirect",
+            artifact_path=str(adapter_path),
+        )
+    adapter_bytes = adapter_path.stat().st_size
+    adapter_sha256 = sha256_file(adapter_path)
     payload = {
         "repository_root": root.as_posix(),
         "git_blob_sha1": git_blob_sha1,
         "file_sha256": file_sha256,
+        "adapter_relative_path": adapter_relative_path,
+        "adapter_file_bytes": adapter_bytes,
+        "adapter_file_sha256": adapter_sha256,
     }
     return UpstreamBinding(
         repository_root=root.as_posix(),
         yolo_root=(root / "YOLOv11").as_posix(),
         source_git_blob_sha1=git_blob_sha1,
         source_file_sha256=file_sha256,
+        adapter_relative_path=adapter_relative_path,
+        adapter_file_bytes=adapter_bytes,
+        adapter_file_sha256=adapter_sha256,
         binding_digest=stable_digest(payload),
     )
 
@@ -121,6 +140,41 @@ def import_classification_trainer(binding: UpstreamBinding):
         loaded[module_name] = module
     module = loaded["ultralytics.models.yolo.classify.train"]
     return module.ClassificationTrainer
+
+
+def validate_sctsr_adapter_import(binding: UpstreamBinding, module: Any) -> dict[str, Any]:
+    origin_value = getattr(module, "__file__", None)
+    if not isinstance(origin_value, str):
+        raise SctsrError(ErrorCode.UPSTREAM_BINDING_FAILED, "Imported SCTSR adapter has no concrete file origin")
+    observed = Path(origin_value).resolve()
+    expected = (Path(binding.repository_root) / binding.adapter_relative_path).resolve()
+    if observed != expected:
+        raise SctsrError(
+            ErrorCode.UPSTREAM_BINDING_FAILED,
+            "Imported SCTSR adapter is not the registered repository module",
+            artifact_path=observed.as_posix(),
+            observed=observed.as_posix(),
+            expected=expected.as_posix(),
+        )
+    if (
+        observed.is_symlink()
+        or not observed.is_file()
+        or observed.stat().st_size != binding.adapter_file_bytes
+        or sha256_file(observed) != binding.adapter_file_sha256
+    ):
+        raise SctsrError(
+            ErrorCode.UPSTREAM_BINDING_FAILED,
+            "Imported SCTSR adapter bytes changed after source binding",
+            artifact_path=observed.as_posix(),
+        )
+    core = {
+        "schema_version": "stage1.sctsr.adapter_import_binding.v1",
+        "adapter_relative_path": binding.adapter_relative_path,
+        "adapter_origin": observed.as_posix(),
+        "adapter_bytes": binding.adapter_file_bytes,
+        "adapter_sha256": binding.adapter_file_sha256,
+    }
+    return {**core, "adapter_binding_digest": stable_digest(core)}
 
 
 def prepare_classification_overrides(binding: UpstreamBinding, overrides: Mapping[str, Any]) -> dict[str, Any]:

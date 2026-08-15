@@ -487,7 +487,7 @@ def test_branch_runner_continues_at_resume_epoch_without_overwriting_completed_g
     monkeypatch.setattr(formal, "prepare_counter_domain_base_loader", lambda *_args, **_kwargs: object())
     monkeypatch.setattr(formal, "_run_transactional_epoch", fake_transactional_epoch)
     monkeypatch.setattr(formal, "_publish_complete_logical_timeline", lambda **_kwargs: {"status": "UNIT_ONLY"})
-    monkeypatch.setattr(formal, "_publish_formal_run_manifest_and_indexes", lambda **_kwargs: {"status": "UNIT_ONLY"})
+    monkeypatch.setattr(formal, "publish_formal_run_manifest_and_indexes", lambda **_kwargs: {"status": "UNIT_ONLY"})
     monkeypatch.setattr(formal, "validate_execution_claim_binding", lambda *_args, **_kwargs: {"status": "UNIT_ONLY"})
     monkeypatch.setattr(formal, "validate_run_intent_binding", lambda *_args, **_kwargs: {"status": "UNIT_ONLY"})
     monkeypatch.setattr(

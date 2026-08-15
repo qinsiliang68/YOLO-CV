@@ -784,7 +784,7 @@ def _publish_complete_logical_timeline(
     }
 
 
-def _publish_formal_run_manifest_and_indexes(
+def publish_formal_run_manifest_and_indexes(
     *,
     root: Path,
     identity: FormalIdentity,
@@ -796,6 +796,7 @@ def _publish_formal_run_manifest_and_indexes(
     execution_claim_binding: Mapping[str, Any],
     execution_claim_snapshot: Mapping[str, Any],
     run_intent_snapshot: Mapping[str, Any],
+    prepared_trainer_binding: Mapping[str, Any],
 ) -> dict[str, Any]:
     from .run_validation import build_artifact_index
     from .serialization import load_json
@@ -819,6 +820,31 @@ def _publish_formal_run_manifest_and_indexes(
     release = release_authorization if isinstance(release_authorization, Mapping) else load_json(release_authorization)
     release_sha = stable_digest(release) if isinstance(release_authorization, Mapping) else sha256_file(release_authorization)
     formal_input_snapshot = validate_formal_input_snapshot(root)
+    adapter_binding = prepared_trainer_binding.get("adapter_import_binding")
+    binary_binding = prepared_trainer_binding.get("binary_classification_binding")
+    if not isinstance(adapter_binding, Mapping) or not isinstance(binary_binding, Mapping):
+        raise SctsrError(ErrorCode.UPSTREAM_BINDING_FAILED, "Formal finalization lacks adapter or binary preflight identity")
+    adapter_core = {key: value for key, value in adapter_binding.items() if key != "adapter_binding_digest"}
+    binary_core = {key: value for key, value in binary_binding.items() if key != "binary_contract_digest"}
+    if (
+        adapter_binding.get("adapter_binding_digest") != stable_digest(adapter_core)
+        or binary_binding.get("binary_contract_digest") != stable_digest(binary_core)
+    ):
+        raise SctsrError(ErrorCode.IDENTITY_DIGEST_MISMATCH, "Adapter or binary preflight binding digest changed before finalization")
+    adapter_path = Path(str(adapter_binding["adapter_origin"])).resolve()
+    repository_root = adapter_path.parents[2]
+    if (
+        not adapter_path.is_file()
+        or adapter_path.is_symlink()
+        or adapter_path.stat().st_size != adapter_binding["adapter_bytes"]
+        or sha256_file(adapter_path) != adapter_binding["adapter_sha256"]
+    ):
+        raise SctsrError(ErrorCode.UPSTREAM_BINDING_FAILED, "SCTSR adapter bytes changed before formal finalization")
+    source_snapshot_row = formal_input_snapshot["files"]["source_tree_manifest"]
+    source_snapshot_path = root / source_snapshot_row["snapshot_relative_path"]
+    from .source_identity import validate_source_tree_manifest
+
+    live_source = validate_source_tree_manifest(source_snapshot_path, repository_root, require_clean=True)
     manifest = {
         "schema_version": "stage1.sctsr.formal_run_manifest.v2",
         "execution_mode": "formal",
@@ -827,6 +853,11 @@ def _publish_formal_run_manifest_and_indexes(
         "arm_id": arm_id,
         "training_seed": identity.training_seed,
         "source_tree_digest": identity.source_tree_digest,
+        "repository_root": repository_root.as_posix(),
+        "runtime_environment_digest": live_source["runtime_environment_digest"],
+        "runtime_environment": live_source["runtime_environment"],
+        "adapter_import_binding": dict(adapter_binding),
+        "binary_classification_binding": dict(binary_binding),
         "contract_digest": identity.effective_contract_digest,
         "asset_registry_digest": identity.asset_registry_digest,
         "runtime_config_digest": identity.runtime_config_digest,
@@ -861,6 +892,55 @@ def _publish_formal_run_manifest_and_indexes(
         "artifact_index_path": generation_index_path.as_posix(),
         "generation_index_path": registered_generation_index.as_posix(),
         "generation_index_sha256": sha256_file(registered_generation_index),
+    }
+
+
+def validate_formal_run_runtime_identity(run_root: str | Path) -> dict[str, Any]:
+    """Re-probe the live runtime and adapter bytes immediately before completion."""
+
+    root = Path(run_root).resolve()
+    manifest_path = root / "RUN_MANIFEST.json"
+    manifest = load_json(manifest_path)
+    if not isinstance(manifest, Mapping):
+        raise SctsrError(ErrorCode.SOURCE_TREE_MISMATCH, "Formal run manifest is missing during runtime closeout")
+    repository_root = Path(str(manifest.get("repository_root", ""))).resolve()
+    formal_input_snapshot = validate_formal_input_snapshot(root)
+    source_row = formal_input_snapshot["files"]["source_tree_manifest"]
+    source_path = root / source_row["snapshot_relative_path"]
+    from .source_identity import validate_source_tree_manifest
+
+    live = validate_source_tree_manifest(source_path, repository_root, require_clean=True)
+    if (
+        manifest.get("runtime_environment_digest") != live["runtime_environment_digest"]
+        or manifest.get("runtime_environment") != live["runtime_environment"]
+    ):
+        raise SctsrError(
+            ErrorCode.SOURCE_TREE_MISMATCH,
+            "Live runtime changed between authorization and formal completion",
+            observed=live["runtime_environment_digest"],
+            expected=manifest.get("runtime_environment_digest"),
+        )
+    adapter = manifest.get("adapter_import_binding")
+    binary = manifest.get("binary_classification_binding")
+    if not isinstance(adapter, Mapping) or not isinstance(binary, Mapping):
+        raise SctsrError(ErrorCode.UPSTREAM_BINDING_FAILED, "Formal run manifest lacks adapter or binary preflight binding")
+    adapter_core = {key: value for key, value in adapter.items() if key != "adapter_binding_digest"}
+    binary_core = {key: value for key, value in binary.items() if key != "binary_contract_digest"}
+    adapter_path = Path(str(adapter.get("adapter_origin", ""))).resolve()
+    if (
+        adapter.get("adapter_binding_digest") != stable_digest(adapter_core)
+        or binary.get("binary_contract_digest") != stable_digest(binary_core)
+        or not adapter_path.is_file()
+        or adapter_path.is_symlink()
+        or adapter_path.stat().st_size != adapter.get("adapter_bytes")
+        or sha256_file(adapter_path) != adapter.get("adapter_sha256")
+    ):
+        raise SctsrError(ErrorCode.UPSTREAM_BINDING_FAILED, "Adapter or binary preflight identity changed before completion")
+    return {
+        "status": "PASS",
+        "runtime_environment_digest": live["runtime_environment_digest"],
+        "adapter_binding_digest": adapter["adapter_binding_digest"],
+        "binary_contract_digest": binary["binary_contract_digest"],
     }
 
 
@@ -1096,7 +1176,7 @@ def run_prepared_common_parent(
         if release_expected_bindings is None or release_authorization is None:
             raise SctsrError(ErrorCode.FORMAL_RELEASE_NOT_AUTHORIZED, "Formal parent finalization lacks release bindings")
         def finalize_parent() -> dict[str, Any]:
-            final_indexes = _publish_formal_run_manifest_and_indexes(
+            final_indexes = publish_formal_run_manifest_and_indexes(
                 root=root,
                 identity=identity,
                 run_role="COMMON_PARENT",
@@ -1107,9 +1187,11 @@ def run_prepared_common_parent(
                 execution_claim_binding=dict(execution_claim_binding or {}),
                 execution_claim_snapshot=dict(execution_claim_snapshot or {}),
                 run_intent_snapshot=dict(run_intent_snapshot or {}),
+                prepared_trainer_binding=dict(prepared_trainer_binding or {}),
             )
             finalized_receipt = {**receipt, "final_indexes": final_indexes}
             atomic_write_json(root / "PARENT_RECEIPT.json", finalized_receipt)
+            validate_formal_run_runtime_identity(root)
             from .run_validation import build_artifact_index
             atomic_write_json(root / "ARTIFACT_INDEX.json", build_artifact_index(root))
             completion = publish_formal_completion(
@@ -1414,18 +1496,11 @@ def run_prepared_branch(
     if execution_mode == "formal":
         if release_expected_bindings is None:
             raise SctsrError(ErrorCode.FORMAL_RELEASE_NOT_AUTHORIZED, "Formal branch finalization lacks release bindings")
-        final_indexes = _publish_formal_run_manifest_and_indexes(
-            root=root,
-            identity=identity,
-            run_role="BRANCH",
-            run_id=lineage.logical_run_id,
-            arm_id=schedule.arm_id.value,
-            release_authorization=release_authorization,
-            release_expected_bindings=release_expected_bindings,
-            execution_claim_binding=dict(execution_claim_binding or {}),
-            execution_claim_snapshot=dict(execution_claim_snapshot or {}),
-            run_intent_snapshot=dict(run_intent_snapshot or {}),
-        )
-        receipt = {**receipt, "final_indexes": final_indexes}
-        atomic_write_json(root / "BRANCH_RECEIPT.json", receipt)
+        return {
+            **receipt,
+            "_finalization_context": {
+                "execution_claim_snapshot": dict(execution_claim_snapshot or {}),
+                "run_intent_snapshot": dict(run_intent_snapshot or {}),
+            },
+        }
     return receipt
