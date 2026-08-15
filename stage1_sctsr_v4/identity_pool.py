@@ -76,7 +76,15 @@ class IdentityPool:
     spec: FixedIdentityPoolSpec
     records: tuple[IdentityRecord, ...]
 
-    def validate(self, *, base_denominator: int, base_ids: set[str] | None = None, t_ids: set[str] | None = None) -> None:
+    def validate(
+        self,
+        *,
+        base_denominator: int,
+        base_ids: set[str] | None = None,
+        t_ids: set[str] | None = None,
+        content_sha256_by_sample_id: Mapping[str, str] | None = None,
+        t_content_sha256: set[str] | None = None,
+    ) -> None:
         ids = [r.sample_id for r in self.records]
         if len(ids) != len(set(ids)):
             raise SctsrError(ErrorCode.DUPLICATE_IDENTITY, "Identity pool contains duplicate IDs")
@@ -94,6 +102,28 @@ class IdentityPool:
             raise SctsrError(ErrorCode.T_POOL_ROLE_MISMATCH, "T pool may not be labelled as a validated selector")
         if self.spec.pool_role == "R2_MATCHED_RANDOM" and t_ids is not None and set(ids) & t_ids:
             raise SctsrError(ErrorCode.R2_OVERLAPS_T, "R2 must have zero identity overlap with T")
+        if content_sha256_by_sample_id is not None:
+            missing = sorted(set(ids) - set(content_sha256_by_sample_id))
+            if missing:
+                raise SctsrError(
+                    ErrorCode.DATASET_CONTENT_MISMATCH,
+                    "Identity pool content binding does not cover every selected identity",
+                    observed=missing[:20],
+                )
+            content = [str(content_sha256_by_sample_id[sample_id]).upper() for sample_id in ids]
+            invalid = [value for value in content if len(value) != 64 or any(character not in "0123456789ABCDEF" for character in value)]
+            if invalid:
+                raise SctsrError(ErrorCode.DATASET_CONTENT_MISMATCH, "Identity pool contains a non-canonical image SHA-256 binding")
+            if len(content) != len(set(content)):
+                raise SctsrError(ErrorCode.DATASET_CONTENT_MISMATCH, "Identity pool contains multiple identities for the same image bytes")
+            if self.spec.pool_role == "R2_MATCHED_RANDOM" and t_content_sha256 is not None:
+                overlap = set(content) & {str(value).upper() for value in t_content_sha256}
+                if overlap:
+                    raise SctsrError(
+                        ErrorCode.R2_OVERLAPS_T,
+                        "R2 must have zero image-byte overlap with T",
+                        observed=sorted(overlap)[:20],
+                    )
         if self.spec.identity_digest_algorithm != "SHA256_SORTED_REPLAY_ROLE_TAB_SAMPLE_ID_LF":
             raise SctsrError(ErrorCode.IDENTITY_DIGEST_MISMATCH, "Identity pool uses an unregistered digest algorithm", observed=self.spec.identity_digest_algorithm)
         if len(self.spec.base_manifest_sha256) != 64 or len(self.spec.source_manifest_sha256) != 64:

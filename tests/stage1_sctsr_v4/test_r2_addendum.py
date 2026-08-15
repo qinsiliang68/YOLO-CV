@@ -6,6 +6,7 @@ from dataclasses import asdict
 import pytest
 
 from stage1_sctsr_v4.asset_registry import load_asset_registry
+from stage1_sctsr_v4.dataset_content_ledger import load_registered_dataset_content_map
 from stage1_sctsr_v4.errors import ErrorCode, SctsrError
 from stage1_sctsr_v4.formal_pool_inputs import (
     R2_APPROVED_IDENTITY_DIGEST,
@@ -19,6 +20,7 @@ from stage1_sctsr_v4.random_controls import (
     build_r2_matched_random,
 )
 from stage1_sctsr_v4.r2_addendum import (
+    R2_APPROVED_CONTENT_MAP_DIGEST,
     validate_approved_r2_build,
     validate_r2_matching_policy_mapping,
 )
@@ -132,14 +134,21 @@ def test_registered_addendum_materializes_the_audited_3000_id_pool(repository_ro
 
     assert len(result.pool.records) == 3000
     assert result.pool.spec.identity_digest == R2_APPROVED_IDENTITY_DIGEST
-    assert result.audit.displacement_count == 378
-    assert result.audit.displacement_lower_bound == 378
-    assert len(result.audit.displacement_records) == 378
+    assert result.audit.displacement_count == 379
+    assert result.audit.displacement_lower_bound == 379
+    assert len(result.audit.displacement_records) == 379
     assert result.audit.relaxed_fields == ("oof_group_id",)
     assert not ({record.sample_id for record in result.pool.records} & {record.sample_id for record in inputs.t_pool.records})
     assert Counter(record.stratum()[:3] for record in result.pool.records) == Counter(
         record.stratum()[:3] for record in inputs.t_pool.records
     )
+    content = load_registered_dataset_content_map(registry=registry, repository_root=repository_root)
+    t_content = {str(content[record.sample_id]["image_sha256"]).upper() for record in inputs.t_pool.records}
+    r2_content = {str(content[record.sample_id]["image_sha256"]).upper() for record in result.pool.records}
+    assert len(r2_content) == 3000
+    assert not (t_content & r2_content)
+    assert result.audit.overlap_with_t_content_count == 0
+    assert result.audit.excluded_content_duplicate_count >= 1
     validate_approved_r2_build(asdict(result.pool.spec), asdict(result.audit))
 
 
@@ -170,14 +179,16 @@ def test_machine_addendum_names_one_relaxed_field_and_one_shared_r2_pool(reposit
     policy_path = repository_root / "configs/stage1_sctsr_v4/r2_matching_policy_v1.json"
     policy = load_json(policy_path)
 
-    assert policy["schema_version"] == "stage1.sctsr.r2_matching_policy.v1"
-    assert policy["owner_decision"] == "APPROVED_2026-08-15"
+    assert policy["schema_version"] == "stage1.sctsr.r2_matching_policy.v2"
+    assert policy["owner_decision"] == "APPROVED_CONTENT_DISJOINT_REPAIR_2026-08-16"
     assert policy["relaxed_fields"] == ["oof_group_id"]
     assert policy["exact_fields"] == ["y_true", "historical_dynamic_bucket", "oof_fold"]
     assert policy["applies_to_arms"] == ["R2_U", "R2_F", "T_TO_R2_AT_160"]
     assert policy["shared_identity_pool_required"] is True
     assert policy["unique_count"] == 3000
     assert policy["overlap_with_t"] == 0
+    assert policy["overlap_with_t_content"] == 0
+    assert policy["content_unique_within_r2"] is True
     assert policy["selection_seed"] == R2_APPROVED_SELECTION_SEED
     assert policy["expected_identity_digest"] == R2_APPROVED_IDENTITY_DIGEST
     validate_r2_matching_policy_mapping(policy)
@@ -190,6 +201,8 @@ def test_machine_addendum_names_one_relaxed_field_and_one_shared_r2_pool(reposit
         "policy_id": policy["policy_id"],
         "selection_seed": R2_APPROVED_SELECTION_SEED,
         "expected_identity_digest": R2_APPROVED_IDENTITY_DIGEST,
+        "expected_content_map_digest": R2_APPROVED_CONTENT_MAP_DIGEST,
+        "expected_selected_content_digest": policy["expected_selected_content_digest"],
     }
 
     seed_registry = load_json(repository_root / "configs/stage1_sctsr_v4/seed_registry_schema_v1.json")

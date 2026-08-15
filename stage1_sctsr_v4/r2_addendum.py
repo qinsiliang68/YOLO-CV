@@ -6,20 +6,26 @@ from .errors import ErrorCode, SctsrError
 from .serialization import stable_digest
 
 
-R2_MATCHING_POLICY_SCHEMA = "stage1.sctsr.r2_matching_policy.v1"
-R2_MINIMUM_OOF_GROUP_DISPLACEMENT_POLICY = "MINIMUM_OOF_GROUP_DISPLACEMENT_ZERO_OVERLAP_V1"
+R2_MATCHING_POLICY_SCHEMA = "stage1.sctsr.r2_matching_policy.v2"
+R2_MINIMUM_OOF_GROUP_DISPLACEMENT_POLICY = "MINIMUM_OOF_GROUP_DISPLACEMENT_CONTENT_DISJOINT_V2"
 R2_STRICT_EXACT_POLICY = "STRICT_EXACT_LABEL_DYNAMIC_FOLD_OOF_GROUP_ZERO_OVERLAP_V1"
 R2_APPROVED_SELECTION_SEED = 20260812
-R2_APPROVED_IDENTITY_DIGEST = "957346D5178CA9397181D0DB47250533E9D659A74A3E7AAFF171FBEE5A0D194B"
+R2_APPROVED_IDENTITY_DIGEST = "A6DAA20A70F02B30D15B7C3E4079EA86903051AEED264F53E0A104A4C1AA80B6"
+R2_APPROVED_CONTENT_MAP_DIGEST = "751742DA58F13A2678CB700D018B95B5FA8E38392F15366B688CCEE97BE81CA7"
+R2_APPROVED_SELECTED_CONTENT_DIGEST = "A48B721CA37AD66D65B8C5972C5AE66C328C09194BA3C8C22C19B8FECE40F819"
+R2_APPROVED_EXCLUDED_CONTENT_IDENTITY_DIGEST = "F0F5F857F684E214BA252360B9454E46FBCE0D9A361910E03F3390F1FCEC42B7"
 R2_APPROVED_SELECTION_SEMANTIC = (
     "ZERO_OVERLAP_UNIQUE_EXACT_LABEL_DYNAMIC_FOLD_"
-    "MINIMUM_OOF_GROUP_DISPLACEMENT_RANDOM_FILL_V1"
+    "CONTENT_DISJOINT_MINIMUM_OOF_GROUP_DISPLACEMENT_RANDOM_FILL_V2"
 )
 R2_EXACT_FIELDS = ("y_true", "historical_dynamic_bucket", "oof_fold")
 R2_RELAXED_FIELDS = ("oof_group_id",)
 R2_SHARED_ARMS = ("R2_U", "R2_F", "T_TO_R2_AT_160")
 R2_APPROVED_UNIQUE_COUNT = 3000
-R2_APPROVED_DISPLACEMENT_COUNT = 378
+R2_APPROVED_DISPLACEMENT_COUNT = 379
+R2_APPROVED_EXCLUDED_COUNT = 3011
+R2_APPROVED_EXCLUDED_CONTENT_DUPLICATE_COUNT = 11
+R2_APPROVED_GROUP_TOTAL_VARIATION = R2_APPROVED_DISPLACEMENT_COUNT / R2_APPROVED_UNIQUE_COUNT
 
 
 def validate_r2_matching_policy_mapping(value: Mapping[str, Any]) -> dict[str, Any]:
@@ -32,6 +38,9 @@ def validate_r2_matching_policy_mapping(value: Mapping[str, Any]) -> dict[str, A
         "selection_seed",
         "unique_count",
         "overlap_with_t",
+        "overlap_with_t_content",
+        "content_unique_within_r2",
+        "content_ledger_asset_id",
         "exact_fields",
         "relaxed_fields",
         "construction",
@@ -39,6 +48,9 @@ def validate_r2_matching_policy_mapping(value: Mapping[str, Any]) -> dict[str, A
         "applies_to_arms",
         "shared_identity_pool_required",
         "expected_identity_digest",
+        "expected_content_map_digest",
+        "expected_selected_content_digest",
+        "expected_excluded_content_duplicate_count",
         "expected_group_total_variation",
         "residual_risk",
         "formal_training_authorized",
@@ -53,20 +65,26 @@ def validate_r2_matching_policy_mapping(value: Mapping[str, Any]) -> dict[str, A
     expected = {
         "schema_version": R2_MATCHING_POLICY_SCHEMA,
         "policy_id": R2_MINIMUM_OOF_GROUP_DISPLACEMENT_POLICY,
-        "owner_decision": "APPROVED_2026-08-15",
-        "approved_at": "2026-08-15",
+        "owner_decision": "APPROVED_CONTENT_DISJOINT_REPAIR_2026-08-16",
+        "approved_at": "2026-08-16",
         "supersedes_taskbook_requirements": ["SA-051", "SA-053", "SA-054"],
         "selection_seed": R2_APPROVED_SELECTION_SEED,
         "unique_count": R2_APPROVED_UNIQUE_COUNT,
         "overlap_with_t": 0,
+        "overlap_with_t_content": 0,
+        "content_unique_within_r2": True,
+        "content_ledger_asset_id": "dataset_content_ledger",
         "exact_fields": list(R2_EXACT_FIELDS),
         "relaxed_fields": list(R2_RELAXED_FIELDS),
-        "construction": "EXHAUST_EXACT_CELLS_THEN_COUNTER_HASH_FILL_WITHIN_SAME_EXACT_THREE_FIELD_CELL",
+        "construction": "EXCLUDE_T_CONTENT_AND_DEDUP_CONTENT_THEN_EXHAUST_EXACT_CELLS_AND_COUNTER_HASH_FILL_WITHIN_SAME_EXACT_THREE_FIELD_CELL",
         "minimum_displacement_count": R2_APPROVED_DISPLACEMENT_COUNT,
         "applies_to_arms": list(R2_SHARED_ARMS),
         "shared_identity_pool_required": True,
         "expected_identity_digest": R2_APPROVED_IDENTITY_DIGEST,
-        "expected_group_total_variation": 0.126,
+        "expected_content_map_digest": R2_APPROVED_CONTENT_MAP_DIGEST,
+        "expected_selected_content_digest": R2_APPROVED_SELECTED_CONTENT_DIGEST,
+        "expected_excluded_content_duplicate_count": R2_APPROVED_EXCLUDED_CONTENT_DUPLICATE_COUNT,
+        "expected_group_total_variation": R2_APPROVED_GROUP_TOTAL_VARIATION,
         "residual_risk": "OOF_GROUP_IS_FILENAME_BUCKET_SURROGATE_NOT_TRUE_VIDEO_ID_R1_REMAINS_CO_PRIMARY_CONTROL",
         "formal_training_authorized": False,
     }
@@ -111,7 +129,7 @@ def validate_approved_r2_build(
     expected_audit = {
         "policy": R2_MINIMUM_OOF_GROUP_DISPLACEMENT_POLICY,
         "selected_count": R2_APPROVED_UNIQUE_COUNT,
-        "excluded_count": R2_APPROVED_UNIQUE_COUNT,
+        "excluded_count": R2_APPROVED_EXCLUDED_COUNT,
         "overlap_with_t_count": 0,
         "overlap_with_t_rate": 0.0,
         "selection_seed": R2_APPROVED_SELECTION_SEED,
@@ -120,6 +138,11 @@ def validate_approved_r2_build(
         "exact_coarse_stratum_quota": True,
         "displacement_count": R2_APPROVED_DISPLACEMENT_COUNT,
         "displacement_lower_bound": R2_APPROVED_DISPLACEMENT_COUNT,
+        "content_map_digest": R2_APPROVED_CONTENT_MAP_DIGEST,
+        "excluded_content_duplicate_count": R2_APPROVED_EXCLUDED_CONTENT_DUPLICATE_COUNT,
+        "excluded_content_identity_digest": R2_APPROVED_EXCLUDED_CONTENT_IDENTITY_DIGEST,
+        "overlap_with_t_content_count": 0,
+        "selected_content_digest": R2_APPROVED_SELECTED_CONTENT_DIGEST,
     }
     for field, expected_value in expected_audit.items():
         if audit.get(field) != expected_value:
@@ -194,12 +217,12 @@ def validate_approved_r2_build(
         requested_groups[parts[3]] = requested_groups.get(parts[3], 0) + int(count)
     keys = set(requested_groups) | set(selected_groups)
     total_variation = sum(abs(requested_groups.get(key, 0) - int(selected_groups.get(key, 0))) for key in keys) / (2 * R2_APPROVED_UNIQUE_COUNT)
-    if total_variation != 0.126:
+    if total_variation != R2_APPROVED_GROUP_TOTAL_VARIATION:
         raise SctsrError(
             ErrorCode.CONFIGURATION_MISMATCH,
             "R2 group total variation differs from the approved capacity lower bound",
             observed=total_variation,
-            expected=0.126,
+            expected=R2_APPROVED_GROUP_TOTAL_VARIATION,
         )
     return {
         "status": "PASS",

@@ -63,7 +63,7 @@ REQUIRED_SCHEMAS = {
     "prepared_trainer_binding": "stage1.sctsr.prepared_trainer_binding.v1",
     "prepared_trainer_setup_failure": "stage1.sctsr.prepared_trainer_setup_failure.v1",
     "quarantine_receipt": "stage1.sctsr.quarantine_receipt.v1",
-    "r2_matching_policy": "stage1.sctsr.r2_matching_policy.v1",
+    "r2_matching_policy": "stage1.sctsr.r2_matching_policy.v2",
     "r2_specification_audit": "stage1.sctsr.r2_specification_audit.v1",
     "release_trust": "stage1.sctsr.release_trust.v1",
     "repository_state_audit": "stage1.sctsr.repository_state_audit.v1",

@@ -9,7 +9,9 @@ from .baseline_reference import MAIN_COMMIT, TASKBOOK_BLOB_SHA, TASKBOOK_PATH
 from .errors import ErrorCode, SctsrError
 from .formal_release import verify_formal_release
 from .r2_addendum import (
+    R2_APPROVED_CONTENT_MAP_DIGEST,
     R2_APPROVED_IDENTITY_DIGEST,
+    R2_APPROVED_SELECTED_CONTENT_DIGEST,
     R2_APPROVED_SELECTION_SEED,
     R2_MINIMUM_OOF_GROUP_DISPLACEMENT_POLICY,
     validate_r2_matching_policy_mapping,
@@ -69,6 +71,8 @@ def validate_contract_mapping(contract: Mapping[str, Any], arms: list[Mapping[st
         "policy_id",
         "selection_seed",
         "expected_identity_digest",
+        "expected_content_map_digest",
+        "expected_selected_content_digest",
     }
     if not isinstance(r2_policy, Mapping) or set(r2_policy) != expected_r2_fields:
         raise SctsrError(
@@ -81,6 +85,8 @@ def validate_contract_mapping(contract: Mapping[str, Any], arms: list[Mapping[st
         "policy_id": R2_MINIMUM_OOF_GROUP_DISPLACEMENT_POLICY,
         "selection_seed": R2_APPROVED_SELECTION_SEED,
         "expected_identity_digest": R2_APPROVED_IDENTITY_DIGEST,
+        "expected_content_map_digest": R2_APPROVED_CONTENT_MAP_DIGEST,
+        "expected_selected_content_digest": R2_APPROVED_SELECTED_CONTENT_DIGEST,
     }
     for field, expected_value in expected_r2_values.items():
         if r2_policy.get(field) != expected_value:

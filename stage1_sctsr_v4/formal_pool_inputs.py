@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any
+from typing import Any, Mapping
 
 import polars as pl
 
@@ -43,6 +43,7 @@ class FormalPoolInputs:
     asset_registry_digest: str
     t_content_unique_count: int
     t_content_identity_digest: str
+    content_sha256_by_sample_id: Mapping[str, str]
 
 
 def _asset(registry: AssetRegistry, asset_id: str):
@@ -159,6 +160,19 @@ def load_formal_pool_inputs(registry: AssetRegistry, repository_root: str | Path
             observed={"identities": len(t_records), "unique_image_sha256": unique_content},
         )
     t_content_digest = stable_digest(sorted(t_content_rows, key=lambda row: row["sample_id"]))
+    base_ids = {record.sample_id for record in base_records}
+    base_content = {
+        sample_id: str(row["image_sha256"]).upper()
+        for sample_id, row in content.items()
+        if sample_id in base_ids
+    }
+    if len(base_content) != len(base_records):
+        raise SctsrError(
+            ErrorCode.DATASET_CONTENT_MISMATCH,
+            "Frozen content ledger does not cover every canonical base identity",
+            observed=len(base_content),
+            expected=len(base_records),
+        )
     return FormalPoolInputs(
         base_records,
         t_pool,
@@ -167,6 +181,7 @@ def load_formal_pool_inputs(registry: AssetRegistry, repository_root: str | Path
         registry.digest,
         unique_content,
         t_content_digest,
+        base_content,
     )
 
 
@@ -213,6 +228,7 @@ def build_registered_r2(inputs: FormalPoolInputs, *, base_denominator: int, sele
         selection_seed=selection_seed,
         guard=TerminalFieldGuard(),
         matching_policy=R2_MINIMUM_OOF_GROUP_DISPLACEMENT_POLICY,
+        content_sha256_by_sample_id=inputs.content_sha256_by_sample_id,
     )
     if result.pool.spec.identity_digest != R2_APPROVED_IDENTITY_DIGEST:
         raise SctsrError(

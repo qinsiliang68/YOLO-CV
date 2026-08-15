@@ -22,3 +22,16 @@ def test_t_cannot_be_labeled_validated_selector(synthetic_fixture):
     bad=replace(synthetic_fixture.t_pool.spec,selection_semantic='VALIDATED_SELECTOR')
     with pytest.raises(SctsrError) as e:IdentityPool(bad,synthetic_fixture.t_pool.records).validate(base_denominator=synthetic_fixture.base_denominator)
     assert e.value.code is ErrorCode.T_POOL_ROLE_MISMATCH
+
+
+def test_r2_pool_validation_rejects_content_overlap_with_t(synthetic_fixture):
+    pool = synthetic_fixture.r2_result.pool
+    content = {record.sample_id: f"{index + 1:064X}" for index, record in enumerate(pool.records)}
+    content[pool.records[0].sample_id] = "F" * 64
+    with pytest.raises(SctsrError) as error:
+        pool.validate(
+            base_denominator=synthetic_fixture.base_denominator,
+            content_sha256_by_sample_id=content,
+            t_content_sha256={"F" * 64},
+        )
+    assert error.value.code is ErrorCode.R2_OVERLAPS_T

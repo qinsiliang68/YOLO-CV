@@ -154,6 +154,11 @@ def main() -> int:
                 base_denominator=denominator,
                 base_ids=base_ids,
                 t_ids={record.sample_id for record in t_pool.records},
+                content_sha256_by_sample_id=inputs.content_sha256_by_sample_id,
+                t_content_sha256={
+                    inputs.content_sha256_by_sample_id[record.sample_id]
+                    for record in t_pool.records
+                },
             )
             source_bindings = {
                 "asset_registry": arguments.asset_registry.resolve().as_posix(),
@@ -162,6 +167,7 @@ def main() -> int:
                 "preterminal_source_sha256": inputs.preterminal_source_sha256,
                 "t_source_manifest_path": inputs.t_pool.spec.source_manifest_path,
                 "t_source_manifest_sha256": inputs.t_pool.spec.source_manifest_sha256,
+                "content_map_digest": built.audit.content_map_digest if arguments.pool == "R2_MATCHED_RANDOM" else "NOT_APPLICABLE",
             }
             if r2_policy_binding is not None:
                 source_bindings["r2_matching_policy"] = r2_policy_binding

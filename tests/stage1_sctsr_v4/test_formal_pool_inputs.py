@@ -43,6 +43,6 @@ def test_sa_053_registered_r2_uses_only_the_owner_approved_minimum_displacement_
     )
 
     assert result.pool.spec.identity_digest == R2_APPROVED_IDENTITY_DIGEST
-    assert result.audit.displacement_count == 378
-    assert result.audit.displacement_lower_bound == 378
+    assert result.audit.displacement_count == 379
+    assert result.audit.displacement_lower_bound == 379
     assert result.audit.relaxed_fields == ("oof_group_id",)

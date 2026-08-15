@@ -56,6 +56,11 @@ class PoolBuildAudit:
     displacement_lower_bound: int = 0
     displacement_records: tuple[R2GroupDisplacement, ...] = ()
     displacement_ledger_digest: str = "NOT_APPLICABLE"
+    content_map_digest: str = "NOT_RECORDED"
+    excluded_content_duplicate_count: int = 0
+    excluded_content_identity_digest: str = "NOT_APPLICABLE"
+    overlap_with_t_content_count: int = 0
+    selected_content_digest: str = "NOT_RECORDED"
 
 
 @dataclass(frozen=True, slots=True)
@@ -258,6 +263,7 @@ def build_r2_matched_random(
     selection_seed: int,
     guard: TerminalFieldGuard | None = None,
     matching_policy: str = R2_STRICT_EXACT_POLICY,
+    content_sha256_by_sample_id: Mapping[str, str] | None = None,
 ) -> PoolBuildResult:
     if matching_policy not in {R2_STRICT_EXACT_POLICY, R2_MINIMUM_OOF_GROUP_DISPLACEMENT_POLICY}:
         raise SctsrError(
@@ -269,8 +275,49 @@ def build_r2_matched_random(
     projected = guard.project_rows(raw_rows)
     records = [IdentityRecord.from_mapping(row) for row in projected]
     t_ids = {record.sample_id for record in t_pool.records}
-    candidates = [record for record in records if record.base_manifest_membership and record.sample_id not in t_ids]
+    identity_eligible = [record for record in records if record.base_manifest_membership and record.sample_id not in t_ids]
     excluded = [record for record in records if not record.base_manifest_membership or record.sample_id in t_ids]
+    excluded_content: list[IdentityRecord] = []
+    content_map_digest = "NOT_RECORDED"
+    selected_content_digest = "NOT_RECORDED"
+    if content_sha256_by_sample_id is None:
+        candidates = identity_eligible
+    else:
+        required_ids = {record.sample_id for record in records} | t_ids
+        missing = sorted(required_ids - set(content_sha256_by_sample_id))
+        if missing:
+            raise SctsrError(
+                ErrorCode.DATASET_CONTENT_MISMATCH,
+                "R2 content map does not cover the complete candidate and treatment universe",
+                observed=missing[:20],
+            )
+        normalized_content = {sample_id: str(value).upper() for sample_id, value in content_sha256_by_sample_id.items() if sample_id in required_ids}
+        invalid = {
+            sample_id: value
+            for sample_id, value in normalized_content.items()
+            if len(value) != 64 or any(character not in "0123456789ABCDEF" for character in value)
+        }
+        if invalid:
+            raise SctsrError(ErrorCode.DATASET_CONTENT_MISMATCH, "R2 content map contains a non-canonical image SHA-256", observed=sorted(invalid)[:20])
+        content_map_digest = stable_digest(sorted(normalized_content.items()))
+        t_content = {normalized_content[sample_id] for sample_id in t_ids}
+        non_t_content = [record for record in identity_eligible if normalized_content[record.sample_id] not in t_content]
+        excluded_content.extend(record for record in identity_eligible if normalized_content[record.sample_id] in t_content)
+        by_content: dict[str, list[IdentityRecord]] = defaultdict(list)
+        for record in non_t_content:
+            by_content[normalized_content[record.sample_id]].append(record)
+        candidates = []
+        for image_sha256, aliases in sorted(by_content.items()):
+            ranked = sorted(
+                aliases,
+                key=lambda record: (
+                    counter_hash("R2_content_representative", selection_seed, image_sha256, record.sample_id),
+                    record.sample_id,
+                ),
+            )
+            candidates.append(ranked[0])
+            excluded_content.extend(ranked[1:])
+        excluded.extend(excluded_content)
     if len({r.sample_id for r in candidates}) != len(candidates):
         raise SctsrError(ErrorCode.DUPLICATE_IDENTITY, "R2 candidate universe contains duplicate IDs")
     required = Counter(_stratum_token(record) for record in t_pool.records)
@@ -307,6 +354,16 @@ def build_r2_matched_random(
         selection_semantic = R2_APPROVED_SELECTION_SEMANTIC
     if {r.sample_id for r in selected} & t_ids:
         raise SctsrError(ErrorCode.R2_OVERLAPS_T, "R2 must have zero identity overlap with T")
+    if content_sha256_by_sample_id is not None:
+        selected_rows = [
+            {"sample_id": record.sample_id, "image_sha256": normalized_content[record.sample_id]}
+            for record in sorted(selected, key=lambda item: item.sample_id)
+        ]
+        selected_content_digest = stable_digest(selected_rows)
+        selected_content = {row["image_sha256"] for row in selected_rows}
+        t_content = {normalized_content[sample_id] for sample_id in t_ids}
+        if len(selected_content) != len(selected) or selected_content & t_content:
+            raise SctsrError(ErrorCode.R2_OVERLAPS_T, "R2 content-disjointness failed after selection")
     pool = make_pool(
         pool_id=f"R2_MATCHED_RANDOM_{matching_policy}_{selection_seed}",
         pool_role="R2_MATCHED_RANDOM",
@@ -325,6 +382,12 @@ def build_r2_matched_random(
     if matching_policy == R2_MINIMUM_OOF_GROUP_DISPLACEMENT_POLICY and (exact_joint or not exact_coarse):
         raise SctsrError(ErrorCode.R2_QUOTA_INFEASIBLE, "Approved R2 addendum changed more or less than oof_group_id")
     displacement_digest = stable_digest(displacement_records) if displacement_records else "NOT_APPLICABLE"
+    pool.validate(
+        base_denominator=base_denominator,
+        t_ids=t_ids,
+        content_sha256_by_sample_id=content_sha256_by_sample_id,
+        t_content_sha256=t_content if content_sha256_by_sample_id is not None else None,
+    )
     return PoolBuildResult(
         pool,
         PoolBuildAudit(
@@ -348,5 +411,10 @@ def build_r2_matched_random(
             displacement_lower_bound=displacement_lower_bound,
             displacement_records=displacement_records,
             displacement_ledger_digest=displacement_digest,
+            content_map_digest=content_map_digest,
+            excluded_content_duplicate_count=len(excluded_content),
+            excluded_content_identity_digest=identity_digest(excluded_content) if excluded_content else "NOT_APPLICABLE",
+            overlap_with_t_content_count=0,
+            selected_content_digest=selected_content_digest,
         ),
     )
