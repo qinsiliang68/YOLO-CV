@@ -8,7 +8,12 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
-from stage1_sctsr_v4.dataset_adapter import IdentityAugmentingDataset, load_identity_manifest
+from stage1_sctsr_v4.dataset_adapter import (
+    DatasetIdentity,
+    IdentityAugmentingDataset,
+    IdentityFilteringDataset,
+    load_identity_manifest,
+)
 
 try:
     from ultralytics.models.yolo.classify.train import ClassificationTrainer
@@ -17,20 +22,30 @@ except ImportError as exc:  # pragma: no cover - exercised in the complete YOLO-
 
 
 class SctsrClassificationTrainer(ClassificationTrainer):
-    def __init__(self, *args: Any, identity_manifest: str | Path, training_seed: int, **kwargs: Any) -> None:
+    def __init__(
+        self,
+        *args: Any,
+        identity_manifest: str | Path,
+        validation_identities: tuple[DatasetIdentity, ...],
+        training_seed: int,
+        **kwargs: Any,
+    ) -> None:
         self._sctsr_identities = load_identity_manifest(identity_manifest)
+        self._sctsr_validation_identities = tuple(validation_identities)
         self._sctsr_training_seed = int(training_seed)
         super().__init__(*args, **kwargs)
 
     def build_dataset(self, img_path: str, mode: str = "train", batch=None):
         dataset = super().build_dataset(img_path, mode=mode, batch=batch)
-        if mode != "train":
-            return dataset
-        return IdentityAugmentingDataset(
-            dataset,
-            self._sctsr_identities,
-            training_seed=self._sctsr_training_seed,
-        )
+        if mode == "train":
+            return IdentityAugmentingDataset(
+                dataset,
+                self._sctsr_identities,
+                training_seed=self._sctsr_training_seed,
+            )
+        if mode == "val":
+            return IdentityFilteringDataset(dataset, self._sctsr_validation_identities)
+        return dataset
 
     def replay_batch_provider(self, sample_ids, epoch: int, base_step_index: int, training_seed: int):
         dataset = self.train_loader.dataset

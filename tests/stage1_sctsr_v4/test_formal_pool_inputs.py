@@ -22,6 +22,8 @@ def registered_inputs(repository_root):
 
 def test_sa_045_registered_t_is_exact_3000_id_frozen_stress_set(registered_inputs):
     assert len(registered_inputs.t_pool.records) == 3000
+    assert registered_inputs.t_content_unique_count == 3000
+    assert len(registered_inputs.t_content_identity_digest) == 64
     assert registered_inputs.t_pool.spec.identity_digest == T_CANONICAL_IDENTITY_DIGEST
     assert registered_inputs.t_pool.spec.selection_semantic == "HISTORICAL_SIGN_REVERSAL_STRESS_SET_NOT_VALIDATED_SELECTOR"
 

@@ -59,7 +59,7 @@ def test_registered_r2_audit_reproduces_shortage_and_compares_falsifiable_option
     assert audit["strict_exact"]["zero_available_occurrences"] == 61
     assert audit["options"]["exact_with_replacement"]["status"] == "INFEASIBLE"
     assert audit["options"]["matchable_t_subset"]["unique_count"] == 2622
-    assert audit["options"]["drop_group_hash_random"]["group_total_variation"] == pytest.approx(0.3923333333333333)
+    assert audit["options"]["drop_group_hash_random"]["group_total_variation"] == pytest.approx(0.39266666666666666)
     proposed = audit["options"]["minimum_displacement_zero_overlap"]
     assert proposed["status"] == "FEASIBLE_REQUIRES_PREREGISTERED_SPEC_CHANGE"
     assert proposed["unique_count"] == 3000

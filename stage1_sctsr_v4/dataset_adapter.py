@@ -9,6 +9,7 @@ import torch
 
 from .errors import ErrorCode, SctsrError
 from .rng_isolation import derive_counter_seed, replay_rng_domain
+from .serialization import sha256_file, stable_digest
 
 
 def tensor_digest(tensor: torch.Tensor) -> str:
@@ -242,6 +243,136 @@ class IdentityAugmentingDataset(torch.utils.data.Dataset):
             "augmentation_digests": tuple(str(item.get("augmentation_digest", "NOT_RECORDED")) for item in items),
             "augmentation_seeds": tuple(int(item["augmentation_seed"]) for item in items),
         }
+
+
+class IdentityFilteringDataset(torch.utils.data.Dataset):
+    """Expose exactly one registered evaluation identity set from an upstream dataset.
+
+    The upstream classification directory may still contain historical rows
+    excluded by the SCTSR content-disjointness overlay. This wrapper filters
+    those rows before any evaluation batch is constructed and preserves the
+    upstream transform and dataset attributes through delegation.
+    """
+
+    def __init__(self, base_dataset: Any, identities: Sequence[DatasetIdentity]) -> None:
+        raw_samples = getattr(base_dataset, "samples", None)
+        if not isinstance(raw_samples, Sequence) or len(raw_samples) != len(base_dataset):
+            raise SctsrError(
+                ErrorCode.UPSTREAM_BINDING_FAILED,
+                "Frozen validation dataset must expose one physical sample path and label per index",
+            )
+        expected: dict[tuple[str, int], DatasetIdentity] = {}
+        for identity in identities:
+            key = (Path(identity.source_path).name.casefold(), int(identity.y_true))
+            if not key[0] or key in expected:
+                raise SctsrError(
+                    ErrorCode.DUPLICATE_IDENTITY,
+                    "Registered validation identities have an ambiguous filename/label binding",
+                    observed=key,
+                )
+            expected[key] = identity
+        selected: list[tuple[int, DatasetIdentity, str, tuple[Any, ...]]] = []
+        for index, raw_sample in enumerate(raw_samples):
+            if not isinstance(raw_sample, Sequence) or len(raw_sample) < 2:
+                raise SctsrError(ErrorCode.UPSTREAM_BINDING_FAILED, "Classification validation sample is malformed")
+            physical_path, physical_label = str(raw_sample[0]), int(raw_sample[1])
+            key = (Path(physical_path).name.casefold(), physical_label)
+            identity = expected.pop(key, None)
+            if identity is None:
+                continue
+            if not _source_path_matches(physical_path, identity.source_path):
+                raise SctsrError(
+                    ErrorCode.PREDICTION_IDENTITY_MISMATCH,
+                    "Validation physical path differs from the registered identity",
+                    observed=physical_path,
+                    expected=identity.source_path,
+                )
+            selected.append((index, identity, physical_path, tuple(raw_sample)))
+        if expected:
+            raise SctsrError(
+                ErrorCode.PREDICTION_IDENTITY_MISMATCH,
+                "Registered validation identities are absent from the physical classification dataset",
+                observed=sorted(expected)[:20],
+            )
+        if not selected:
+            raise SctsrError(ErrorCode.ASSET_VALIDATION_FAILED, "Effective validation dataset is empty")
+        self.base_dataset = base_dataset
+        self._base_indices = tuple(row[0] for row in selected)
+        self.identities = tuple(row[1] for row in selected)
+        self.physical_source_paths = tuple(row[2] for row in selected)
+        self.samples = tuple(row[3] for row in selected)
+
+    def __len__(self) -> int:
+        return len(self._base_indices)
+
+    def __getitem__(self, index: int) -> Any:
+        return self.base_dataset[self._base_indices[index]]
+
+    def __getattr__(self, name: str) -> Any:
+        if name in {"base_dataset", "_base_indices", "identities", "physical_source_paths", "samples"}:
+            raise AttributeError(name)
+        return getattr(self.base_dataset, name)
+
+
+def validate_materialized_dataset_bytes(
+    dataset: Any,
+    expected_content: Mapping[str, Mapping[str, Any]],
+    *,
+    role: str,
+) -> dict[str, Any]:
+    """Hash the exact physical files exposed by an upstream dataset."""
+
+    identities = getattr(dataset, "identities", None)
+    physical_paths = getattr(dataset, "physical_source_paths", None)
+    if (
+        not isinstance(identities, Sequence)
+        or not isinstance(physical_paths, Sequence)
+        or len(identities) != len(physical_paths)
+    ):
+        raise SctsrError(
+            ErrorCode.UPSTREAM_BINDING_FAILED,
+            "Prepared dataset lacks auditable physical identity paths",
+            observed=role,
+        )
+    evidence: list[dict[str, Any]] = []
+    total_bytes = 0
+    for identity, raw_path in zip(identities, physical_paths, strict=True):
+        sample_id = str(identity.sample_id)
+        expected = expected_content.get(sample_id)
+        path = Path(str(raw_path)).resolve()
+        if expected is None or not path.is_file():
+            raise SctsrError(
+                ErrorCode.DATASET_CONTENT_MISMATCH,
+                "Materialized dataset identity or physical file is absent from the frozen content ledger",
+                observed=sample_id,
+                artifact_path=str(path),
+            )
+        observed_bytes = path.stat().st_size
+        observed_sha = sha256_file(path)
+        expected_bytes = int(expected["image_bytes"])
+        expected_sha = str(expected["image_sha256"]).upper()
+        if observed_bytes != expected_bytes or observed_sha != expected_sha:
+            raise SctsrError(
+                ErrorCode.DATASET_CONTENT_MISMATCH,
+                "Materialized dataset bytes differ from the frozen content ledger",
+                observed={"bytes": observed_bytes, "sha256": observed_sha},
+                expected={"bytes": expected_bytes, "sha256": expected_sha},
+                artifact_path=str(path),
+            )
+        total_bytes += observed_bytes
+        evidence.append(
+            {"sample_id": sample_id, "image_bytes": observed_bytes, "image_sha256": observed_sha}
+        )
+    payload = {
+        "status": "PASS",
+        "role": role,
+        "row_count": len(evidence),
+        "physical_bytes_verified": total_bytes,
+        "materialized_content_digest": stable_digest(
+            sorted(evidence, key=lambda row: row["sample_id"])
+        ),
+    }
+    return {**payload, "binding_digest": stable_digest(payload)}
 
 
 def load_identity_manifest(path: str | Path) -> tuple[DatasetIdentity, ...]:

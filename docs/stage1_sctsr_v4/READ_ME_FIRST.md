@@ -15,7 +15,7 @@ multi-label 主训练任务，也不覆盖任何历史 120/240-run 结果。SCTS
 - owner 已于 2026-08-15 批准只放宽 filename-bucket surrogate `oof_group_id`，
   其余三字段 exact、3,000 unique、T overlap=0 保持不变；
 - `R2_U`、`R2_F` 和 fallback 必须复用 digest 为
-  `075FC31...19B6BECC` 的同一 R2 pool；
+  `957346D5...A0D194B` 的同一 R2 pool；
 - 正式 seed、matrix release 和 execution token 尚未发布；
 - `val_target` 不存在，故 A/gradient-alignment保持 HELD，但不阻断第一阶段
   timing/stop/fallback 代码审查；
@@ -40,7 +40,9 @@ authority 仍必须把 addendum、可物化 R2 pool 和新的 contract/source id
 7. `ARTIFACT_AND_SCHEMA_GUIDE.md`：每个 ledger/checkpoint/prediction/frontier字段；
 8. `DEPLOYMENT_CHECKLIST.md`：发布前逐项机器验收；
 9. `SPECIFICATION_CHANGE_REQUEST_R2_INFEASIBLE.md` 与 canonical
-   `SCTSR_R2_MATCHING_ADDENDUM_20260815.md`：原不可行证据和已批准决定；
+   `SCTSR_R2_MATCHING_ADDENDUM_20260815.md`、
+   `SCTSR_DATA_CONTENT_AND_T_REPAIR_ADDENDUM_20260815.md`：原不可行证据、
+   已批准 R2 决定和数据内容修复；
 10. `INDEPENDENT_REVIEW_CHECKLIST.md`、`KNOWN_BLOCKERS.md` 和最终 review report。
 
 任务书仍是实施范围的上游权威规范；本 runbook 是对已经实现代码和本轮 review

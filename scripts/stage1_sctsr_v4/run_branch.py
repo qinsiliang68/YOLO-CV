@@ -264,6 +264,7 @@ def main() -> int:
             transform=transform,
             run_root=arguments.output_root,
             repository_root=arguments.repository_root,
+            dataset_root=trainer_binding["dataset_content_binding"]["dataset_root"],
             asset_registry_path=arguments.asset_registry,
             checkpoint_path=Path(result["fixed_formal_endpoint"]["path"]),
             run_id=lineage.logical_run_id,

@@ -68,6 +68,7 @@ class AssetRegistry:
     base_identity_digest_algorithm: str | None = None
     base_asset_ids: tuple[str, ...] = ()
     split_asset_ids: tuple[tuple[str, tuple[str, ...]], ...] = ()
+    content_exclusion_asset_id: str | None = None
 
     @property
     def digest(self) -> str:
@@ -95,6 +96,11 @@ class AssetRegistry:
             split_asset_ids=tuple(
                 (str(role), tuple(str(item) for item in asset_ids))
                 for role, asset_ids in sorted(dict(value.get("split_asset_ids", {})).items())
+            ),
+            content_exclusion_asset_id=(
+                None
+                if value.get("content_exclusion_asset_id") is None
+                else str(value["content_exclusion_asset_id"])
             ),
         )
 
@@ -269,6 +275,13 @@ def validate_asset_registry(registry: AssetRegistry, repository_root: str | Path
                 if overlap:
                     raise SctsrError(ErrorCode.ASSET_VALIDATION_FAILED, "Mutually exclusive assets overlap", failing_field=group, observed={"left": left_id, "right": right_id, "example": sorted(overlap)[:20]})
 
+    from .dataset_disjointness import load_registered_content_exclusions, scientific_split_role
+
+    exclusions = load_registered_content_exclusions(registry, root)
+    exclusions_by_role: dict[str, set[str]] = {}
+    for sample_id, row in exclusions.items():
+        exclusions_by_role.setdefault(scientific_split_role(row["split_role"]), set()).add(sample_id)
+
     allowed_split_roles = {"val_model", "val_cal", "val_op"}
     registered_splits: dict[str, dict[str, Any]] = {}
     split_identities_seen: dict[str, str] = {}
@@ -307,10 +320,23 @@ def validate_asset_registry(registry: AssetRegistry, repository_root: str | Path
                     "identity_digest": evidence.identity_digest,
                 }
             )
+        excluded_ids = exclusions_by_role.get(split_role, set())
+        unknown_exclusions = sorted(excluded_ids - set(combined))
+        if unknown_exclusions:
+            raise SctsrError(
+                ErrorCode.DATASET_SPLIT_CONTENT_LEAKAGE,
+                "Content exclusion references an identity outside its registered split",
+                observed={"split_role": split_role, "sample_ids": unknown_exclusions[:20]},
+            )
+        effective = {sample_id: label for sample_id, label in combined.items() if sample_id not in excluded_ids}
+        if not effective:
+            raise SctsrError(ErrorCode.ASSET_VALIDATION_FAILED, "Effective registered validation split is empty", observed=split_role)
         registered_splits[split_role] = {
             "asset_ids": list(asset_ids),
-            "row_count": len(combined),
-            "sample_label_identity_digest": _sample_label_digest(combined),
+            "raw_row_count": len(combined),
+            "excluded_content_rows": len(excluded_ids),
+            "row_count": len(effective),
+            "sample_label_identity_digest": _sample_label_digest(effective),
             "components": components,
         }
 
@@ -361,6 +387,22 @@ def load_registered_split_labels(
             if sample_id in labels:
                 raise SctsrError(ErrorCode.ASSET_VALIDATION_FAILED, "Registered split components overlap", observed=sample_id)
             labels[sample_id] = label
+    from .dataset_disjointness import load_registered_content_exclusions, scientific_split_role
+
+    exclusions = load_registered_content_exclusions(registry, root)
+    excluded_ids = {
+        sample_id
+        for sample_id, row in exclusions.items()
+        if scientific_split_role(row["split_role"]) == role
+    }
+    unknown = sorted(excluded_ids - set(labels))
+    if unknown:
+        raise SctsrError(
+            ErrorCode.DATASET_SPLIT_CONTENT_LEAKAGE,
+            "Content exclusion references an identity outside the requested split",
+            observed=unknown[:20],
+        )
+    labels = {sample_id: label for sample_id, label in labels.items() if sample_id not in excluded_ids}
     if not labels:
         raise SctsrError(ErrorCode.ASSET_VALIDATION_FAILED, "Registered validation split is empty", observed=role)
     return labels

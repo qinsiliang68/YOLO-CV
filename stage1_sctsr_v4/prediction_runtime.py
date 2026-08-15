@@ -63,10 +63,12 @@ def load_registered_image_records(
 
     root = Path(repository_root).resolve()
     data_root = Path(dataset_root).resolve()
-    try:
-        data_root.relative_to(root)
-    except ValueError as exc:
-        raise SctsrError(ErrorCode.ASSET_VALIDATION_FAILED, "Prediction dataset root escapes the repository") from exc
+    if not data_root.is_dir():
+        raise SctsrError(
+            ErrorCode.ASSET_VALIDATION_FAILED,
+            "Prediction dataset root is missing",
+            artifact_path=str(data_root),
+        )
     expected_labels = load_registered_split_labels(registry, root, split_role)
     asset_ids = registry.split_asset_map.get(split_role)
     if not asset_ids:
@@ -104,11 +106,22 @@ def load_registered_image_records(
                         "Prediction image path differs from its registered sample identity",
                         failing_field=f"{asset.asset_id}:row[{row_index}]",
                     )
+                if sample_id not in expected_labels:
+                    # The SHA-bound content-disjointness overlay removes this
+                    # historical manifest row from the effective endpoint.
+                    continue
                 raw_label = asset.constant_label if asset.constant_label is not None else row.get(asset.label_column or "")
                 try:
                     label = int(raw_label)
                 except (TypeError, ValueError) as exc:
                     raise SctsrError(ErrorCode.ASSET_VALIDATION_FAILED, "Prediction split label is not an integer") from exc
+                if label != expected_labels[sample_id]:
+                    raise SctsrError(
+                        ErrorCode.PREDICTION_IDENTITY_MISMATCH,
+                        "Prediction manifest label differs from the effective registered split",
+                        observed=label,
+                        expected=expected_labels[sample_id],
+                    )
                 image_path = (data_root / Path(image_relative)).resolve()
                 try:
                     image_path.relative_to(data_root)
@@ -228,6 +241,7 @@ def publish_formal_endpoint(
     transform: Callable[[Image.Image], torch.Tensor],
     run_root: str | Path,
     repository_root: str | Path,
+    dataset_root: str | Path,
     asset_registry_path: str | Path,
     checkpoint_path: str | Path,
     run_id: str,
@@ -240,6 +254,13 @@ def publish_formal_endpoint(
 
     root = Path(run_root).resolve()
     repository = Path(repository_root).resolve()
+    data_root = Path(dataset_root).resolve()
+    if not data_root.is_dir():
+        raise SctsrError(
+            ErrorCode.ASSET_VALIDATION_FAILED,
+            "Formal endpoint dataset root is missing",
+            artifact_path=str(data_root),
+        )
     registry_source = Path(asset_registry_path).resolve()
     registry = load_asset_registry(registry_source)
     paths = _endpoint_artifact_paths(root, run_id)
@@ -281,7 +302,7 @@ def publish_formal_endpoint(
     records = load_registered_image_records(
         registry,
         repository_root=repository,
-        dataset_root=repository / "data/final_sewerml_dataset",
+        dataset_root=data_root,
         split_role="val_op",
     )
     rows = infer_prediction_rows(
@@ -328,7 +349,7 @@ def publish_formal_endpoint(
     atomic_write_json(receipt_path, receipt)
     from .run_validation import validate_formal_endpoint_evidence
 
-    return validate_formal_endpoint_evidence(
+    validation = validate_formal_endpoint_evidence(
         root,
         manifest={
             "run_id": run_id,
@@ -340,6 +361,7 @@ def publish_formal_endpoint(
         checkpoint_path=checkpoint,
         repository_root=repository,
     )
+    return {**validation, "dataset_root": data_root.as_posix()}
 
 
 def _ema_model_state(ema_state: Mapping[str, object]) -> Mapping[str, object]:

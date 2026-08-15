@@ -94,7 +94,7 @@ R2 matcher 在匹配前只接收预终端白名单投影。loss、confidence、R
 
 `R2_U` 与 `R2_F` 不是两套各 3,000 IDs 的抽样。两者及
 `T_TO_R2_AT_160` fallback 必须复用 selection seed `20260812`、3,000 unique 和
-identity digest `075FC31...19B6BECC` 的同一 pool；U/F 只允许 schedule 不同。
+identity digest `957346D5...A0D194B` 的同一 pool；U/F 只允许 schedule 不同。
 
 正式 pool 从登记资产派生分母；CLI 不接受人为 `--base-denominator`。生成后保存 manifest、五组 membership、候选全集 selection ledger 和 quota audit。
 

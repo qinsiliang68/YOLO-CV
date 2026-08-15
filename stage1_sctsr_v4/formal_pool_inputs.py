@@ -7,6 +7,7 @@ from typing import Any
 import polars as pl
 
 from .asset_registry import AssetRegistry, validate_asset_registry
+from .dataset_content_ledger import load_registered_dataset_content_map
 from .errors import ErrorCode, SctsrError
 from .identity_pool import IdentityPool, IdentityRecord, T_SELECTION_SEMANTIC, make_pool
 from .random_controls import PoolBuildResult, build_r1_global_random, build_r2_matched_random
@@ -19,7 +20,7 @@ from .serialization import stable_digest
 from .terminal_field_guard import TerminalFieldGuard
 
 
-T_CANONICAL_IDENTITY_DIGEST = "85D462C1D95F30FB8B519162BBAD762CC4E9506A185C07D719145F07FE003B4B"
+T_CANONICAL_IDENTITY_DIGEST = "D9702F54DA3D9C7C4E27B657B7EC7A5FD235DEC72E2257AE5029E0C62D7482C7"
 PRETERMINAL_FIELDS = (
     "sample_id",
     "y_true",
@@ -40,6 +41,8 @@ class FormalPoolInputs:
     base_manifest_sha256: str
     preterminal_source_sha256: str
     asset_registry_digest: str
+    t_content_unique_count: int
+    t_content_identity_digest: str
 
 
 def _asset(registry: AssetRegistry, asset_id: str):
@@ -137,7 +140,34 @@ def load_formal_pool_inputs(registry: AssetRegistry, repository_root: str | Path
     t_pool.validate(base_denominator=registry.base_denominator, base_ids={record.sample_id for record in base_records})
     if t_pool.spec.identity_digest != T_CANONICAL_IDENTITY_DIGEST:
         raise SctsrError(ErrorCode.IDENTITY_DIGEST_MISMATCH, "Registered T stress-set digest differs from the taskbook", observed=t_pool.spec.identity_digest, expected=T_CANONICAL_IDENTITY_DIGEST)
-    return FormalPoolInputs(base_records, t_pool, base_binding, preterminal_binding, registry.digest)
+    content = load_registered_dataset_content_map(registry=registry, repository_root=root)
+    t_content_rows = []
+    for record in t_records:
+        row = content.get(record.sample_id)
+        if row is None:
+            raise SctsrError(
+                ErrorCode.DATASET_CONTENT_MISMATCH,
+                "Registered T identity is absent from the frozen content ledger",
+                observed=record.sample_id,
+            )
+        t_content_rows.append({"sample_id": record.sample_id, "image_sha256": str(row["image_sha256"]).upper()})
+    unique_content = len({row["image_sha256"] for row in t_content_rows})
+    if unique_content != len(t_records):
+        raise SctsrError(
+            ErrorCode.DATASET_CONTENT_MISMATCH,
+            "Registered T stress set contains duplicate image bytes",
+            observed={"identities": len(t_records), "unique_image_sha256": unique_content},
+        )
+    t_content_digest = stable_digest(sorted(t_content_rows, key=lambda row: row["sample_id"]))
+    return FormalPoolInputs(
+        base_records,
+        t_pool,
+        base_binding,
+        preterminal_binding,
+        registry.digest,
+        unique_content,
+        t_content_digest,
+    )
 
 
 def build_registered_r1(inputs: FormalPoolInputs, *, base_denominator: int, selection_seed: int) -> PoolBuildResult:

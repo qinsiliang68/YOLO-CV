@@ -420,6 +420,59 @@ def validate_registered_dataset_content(
     )
     rows = read_columnar(ledger)
     ledger_by_id, content_digest = _validate_ledger_rows(rows, record)
+    from .dataset_disjointness import (
+        derive_content_exclusion_rows,
+        load_registered_content_exclusions,
+        scientific_split_role,
+    )
+
+    expected_exclusions, disjointness_audit = derive_content_exclusion_rows(rows)
+    registered_exclusions = load_registered_content_exclusions(registry, repository)
+    observed_exclusions = sorted(registered_exclusions.values(), key=lambda row: row["sample_id"])
+    if observed_exclusions != expected_exclusions:
+        raise SctsrError(
+            ErrorCode.DATASET_SPLIT_CONTENT_LEAKAGE,
+            "Registered content exclusions do not exactly equal the deterministic leakage repair",
+            observed={
+                "registered_count": len(observed_exclusions),
+                "registered_digest": stable_digest(observed_exclusions),
+            },
+            expected={
+                "derived_count": len(expected_exclusions),
+                "derived_digest": stable_digest(expected_exclusions),
+            },
+            required_action=(
+                "Register the exact deterministic evaluation exclusion CSV; historical base rows must remain immutable."
+            ),
+        )
+    excluded_ids = set(registered_exclusions)
+    effective_rows = [row for row in rows if str(row["sample_id"]) not in excluded_ids]
+    effective_by_sha: dict[str, list[Mapping[str, Any]]] = {}
+    effective_split_counts: dict[str, int] = {}
+    for row in effective_rows:
+        role = scientific_split_role(str(row["split_role"]))
+        effective_split_counts[role] = effective_split_counts.get(role, 0) + 1
+        effective_by_sha.setdefault(str(row["image_sha256"]).upper(), []).append(row)
+    remaining_leaks: list[dict[str, Any]] = []
+    for image_sha, members in effective_by_sha.items():
+        if len(members) < 2:
+            continue
+        roles = {scientific_split_role(str(row["split_role"])) for row in members}
+        if roles == {"base"}:
+            continue
+        remaining_leaks.append(
+            {
+                "image_sha256": image_sha,
+                "sample_ids": sorted(str(row["sample_id"]) for row in members),
+                "scientific_roles": sorted(roles),
+            }
+        )
+    if remaining_leaks:
+        raise SctsrError(
+            ErrorCode.DATASET_SPLIT_CONTENT_LEAKAGE,
+            "Effective SCTSR dataset still contains evaluation content duplicates",
+            observed=remaining_leaks[:20],
+        )
     ids = tuple(required_manifest_asset_ids or registered_dataset_manifest_asset_ids(registry))
     expected, manifest_evidence = _manifest_records(registry, repository, ids)
     expected_ids = {identity.sample_id for identity in expected}
@@ -485,6 +538,17 @@ def validate_registered_dataset_content(
         "ledger_bytes": record.bytes,
         "ledger_sha256": record.sha256,
         "ledger_row_count": len(rows),
+        "effective_row_count": len(effective_rows),
+        "effective_split_counts": {
+            role: effective_split_counts[role]
+            for role in sorted(effective_split_counts)
+            if role != "base"
+        },
+        "content_exclusion_count": len(excluded_ids),
+        "content_exclusion_digest": stable_digest(expected_exclusions),
+        "content_disjointness_audit": disjointness_audit,
+        "cross_role_content_collisions_after_exclusion": 0,
+        "evaluation_content_duplicates_after_exclusion": 0,
         "content_identity_digest": content_digest,
         "manifest_asset_ids": list(ids),
         "manifest_evidence": manifest_evidence,
@@ -499,9 +563,45 @@ def validate_registered_dataset_content(
             {
                 "ledger_sha256": record.sha256,
                 "content_identity_digest": content_digest,
+                "content_exclusion_digest": stable_digest(expected_exclusions),
                 "manifest_asset_ids": list(ids),
                 "physical_files_verified": physical_files_verified,
                 "physical_bytes_verified": physical_bytes_verified,
             }
         ),
     }
+
+
+def load_registered_dataset_content_map(
+    *,
+    registry: AssetRegistry,
+    repository_root: str | Path,
+) -> dict[str, Mapping[str, Any]]:
+    """Load the SHA-bound content map used to audit exact materialized files."""
+
+    repository = Path(repository_root).resolve()
+    records = [record for record in registry.assets if record.asset_id == DATASET_CONTENT_ASSET_ID]
+    if len(records) != 1:
+        raise SctsrError(
+            ErrorCode.DATASET_CONTENT_LEDGER_REQUIRED,
+            "Formal SCTSR execution requires exactly one registered dataset content ledger",
+        )
+    record = records[0]
+    ledger = (repository / record.relative_path).resolve()
+    try:
+        ledger.relative_to(repository)
+    except ValueError as exc:
+        raise SctsrError(
+            ErrorCode.ASSET_VALIDATION_FAILED,
+            "Dataset content ledger escapes repository root",
+            artifact_path=str(ledger),
+        ) from exc
+    if not ledger.is_file() or ledger.stat().st_size != record.bytes or sha256_file(ledger) != record.sha256:
+        raise SctsrError(
+            ErrorCode.DATASET_CONTENT_MISMATCH,
+            "Dataset content ledger bytes differ from the asset registry",
+            artifact_path=str(ledger),
+        )
+    rows = read_columnar(ledger)
+    by_id, _ = _validate_ledger_rows(rows, record)
+    return by_id

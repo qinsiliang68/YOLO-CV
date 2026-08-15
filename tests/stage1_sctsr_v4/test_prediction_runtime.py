@@ -346,6 +346,7 @@ def test_formal_endpoint_publisher_runs_real_images_and_writes_complete_evidence
         transform=transform,
         run_root=repository / "run",
         repository_root=repository,
+        dataset_root=dataset,
         asset_registry_path=registry_path,
         checkpoint_path=checkpoint,
         run_id="RUN_42_T_U",
@@ -355,5 +356,6 @@ def test_formal_endpoint_publisher_runs_real_images_and_writes_complete_evidence
     )
     assert report["status"] == "PASS"
     assert report["prediction_rows"] == len(all_rows)
+    assert report["dataset_root"] == dataset.resolve().as_posix()
     assert report["frontier_points"] == 96
     assert (repository / "run/08_receipts/FORMAL_ENDPOINT_RECEIPT.json").is_file()

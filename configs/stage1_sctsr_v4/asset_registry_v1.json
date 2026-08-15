@@ -21,6 +21,7 @@
       "val_op_normal_manifest"
     ]
   },
+  "content_exclusion_asset_id": "dataset_content_exclusions",
   "val_target_available": false,
   "assets": [
     {
@@ -205,18 +206,27 @@
     },
     {
       "asset_id": "t_stress_manifest",
-      "relative_path": "artifacts/stage1_sample_value_experiments/contracts/gapvalue240_v1_1/generated/selections/RUN_010/selection_manifest.csv",
-      "sha256": "DFDADC5D75B39A78E0C8995BD46F063C5D969BEA1024E4A332A051D00A172689",
-      "bytes": 590747,
-      "role": "HISTORICAL_SIGN_REVERSAL_STRESS_SET_NOT_VALIDATED_SELECTOR",
+      "relative_path": "artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/03_preregistration_v4_sctsr/assets/T_STRESS_CONTENT_UNIQUE_v1.csv",
+      "sha256": "62F7CE1E1DD4E34470E7C085D1DA290F4EAFC618DCB9C5AFE94DF46D6E219BD6",
+      "bytes": 587746,
+      "role": "CONTENT_UNIQUE_DERIVATION_OF_HISTORICAL_SIGN_REVERSAL_STRESS_SET_NOT_VALIDATED_SELECTOR",
       "required": true,
       "row_count": 3000,
       "identity_column": "sample_id",
       "label_column": "y_true",
       "replay_role_column": "replay_role",
-      "identity_digest": "85D462C1D95F30FB8B519162BBAD762CC4E9506A185C07D719145F07FE003B4B",
+      "identity_digest": "D9702F54DA3D9C7C4E27B657B7EC7A5FD235DEC72E2257AE5029E0C62D7482C7",
       "identity_digest_algorithm": "SHA256_SORTED_REPLAY_ROLE_TAB_SAMPLE_ID_LF",
       "identity_universe": "T_SUBSET"
+    },
+    {
+      "asset_id": "t_content_repair_receipt",
+      "relative_path": "artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/03_preregistration_v4_sctsr/assets/T_STRESS_CONTENT_UNIQUE_v1.receipt.json",
+      "sha256": "8A06BAEB3757830C57DE492140DED5F8F0471760ED4106424ACD28F663C42AD3",
+      "bytes": 1709,
+      "role": "T_CONTENT_UNIQUENESS_DERIVATION_RECEIPT",
+      "required": true,
+      "group_semantic": "ONE_EXACT_FOUR_FIELD_REPLACEMENT_HISTORICAL_SOURCE_PRESERVED"
     },
     {
       "asset_id": "sample_value_table",
@@ -257,6 +267,18 @@
       "identity_digest": "EDA93977CE43E946D4C795A8FBA30BF39B6AF510034276E739BC51D88DB1DD6E",
       "identity_digest_algorithm": "SHA256_SORTED_DATASET_CONTENT_ROWS_V1",
       "group_semantic": "BYTE_LEVEL_NON_TEST_IMAGE_IDENTITY"
+    },
+    {
+      "asset_id": "dataset_content_exclusions",
+      "relative_path": "artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/03_preregistration_v4_sctsr/assets/DATASET_CONTENT_EXCLUSIONS_v1.csv",
+      "sha256": "CED3DE0E070F82DD5AE4B692D478FF6D3FA0015DB62186F72110E16DFCD0C417",
+      "bytes": 22377,
+      "role": "SCTSR_V4_EFFECTIVE_EVALUATION_CONTENT_EXCLUSIONS",
+      "required": true,
+      "row_count": 102,
+      "identity_column": "sample_id",
+      "label_column": "y_true",
+      "group_semantic": "DETERMINISTIC_BYTE_DISJOINTNESS_OVERLAY_BASE_GT_VAL_MODEL_GT_VAL_CAL_GT_VAL_OP"
     }
   ]
 }

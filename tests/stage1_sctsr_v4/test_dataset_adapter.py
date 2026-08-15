@@ -1,7 +1,15 @@
+from pathlib import Path
+
 import pytest
 import torch
 
-from stage1_sctsr_v4.dataset_adapter import DatasetIdentity, IdentityAugmentingDataset, tensor_digest
+from stage1_sctsr_v4.dataset_adapter import (
+    DatasetIdentity,
+    IdentityAugmentingDataset,
+    IdentityFilteringDataset,
+    tensor_digest,
+    validate_materialized_dataset_bytes,
+)
 from stage1_sctsr_v4.errors import ErrorCode, SctsrError
 
 
@@ -63,3 +71,67 @@ def test_source_path_mismatch_fails_closed():
 def test_tensor_digest_is_deterministic():
     x = torch.arange(4).reshape(1, 2, 2)
     assert tensor_digest(x) == tensor_digest(x.clone())
+
+
+def test_materialized_training_file_is_sha_bound_not_filename_label_only(tmp_path: Path):
+    expected = tmp_path / "canonical" / "a.png"
+    observed = tmp_path / "staging" / "train" / "no_target" / "a.png"
+    expected.parent.mkdir(parents=True)
+    observed.parent.mkdir(parents=True)
+    expected.write_bytes(b"expected-image-bytes")
+    observed.write_bytes(b"different-image-bytes")
+
+    class PhysicalBase(torch.utils.data.Dataset):
+        samples = ((str(observed), 0),)
+
+        def __len__(self):
+            return 1
+
+        def __getitem__(self, index):
+            return {"img": torch.zeros((1, 2, 2)), "cls": torch.tensor(0)}
+
+    wrapped = IdentityAugmentingDataset(
+        PhysicalBase(),
+        (DatasetIdentity("Det/images/normal_train/a.png", 0, str(expected)),),
+    )
+    content = {
+        "Det/images/normal_train/a.png": {
+            "image_bytes": expected.stat().st_size,
+            "image_sha256": __import__("hashlib").sha256(expected.read_bytes()).hexdigest().upper(),
+        }
+    }
+
+    with pytest.raises(SctsrError) as caught:
+        validate_materialized_dataset_bytes(wrapped, content, role="train")
+    assert caught.value.code is ErrorCode.DATASET_CONTENT_MISMATCH
+
+
+def test_validation_wrapper_filters_excluded_physical_rows_and_preserves_transform():
+    class ValidationBase(torch.utils.data.Dataset):
+        samples = (
+            ("root/keep_a.png", 0),
+            ("root/excluded.png", 0),
+            ("root/keep_b.png", 1),
+        )
+        torch_transforms = object()
+
+        def __len__(self):
+            return 3
+
+        def __getitem__(self, index):
+            return {"img": torch.full((1,), index), "cls": torch.tensor(self.samples[index][1])}
+
+    identities = (
+        DatasetIdentity("Det/images/normal_val_model/keep_a.png", 0, "keep_a.png"),
+        DatasetIdentity("Det/images/val_model/keep_b.png", 1, "keep_b.png"),
+    )
+    wrapped = IdentityFilteringDataset(ValidationBase(), identities)
+
+    assert len(wrapped) == 2
+    assert [Path(row[0]).name for row in wrapped.samples] == ["keep_a.png", "keep_b.png"]
+    assert [wrapped[index]["cls"].item() for index in range(2)] == [0, 1]
+    assert wrapped.torch_transforms is ValidationBase.torch_transforms
+    assert tuple(item.sample_id for item in wrapped.identities) == (
+        "Det/images/normal_val_model/keep_a.png",
+        "Det/images/val_model/keep_b.png",
+    )

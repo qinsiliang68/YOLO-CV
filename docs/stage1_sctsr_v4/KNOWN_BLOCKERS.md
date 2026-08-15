@@ -8,16 +8,17 @@
 
 ## 2. R2 旧规格矛盾已解决，不再是当前阻断
 
-冻结 T 为 3,000 IDs，digest 是 `85D462C1D95F30FB8B519162BBAD762CC4E9506A185C07D719145F07FE003B4B`。在排除 T 后，按 `(label, dynamic bucket, OOF fold, oof_group_id)` 精确匹配有 172 个 joint strata 缺口，累计短缺 378 个 occurrence。
+内容唯一派生 T 为 3,000 IDs/3,000 image SHA，digest 是 `D9702F54DA3D9C7C4E27B657B7EC7A5FD235DEC72E2257AE5029E0C62D7482C7`。在排除 T 后，按 `(label, dynamic bucket, OOF fold, oof_group_id)` 精确匹配仍有 172 个 joint strata 缺口，累计短缺 378 个 occurrence。
 
 2026-08-15 owner 已批准唯一推荐修订：保持 3,000 unique、零 overlap 和
 `(label, dynamic bucket, OOF fold)` exact，四字段先按可用容量填满，再在相同三字段
 cell 内随机填充不可避免的 378 个 deficit；group TV 为容量下界 0.126。正式 matcher
 已显式激活该版本化政策，真实资产物化得到预注册 R2 digest
-`075FC31FE487D3646E89BA1043E5124D9FE49CE9FCC61C1A8041A9CB8196BECC`。
+`957346D5178CA9397181D0DB47250533E9D659A74A3E7AAFF171FBEE5A0D194B`。
 `R2_U`、`R2_F` 和 fallback 必须复用该同一 pool。任何第二字段放宽、replacement、
 T overlap 或标签替换仍失败封闭。详见 `SPECIFICATION_CHANGE_REQUEST_R2_INFEASIBLE.md`
-和 canonical `SCTSR_R2_MATCHING_ADDENDUM_20260815.md`。
+、canonical `SCTSR_R2_MATCHING_ADDENDUM_20260815.md` 及
+`SCTSR_DATA_CONTENT_AND_T_REPAIR_ADDENDUM_20260815.md`。
 
 ## 3. v3 回归口径矛盾
 

@@ -12,12 +12,12 @@
     "oof_fold"
   ],
   "expected_group_total_variation": 0.126,
-  "expected_identity_digest": "075FC31FE487D3646E89BA1043E5124D9FE49CE9FCC61C1A8041A9CB8196BECC",
+  "expected_identity_digest": "957346D5178CA9397181D0DB47250533E9D659A74A3E7AAFF171FBEE5A0D194B",
   "formal_training_authorized": false,
   "minimum_displacement_count": 378,
   "overlap_with_t": 0,
   "owner_decision": "APPROVED_2026-08-15",
-  "policy_digest": "33B4681FFF92360FD253AE7B0CC92CC0A2D7E27AEAB65A238730600ECEFE7D4F",
+  "policy_digest": "3FED707438AC3237AEB86379F6BB759AFF2EBCBDD670C83C60FA21FB2EE502E5",
   "policy_id": "MINIMUM_OOF_GROUP_DISPLACEMENT_ZERO_OVERLAP_V1",
   "relaxed_fields": [
     "oof_group_id"

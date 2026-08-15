@@ -102,7 +102,7 @@ AUM、correct rate、未来 checkpoint 或 endpoint 字段。
 真实资产审计得到 172 个 shortage strata、378 个缺口。批准算法先耗尽全部可用
 四字段 exact capacity，再在相同三字段 cell 内 counter-hash 填充 378 个缺口；
 group TV 必须恰为 0.126。R2 固定为 3,000 unique、T overlap=0、digest
-`075FC31...19B6BECC`。`R2_U`、`R2_F` 和 fallback 共用该 pool；不得各自重抽。
+`957346D5...A0D194B`。`R2_U`、`R2_F` 和 fallback 共用该 pool；不得各自重抽。
 任何额外 relaxation、nearest outside coarse cell、replacement、回用 T、改标签或
 少于 3,000 unique 都是实验无效，不是“临时工程修复”。
 

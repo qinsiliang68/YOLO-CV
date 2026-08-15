@@ -24,18 +24,22 @@
 
 ## 2. T 是什么，不是什么
 
-`T` 是冻结历史压力集合：
+`T` 是从冻结历史压力集合派生的、内容唯一的 v4 压力集合：
 
-- canonical source：
+- historical source 原样保留：
   `artifacts/stage1_sample_value_experiments/contracts/gapvalue240_v1_1/generated/selections/RUN_010/selection_manifest.csv`；
+- v4 canonical source：
+  `artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/03_preregistration_v4_sctsr/assets/T_STRESS_CONTENT_UNIQUE_v1.csv`；
 - 3,000 个 unique canonical train IDs；
 - 全部为 normal/label 0；
 - identity digest：
-  `85D462C1D95F30FB8B519162BBAD762CC4E9506A185C07D719145F07FE003B4B`；
+  `D9702F54DA3D9C7C4E27B657B7EC7A5FD235DEC72E2257AE5029E0C62D7482C7`；
 - 正式角色：
   `HISTORICAL_SIGN_REVERSAL_STRESS_SET_NOT_VALIDATED_SELECTOR`。
 
-T 被选来做压力测试，是因为历史实验中它跨 seed 出现过正、负和混合方向。T
+派生过程只替换一条重复图像字节的身份，并保持 label/dynamic/fold/oof_group 四字段
+quota 不变；详见 `SCTSR_DATA_CONTENT_AND_T_REPAIR_ADDENDUM_20260815.md`。T 被选来做
+压力测试，是因为历史实验中它跨 seed 出现过正、负和混合方向。T
 不是已证明有用的 selector，不代表 Q/R/A/D，不代表“最难样本”，也不允许在
 结果出来之前被称为高价值样本。
 

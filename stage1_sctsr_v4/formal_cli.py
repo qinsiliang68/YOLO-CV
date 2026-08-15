@@ -9,7 +9,7 @@ from pathlib import Path
 from typing import Any, Mapping
 
 from .arm_spec import ArmId
-from .asset_registry import load_asset_registry, validate_asset_registry
+from .asset_registry import load_asset_registry, load_registered_split_labels, validate_asset_registry
 from .baseline_reference import MAIN_COMMIT, TASKBOOK_BLOB_SHA
 from .branch_lineage import BranchLineage
 from .columnar import read_columnar, validate_columnar_file
@@ -18,8 +18,12 @@ from .errors import ErrorCode, SctsrError
 from .formal_training import FormalIdentity
 from .formal_pool_inputs import load_formal_pool_inputs
 from .identity_pool import FixedIdentityPoolSpec, IdentityPool, IdentityRecord, partition_five_groups
-from .dataset_adapter import load_identity_manifest
-from .dataset_content_ledger import registered_dataset_manifest_asset_ids, validate_registered_dataset_content
+from .dataset_adapter import DatasetIdentity, load_identity_manifest, validate_materialized_dataset_bytes
+from .dataset_content_ledger import (
+    load_registered_dataset_content_map,
+    registered_dataset_manifest_asset_ids,
+    validate_registered_dataset_content,
+)
 from .evidence_runtime import SampleEvidence
 from .rate_spec import DenominatorRole, RateSemantic, ReplayRateSpec
 from .r2_addendum import validate_approved_r2_build
@@ -692,29 +696,33 @@ def validate_prepared_trainer_datasets(trainer: Any, *, registry: Any, repositor
         raise SctsrError(ErrorCode.DENOMINATOR_IDENTITY_MISMATCH, "Prepared train loader is not the canonical identity-augmenting 120k base")
     if len(getattr(trainer, "train_loader", ())) != 938:
         raise SctsrError(ErrorCode.BASE_STEP_COUNT_MISMATCH, "Prepared train loader does not contain exactly 938 base steps")
-    val_assets = {record.asset_id: record for record in registry.assets if record.asset_id in {"val_model_defect_manifest", "val_model_normal_manifest"}}
-    if set(val_assets) != {"val_model_defect_manifest", "val_model_normal_manifest"}:
-        raise SctsrError(ErrorCode.ASSET_VALIDATION_FAILED, "Asset registry lacks the two val_model role manifests")
-    expected = _manifest_filename_label_pairs(repository_root / val_assets["val_model_defect_manifest"].relative_path, label=1)
-    expected |= _manifest_filename_label_pairs(repository_root / val_assets["val_model_normal_manifest"].relative_path, label=0)
+    expected_labels = load_registered_split_labels(registry, repository_root, "val_model")
+    expected = {(Path(sample_id).name.casefold(), label) for sample_id, label in expected_labels.items()}
     val_dataset = getattr(getattr(trainer, "test_loader", None), "dataset", None)
+    val_identities = getattr(val_dataset, "identities", None)
     samples = getattr(val_dataset, "samples", None)
-    if not isinstance(samples, (list, tuple)):
-        raise SctsrError(ErrorCode.UPSTREAM_BINDING_FAILED, "Prepared validation loader does not expose auditable physical samples")
+    if not isinstance(samples, (list, tuple)) or not isinstance(val_identities, (list, tuple)):
+        raise SctsrError(ErrorCode.UPSTREAM_BINDING_FAILED, "Prepared validation loader does not expose filtered auditable identities")
     observed = [(Path(str(row[0])).name.casefold(), int(row[1])) for row in samples]
-    if len(observed) != len(set(observed)) or set(observed) != expected:
+    observed_labels = {str(row.sample_id): int(row.y_true) for row in val_identities}
+    if len(observed) != len(set(observed)) or set(observed) != expected or observed_labels != expected_labels:
         raise SctsrError(
             ErrorCode.TEST_ACCESS_FORBIDDEN,
             "Upstream validation loader is not exactly the registered val_model/study role",
             observed={"rows": len(observed), "unexpected": sorted(set(observed) - expected)[:20], "missing": sorted(expected - set(observed))[:20]},
             expected={"rows": len(expected), "role": "val_model/study"},
         )
+    content = load_registered_dataset_content_map(registry=registry, repository_root=repository_root)
+    train_content_binding = validate_materialized_dataset_bytes(train_dataset, content, role="train")
+    val_content_binding = validate_materialized_dataset_bytes(val_dataset, content, role="val_model")
     return {
         "status": "PASS",
         "train_rows": len(train_dataset),
         "train_steps": len(trainer.train_loader),
         "val_model_rows": len(observed),
         "val_role": "VAL_MODEL_STUDY_ONLY_NOT_METHOD_SELECTION",
+        "train_materialized_content_binding": train_content_binding,
+        "val_model_materialized_content_binding": val_content_binding,
         "test_accessed": False,
         "blind_holdout_opened": False,
         "dataset_binding_digest": stable_digest({"train_ids": [row.sample_id for row in train_identities], "val_pairs": sorted(observed)}),
@@ -1017,10 +1025,15 @@ def build_prepared_trainer(
         if value not in sys.path:
             sys.path.insert(0, value)
     module = importlib.import_module("sctsr_classification_trainer")
+    val_model_identities = tuple(
+        DatasetIdentity(sample_id=sample_id, y_true=label, source_path=sample_id)
+        for sample_id, label in sorted(load_registered_split_labels(registry, root, "val_model").items())
+    )
     try:
         trainer = module.SctsrClassificationTrainer(
             overrides=clean,
             identity_manifest=identity_manifest,
+            validation_identities=val_model_identities,
             training_seed=identity.training_seed,
         )
         # Use the frozen upstream setup routine, but never enter upstream
