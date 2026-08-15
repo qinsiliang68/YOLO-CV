@@ -6,6 +6,13 @@
 
 `formal_release_trust_v1.json` 没有登记 authorized key，仓库也没有未来签名 release。`seed_registry_schema_v1.json` 的 discovery/confirmation seed 为空，状态为 `FORMAL_SEEDS_BLOCKED_UNTIL_RELEASE`。因此 formal runner 必须在构建 trainer、生成 assignment 或读取正式 split 前拒绝。
 
+正式部署还必须在每台机器上提供独立的 hardlink-only classification view，并把其
+绝对路径冻结进 `trainer_overrides.data`、run-intent 和 execution token。canonical
+dataset root 不由 operator 输入猜测，而是从冻结 asset registry 的 base manifests
+派生。代码会分别绑定两棵 root，并要求每个 loader file 与 canonical source
+`os.path.samefile(...) == true`。当前仓库不登记某台机器的本地 staging 绝对路径；
+因此 staging 的物化与只读验收属于 release 前机器 provisioning，不是可跳过步骤。
+
 ## 2. R2 旧规格矛盾已解决，不再是当前阻断
 
 内容唯一派生 T 为 3,000 IDs/3,000 image SHA，digest 是 `D9702F54DA3D9C7C4E27B657B7EC7A5FD235DEC72E2257AE5029E0C62D7482C7`。在排除 T 后，按 `(label, dynamic bucket, OOF fold, oof_group_id)` 精确匹配仍有 172 个 joint strata 缺口，累计短缺 378 个 occurrence。
@@ -55,7 +62,7 @@ BudgetedReplay 报告所称的三个源码载体在既有现场审计中为 `REP
 
 1. 对 R2 addendum 实现提交做独立复审并冻结新 source manifest；
 2. owner 对 v3 231 基线矛盾作修订或恢复缺失测试；
-3. 3090 正式规格单 epoch engineering benchmark 通过；
+3. 3090 正式规格单 epoch engineering benchmark 与 hardlink-only classification view 验收通过；
 4. release authority 登记 key、8+14 training seeds、签名 release、逐 job token 和
    全部训练机共享的 v2 claim registry；registry 必须绑定 exact experiment/release；
 5. 只在所有机器 preflight PASS 后另行授权正式训练；

@@ -80,6 +80,12 @@ uv run python scripts/stage1_sctsr_v4/validate_dataset_content.py `
 必须返回 `DATASET_CONTENT_MISMATCH`。不得用 `--ledger-only` 的结果替代正式
 物理复验；该开关只用于快速检查 ledger/manifest 自身。
 
+正式 trainer 的 `overrides.data` 是单独的 Ultralytics classification view，不等于
+上述 canonical root。view 必须由 frozen manifests 生成 hardlink，不能 copy；runner
+会从 asset registry 的两个 canonical base manifest 派生 canonical root，同时把
+classification root、canonical root、逐行 resolved path、file identity、bytes/SHA
+和 `samefile` 结果写入 materialized binding v3。四个边界都会重验并重新扫描额外文件。
+
 ## 5. Identity pool 和 schedule
 
 `build_identity_pools.py` 只允许四个登记角色：
@@ -94,7 +100,11 @@ R2 matcher 在匹配前只接收预终端白名单投影。loss、confidence、R
 
 `R2_U` 与 `R2_F` 不是两套各 3,000 IDs 的抽样。两者及
 `T_TO_R2_AT_160` fallback 必须复用 selection seed `20260812`、3,000 unique 和
-identity digest `957346D5...A0D194B` 的同一 pool；U/F 只允许 schedule 不同。
+identity digest
+`A6DAA20A70F02B30D15B7C3E4079EA86903051AEED264F53E0A104A4C1AA80B6`
+的同一 pool；selected-content digest 为
+`A48B721CA37AD66D65B8C5972C5AE66C328C09194BA3C8C22C19B8FECE40F819`。
+U/F 只允许 schedule 不同。
 
 正式 pool 从登记资产派生分母；CLI 不接受人为 `--base-denominator`。生成后保存 manifest、五组 membership、候选全集 selection ledger 和 quota audit。
 

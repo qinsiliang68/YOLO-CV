@@ -46,7 +46,8 @@ requested_oof_group_id, selected_oof_group_id, selection_counter_hash
 ```
 
 机器 validator 必须重算 displacement ledger digest、row count、requested/selected
-group 不同、pool identity digest 和 group TV=0.126。`R2_U`、`R2_F` 和 fallback 的
+group 不同、pool identity/content digest、displacement=379 和
+group TV=`0.12633333333333333`。`R2_U`、`R2_F` 和 fallback 的
 schedule/pool binding 必须回指同一 R2 `POOL_MANIFEST.json`；复制后改路径但保持不同
 manifest SHA 不能冒充共享 pool。
 

@@ -96,13 +96,18 @@ AUM、correct rate、未来 checkpoint 或 endpoint 字段。
 - exact label + historical dynamic bucket + OOF fold；
 - `oof_group_id` 语义是
   `FILENAME_BUCKET_SURROGATE_NOT_TRUE_VIDEO_ID`；
-- 只允许对 `oof_group_id` 做容量下界为 378 的最小 displacement；
+- 只允许对 `oof_group_id` 做容量下界约束下的最小 displacement；
 - 三字段 quota 不可满足或试图再放宽第二字段时 fail closed。
 
 真实资产审计得到 172 个 shortage strata、378 个缺口。批准算法先耗尽全部可用
-四字段 exact capacity，再在相同三字段 cell 内 counter-hash 填充 378 个缺口；
-group TV 必须恰为 0.126。R2 固定为 3,000 unique、T overlap=0、digest
-`957346D5...A0D194B`。`R2_U`、`R2_F` 和 fallback 共用该 pool；不得各自重抽。
+四字段 exact capacity，再在相同三字段 cell 内 counter-hash 填充；额外排除 1 个
+T image-SHA alias 后，最终 displacement 为 379、group TV 为
+`0.12633333333333333`。R2 固定为 3,000 unique，T sample/content overlap 都为 0，
+identity digest 为
+`A6DAA20A70F02B30D15B7C3E4079EA86903051AEED264F53E0A104A4C1AA80B6`，
+selected-content digest 为
+`A48B721CA37AD66D65B8C5972C5AE66C328C09194BA3C8C22C19B8FECE40F819`。
+`R2_U`、`R2_F` 和 fallback 共用该 pool；不得各自重抽。
 任何额外 relaxation、nearest outside coarse cell、replacement、回用 T、改标签或
 少于 3,000 unique 都是实验无效，不是“临时工程修复”。
 

@@ -29,7 +29,8 @@ Release authority 必须给出以下全部值，禁止留空/`latest`/通配符�
 
 ```text
 CHECKOUT_ROOT=<absolute clean checkout>
-DATASET_ROOT=<absolute canonical dataset root>
+CANONICAL_DATASET_ROOT=<absolute immutable Sewer-ML root derived from registered manifests>
+CLASSIFICATION_DATA_ROOT=<absolute hardlink-only train/val view; exact trainer_overrides.data>
 PYTHON_VERSION=3.11 or 3.12
 CUDA_DEVICE=<one integer>
 RUN_ROLE=COMMON_PARENT or BRANCH
@@ -67,6 +68,12 @@ RESUME_RECEIPT_DIGEST=<full 64 hex; START uses 64 zeroes>
 
 本机 AI 不填缺失值，也不去 Downloads/Desktop/邻近 run 中自动寻找。
 
+`CANONICAL_DATASET_ROOT` 用于完整 content-ledger 重验和 endpoint；
+`CLASSIFICATION_DATA_ROOT` 仅用于 Ultralytics `train/`、`val/` DataLoader。二者可以是
+不同目录，但必须在支持 hardlink 的同一卷上。训练文件必须与 canonical source 是
+同一物理文件；同名同标签同 SHA 的独立 copy 也不接受。classification view 中出现
+额外 class、额外图片、symlink、junction、缺失 link 或训练期间 inode 漂移时立即停止。
+
 ## 3. 只读环境预检
 
 ```powershell
@@ -86,6 +93,11 @@ nvidia-smi
 资产预检命令见 `TRAINING_OPERATIONS_MANUAL.md`。dataset content full verification
 应得到 384,000 files 和 content digest `EDA939...DD6E`。若本地 data path 不同但
 字节完全一致，可以通过；若代码自动 fallback 到别处，必须失败。
+
+随后单独核对 `TRAINER_OVERRIDES.data == CLASSIFICATION_DATA_ROOT`；不要把 canonical
+root 直接填进 `data`，除非它本身已经按冻结 manifests 原子物化了准确的 hardlink
+classification view。runner 在 optimizer step 0 前、RESUME 后、endpoint 前和
+completion 前都会重读 row-level Parquet binding 并扫描额外文件。
 
 ## 4. 生成本 job 的 run-intent acknowledgement
 

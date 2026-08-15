@@ -19,6 +19,9 @@ multi-label 主训练任务，也不覆盖任何历史 120/240-run 结果。SCTS
   selected-content digest 为
   `A48B721CA37AD66D65B8C5972C5AE66C328C09194BA3C8C22C19B8FECE40F819`；
 - T/R2 sample ID 交集和实际 image SHA-256 交集都必须为 0；
+- canonical Sewer-ML 根和 Ultralytics classification view 是两个不同身份：前者由
+  asset registry 派生并做 384,000 行内容校验，后者由 `trainer_overrides.data` 指定，
+  只能包含指向 canonical 图片的 hardlink；复制文件、symlink/junction 或额外文件均失败；
 - 正式 seed、matrix release 和 execution token 尚未发布；
 - `val_target` 不存在，故 A/gradient-alignment保持 HELD，但不阻断第一阶段
   timing/stop/fallback 代码审查；
@@ -39,7 +42,7 @@ canonical shared root；旧 v1 registry 不可用于本实现。
 1. `EXPERIMENT_INTENT.md`：研究问题、T、八臂、可推出和不可推出的结论；
 2. `FAIRNESS_CONTRACT.md`：唯一允许变化的 treatment 和直接作废条件；
 3. `ASSET_IDENTITY_LEDGER.md`：数据、权重、OOF、T 和 image-byte identity；
-4. `TRAINING_OPERATIONS_MANUAL.md`：端到端阶段、10 台 3090 和成功定义；
+4. `TRAINING_OPERATIONS_MANUAL.md`：端到端阶段、13 台 3090（12 活跃 + 1 替补）和成功定义；
 5. `MACHINE_RUNBOOK.md`：单 job 参数、确认书、START/RESUME 命令；
 6. `FAILURE_AND_RECOVERY.md`：OOM/kill/disk/partial/receipt恢复规则；
 7. `ARTIFACT_AND_SCHEMA_GUIDE.md`：每个 ledger/checkpoint/prediction/frontier字段；

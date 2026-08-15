@@ -25,7 +25,8 @@ asset registry 对每个 component 保存 role、path、bytes、SHA、row count 
 T/R1/R2 是离线生成并哈希绑定的固定 identity pool。R2 的白名单投影发生在 matcher
 之前；先按 `(label, historical_dynamic_bucket, oof_fold, oof_group_id)` 耗尽 exact
 capacity，再仅在同 `(label, historical_dynamic_bucket, oof_fold)` cell 内执行已批准的
-378 个最小 group displacement。`R2_U`、`R2_F` 与 fallback 共享一个 pool digest。
+在原 378 个 quota deficit 上再排除 1 个 T content alias，形成 379 个最小 group
+displacement。`R2_U`、`R2_F` 与 fallback 共享一个 pool identity/content digest。
 五个 identity group 由 ID 稳定散列产生，不读取原 rank。
 
 Schedule 是完整 materialized E1–E200 occurrence plan，不把 seed 当成计划。每个 epoch 记录 rate、sample IDs、slot skeleton、identity policy、fallback state 和累计守恒摘要。跨臂 validator 联合检查八臂、U/F parity、共同前缀、stop/fallback 和逐 ID multiplicity。

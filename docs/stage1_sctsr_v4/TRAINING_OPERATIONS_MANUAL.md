@@ -57,9 +57,18 @@ uv run --python 3.11 python scripts/stage1_sctsr_v4/validate_dataset_content.py 
 每条命令必须保存 stdout、stderr、exit code、receipt bytes/SHA。只要有一条非零，
 该机器不进入 job pool。
 
+`--dataset-root` 指 canonical Sewer-ML root，不是 Ultralytics classification view。
+后者由 `trainer_overrides.data` 指定，必须在同一卷预先原子物化为 hardlink-only
+`train/no_target`、`train/target_defect`、`val/no_target`、`val/target_defect`。正式
+runner 分别绑定 canonical root 与 materialized root；每个 loader row 都保存两个
+resolved path、bytes/SHA、physical file identity 和 `samefile_as_canonical=true`。
+独立 copy、symlink/junction、额外文件或训练期间替换均在 step 0/RESUME/endpoint/
+completion 边界失败封闭。classification view 的绝对路径必须进入 overrides、
+run-intent 和 execution token，不能由机器临时搜索或复用相似缓存。
+
 ### Phase 2：pool 和 schedule 物化
 
-Pool 由 release authority 在独立冻结目录一次性生成，不由 10 台机器各自随机生成。
+Pool 由 release authority 在独立冻结目录一次性生成，不由各训练机器各自随机生成。
 每个 pool 保存 manifest、membership Parquet、selection ledger、quota audit 和 CLI
 receipt。R2 只能按已批准 policy ID、selection seed `20260812` 和 expected digest
 成功；`R2_U`、`R2_F` 与 fallback 必须读取同一个 pool artifact，不得在训练机重抽。
@@ -125,7 +134,11 @@ Branch E200 完成后，由 runner 用 E200 EMA 和 val_op 发布 prediction/fro
 训练机不得自动选择最新 checkpoint、最新 schedule、同名 pool、空闲 GPU 或相似输出
 目录。具体值由 token/acknowledgement给出。
 
-## 4. 10 台 3090 的分配原则
+## 4. 13 台 3090 的分配原则
+
+最多 12 台并行，1 台作为故障替补；job 可简单随机分配，不需要复杂 GPU 锁或调度器。
+正确性来自 one-use token、共享 v2 claim registry、numeric CUDA device 和 logical-job
+fence，而不是机器序号。common-parent 初期只有已发布 seed 数量那么多可并行任务。
 
 - 每个 process 单 GPU，world size 固定 1；
 - 一块 3090 同一时刻最多一个 formal process；
@@ -155,7 +168,7 @@ optimizer state 和全量 ledger 可能更大。每 seed 有 760 个 epoch gener
 安全余量。
 
 部署前应按至少 200 GB/seed 的规划值分配，并以首个完整正式工程 canary 的最大
-generation bytes 更新。10 台机器建议每台至少保留 500 GB 独占可用 NVMe；统一
+generation bytes 更新。13 台机器建议每台至少保留 500 GB 独占可用 NVMe；统一
 evidence store 至少预留 3 TB discovery 空间，confirmation 前根据 discovery
 实测重算。空间不足必须在 job 前阻断，不能等训练中途自动删旧 epoch。
 
