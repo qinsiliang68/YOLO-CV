@@ -1,0 +1,7 @@
+source_commit=f5c9801555285e08969a2c7040be394b6bb0a0e6
+command=uv run --locked --python 3.11 --extra dev python scripts/stage1_sctsr_v4/run_engineering_canary.py --artifact-root <TEMP>/SCTSR_v4_output_fixes_canary_f5c9801 --repository-root <CLEAN_CHECKOUT> --dataset-root C:\GitHub\YOLO-CV\data\final_sewerml_dataset --training-seed 20260816 --device cuda:0 --output <TEMP>/SCTSR_v4_output_fixes_canary_f5c9801.receipt.json
+started_utc=2026-08-15T20:34:29.7725719Z
+duration_seconds=12.1492284
+exit_code=0
+
+C:/Users/28898/AppData/Local/Temp/SCTSR_v4_output_fixes_canary_f5c9801.receipt.json

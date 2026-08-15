@@ -1,0 +1,7 @@
+command=uv run --locked --python 3.11 --extra dev pytest -q tests/stage1_sctsr_v4/test_dataset_adapter.py
+started_utc=2026-08-15T20:10:47.3244206Z
+duration_seconds=2.4995904
+exit_code=0
+
+...........                                                              [100%]
+11 passed in 1.47s

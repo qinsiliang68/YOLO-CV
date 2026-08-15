@@ -1,0 +1,7 @@
+source_commit=f5c9801555285e08969a2c7040be394b6bb0a0e6
+command=uv lock --check
+started_utc=2026-08-15T20:34:11.4915889Z
+duration_seconds=0.1228438
+exit_code=0
+
+Resolved 77 packages in 0.96ms

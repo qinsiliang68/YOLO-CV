@@ -1,0 +1,75 @@
+{
+  "schema_version": "stage1.sctsr.training_output_fix_verification.v2",
+  "status": "IMPLEMENTED_AND_LOCALLY_VERIFIED_FOR_REREVIEW",
+  "review_baseline_commit": "54e320020c60c8d7a11f59d2fa606ff203fd0d4d",
+  "fixed_source_commit": "f5c9801555285e08969a2c7040be394b6bb0a0e6",
+  "fix_commits": [
+    "6419307",
+    "6b49a1d",
+    "09af540",
+    "69f4f72",
+    "cef0e03",
+    "752d326",
+    "7b44d7a",
+    "4748ce9",
+    "f5c9801"
+  ],
+  "red_contract_probe": {
+    "baseline_exit_code": 1,
+    "baseline_result": "10 failed",
+    "fixed_exit_code": 0,
+    "fixed_result": "10 passed"
+  },
+  "tests": {
+    "python_3_11_v4": "456 passed",
+    "python_3_12_v4": "456 passed",
+    "python_3_11_v3_regression": "181 passed, 3 skipped",
+    "compileall_python_3_11": "PASS",
+    "compileall_python_3_12": "PASS",
+    "uv_lock_check": "PASS",
+    "git_diff_check": "PASS",
+    "runbook_manifest": "PASS; v5; 22 documents"
+  },
+  "r2": {
+    "unique_sample_ids": 3000,
+    "unique_image_sha256": 3000,
+    "t_sample_id_overlap_count": 0,
+    "t_image_sha256_overlap_count": 0,
+    "identity_digest": "A6DAA20A70F02B30D15B7C3E4079EA86903051AEED264F53E0A104A4C1AA80B6",
+    "content_map_digest": "751742DA58F13A2678CB700D018B95B5FA8E38392F15366B688CCEE97BE81CA7",
+    "selected_content_digest": "A48B721CA37AD66D65B8C5972C5AE66C328C09194BA3C8C22C19B8FECE40F819",
+    "excluded_content_identity_digest": "F0F5F857F684E214BA252360B9454E46FBCE0D9A361910E03F3390F1FCEC42B7",
+    "displacement_count": 379,
+    "oof_group_total_variation": 0.12633333333333333,
+    "shared_by_r2_arms": true
+  },
+  "materialized_dataset_binding": {
+    "canonical_and_classification_roots_separate": true,
+    "hardlink_samefile_required": true,
+    "terminal_tree_rescan_required": true,
+    "real_image_canary": "PASS"
+  },
+  "engineering_canary": {
+    "status": "PASS",
+    "scientific_role": "ENGINEERING_CANARY_NOT_SCIENTIFIC_RESULT",
+    "real_images": true,
+    "real_registered_yolo_weight": true,
+    "real_cuda_update": true,
+    "artifact_manifest_recheck": "15/15 MATCH"
+  },
+  "runbook": {
+    "manifest_path": "docs/stage1_sctsr_v4/RUNBOOK_MANIFEST_v5.json",
+    "manifest_bytes": 4195,
+    "manifest_sha256": "CBCCAF21637AE2FE7377C1C0F18369F3E1A1DE86214E4926F1FC6298ECA7D15E",
+    "runbook_digest": "1A07C339C4E573C311EF1E06B83117988E86D7A92FEE297A7140BEDA61E378C5"
+  },
+  "formal_training_authorized": false,
+  "formal_training_started": false,
+  "assignments_generated": false,
+  "engineering_gate_generated": false,
+  "pilot_release_generated": false,
+  "blind_holdout_opened": false,
+  "test_accessed": false,
+  "method_effectiveness_claimed": false,
+  "sctsr_current_training_output_verdict": "NO_GO_PENDING_TRAINING_MACHINE_REREVIEW"
+}

@@ -1,0 +1,7 @@
+source_commit=f5c9801555285e08969a2c7040be394b6bb0a0e6
+command=provision short-path script copy; uv run --project <CLEAN_CHECKOUT> --locked --python 3.11 --extra dev python <TEMP>/sctsr_real_hardlink_binding_canary.py <CLEAN_CHECKOUT> C:\GitHub\YOLO-CV\data\final_sewerml_dataset
+started_utc=2026-08-15T20:36:01.7677160Z
+duration_seconds=1.9228108
+exit_code=0
+
+{"all_rows_samefile_as_canonical": true, "binding_digest": "BC3D44F1C5312FE04DF9C79D01A996A43027E7823B5A65577175DC0629EF5E55", "blind_holdout_opened": false, "canonical_dataset_root": "C:/GitHub/YOLO-CV/data/final_sewerml_dataset", "formal_training_started": false, "materialized_content_digest": "640C3327565985FFBB38793DA857691A3A899EB5293B498281D40DD7FAA029CA", "materialized_data_root": "C:/Users/28898/AppData/Local/Temp/sctsr_real_hardlink_view_wu1l53r1/classification_view", "post_setup_extra_file_rejected_with": "DATASET_CONTENT_MISMATCH", "real_image_sha256": ["237C9F3C5771F4521F2463712ED8098A3294A869FF3FFF1220F2021D2F279CAA", "3BB900444EB32EE1C2F2CB56A54BB2857BAAC046BEBA16CF5CD5A7C5D999D6D5"], "row_count": 2, "schema_version": "stage1.sctsr.real_hardlink_binding_canary.v1", "scientific_role": "ENGINEERING_CANARY_NOT_SCIENTIFIC_RESULT", "status": "PASS", "test_accessed": false}

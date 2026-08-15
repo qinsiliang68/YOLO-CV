@@ -1,0 +1,117 @@
+baseline_commit=54e320020c60c8d7a11f59d2fa606ff203fd0d4d
+command=uv run --locked --python 3.11 --extra dev pytest -q red_training_output_contract.py
+started_utc=2026-08-15T19:45:57.9076447Z
+duration_seconds=2.1547174
+exit_code=1
+
+FFFFFFFFFF                                                               [100%]
+================================== FAILURES ===================================
+_______________ test_tc01_r2_builder_requires_content_identity ________________
+
+    def test_tc01_r2_builder_requires_content_identity():
+        parameters = inspect.signature(random_controls.build_r2_matched_random).parameters
+>       assert "content_sha256_by_sample_id" in parameters
+E       assert 'content_sha256_by_sample_id' in mappingproxy(OrderedDict([('raw_rows', <Parameter "raw_rows: 'Sequence[Mapping[str, object]]'">), ('t_pool', <Paramete...atching_policy', <Parameter "matching_policy: 'str' = 'STRICT_EXACT_LABEL_DYNAMIC_FOLD_OOF_GROUP_ZERO_OVERLAP_V1'">)]))
+
+red_training_output_contract.py:19: AssertionError
+___________ test_tc02_endpoint_records_and_binds_actual_input_bytes ___________
+
+    def test_tc02_endpoint_records_and_binds_actual_input_bytes():
+        record_fields = {field.name for field in fields(prediction_runtime.RegisteredImageRecord)}
+>       assert {"image_bytes", "image_sha256"} <= record_fields
+E       AssertionError: assert {'image_bytes...image_sha256'} <= {'image_path'...id', 'y_true'}
+E         
+E         Extra items in the left set:
+E         'image_bytes'
+E         'image_sha256'
+
+red_training_output_contract.py:24: AssertionError
+___________ test_tc03_materialized_loader_has_terminal_revalidator ____________
+
+    def test_tc03_materialized_loader_has_terminal_revalidator():
+>       assert hasattr(dataset_adapter, "revalidate_materialized_dataset_binding")
+E       AssertionError: assert False
+E        +  where False = hasattr(dataset_adapter, 'revalidate_materialized_dataset_binding')
+
+red_training_output_contract.py:31: AssertionError
+______________ test_tc04_finalization_has_one_fenced_entrypoint _______________
+
+    def test_tc04_finalization_has_one_fenced_entrypoint():
+>       assert hasattr(formal_execution, "execute_fenced_finalization")
+E       AssertionError: assert False
+E        +  where False = hasattr(formal_execution, 'execute_fenced_finalization')
+
+red_training_output_contract.py:35: AssertionError
+__________ test_tc05_execution_lease_has_terminal_failure_transition __________
+
+    def test_tc05_execution_lease_has_terminal_failure_transition():
+>       assert hasattr(formal_execution, "mark_execution_failed")
+E       AssertionError: assert False
+E        +  where False = hasattr(formal_execution, 'mark_execution_failed')
+
+red_training_output_contract.py:39: AssertionError
+_________ test_tc06_logical_job_is_storage_independent_and_namespaced _________
+
+    def test_tc06_logical_job_is_storage_independent_and_namespaced():
+        invariant_fields = set(formal_execution.LOGICAL_JOB_INVARIANT_FIELDS)
+>       assert "output_root_digest" not in invariant_fields
+E       AssertionError: assert 'output_root_digest' not in {'arm_id', 'lineage_digest', 'logical_run_id', 'output_root_digest', 'parent_checkpoint_sha256', 'run_role', ...}
+
+red_training_output_contract.py:44: AssertionError
+________________ test_tc07_validation_can_reprobe_live_runtime ________________
+
+    def test_tc07_validation_can_reprobe_live_runtime():
+>       assert hasattr(source_identity, "probe_runtime_environment")
+E       AssertionError: assert False
+E        +  where False = hasattr(source_identity, 'probe_runtime_environment')
+
+red_training_output_contract.py:50: AssertionError
+_____________ test_tc08_imported_adapter_has_an_origin_validator ______________
+
+    def test_tc08_imported_adapter_has_an_origin_validator():
+>       assert hasattr(training_system, "validate_sctsr_adapter_import")
+E       AssertionError: assert False
+E        +  where False = hasattr(training_system, 'validate_sctsr_adapter_import')
+
+red_training_output_contract.py:54: AssertionError
+_____________ test_tc09_binary_contract_exists_before_first_step ______________
+
+    def test_tc09_binary_contract_exists_before_first_step():
+>       assert hasattr(formal_cli, "validate_binary_classification_contract")
+E       AssertionError: assert False
+E        +  where False = hasattr(formal_cli, 'validate_binary_classification_contract')
+
+red_training_output_contract.py:58: AssertionError
+_____________ test_tc10_registered_evidence_text_is_forced_to_lf ______________
+
+    def test_tc10_registered_evidence_text_is_forced_to_lf():
+        root = Path(__file__).resolve().parent
+        target = "docs/stage1_sctsr_v4/tdd_receipts/commit_01/RED.txt"
+        result = subprocess.run(
+            ["git", "check-attr", "eol", "--", target],
+            cwd=root,
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+>       assert result.stdout.strip().endswith("eol: lf")
+E       AssertionError: assert False
+E        +  where False = <built-in method endswith of str object at 0x0000017DE8D463B0>('eol: lf')
+E        +    where <built-in method endswith of str object at 0x0000017DE8D463B0> = 'docs/stage1_sctsr_v4/tdd_receipts/commit_01/RED.txt: eol: unspecified'.endswith
+E        +      where 'docs/stage1_sctsr_v4/tdd_receipts/commit_01/RED.txt: eol: unspecified' = <built-in method strip of str object at 0x0000017DE8D46330>()
+E        +        where <built-in method strip of str object at 0x0000017DE8D46330> = 'docs/stage1_sctsr_v4/tdd_receipts/commit_01/RED.txt: eol: unspecified\n'.strip
+E        +          where 'docs/stage1_sctsr_v4/tdd_receipts/commit_01/RED.txt: eol: unspecified\n' = CompletedProcess(args=['git', 'check-attr', 'eol', '--', 'docs/stage1_sctsr_v4/tdd_receipts/commit_01/RED.txt'], returncode=0, stdout='docs/stage1_sctsr_v4/tdd_receipts/commit_01/RED.txt: eol: unspecified\n', stderr='').stdout
+
+red_training_output_contract.py:71: AssertionError
+=========================== short test summary info ===========================
+FAILED red_training_output_contract.py::test_tc01_r2_builder_requires_content_identity
+FAILED red_training_output_contract.py::test_tc02_endpoint_records_and_binds_actual_input_bytes
+FAILED red_training_output_contract.py::test_tc03_materialized_loader_has_terminal_revalidator
+FAILED red_training_output_contract.py::test_tc04_finalization_has_one_fenced_entrypoint
+FAILED red_training_output_contract.py::test_tc05_execution_lease_has_terminal_failure_transition
+FAILED red_training_output_contract.py::test_tc06_logical_job_is_storage_independent_and_namespaced
+FAILED red_training_output_contract.py::test_tc07_validation_can_reprobe_live_runtime
+FAILED red_training_output_contract.py::test_tc08_imported_adapter_has_an_origin_validator
+FAILED red_training_output_contract.py::test_tc09_binary_contract_exists_before_first_step
+FAILED red_training_output_contract.py::test_tc10_registered_evidence_text_is_forced_to_lf
+10 failed in 1.47s

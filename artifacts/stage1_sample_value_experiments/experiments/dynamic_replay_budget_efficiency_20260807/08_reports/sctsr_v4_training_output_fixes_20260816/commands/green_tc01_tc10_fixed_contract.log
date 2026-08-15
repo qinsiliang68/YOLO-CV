@@ -1,0 +1,8 @@
+fixed_commit=f5c9801555285e08969a2c7040be394b6bb0a0e6
+command=provision probe into clean checkout root; uv run --locked --python 3.11 --extra dev pytest -q red_training_output_contract.py
+started_utc=2026-08-15T20:37:24.6910910Z
+duration_seconds=1.9962514
+exit_code=0
+
+..........                                                               [100%]
+10 passed in 1.39s

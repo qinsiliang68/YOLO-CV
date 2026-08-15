@@ -1,0 +1,10 @@
+source_commit=f5c9801555285e08969a2c7040be394b6bb0a0e6
+command=uv run --locked --python 3.12 --extra dev python -m compileall -q stage1_sctsr_v4 scripts/stage1_sctsr_v4 integrations/ultralytics tests/stage1_sctsr_v4
+started_utc=2026-08-15T20:33:22.2318316Z
+duration_seconds=7.8845254
+exit_code=0
+
+Using CPython 3.12.12
+Removed virtual environment at: .venv
+Creating virtual environment at: .venv
+Installed 57 packages in 5.23s

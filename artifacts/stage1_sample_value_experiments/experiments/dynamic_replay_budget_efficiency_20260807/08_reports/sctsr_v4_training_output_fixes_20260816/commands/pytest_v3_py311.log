@@ -1,0 +1,14 @@
+source_commit=f5c9801555285e08969a2c7040be394b6bb0a0e6
+command=uv run --locked --python 3.11 --extra dev pytest -q tests/stage1_dynamic_replay_v3
+started_utc=2026-08-15T20:33:44.4426002Z
+duration_seconds=15.468628
+exit_code=0
+
+Using CPython 3.11.14
+Removed virtual environment at: .venv
+Creating virtual environment at: .venv
+Installed 57 packages in 5.18s
+..............s.........s.s............................................. [ 39%]
+........................................................................ [ 78%]
+........................................                                 [100%]
+181 passed, 3 skipped in 7.62s

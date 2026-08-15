@@ -1,0 +1,153 @@
+{
+  "schema_version": "stage1.sctsr.training_output_fix_commands.v2",
+  "review_baseline_commit": "54e320020c60c8d7a11f59d2fa606ff203fd0d4d",
+  "fixed_source_commit": "f5c9801555285e08969a2c7040be394b6bb0a0e6",
+  "verification_checkout": "isolated clean worktree with explicitly provisioned registered weight",
+  "commands": [
+    {
+      "command_id": "RED_TC01_TC10_BASELINE",
+      "command": "uv run --locked --python 3.11 --extra dev pytest -q red_training_output_contract.py",
+      "checkout_commit": "54e320020c60c8d7a11f59d2fa606ff203fd0d4d",
+      "expected_exit_code": 1,
+      "actual_exit_code": 1,
+      "observed": "10 failed in 1.47s",
+      "stdout_stderr": "commands/red_tc01_tc10_baseline_contract.log",
+      "probe_source": "commands/red_training_output_contract.py"
+    },
+    {
+      "command_id": "GREEN_TC01_TC10_FIXED",
+      "command": "provision probe into clean checkout root; uv run --locked --python 3.11 --extra dev pytest -q red_training_output_contract.py",
+      "checkout_commit": "f5c9801555285e08969a2c7040be394b6bb0a0e6",
+      "expected_exit_code": 0,
+      "actual_exit_code": 0,
+      "observed": "10 passed in 1.39s",
+      "stdout_stderr": "commands/green_tc01_tc10_fixed_contract.log",
+      "probe_source": "commands/red_training_output_contract.py"
+    },
+    {
+      "command_id": "RED_TC03_HARDLINK_RESCAN",
+      "command": "uv run --locked --python 3.11 --extra dev pytest -q tests/stage1_sctsr_v4/test_dataset_adapter.py",
+      "checkout_commit": "752d326e0fa83f01243d23927b6a611a2a3e49b5",
+      "expected_exit_code": 1,
+      "actual_exit_code": 1,
+      "observed": "2 failed, 9 passed in 1.59s; copied bytes and post-setup extra file were not rejected",
+      "stdout_stderr": "commands/red_tc03_hardlink_rescan.log"
+    },
+    {
+      "command_id": "GREEN_TC03_HARDLINK_RESCAN",
+      "command": "uv run --locked --python 3.11 --extra dev pytest -q tests/stage1_sctsr_v4/test_dataset_adapter.py",
+      "checkout_commit": "7b44d7ad89a590b8daa86493cd8715010d5abadd",
+      "expected_exit_code": 0,
+      "actual_exit_code": 0,
+      "observed": "11 passed in 1.47s",
+      "stdout_stderr": "commands/green_tc03_hardlink_rescan.log"
+    },
+    {
+      "command_id": "RED_TC03_SEPARATE_ROOTS",
+      "command": "uv run --locked --python 3.11 --extra dev pytest -q tests/stage1_sctsr_v4/test_dataset_adapter.py",
+      "checkout_commit": "7b44d7ad89a590b8daa86493cd8715010d5abadd",
+      "expected_exit_code": 1,
+      "actual_exit_code": 1,
+      "observed": "3 failed, 9 passed in 7.00s; canonical root and classification view could not be represented separately",
+      "stdout_stderr": "commands/red_tc03_separate_roots.log"
+    },
+    {
+      "command_id": "GREEN_TC03_SEPARATE_ROOTS",
+      "command": "uv run --locked --python 3.11 --extra dev pytest -q tests/stage1_sctsr_v4/test_dataset_adapter.py",
+      "checkout_commit": "4748ce959db44357c1a51d4bd397d397f1845732",
+      "expected_exit_code": 0,
+      "actual_exit_code": 0,
+      "observed": "12 passed in 1.51s",
+      "stdout_stderr": "commands/green_tc03_separate_roots.log"
+    },
+    {
+      "command_id": "UV_LOCK_CHECK",
+      "command": "uv lock --check",
+      "actual_exit_code": 0,
+      "observed": "PASS",
+      "stdout_stderr": "commands/uv_lock_check.log"
+    },
+    {
+      "command_id": "PYTEST_V4_PY311",
+      "command": "uv run --locked --python 3.11 --extra dev pytest -q tests/stage1_sctsr_v4",
+      "actual_exit_code": 0,
+      "observed": "456 passed in 191.85s",
+      "stdout_stderr": "commands/pytest_v4_py311_with_dev.log"
+    },
+    {
+      "command_id": "PYTEST_V4_PY312",
+      "command": "uv run --locked --python 3.12 --extra dev pytest -q tests/stage1_sctsr_v4",
+      "actual_exit_code": 0,
+      "observed": "456 passed in 183.31s",
+      "stdout_stderr": "commands/pytest_v4_py312.log"
+    },
+    {
+      "command_id": "COMPILEALL_PY311",
+      "command": "uv run --locked --python 3.11 --extra dev python -m compileall -q stage1_sctsr_v4 scripts/stage1_sctsr_v4 integrations/ultralytics tests/stage1_sctsr_v4",
+      "actual_exit_code": 0,
+      "observed": "PASS",
+      "stdout_stderr": "commands/compileall_py311.log"
+    },
+    {
+      "command_id": "COMPILEALL_PY312",
+      "command": "uv run --locked --python 3.12 --extra dev python -m compileall -q stage1_sctsr_v4 scripts/stage1_sctsr_v4 integrations/ultralytics tests/stage1_sctsr_v4",
+      "actual_exit_code": 0,
+      "observed": "PASS",
+      "stdout_stderr": "commands/compileall_py312.log"
+    },
+    {
+      "command_id": "PYTEST_V3_REGRESSION_PY311",
+      "command": "uv run --locked --python 3.11 --extra dev pytest -q tests/stage1_dynamic_replay_v3",
+      "actual_exit_code": 0,
+      "observed": "181 passed, 3 skipped in 7.62s",
+      "stdout_stderr": "commands/pytest_v3_py311.log"
+    },
+    {
+      "command_id": "RUNBOOK_MANIFEST_VALIDATION",
+      "command": "validate_runbook_manifest(docs/stage1_sctsr_v4/RUNBOOK_MANIFEST_v5.json)",
+      "actual_exit_code": 0,
+      "observed": "PASS; 22 documents; runbook digest 1A07C339C4E573C311EF1E06B83117988E86D7A92FEE297A7140BEDA61E378C5",
+      "stdout_stderr": "commands/validate_runbook_manifest.log"
+    },
+    {
+      "command_id": "REAL_ENGINEERING_CANARY",
+      "command": "uv run --locked --python 3.11 --extra dev python scripts/stage1_sctsr_v4/run_engineering_canary.py --artifact-root <TEMP>/SCTSR_v4_output_fixes_canary_f5c9801 --repository-root <CLEAN_CHECKOUT> --dataset-root C:/GitHub/YOLO-CV/data/final_sewerml_dataset --training-seed 20260816 --device cuda:0 --output <TEMP>/SCTSR_v4_output_fixes_canary_f5c9801.receipt.json",
+      "actual_exit_code": 0,
+      "observed": "PASS; ENGINEERING_CANARY_NOT_SCIENTIFIC_RESULT; 15/15 artifact manifest entries re-read and matched",
+      "stdout_stderr": "commands/real_engineering_canary.log",
+      "receipt": "canary/real_engineering_canary.receipt.json",
+      "report": "canary/ENGINEERING_CANARY_REPORT.json"
+    },
+    {
+      "command_id": "REAL_HARDLINK_BINDING_CANARY",
+      "command": "provision short-path script copy; uv run --project <CLEAN_CHECKOUT> --locked --python 3.11 --extra dev python <TEMP>/sctsr_real_hardlink_binding_canary.py <CLEAN_CHECKOUT> C:/GitHub/YOLO-CV/data/final_sewerml_dataset",
+      "actual_exit_code": 0,
+      "observed": "PASS; two real images; separate classification view; samefile true; post-setup extra file rejected",
+      "stdout_stderr": "commands/real_hardlink_binding_canary.log",
+      "source": "commands/real_hardlink_binding_canary.py"
+    },
+    {
+      "command_id": "HEARTBEAT_AND_STALE_FENCE_EXAMPLES",
+      "command": "provision short-path script copy; uv run --project <CLEAN_CHECKOUT> --locked --python 3.11 --extra dev python <TEMP>/sctsr_heartbeat_examples.py <CLEAN_CHECKOUT>",
+      "actual_exit_code": 0,
+      "observed": "COMPLETE and FAILED terminal heartbeats; old generation rejected with LOGICAL_JOB_FENCED",
+      "stdout_stderr": "commands/heartbeat_examples.log",
+      "source": "commands/heartbeat_examples.py"
+    },
+    {
+      "command_id": "ENDPOINT_INPUT_BINDING_EXAMPLE",
+      "command": "provision short-path script copy; uv run --project <CLEAN_CHECKOUT> --locked --python 3.11 --extra dev python <TEMP>/sctsr_endpoint_binding_example.py <CLEAN_CHECKOUT>",
+      "actual_exit_code": 0,
+      "observed": "binding validated; post-binding image mutation rejected with DATASET_CONTENT_MISMATCH",
+      "stdout_stderr": "commands/endpoint_input_binding_example.log",
+      "source": "commands/endpoint_input_binding_example.py"
+    },
+    {
+      "command_id": "GIT_DIFF_CHECK",
+      "command": "git diff --check",
+      "actual_exit_code": 0,
+      "observed": "PASS; tracked clean",
+      "stdout_stderr": "commands/git_diff_check.log"
+    }
+  ]
+}

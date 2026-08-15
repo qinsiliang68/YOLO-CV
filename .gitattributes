@@ -1,7 +1,9 @@
 * text=auto
+.gitattributes text eol=lf
 
 *.py text eol=lf
 *.json text eol=lf
+*.jsonl text eol=lf
 *.md text eol=lf
 *.tex text eol=lf
 *.yaml text eol=lf
@@ -58,6 +60,7 @@ docs/stage1_sctsr_v4/tdd_receipts/** -whitespace
 docs/stage1_sctsr_v4/tdd_receipts/**/*.log text eol=lf
 docs/stage1_sctsr_v4/tdd_receipts/**/*.txt text eol=lf
 artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/08_reports/sctsr_v4_*/**/*.log text eol=lf
+artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/08_reports/sctsr_v4_*/**/*.log -whitespace
 artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/08_reports/sctsr_v4_*/**/*.txt text eol=lf
 artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/08_reports/sctsr_v4_*/**/*.csv text eol=lf
 
