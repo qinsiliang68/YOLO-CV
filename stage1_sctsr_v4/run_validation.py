@@ -171,6 +171,7 @@ def validate_formal_endpoint_evidence(
     manifest: Mapping[str, Any],
     checkpoint_path: str | Path,
     repository_root: str | Path,
+    expected_endpoint_input_binding: Mapping[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Recompute and cross-bind the immutable E200 ``val_op`` endpoint.
 
@@ -189,6 +190,8 @@ def validate_formal_endpoint_evidence(
     prediction_root = root / "06_predictions" / f"run_id={run_id}" / "epoch=0200"
     evaluation_root = root / "07_evaluation" / f"run_id={run_id}" / "epoch=0200"
     paths = {
+        "endpoint_input_rows": prediction_root / "endpoint_input_rows.parquet",
+        "endpoint_input_binding": prediction_root / "endpoint_input_binding.json",
         "prediction": prediction_root / "predictions.parquet",
         "prediction_summary": prediction_root / "prediction_summary.json",
         "split_bundle": prediction_root / "split_identity_bundle.json",
@@ -208,13 +211,13 @@ def validate_formal_endpoint_evidence(
     receipt_core = {key: value for key, value in receipt.items() if key != "endpoint_digest"}
     expected_receipt_fields = {
         "schema_version", "status", "run_id", "arm_id", "training_seed", "split_role",
-        "checkpoint_epoch", "checkpoint_sha256", "model_variant", "selection_semantic", "files",
+        "checkpoint_epoch", "checkpoint_sha256", "model_variant", "endpoint_input_binding_digest", "selection_semantic", "files",
         "formal_training_started", "blind_holdout_opened", "test_accessed",
         "method_effectiveness_claimed", "endpoint_digest",
     }
     _require(set(receipt) == expected_receipt_fields, "Formal endpoint receipt schema is not exact")
     _require(
-        receipt.get("schema_version") == "stage1.sctsr.formal_endpoint_receipt.v1"
+        receipt.get("schema_version") == "stage1.sctsr.formal_endpoint_receipt.v2"
         and receipt.get("status") == "FORMAL_ENDPOINT_COMPLETE_NOT_METHOD_SELECTION"
         and receipt.get("endpoint_digest") == stable_digest(receipt_core)
         and receipt.get("formal_training_started") is True
@@ -235,6 +238,23 @@ def validate_formal_endpoint_evidence(
         key=lambda row: row["path"],
     )
     _require(receipt.get("files") == expected_file_rows, "Formal endpoint receipt does not bind the exact endpoint bytes")
+
+    from .prediction_runtime import validate_endpoint_input_binding
+
+    endpoint_input_binding = load_json(paths["endpoint_input_binding"])
+    input_validation = validate_endpoint_input_binding(endpoint_input_binding)
+    if expected_endpoint_input_binding is not None:
+        identity_fields = {
+            "split_role", "dataset_root", "dataset_root_digest", "repository_root",
+            "asset_registry_digest", "content_ledger_path", "content_ledger_sha256",
+            "content_ledger_identity_digest", "row_count", "physical_bytes",
+            "sample_label_digest", "sample_content_digest",
+        }
+        _require(
+            {field: endpoint_input_binding.get(field) for field in identity_fields}
+            == {field: expected_endpoint_input_binding.get(field) for field in identity_fields},
+            "Existing endpoint input binding differs from the current dataset root or bytes",
+        )
 
     predictions, prediction_summary, binding = read_registered_prediction_artifact(
         paths["prediction"],
@@ -257,6 +277,11 @@ def validate_formal_endpoint_evidence(
         "Formal endpoint identity differs from its run manifest",
     )
     _require(
+        prediction_summary.get("endpoint_input_binding_digest") == endpoint_input_binding.get("binding_digest")
+        and prediction_summary.get("endpoint_input_sample_content_digest") == endpoint_input_binding.get("sample_content_digest"),
+        "Prediction summary is not bound to the exact endpoint input bytes",
+    )
+    _require(
         receipt.get("run_id") == run_id
         and receipt.get("arm_id") == arm_id
         and int(receipt.get("training_seed", -1)) == binding.training_seed
@@ -264,6 +289,7 @@ def validate_formal_endpoint_evidence(
         and int(receipt.get("checkpoint_epoch", -1)) == binding.checkpoint_epoch
         and receipt.get("checkpoint_sha256") == binding.checkpoint_sha256
         and receipt.get("model_variant") == binding.model_variant
+        and receipt.get("endpoint_input_binding_digest") == endpoint_input_binding.get("binding_digest")
         and receipt.get("selection_semantic") == "ENDPOINT_ONLY_NOT_FOR_SELECTION",
         "Formal endpoint receipt identity differs from registered predictions",
     )
@@ -317,6 +343,8 @@ def validate_formal_endpoint_evidence(
         "sample_label_identity_digest": sample_label_identity_digest(predictions),
         "selection_semantic": "ENDPOINT_ONLY_NOT_FOR_SELECTION",
         "endpoint_receipt_sha256": sha256_file(receipt_path),
+        "endpoint_input_binding_digest": endpoint_input_binding["binding_digest"],
+        "endpoint_input_rows": input_validation["row_count"],
     }
 
 

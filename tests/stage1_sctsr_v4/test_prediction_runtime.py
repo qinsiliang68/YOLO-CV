@@ -14,11 +14,22 @@ from stage1_sctsr_v4.errors import ErrorCode, SctsrError
 from stage1_sctsr_v4.fixed_step_runtime import ExponentialMovingAverage
 from stage1_sctsr_v4.prediction_artifact import PredictionArtifactBinding
 from stage1_sctsr_v4.asset_registry import AssetRegistry
+from stage1_sctsr_v4.columnar import write_zstd_parquet
+from stage1_sctsr_v4.dataset_content_ledger import (
+    DATASET_CONTENT_DIGEST_ALGORITHM,
+    DATASET_CONTENT_ROLE,
+    DATASET_CONTENT_SCHEMA_VERSION,
+    DatasetContentRow,
+    dataset_content_identity_digest,
+    dataset_content_schema,
+)
 from stage1_sctsr_v4.prediction_runtime import (
     PredictionBatch,
+    build_endpoint_input_binding,
     infer_prediction_rows,
     load_registered_image_records,
     publish_formal_endpoint,
+    validate_endpoint_input_binding,
 )
 from stage1_sctsr_v4.serialization import atomic_write_json, sha256_file
 
@@ -251,6 +262,45 @@ def test_registered_image_records_reject_path_escape(tmp_path):
     assert caught.value.code is ErrorCode.ASSET_VALIDATION_FAILED
 
 
+def test_endpoint_input_binding_rejects_changed_image_bytes_and_binds_dataset_root(tmp_path):
+    dataset = tmp_path / "dataset"
+    rows = [{"canonical_image_relpath": "Det/images/val_op/a.png", "split": "val_op"}]
+    image = dataset / rows[0]["canonical_image_relpath"]
+    image.parent.mkdir(parents=True)
+    image.write_bytes(b"registered-image")
+    content = {
+        rows[0]["canonical_image_relpath"]: {
+            "image_bytes": image.stat().st_size,
+            "image_sha256": sha256_file(image),
+        }
+    }
+    registry = _image_registry(tmp_path, rows)
+    records = load_registered_image_records(
+        registry,
+        repository_root=tmp_path,
+        dataset_root=dataset,
+        split_role="val_op",
+        expected_content=content,
+    )
+    ledger = tmp_path / "ledger.parquet"
+    ledger.write_bytes(b"ledger")
+    binding = build_endpoint_input_binding(
+        records,
+        registry=registry,
+        repository_root=tmp_path,
+        dataset_root=dataset,
+        split_role="val_op",
+        content_ledger_path=ledger,
+        content_ledger_sha256=sha256_file(ledger),
+        content_ledger_identity_digest="B" * 64,
+    )
+    assert binding["dataset_root"] == dataset.resolve().as_posix()
+    image.write_bytes(b"replacement")
+    with pytest.raises(SctsrError) as caught:
+        validate_endpoint_input_binding(binding)
+    assert caught.value.code is ErrorCode.DATASET_CONTENT_MISMATCH
+
+
 def test_formal_endpoint_publisher_runs_real_images_and_writes_complete_evidence(tmp_path):
     repository = tmp_path / "repository"
     manifest_root = repository / "manifests"
@@ -300,6 +350,48 @@ def test_formal_endpoint_publisher_runs_real_images_and_writes_complete_evidence
         "val_target_available": False,
         "assets": components,
     }
+    component_by_label = {int(component["constant_label"]): component for component in components}
+    ledger_rows = []
+    for relative, label in all_rows:
+        component = component_by_label[label]
+        image_path = dataset / relative
+        ledger_rows.append(
+            DatasetContentRow(
+                sample_id=relative,
+                split_role="val_op" if label else "normal_val_op",
+                y_true=label,
+                manifest_asset_id=str(component["asset_id"]),
+                manifest_sha256=str(component["sha256"]),
+                canonical_image_relpath=relative,
+                image_bytes=image_path.stat().st_size,
+                image_sha256=sha256_file(image_path),
+                image_width=4,
+                image_height=4,
+                image_mode="RGB",
+                image_format="PNG",
+            ).as_dict()
+        )
+    ledger_path = repository / "dataset_content.parquet"
+    ledger_manifest = write_zstd_parquet(
+        ledger_rows,
+        ledger_path,
+        schema_version=DATASET_CONTENT_SCHEMA_VERSION,
+        schema=dataset_content_schema(),
+    )
+    registry_raw["assets"].append(
+        {
+            "asset_id": "dataset_content_ledger",
+            "relative_path": ledger_path.relative_to(repository).as_posix(),
+            "sha256": ledger_manifest.sha256,
+            "bytes": ledger_manifest.bytes,
+            "role": DATASET_CONTENT_ROLE,
+            "required": True,
+            "row_count": len(ledger_rows),
+            "identity_digest": dataset_content_identity_digest(ledger_rows),
+            "identity_digest_algorithm": DATASET_CONTENT_DIGEST_ALGORITHM,
+            "group_semantic": "BYTE_LEVEL_NON_TEST_IMAGE_IDENTITY",
+        }
+    )
     registry_path = repository / "asset_registry.json"
     atomic_write_json(registry_path, registry_raw)
     registry = AssetRegistry.from_mapping(registry_raw)

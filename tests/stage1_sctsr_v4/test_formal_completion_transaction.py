@@ -150,6 +150,8 @@ def test_complete_valid_endpoint_is_reused_without_reinference(tmp_path):
     prediction_root = root / "06_predictions" / "run_id=RUN_17_T_U" / "epoch=0200"
     evaluation_root = root / "07_evaluation" / "run_id=RUN_17_T_U" / "epoch=0200"
     paths = (
+        prediction_root / "endpoint_input_rows.parquet",
+        prediction_root / "endpoint_input_binding.json",
         prediction_root / "split_identity_bundle.json",
         prediction_root / "predictions.parquet",
         prediction_root / "prediction_summary.json",

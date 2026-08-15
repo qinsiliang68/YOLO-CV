@@ -19,6 +19,8 @@ from .asset_registry import (
     load_registered_split_labels,
 )
 from .checkpointing import checkpoint_state_digest
+from .columnar import read_columnar, validate_columnar_file, write_zstd_parquet
+from .dataset_content_ledger import DATASET_CONTENT_ASSET_ID, load_registered_dataset_content_map
 from .errors import ErrorCode, SctsrError
 from .evaluation import compute_tie_safe_frontier, write_frontier_artifacts
 from .prediction_artifact import (
@@ -53,6 +55,8 @@ class RegisteredImageRecord:
     sample_id: str
     y_true: int
     image_path: Path
+    image_bytes: int
+    image_sha256: str
 
 
 def load_registered_image_records(
@@ -61,6 +65,7 @@ def load_registered_image_records(
     repository_root: str | Path,
     dataset_root: str | Path,
     split_role: str,
+    expected_content: Mapping[str, Mapping[str, Any]] | None = None,
 ) -> tuple[RegisteredImageRecord, ...]:
     """Resolve physical images only through SHA-bound registered split CSVs."""
 
@@ -136,9 +141,25 @@ def load_registered_image_records(
                     ) from exc
                 if not image_path.is_file():
                     raise SctsrError(ErrorCode.ASSET_VALIDATION_FAILED, "Registered prediction image is missing", artifact_path=str(image_path))
+                image_bytes = image_path.stat().st_size
+                image_sha256 = sha256_file(image_path)
+                if expected_content is not None:
+                    expected = expected_content.get(sample_id)
+                    if (
+                        expected is None
+                        or image_bytes != int(expected["image_bytes"])
+                        or image_sha256 != str(expected["image_sha256"]).upper()
+                    ):
+                        raise SctsrError(
+                            ErrorCode.DATASET_CONTENT_MISMATCH,
+                            "Endpoint image bytes differ from the frozen dataset content ledger",
+                            observed={"bytes": image_bytes, "sha256": image_sha256},
+                            expected=None if expected is None else {"bytes": int(expected["image_bytes"]), "sha256": str(expected["image_sha256"]).upper()},
+                            artifact_path=str(image_path),
+                        )
                 if sample_id in records:
                     raise SctsrError(ErrorCode.DUPLICATE_IDENTITY, "Prediction split contains a duplicate image identity", observed=sample_id)
-                records[sample_id] = RegisteredImageRecord(sample_id, label, image_path)
+                records[sample_id] = RegisteredImageRecord(sample_id, label, image_path, image_bytes, image_sha256)
     observed_labels = {sample_id: record.y_true for sample_id, record in records.items()}
     if observed_labels != expected_labels:
         raise SctsrError(
@@ -146,6 +167,121 @@ def load_registered_image_records(
             "Resolved prediction images differ from registered split labels",
         )
     return tuple(records[sample_id] for sample_id in sorted(records))
+
+
+def build_endpoint_input_binding(
+    records: Sequence[RegisteredImageRecord],
+    *,
+    registry: AssetRegistry,
+    repository_root: str | Path,
+    dataset_root: str | Path,
+    split_role: str,
+    content_ledger_path: str | Path,
+    content_ledger_sha256: str,
+    content_ledger_identity_digest: str,
+    evidence_path: str | Path | None = None,
+) -> dict[str, Any]:
+    """Bind the exact endpoint filesystem bytes before inference or reuse."""
+
+    repository = Path(repository_root).resolve()
+    data_root = Path(dataset_root).resolve()
+    ledger = Path(content_ledger_path).resolve()
+    if not ledger.is_file() or sha256_file(ledger) != str(content_ledger_sha256).upper():
+        raise SctsrError(ErrorCode.DATASET_CONTENT_MISMATCH, "Endpoint content ledger bytes are not the registered bytes", artifact_path=str(ledger))
+    if not records:
+        raise SctsrError(ErrorCode.PREDICTION_IDENTITY_MISMATCH, "Endpoint input binding cannot be empty")
+    rows = []
+    for record in records:
+        image = record.image_path.resolve()
+        try:
+            image.relative_to(data_root)
+        except ValueError as exc:
+            raise SctsrError(ErrorCode.DATASET_CONTENT_MISMATCH, "Endpoint image escapes its bound dataset root", artifact_path=str(image)) from exc
+        rows.append(
+            {
+                "sample_id": record.sample_id,
+                "y_true": record.y_true,
+                "image_path": image.as_posix(),
+                "image_bytes": record.image_bytes,
+                "image_sha256": record.image_sha256,
+            }
+        )
+    rows = sorted(rows, key=lambda row: row["sample_id"])
+    payload: dict[str, Any] = {
+        "schema_version": "stage1.sctsr.endpoint_input_binding.v1",
+        "split_role": split_role,
+        "dataset_root": data_root.as_posix(),
+        "dataset_root_digest": stable_digest({"resolved_dataset_root": data_root.as_posix()}),
+        "repository_root": repository.as_posix(),
+        "asset_registry_digest": registry.digest,
+        "content_ledger_path": ledger.as_posix(),
+        "content_ledger_sha256": str(content_ledger_sha256).upper(),
+        "content_ledger_identity_digest": str(content_ledger_identity_digest).upper(),
+        "row_count": len(rows),
+        "physical_bytes": sum(int(row["image_bytes"]) for row in rows),
+        "sample_label_digest": stable_digest([(row["sample_id"], row["y_true"]) for row in rows]),
+        "sample_content_digest": stable_digest(rows),
+    }
+    if evidence_path is None:
+        payload["row_evidence"] = {"storage": "IN_MEMORY_UNIT_ONLY", "rows": rows}
+    else:
+        manifest = write_zstd_parquet(rows, evidence_path, schema_version="stage1.sctsr.endpoint_input_rows.v1")
+        payload["row_evidence"] = {
+            "storage": "PARQUET_ZSTD",
+            "path": Path(manifest.path).resolve().as_posix(),
+            "bytes": manifest.bytes,
+            "sha256": manifest.sha256,
+            "row_count": manifest.row_count,
+            "schema_version": manifest.schema_version,
+            "schema_digest": manifest.schema_digest,
+        }
+    return {**payload, "binding_digest": stable_digest(payload)}
+
+
+def validate_endpoint_input_binding(binding: Mapping[str, Any]) -> dict[str, Any]:
+    if binding.get("schema_version") != "stage1.sctsr.endpoint_input_binding.v1":
+        raise SctsrError(ErrorCode.SCHEMA_VALIDATION_FAILED, "Endpoint input binding schema is not registered")
+    core = {key: value for key, value in binding.items() if key != "binding_digest"}
+    if binding.get("binding_digest") != stable_digest(core):
+        raise SctsrError(ErrorCode.IDENTITY_DIGEST_MISMATCH, "Endpoint input binding digest is invalid")
+    ledger = Path(str(binding["content_ledger_path"])).resolve()
+    if not ledger.is_file() or sha256_file(ledger) != binding.get("content_ledger_sha256"):
+        raise SctsrError(ErrorCode.DATASET_CONTENT_MISMATCH, "Endpoint input content ledger changed")
+    evidence = binding.get("row_evidence")
+    if not isinstance(evidence, Mapping):
+        raise SctsrError(ErrorCode.DATASET_CONTENT_MISMATCH, "Endpoint input binding has no row evidence")
+    if evidence.get("storage") == "PARQUET_ZSTD":
+        validate_columnar_file(
+            evidence["path"],
+            expected_rows=int(evidence["row_count"]),
+            expected_schema_version=str(evidence["schema_version"]),
+            expected_schema_digest=str(evidence["schema_digest"]),
+            expected_sha256=str(evidence["sha256"]),
+        )
+        rows = read_columnar(evidence["path"])
+    elif evidence.get("storage") == "IN_MEMORY_UNIT_ONLY":
+        rows = list(evidence.get("rows", ()))
+    else:
+        raise SctsrError(ErrorCode.DATASET_CONTENT_MISMATCH, "Endpoint input row-evidence storage is invalid")
+    data_root = Path(str(binding["dataset_root"])).resolve()
+    observed_rows = []
+    for row in rows:
+        image = Path(str(row["image_path"])).resolve()
+        try:
+            image.relative_to(data_root)
+        except ValueError as exc:
+            raise SctsrError(ErrorCode.DATASET_CONTENT_MISMATCH, "Endpoint image escaped the bound dataset root after setup") from exc
+        if not image.is_file():
+            raise SctsrError(ErrorCode.DATASET_CONTENT_MISMATCH, "Endpoint image is missing after binding", artifact_path=str(image))
+        observed = dict(row)
+        observed["image_bytes"] = image.stat().st_size
+        observed["image_sha256"] = sha256_file(image)
+        if observed != row:
+            raise SctsrError(ErrorCode.DATASET_CONTENT_MISMATCH, "Endpoint image bytes changed after binding", observed=observed, expected=row, artifact_path=str(image))
+        observed_rows.append(observed)
+    if len(observed_rows) != int(binding["row_count"]) or stable_digest(observed_rows) != binding.get("sample_content_digest"):
+        raise SctsrError(ErrorCode.DATASET_CONTENT_MISMATCH, "Endpoint input aggregate digest changed")
+    return {"status": "PASS", "binding_digest": binding["binding_digest"], "row_count": len(observed_rows)}
 
 
 def iter_registered_image_batches(
@@ -189,6 +325,8 @@ def _endpoint_artifact_paths(run_root: Path, run_id: str) -> dict[str, Path]:
     prediction_root = run_root / "06_predictions" / f"run_id={run_id}" / "epoch=0200"
     evaluation_root = run_root / "07_evaluation" / f"run_id={run_id}" / "epoch=0200"
     return {
+        "endpoint_input_rows": prediction_root / "endpoint_input_rows.parquet",
+        "endpoint_input_binding": prediction_root / "endpoint_input_binding.json",
         "split_bundle": prediction_root / "split_identity_bundle.json",
         "prediction": prediction_root / "predictions.parquet",
         "prediction_summary": prediction_root / "prediction_summary.json",
@@ -206,6 +344,7 @@ def build_formal_endpoint_receipt(
     checkpoint_epoch: int,
     checkpoint_sha256: str,
     model_variant: str,
+    endpoint_input_binding_digest: str,
 ) -> dict[str, Any]:
     root = Path(run_root).resolve()
     paths = _endpoint_artifact_paths(root, run_id)
@@ -218,7 +357,7 @@ def build_formal_endpoint_receipt(
         )
     files = sorted((file_record(path, root=root) for path in paths.values()), key=lambda row: row["path"])
     payload: dict[str, Any] = {
-        "schema_version": "stage1.sctsr.formal_endpoint_receipt.v1",
+        "schema_version": "stage1.sctsr.formal_endpoint_receipt.v2",
         "status": "FORMAL_ENDPOINT_COMPLETE_NOT_METHOD_SELECTION",
         "run_id": str(run_id),
         "arm_id": str(arm_id),
@@ -227,6 +366,7 @@ def build_formal_endpoint_receipt(
         "checkpoint_epoch": int(checkpoint_epoch),
         "checkpoint_sha256": str(checkpoint_sha256).upper(),
         "model_variant": str(model_variant),
+        "endpoint_input_binding_digest": str(endpoint_input_binding_digest).upper(),
         "selection_semantic": "ENDPOINT_ONLY_NOT_FOR_SELECTION",
         "files": files,
         "formal_training_started": True,
@@ -348,6 +488,29 @@ def publish_formal_endpoint(
         "source_tree_digest": str(checkpoint_payload["source_tree_digest"]),
         "asset_registry_digest": registry.digest,
     }
+    content = load_registered_dataset_content_map(registry=registry, repository_root=repository)
+    ledger_records = [record for record in registry.assets if record.asset_id == DATASET_CONTENT_ASSET_ID]
+    if len(ledger_records) != 1:
+        raise SctsrError(ErrorCode.DATASET_CONTENT_LEDGER_REQUIRED, "Formal endpoint requires one frozen dataset content ledger")
+    ledger_record = ledger_records[0]
+    ledger_path = (repository / ledger_record.relative_path).resolve()
+    current_records = load_registered_image_records(
+        registry,
+        repository_root=repository,
+        dataset_root=data_root,
+        split_role="val_op",
+        expected_content=content,
+    )
+    current_input_binding = build_endpoint_input_binding(
+        current_records,
+        registry=registry,
+        repository_root=repository,
+        dataset_root=data_root,
+        split_role="val_op",
+        content_ledger_path=ledger_path,
+        content_ledger_sha256=ledger_record.sha256,
+        content_ledger_identity_digest=str(ledger_record.identity_digest),
+    )
     preparation = prepare_formal_endpoint_publication(
         root,
         run_id=run_id,
@@ -356,6 +519,7 @@ def publish_formal_endpoint(
             manifest=endpoint_manifest,
             checkpoint_path=checkpoint,
             repository_root=repository,
+            expected_endpoint_input_binding=current_input_binding,
         ),
     )
     if preparation["action"] == "REUSE_VALID_ENDPOINT":
@@ -373,6 +537,18 @@ def publish_formal_endpoint(
         output_path=paths["split_bundle"],
     )
     split_sha = sha256_file(paths["split_bundle"])
+    endpoint_input_binding = build_endpoint_input_binding(
+        current_records,
+        registry=registry,
+        repository_root=repository,
+        dataset_root=data_root,
+        split_role="val_op",
+        content_ledger_path=ledger_path,
+        content_ledger_sha256=ledger_record.sha256,
+        content_ledger_identity_digest=str(ledger_record.identity_digest),
+        evidence_path=paths["endpoint_input_rows"],
+    )
+    atomic_write_json(paths["endpoint_input_binding"], endpoint_input_binding)
     binding = PredictionArtifactBinding(
         checkpoint_path=checkpoint.as_posix(),
         checkpoint_sha256=checkpoint_sha,
@@ -386,15 +562,9 @@ def publish_formal_endpoint(
         evaluation_mode="formal",
         selection_semantic="ENDPOINT_ONLY_NOT_FOR_SELECTION",
     )
-    records = load_registered_image_records(
-        registry,
-        repository_root=repository,
-        dataset_root=data_root,
-        split_role="val_op",
-    )
     rows = infer_prediction_rows(
         model=model,
-        batches=iter_registered_image_batches(records, transform=transform, batch_size=batch_size),
+        batches=iter_registered_image_batches(current_records, transform=transform, batch_size=batch_size),
         binding=binding,
         run_id=run_id,
         arm_id=arm_id,
@@ -407,6 +577,8 @@ def publish_formal_endpoint(
         binding=binding,
         repository_root=repository,
     )
+    prediction_summary["endpoint_input_binding_digest"] = endpoint_input_binding["binding_digest"]
+    prediction_summary["endpoint_input_sample_content_digest"] = endpoint_input_binding["sample_content_digest"]
     atomic_write_json(paths["prediction_summary"], prediction_summary)
     points, frontier_summary = compute_tie_safe_frontier(
         rows,
@@ -432,6 +604,7 @@ def publish_formal_endpoint(
         checkpoint_epoch=200,
         checkpoint_sha256=checkpoint_sha,
         model_variant=model_variant,
+        endpoint_input_binding_digest=endpoint_input_binding["binding_digest"],
     )
     atomic_write_json(receipt_path, receipt)
     validation = validate_formal_endpoint_evidence(
@@ -439,6 +612,7 @@ def publish_formal_endpoint(
         manifest=endpoint_manifest,
         checkpoint_path=checkpoint,
         repository_root=repository,
+        expected_endpoint_input_binding=endpoint_input_binding,
     )
     return {
         **validation,

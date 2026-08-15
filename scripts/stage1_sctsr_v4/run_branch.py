@@ -275,6 +275,10 @@ def main() -> int:
         transform = getattr(getattr(getattr(trainer, "test_loader", None), "dataset", None), "torch_transforms", None)
         if not callable(transform):
             raise SctsrError(ErrorCode.UPSTREAM_BINDING_FAILED, "Prepared val_model loader has no frozen evaluation transform")
+        from stage1_sctsr_v4.dataset_adapter import revalidate_materialized_dataset_binding
+
+        for materialized_role in ("train_materialized_content_binding", "val_model_materialized_content_binding"):
+            revalidate_materialized_dataset_binding(trainer_binding["dataset_binding"][materialized_role])
         endpoint = publish_formal_endpoint(
             model=endpoint_model,
             transform=transform,

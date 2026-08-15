@@ -288,6 +288,19 @@ def _prepare_run_root_after_upstream_setup(root_value: str | Path, *, execution_
     return root
 
 
+def _revalidate_prepared_dataset_bindings(prepared_trainer_binding: Mapping[str, Any]) -> None:
+    from .dataset_adapter import revalidate_materialized_dataset_binding
+
+    dataset = prepared_trainer_binding.get("dataset_binding")
+    if not isinstance(dataset, Mapping):
+        raise SctsrError(ErrorCode.UPSTREAM_BINDING_FAILED, "Prepared trainer lacks materialized dataset evidence")
+    for field in ("train_materialized_content_binding", "val_model_materialized_content_binding"):
+        binding = dataset.get(field)
+        if not isinstance(binding, Mapping):
+            raise SctsrError(ErrorCode.UPSTREAM_BINDING_FAILED, "Prepared trainer lacks a row-level materialized dataset binding", failing_field=field)
+        revalidate_materialized_dataset_binding(binding)
+
+
 _RESUME_STABLE_TRAINER_BINDING_FIELDS = (
     "upstream_binding_digest",
     "canonical_training_lock_sha256",
@@ -908,6 +921,8 @@ def run_prepared_common_parent(
     sample_evidence = sample_evidence_from_trainer(trainer) if evidence_enabled else {}
     if execution_mode == "formal" and prepared_trainer_binding is None:
         raise SctsrError(ErrorCode.UPSTREAM_BINDING_FAILED, "Formal parent lacks its prepared trainer binding")
+    if execution_mode == "formal":
+        _revalidate_prepared_dataset_bindings(dict(prepared_trainer_binding or {}))
     if execution_mode == "formal" and formal_input_binding is None:
         raise SctsrError(ErrorCode.ARTIFACT_VALIDATION_FAILED, "Formal parent lacks its immutable authorization-input binding")
     if resume_context is not None and execution_mode != "formal":
@@ -1164,6 +1179,10 @@ def run_prepared_branch(
         identity.training_seed,
         require_formal=execution_mode == "formal",
     )
+    if execution_mode == "formal":
+        if prepared_trainer_binding is None:
+            raise SctsrError(ErrorCode.UPSTREAM_BINDING_FAILED, "Formal branch lacks its prepared trainer binding")
+        _revalidate_prepared_dataset_bindings(dict(prepared_trainer_binding))
     lineage.validate(
         parent_sha=parent_sha, training_seed=identity.training_seed, arm_id=schedule.arm_id.value,
         source_digest=identity.source_tree_digest,

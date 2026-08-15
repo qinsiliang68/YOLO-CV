@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+import os
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Mapping, Sequence
@@ -8,6 +9,7 @@ from typing import Any, Mapping, Sequence
 import torch
 
 from .errors import ErrorCode, SctsrError
+from .columnar import read_columnar, validate_columnar_file, write_zstd_parquet
 from .rng_isolation import derive_counter_seed, replay_rng_domain
 from .serialization import sha256_file, stable_digest
 
@@ -319,6 +321,8 @@ def validate_materialized_dataset_bytes(
     expected_content: Mapping[str, Mapping[str, Any]],
     *,
     role: str,
+    dataset_root: str | Path | None = None,
+    evidence_path: str | Path | None = None,
 ) -> dict[str, Any]:
     """Hash the exact physical files exposed by an upstream dataset."""
 
@@ -336,10 +340,19 @@ def validate_materialized_dataset_bytes(
         )
     evidence: list[dict[str, Any]] = []
     total_bytes = 0
+    canonical_root = None if dataset_root is None else Path(dataset_root).resolve()
+    selected_paths: set[Path] = set()
+    scan_roots: set[Path] = set()
     for identity, raw_path in zip(identities, physical_paths, strict=True):
         sample_id = str(identity.sample_id)
         expected = expected_content.get(sample_id)
         path = Path(str(raw_path)).resolve()
+        if canonical_root is not None and path != canonical_root and canonical_root not in path.parents:
+            raise SctsrError(
+                ErrorCode.DATASET_CONTENT_MISMATCH,
+                "Materialized loader path escapes the registered dataset root",
+                artifact_path=str(path),
+            )
         if expected is None or not path.is_file():
             raise SctsrError(
                 ErrorCode.DATASET_CONTENT_MISMATCH,
@@ -360,19 +373,125 @@ def validate_materialized_dataset_bytes(
                 artifact_path=str(path),
             )
         total_bytes += observed_bytes
+        selected_paths.add(path)
+        scan_roots.add(path.parent)
+        canonical_path = None if canonical_root is None else (canonical_root / Path(sample_id)).resolve()
+        if canonical_path is not None:
+            try:
+                canonical_path.relative_to(canonical_root)
+            except ValueError as exc:
+                raise SctsrError(ErrorCode.DATASET_CONTENT_MISMATCH, "Canonical materialized identity escapes the registered dataset root", observed=sample_id) from exc
+            if not canonical_path.is_file() or canonical_path.stat().st_size != expected_bytes or sha256_file(canonical_path) != expected_sha:
+                raise SctsrError(ErrorCode.DATASET_CONTENT_MISMATCH, "Canonical source bytes differ from the frozen content ledger", observed=sample_id, artifact_path=str(canonical_path))
+        stat_result = path.stat()
         evidence.append(
-            {"sample_id": sample_id, "image_bytes": observed_bytes, "image_sha256": observed_sha}
+            {
+                "role": role,
+                "sample_id": sample_id,
+                "y_true": int(identity.y_true),
+                "loader_path": str(raw_path),
+                "loader_path_resolved": path.as_posix(),
+                "canonical_source_path": "NOT_BOUND" if canonical_path is None else canonical_path.as_posix(),
+                "image_bytes": observed_bytes,
+                "image_sha256": observed_sha,
+                "physical_file_identity": f"{stat_result.st_dev}:{stat_result.st_ino}",
+                "samefile_as_canonical": False if canonical_path is None else os.path.samefile(path, canonical_path),
+            }
         )
+    for selected in selected_paths:
+        current = selected
+        while True:
+            stat_result = current.lstat()
+            attributes = int(getattr(stat_result, "st_file_attributes", 0))
+            if current.is_symlink() or attributes & 0x400:
+                raise SctsrError(ErrorCode.DATASET_CONTENT_MISMATCH, "Materialized dataset path uses a symlink or reparse point", artifact_path=str(current))
+            if canonical_root is None or current == canonical_root or canonical_root not in current.parents:
+                break
+            current = current.parent
+    for scan_root in scan_roots:
+        for entry in scan_root.rglob("*"):
+            resolved = entry.resolve()
+            attributes = int(getattr(entry.lstat(), "st_file_attributes", 0))
+            if entry.is_symlink() or attributes & 0x400:
+                raise SctsrError(ErrorCode.DATASET_CONTENT_MISMATCH, "Materialized dataset contains a symlink or reparse point", artifact_path=str(entry))
+            if entry.is_file() and resolved not in selected_paths:
+                raise SctsrError(ErrorCode.DATASET_CONTENT_MISMATCH, "Materialized dataset contains an unregistered extra file", artifact_path=str(entry))
+            if entry.is_dir() and not any(resolved in selected.parents for selected in selected_paths):
+                raise SctsrError(ErrorCode.DATASET_CONTENT_MISMATCH, "Materialized dataset contains an unregistered extra directory", artifact_path=str(entry))
     payload = {
+        "schema_version": "stage1.sctsr.materialized_dataset_binding.v2",
         "status": "PASS",
         "role": role,
         "row_count": len(evidence),
         "physical_bytes_verified": total_bytes,
+        "dataset_root": "NOT_BOUND" if canonical_root is None else canonical_root.as_posix(),
+        "materialized_roots": sorted(path.as_posix() for path in scan_roots),
         "materialized_content_digest": stable_digest(
             sorted(evidence, key=lambda row: row["sample_id"])
         ),
     }
+    if evidence_path is not None:
+        manifest = write_zstd_parquet(
+            sorted(evidence, key=lambda row: row["sample_id"]),
+            evidence_path,
+            schema_version="stage1.sctsr.materialized_dataset_rows.v2",
+        )
+        payload["evidence"] = {
+            "path": Path(manifest.path).resolve().as_posix(),
+            "bytes": manifest.bytes,
+            "sha256": manifest.sha256,
+            "row_count": manifest.row_count,
+            "schema_version": manifest.schema_version,
+            "schema_digest": manifest.schema_digest,
+            "compression": manifest.compression,
+        }
     return {**payload, "binding_digest": stable_digest(payload)}
+
+
+def revalidate_materialized_dataset_binding(binding: Mapping[str, Any]) -> dict[str, Any]:
+    """Re-hash every prepared loader file from its immutable row ledger."""
+
+    if binding.get("schema_version") != "stage1.sctsr.materialized_dataset_binding.v2":
+        raise SctsrError(ErrorCode.SCHEMA_VALIDATION_FAILED, "Materialized dataset binding schema is not registered")
+    core = {key: value for key, value in binding.items() if key != "binding_digest"}
+    if binding.get("binding_digest") != stable_digest(core):
+        raise SctsrError(ErrorCode.IDENTITY_DIGEST_MISMATCH, "Materialized dataset binding digest is invalid")
+    evidence = binding.get("evidence")
+    if not isinstance(evidence, Mapping):
+        raise SctsrError(ErrorCode.DATASET_CONTENT_MISMATCH, "Materialized dataset binding lacks row-level evidence")
+    path = Path(str(evidence.get("path", ""))).resolve()
+    validate_columnar_file(
+        path,
+        expected_rows=int(evidence.get("row_count", -1)),
+        expected_schema_version=str(evidence.get("schema_version", "")),
+        expected_schema_digest=str(evidence.get("schema_digest", "")),
+        expected_sha256=str(evidence.get("sha256", "")),
+    )
+    rows = read_columnar(path)
+    observed: list[dict[str, Any]] = []
+    for row in rows:
+        physical = Path(str(row["loader_path_resolved"])).resolve()
+        if not physical.is_file():
+            raise SctsrError(ErrorCode.DATASET_CONTENT_MISMATCH, "A bound materialized dataset file is missing", artifact_path=str(physical))
+        stat_result = physical.stat()
+        observed_row = dict(row)
+        observed_row["image_bytes"] = stat_result.st_size
+        observed_row["image_sha256"] = sha256_file(physical)
+        observed_row["physical_file_identity"] = f"{stat_result.st_dev}:{stat_result.st_ino}"
+        canonical = str(row.get("canonical_source_path", "NOT_BOUND"))
+        observed_row["samefile_as_canonical"] = False if canonical == "NOT_BOUND" else os.path.samefile(physical, Path(canonical))
+        if observed_row != row:
+            raise SctsrError(
+                ErrorCode.DATASET_CONTENT_MISMATCH,
+                "Materialized dataset bytes or physical file identity changed after setup",
+                observed={key: observed_row[key] for key in ("sample_id", "image_bytes", "image_sha256", "physical_file_identity")},
+                expected={key: row[key] for key in ("sample_id", "image_bytes", "image_sha256", "physical_file_identity")},
+                artifact_path=str(physical),
+            )
+        observed.append(observed_row)
+    if stable_digest(sorted(observed, key=lambda row: row["sample_id"])) != binding.get("materialized_content_digest"):
+        raise SctsrError(ErrorCode.DATASET_CONTENT_MISMATCH, "Materialized dataset aggregate digest changed after setup")
+    return {"status": "PASS", "role": binding["role"], "row_count": len(observed), "binding_digest": binding["binding_digest"]}
 
 
 def load_identity_manifest(path: str | Path) -> tuple[DatasetIdentity, ...]:

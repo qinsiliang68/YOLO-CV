@@ -14,7 +14,11 @@ from stage1_sctsr_v4.errors import ErrorCode, SctsrError
 from stage1_sctsr_v4.evaluation import compute_tie_safe_frontier, validate_checkpoint_for_evaluation, write_frontier_artifacts
 from stage1_sctsr_v4.fixed_step_runtime import ExponentialMovingAverage
 from stage1_sctsr_v4.prediction_artifact import PredictionArtifactBinding, validate_prediction_rows, write_prediction_artifact
-from stage1_sctsr_v4.prediction_runtime import build_formal_endpoint_receipt
+from stage1_sctsr_v4.prediction_runtime import (
+    RegisteredImageRecord,
+    build_endpoint_input_binding,
+    build_formal_endpoint_receipt,
+)
 from stage1_sctsr_v4.run_validation import validate_formal_endpoint_evidence
 from stage1_sctsr_v4.serialization import atomic_write_json, sha256_file
 
@@ -158,6 +162,29 @@ def _write_formal_endpoint(tmp_path, prediction_rows):
         binding=binding,
         repository_root=tmp_path,
     )
+    dataset_root = tmp_path / "endpoint_dataset"
+    endpoint_records = []
+    for index, row in enumerate(rows):
+        image = dataset_root / f"image_{index:04d}.bin"
+        image.parent.mkdir(parents=True, exist_ok=True)
+        image.write_bytes(f"{row.sample_id}:{row.y_true}".encode("utf-8"))
+        endpoint_records.append(RegisteredImageRecord(row.sample_id, row.y_true, image, image.stat().st_size, sha256_file(image)))
+    ledger = tmp_path / "endpoint_content_ledger.parquet"
+    ledger.write_bytes(b"fixture-ledger")
+    input_binding = build_endpoint_input_binding(
+        endpoint_records,
+        registry=AssetRegistry.from_mapping(json.loads((tmp_path / "asset_registry.json").read_text(encoding="utf-8"))),
+        repository_root=tmp_path,
+        dataset_root=dataset_root,
+        split_role="val_op",
+        content_ledger_path=ledger,
+        content_ledger_sha256=sha256_file(ledger),
+        content_ledger_identity_digest="B" * 64,
+        evidence_path=prediction_root / "endpoint_input_rows.parquet",
+    )
+    atomic_write_json(prediction_root / "endpoint_input_binding.json", input_binding)
+    prediction_summary["endpoint_input_binding_digest"] = input_binding["binding_digest"]
+    prediction_summary["endpoint_input_sample_content_digest"] = input_binding["sample_content_digest"]
     atomic_write_json(prediction_root / "prediction_summary.json", prediction_summary)
 
     points, frontier_summary = compute_tie_safe_frontier(
@@ -185,6 +212,7 @@ def _write_formal_endpoint(tmp_path, prediction_rows):
         checkpoint_epoch=200,
         checkpoint_sha256=sha256_file(checkpoint),
         model_variant="MODEL",
+        endpoint_input_binding_digest=input_binding["binding_digest"],
     )
     atomic_write_json(run_root / "08_receipts" / "FORMAL_ENDPOINT_RECEIPT.json", receipt)
     manifest = {

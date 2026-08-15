@@ -687,7 +687,14 @@ def _manifest_filename_label_pairs(path: Path, *, label: int) -> set[tuple[str, 
     return pairs
 
 
-def validate_prepared_trainer_datasets(trainer: Any, *, registry: Any, repository_root: Path) -> dict[str, Any]:
+def validate_prepared_trainer_datasets(
+    trainer: Any,
+    *,
+    registry: Any,
+    repository_root: Path,
+    dataset_root: Path,
+    evidence_root: Path,
+) -> dict[str, Any]:
     """Prove upstream train/validation loaders expose only registered roles."""
 
     train_dataset = getattr(getattr(trainer, "train_loader", None), "dataset", None)
@@ -713,8 +720,20 @@ def validate_prepared_trainer_datasets(trainer: Any, *, registry: Any, repositor
             expected={"rows": len(expected), "role": "val_model/study"},
         )
     content = load_registered_dataset_content_map(registry=registry, repository_root=repository_root)
-    train_content_binding = validate_materialized_dataset_bytes(train_dataset, content, role="train")
-    val_content_binding = validate_materialized_dataset_bytes(val_dataset, content, role="val_model")
+    train_content_binding = validate_materialized_dataset_bytes(
+        train_dataset,
+        content,
+        role="train",
+        dataset_root=dataset_root,
+        evidence_path=evidence_root / "train_materialized_files.parquet",
+    )
+    val_content_binding = validate_materialized_dataset_bytes(
+        val_dataset,
+        content,
+        role="val_model",
+        dataset_root=dataset_root,
+        evidence_path=evidence_root / "val_model_materialized_files.parquet",
+    )
     return {
         "status": "PASS",
         "train_rows": len(train_dataset),
@@ -1040,7 +1059,13 @@ def build_prepared_trainer(
         # _do_train, which can auto-reduce batch and final-evaluate best.pt.
         trainer._setup_train()
         trainer.accumulate = 1
-        dataset_binding = validate_prepared_trainer_datasets(trainer, registry=registry, repository_root=root)
+        dataset_binding = validate_prepared_trainer_datasets(
+            trainer,
+            registry=registry,
+            repository_root=root,
+            dataset_root=data_root,
+            evidence_root=output / "trainer" / "sctsr_materialized_bindings",
+        )
     except BaseException as exc:
         if output.exists():
             suffix = stable_digest({"output": output.as_posix(), "exception": type(exc).__name__, "message": str(exc)})[:12]
