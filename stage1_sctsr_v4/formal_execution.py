@@ -10,7 +10,7 @@ import time
 from contextlib import contextmanager
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
-from typing import Any, Iterator, Mapping
+from typing import Any, Callable, Iterator, Mapping
 
 from .errors import ErrorCode, SctsrError
 from .formal_release import (
@@ -26,15 +26,15 @@ from .serialization import _fsync_directory, atomic_write_bytes, atomic_write_js
 EXECUTION_TOKEN_SCHEMA = "stage1.sctsr.formal_execution_token.v1"
 CLAIM_REGISTRY_SCHEMA = "stage1.sctsr.execution_claim_registry.v1"
 FORMAL_EXECUTION_CLAIM_SCHEMA = "stage1.sctsr.formal_execution_claim.v2"
-LOGICAL_JOB_FENCE_SCHEMA = "stage1.sctsr.logical_job_fence.v1"
-LOGICAL_JOB_HEARTBEAT_SCHEMA = "stage1.sctsr.logical_job_heartbeat.v1"
+LOGICAL_JOB_FENCE_SCHEMA = "stage1.sctsr.logical_job_fence.v2"
+LOGICAL_JOB_HEARTBEAT_SCHEMA = "stage1.sctsr.logical_job_heartbeat.v2"
+LOGICAL_JOB_TERMINAL_RECEIPT_SCHEMA = "stage1.sctsr.logical_job_terminal_receipt.v1"
 EXECUTION_ATTEMPT_SNAPSHOT_SCHEMA = "stage1.sctsr.execution_attempt_snapshot.v2"
 LOGICAL_JOB_INVARIANT_FIELDS = (
     "run_role",
     "logical_run_id",
     "arm_id",
     "training_seed",
-    "output_root_digest",
     "parent_checkpoint_sha256",
     "lineage_digest",
     "schedule_digest",
@@ -115,6 +115,7 @@ REQUIRED_EXECUTION_CLAIM_BINDING_FIELDS = frozenset(
         "fence_claim_bytes",
         "fence_claim_sha256",
         "fence_digest",
+        "authorized_output_root_digest",
         "lease_heartbeat_path",
         "lease_timeout_seconds",
         "execution_token_path",
@@ -137,6 +138,7 @@ REQUIRED_LOGICAL_JOB_FENCE_FIELDS = frozenset(
         "execution_nonce_sha256",
         "execution_claim_path",
         "execution_claim_sha256",
+        "authorized_output_root_digest",
         "job_invariants",
         "claimed_at_utc",
         "fence_digest",
@@ -151,7 +153,24 @@ REQUIRED_LOGICAL_JOB_HEARTBEAT_FIELDS = frozenset(
         "execution_id",
         "fence_digest",
         "renewed_at_utc",
+        "terminal_receipt_path",
+        "terminal_receipt_sha256",
         "heartbeat_digest",
+    }
+)
+REQUIRED_LOGICAL_JOB_TERMINAL_RECEIPT_FIELDS = frozenset(
+    {
+        "schema_version",
+        "status",
+        "logical_job_digest",
+        "fence_generation",
+        "execution_id",
+        "fence_digest",
+        "recorded_at_utc",
+        "result_digest",
+        "error_type",
+        "error_message",
+        "terminal_receipt_digest",
     }
 )
 
@@ -216,6 +235,10 @@ def _fence_path(claims_root: Path, job_digest: str, generation: int) -> Path:
 
 def _heartbeat_path(claims_root: Path, job_digest: str) -> Path:
     return claims_root / f"{job_digest}.heartbeat.json"
+
+
+def _terminal_receipt_path(claims_root: Path, job_digest: str, generation: int) -> Path:
+    return claims_root / f"{job_digest}.fence_{generation:08d}.terminal.json"
 
 
 def _exclusive_write(path: Path, payload: bytes) -> None:
@@ -320,6 +343,8 @@ def _load_fence_chain(claims_root: Path, job_digest: str) -> list[tuple[Path, di
                 value.get("fence_digest") != stable_digest(core),
                 not isinstance(value.get("job_invariants"), Mapping),
                 stable_digest(dict(value.get("job_invariants", {}))) != job_digest,
+                not isinstance(value.get("authorized_output_root_digest"), str),
+                len(str(value.get("authorized_output_root_digest"))) != 64,
             )
         ):
             raise SctsrError(ErrorCode.LOGICAL_JOB_FENCE_CORRUPT, "Logical-job fence chain is invalid", artifact_path=path.as_posix())
@@ -350,7 +375,7 @@ def _load_heartbeat(path: Path, *, latest_fence: Mapping[str, Any]) -> dict[str,
     if any(
         (
             value.get("schema_version") != LOGICAL_JOB_HEARTBEAT_SCHEMA,
-            value.get("status") not in {"ACTIVE", "FAILED", "COMPLETE"},
+            value.get("status") not in {"ACTIVE", "FINALIZING", "FAILED", "COMPLETE"},
             value.get("logical_job_digest") != latest_fence.get("logical_job_digest"),
             value.get("fence_generation") != latest_fence.get("fence_generation"),
             value.get("execution_id") != latest_fence.get("execution_id"),
@@ -360,6 +385,54 @@ def _load_heartbeat(path: Path, *, latest_fence: Mapping[str, Any]) -> dict[str,
     ):
         raise SctsrError(ErrorCode.LOGICAL_JOB_FENCE_CORRUPT, "Logical-job heartbeat does not bind the current fence", artifact_path=path.as_posix())
     _parse_utc(value.get("renewed_at_utc"), field="logical_job_heartbeat.renewed_at_utc")
+    terminal_path_value = value.get("terminal_receipt_path")
+    terminal_sha_value = value.get("terminal_receipt_sha256")
+    if value["status"] in {"ACTIVE", "FINALIZING"}:
+        if terminal_path_value is not None or terminal_sha_value is not None:
+            raise SctsrError(
+                ErrorCode.LOGICAL_JOB_FENCE_CORRUPT,
+                "Non-terminal heartbeat unexpectedly binds a terminal receipt",
+                artifact_path=path.as_posix(),
+            )
+    else:
+        expected_terminal_path = _terminal_receipt_path(
+            path.parent,
+            str(latest_fence["logical_job_digest"]),
+            int(latest_fence["fence_generation"]),
+        ).resolve()
+        terminal_path = Path(str(terminal_path_value)).resolve()
+        if (
+            not isinstance(terminal_path_value, str)
+            or terminal_path != expected_terminal_path
+            or terminal_path.is_symlink()
+            or not terminal_path.is_file()
+            or not isinstance(terminal_sha_value, str)
+            or sha256_file(terminal_path) != terminal_sha_value
+        ):
+            raise SctsrError(
+                ErrorCode.LOGICAL_JOB_FENCE_CORRUPT,
+                "Terminal heartbeat does not bind an intact immutable terminal receipt",
+                artifact_path=path.as_posix(),
+            )
+        terminal = load_json(terminal_path)
+        terminal_core = {key: item for key, item in terminal.items() if key != "terminal_receipt_digest"} if isinstance(terminal, Mapping) else {}
+        if (
+            not isinstance(terminal, Mapping)
+            or set(terminal) != REQUIRED_LOGICAL_JOB_TERMINAL_RECEIPT_FIELDS
+            or terminal.get("schema_version") != LOGICAL_JOB_TERMINAL_RECEIPT_SCHEMA
+            or terminal.get("status") != value["status"]
+            or terminal.get("logical_job_digest") != latest_fence.get("logical_job_digest")
+            or terminal.get("fence_generation") != latest_fence.get("fence_generation")
+            or terminal.get("execution_id") != latest_fence.get("execution_id")
+            or terminal.get("fence_digest") != latest_fence.get("fence_digest")
+            or terminal.get("terminal_receipt_digest") != stable_digest(terminal_core)
+        ):
+            raise SctsrError(
+                ErrorCode.LOGICAL_JOB_FENCE_CORRUPT,
+                "Terminal receipt content does not bind the current fence",
+                artifact_path=terminal_path.as_posix(),
+            )
+        _parse_utc(terminal.get("recorded_at_utc"), field="logical_job_terminal_receipt.recorded_at_utc")
     return dict(value)
 
 
@@ -369,6 +442,8 @@ def _heartbeat_payload(
     job_digest: str,
     fence: Mapping[str, Any],
     renewed_at: datetime,
+    terminal_receipt_path: str | None = None,
+    terminal_receipt_sha256: str | None = None,
 ) -> dict[str, Any]:
     core = {
         "schema_version": LOGICAL_JOB_HEARTBEAT_SCHEMA,
@@ -378,8 +453,59 @@ def _heartbeat_payload(
         "execution_id": fence["execution_id"],
         "fence_digest": fence["fence_digest"],
         "renewed_at_utc": renewed_at.astimezone(timezone.utc).isoformat().replace("+00:00", "Z"),
+        "terminal_receipt_path": terminal_receipt_path,
+        "terminal_receipt_sha256": terminal_receipt_sha256,
     }
     return {**core, "heartbeat_digest": stable_digest(core)}
+
+
+def _write_terminal_state_locked(
+    binding: Mapping[str, Any],
+    *,
+    fence: Mapping[str, Any],
+    status: str,
+    result_digest: str,
+    error_type: str | None,
+    error_message: str | None,
+    now_utc: datetime | None = None,
+) -> Mapping[str, Any]:
+    if status not in {"FAILED", "COMPLETE"}:
+        raise ValueError(f"terminal status must be FAILED or COMPLETE, got {status!r}")
+    recorded_at = (now_utc or datetime.now(timezone.utc)).astimezone(timezone.utc)
+    recorded_at_text = recorded_at.isoformat().replace("+00:00", "Z")
+    terminal_core = {
+        "schema_version": LOGICAL_JOB_TERMINAL_RECEIPT_SCHEMA,
+        "status": status,
+        "logical_job_digest": binding["logical_job_digest"],
+        "fence_generation": binding["fence_generation"],
+        "execution_id": binding["execution_id"],
+        "fence_digest": binding["fence_digest"],
+        "recorded_at_utc": recorded_at_text,
+        "result_digest": result_digest,
+        "error_type": error_type,
+        "error_message": error_message,
+    }
+    terminal = {**terminal_core, "terminal_receipt_digest": stable_digest(terminal_core)}
+    claims_root = Path(str(binding["claim_path"])).resolve().parent
+    terminal_path = _terminal_receipt_path(
+        claims_root,
+        str(binding["logical_job_digest"]),
+        int(binding["fence_generation"]),
+    )
+    _exclusive_write(terminal_path, canonical_json_bytes(terminal))
+    terminal_sha = sha256_file(terminal_path)
+    heartbeat = _heartbeat_payload(
+        status=status,
+        job_digest=str(binding["logical_job_digest"]),
+        fence=fence,
+        renewed_at=recorded_at,
+        terminal_receipt_path=terminal_path.as_posix(),
+        terminal_receipt_sha256=terminal_sha,
+    )
+    heartbeat_path = Path(str(binding["lease_heartbeat_path"])).resolve()
+    atomic_write_json(heartbeat_path, heartbeat)
+    _fsync_directory(claims_root)
+    return terminal
 
 
 def _fail(message: str, *, field: str | None = None, observed: Any = None, expected: Any = None) -> None:
@@ -685,6 +811,13 @@ def claim_formal_execution(
                     observed=action,
                 )
             latest_heartbeat = _load_heartbeat(heartbeat_path, latest_fence=fences[-1][1])
+            if fences[-1][1]["authorized_output_root_digest"] != expected_job_bindings["output_root_digest"]:
+                _fail(
+                    "RESUME output root differs from the storage root authorized by the first START",
+                    field="output_root_digest",
+                    observed=expected_job_bindings["output_root_digest"],
+                    expected=fences[-1][1]["authorized_output_root_digest"],
+                )
             renewed_at = _parse_utc(latest_heartbeat["renewed_at_utc"], field="logical_job_heartbeat.renewed_at_utc")
             if renewed_at > claimed_at_value + timedelta(minutes=5):
                 raise SctsrError(
@@ -701,7 +834,7 @@ def claim_formal_execution(
                     artifact_path=heartbeat_path.as_posix(),
                     observed=latest_heartbeat,
                 )
-            if latest_heartbeat["status"] == "ACTIVE" and age_seconds <= LOGICAL_JOB_LEASE_TIMEOUT_SECONDS:
+            if latest_heartbeat["status"] in {"ACTIVE", "FINALIZING"} and age_seconds <= LOGICAL_JOB_LEASE_TIMEOUT_SECONDS:
                 raise SctsrError(
                     ErrorCode.LOGICAL_JOB_LEASE_ACTIVE,
                     "Logical job still has a fresh active lease",
@@ -759,6 +892,7 @@ def claim_formal_execution(
                 "execution_nonce_sha256": nonce_digest,
                 "execution_claim_path": claim_path.as_posix(),
                 "execution_claim_sha256": sha256_file(claim_path),
+                "authorized_output_root_digest": expected_job_bindings["output_root_digest"],
                 "job_invariants": logical_job_invariants(expected_job_bindings),
                 "claimed_at_utc": claimed_at,
             }
@@ -800,6 +934,7 @@ def claim_formal_execution(
         "fence_claim_bytes": fence_path.stat().st_size,
         "fence_claim_sha256": sha256_file(fence_path),
         "fence_digest": fence["fence_digest"],
+        "authorized_output_root_digest": fence["authorized_output_root_digest"],
         "lease_heartbeat_path": heartbeat_path.as_posix(),
         "lease_timeout_seconds": LOGICAL_JOB_LEASE_TIMEOUT_SECONDS,
         "execution_token_path": None if token_path is None else token_path.as_posix(),
@@ -889,6 +1024,8 @@ def validate_execution_claim_binding(
             fence.get("execution_id") != binding["execution_id"],
             fence.get("execution_claim_path") != claim_path.as_posix(),
             fence.get("execution_claim_sha256") != binding["claim_sha256"],
+            fence.get("authorized_output_root_digest") != binding["authorized_output_root_digest"],
+            fence.get("authorized_output_root_digest") != expected_job_bindings["output_root_digest"],
             fence.get("job_invariants") != logical_job_invariants(expected_job_bindings),
         )
     ):
@@ -936,6 +1073,8 @@ def _renew_execution_lease_locked(
     status: str,
     now_utc: datetime | None,
 ) -> Mapping[str, Any]:
+    if status not in {"ACTIVE", "FINALIZING"}:
+        raise ValueError(f"lease renewal status must be ACTIVE or FINALIZING, got {status!r}")
     validate_execution_claim_binding(
         binding,
         expected_job_bindings=expected_job_bindings,
@@ -943,13 +1082,21 @@ def _renew_execution_lease_locked(
         require_current_fence=True,
     )
     fence = load_json(binding["fence_claim_path"])
+    heartbeat_path = Path(str(binding["lease_heartbeat_path"])).resolve()
+    current = _load_heartbeat(heartbeat_path, latest_fence=fence)
+    if current["status"] in {"FAILED", "COMPLETE"}:
+        raise SctsrError(
+            ErrorCode.LOGICAL_JOB_FENCED,
+            "Terminal logical-job lease cannot be renewed",
+            artifact_path=heartbeat_path.as_posix(),
+            observed=current["status"],
+        )
     heartbeat = _heartbeat_payload(
         status=status,
         job_digest=str(binding["logical_job_digest"]),
         fence=fence,
         renewed_at=(now_utc or datetime.now(timezone.utc)).astimezone(timezone.utc),
     )
-    heartbeat_path = Path(str(binding["lease_heartbeat_path"])).resolve()
     atomic_write_json(heartbeat_path, heartbeat)
     _fsync_directory(heartbeat_path.parent)
     return heartbeat
@@ -988,6 +1135,107 @@ def execution_fence_guard(
             now_utc=None,
         )
         yield
+
+
+def execute_fenced_finalization(
+    binding: Mapping[str, Any],
+    *,
+    expected_job_bindings: Mapping[str, Any],
+    operation: Callable[[], Any],
+    now_utc: datetime | None = None,
+) -> Any:
+    """Run canonical final publication under the latest immutable job fence.
+
+    The logical-job lock is deliberately held while ``operation`` runs.  Only
+    this latest attempt may publish endpoint/index/completion artifacts.  A
+    successful or failed operation is then bound to an append-only terminal
+    receipt before the canonical heartbeat becomes terminal.
+    """
+
+    claims_root = Path(str(binding["claim_path"])).resolve().parent
+    with _logical_job_control_lock(claims_root, str(binding["logical_job_digest"])):
+        _renew_execution_lease_locked(
+            binding,
+            expected_job_bindings=expected_job_bindings,
+            status="FINALIZING",
+            now_utc=now_utc,
+        )
+        fence = load_json(binding["fence_claim_path"])
+        try:
+            result = operation()
+            result_digest = stable_digest(result)
+        except BaseException as exc:
+            error_record = {
+                "error_type": type(exc).__name__,
+                "error_message": str(exc),
+            }
+            _write_terminal_state_locked(
+                binding,
+                fence=fence,
+                status="FAILED",
+                result_digest=stable_digest(error_record),
+                error_type=error_record["error_type"],
+                error_message=error_record["error_message"],
+                now_utc=now_utc,
+            )
+            raise
+        _write_terminal_state_locked(
+            binding,
+            fence=fence,
+            status="COMPLETE",
+            result_digest=result_digest,
+            error_type=None,
+            error_message=None,
+            now_utc=now_utc,
+        )
+        return result
+
+
+def mark_execution_failed(
+    binding: Mapping[str, Any],
+    *,
+    expected_job_bindings: Mapping[str, Any],
+    error: BaseException,
+    now_utc: datetime | None = None,
+) -> Mapping[str, Any]:
+    """Publish an immutable FAILED lease for a claimed training attempt.
+
+    This is intentionally idempotent for the same fence so a runner may call it
+    while unwinding an exception that was already recorded by finalization.
+    """
+
+    claims_root = Path(str(binding["claim_path"])).resolve().parent
+    with _logical_job_control_lock(claims_root, str(binding["logical_job_digest"])):
+        validate_execution_claim_binding(
+            binding,
+            expected_job_bindings=expected_job_bindings,
+            require_token_file=True,
+            require_current_fence=True,
+        )
+        fence = load_json(binding["fence_claim_path"])
+        heartbeat_path = Path(str(binding["lease_heartbeat_path"])).resolve()
+        heartbeat = _load_heartbeat(heartbeat_path, latest_fence=fence)
+        if heartbeat["status"] == "FAILED":
+            terminal = load_json(heartbeat["terminal_receipt_path"])
+            if not isinstance(terminal, Mapping):
+                raise SctsrError(ErrorCode.LOGICAL_JOB_FENCE_CORRUPT, "FAILED terminal receipt is not an object")
+            return dict(terminal)
+        if heartbeat["status"] == "COMPLETE":
+            raise SctsrError(
+                ErrorCode.LOGICAL_JOB_FENCED,
+                "Completed logical job cannot be changed to FAILED",
+                artifact_path=heartbeat_path.as_posix(),
+            )
+        error_record = {"error_type": type(error).__name__, "error_message": str(error)}
+        return _write_terminal_state_locked(
+            binding,
+            fence=fence,
+            status="FAILED",
+            result_digest=stable_digest(error_record),
+            error_type=error_record["error_type"],
+            error_message=error_record["error_message"],
+            now_utc=now_utc,
+        )
 
 
 def publish_execution_claim_snapshot(

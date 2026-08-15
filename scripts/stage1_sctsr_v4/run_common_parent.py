@@ -8,7 +8,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from stage1_sctsr_v4.cli_support import add_execution_arguments, add_output_argument, require_receipt_outside_artifact_root, run_cli
 from stage1_sctsr_v4.errors import ErrorCode, SctsrError
-from stage1_sctsr_v4.formal_execution import build_execution_job_bindings, claim_formal_execution
+from stage1_sctsr_v4.formal_execution import build_execution_job_bindings, claim_formal_execution, mark_execution_failed
 from stage1_sctsr_v4.formal_cli import build_prepared_trainer, load_formal_identity, prepare_formal_authorization
 from stage1_sctsr_v4.formal_training import run_prepared_common_parent
 from stage1_sctsr_v4.recovery import inspect_formal_resume_context, prepare_formal_resume_context
@@ -190,20 +190,24 @@ def main() -> int:
             output_root=trainer_setup_root,
             asset_registry_path=arguments.asset_registry,
         )
-        result = run_prepared_common_parent(
-            trainer=trainer,
-            identity=identity,
-            output_root=arguments.output_root,
-            release_authorization=arguments.release_authorization,
-            release_trust_policy=arguments.release_trust_policy,
-            release_expected_bindings=authorization["expected_bindings"],
-            prepared_trainer_binding=trainer_binding,
-            formal_input_binding=authorization["formal_input_binding"],
-            execution_claim_binding=execution_claim,
-            run_intent_binding=run_intent_binding,
-            resume_context=resume_context,
-            execution_mode="formal",
-        )
+        try:
+            result = run_prepared_common_parent(
+                trainer=trainer,
+                identity=identity,
+                output_root=arguments.output_root,
+                release_authorization=arguments.release_authorization,
+                release_trust_policy=arguments.release_trust_policy,
+                release_expected_bindings=authorization["expected_bindings"],
+                prepared_trainer_binding=trainer_binding,
+                formal_input_binding=authorization["formal_input_binding"],
+                execution_claim_binding=execution_claim,
+                run_intent_binding=run_intent_binding,
+                resume_context=resume_context,
+                execution_mode="formal",
+            )
+        except BaseException as exc:
+            mark_execution_failed(execution_claim, expected_job_bindings=execution_job, error=exc)
+            raise
         return {
             **result,
             "upstream_binding_digest": binding.binding_digest,

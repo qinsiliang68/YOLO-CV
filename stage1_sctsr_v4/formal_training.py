@@ -19,6 +19,7 @@ from .evidence_runtime import EpochEvidenceRecorder, ReplayHistoryState, SampleE
 from .filesystem import windows_safe_resolved_path
 from .formal_execution import (
     build_execution_job_bindings,
+    execute_fenced_finalization,
     execution_fence_guard,
     publish_execution_claim_snapshot,
     validate_execution_claim_binding,
@@ -1094,32 +1095,39 @@ def run_prepared_common_parent(
     if execution_mode == "formal":
         if release_expected_bindings is None or release_authorization is None:
             raise SctsrError(ErrorCode.FORMAL_RELEASE_NOT_AUTHORIZED, "Formal parent finalization lacks release bindings")
-        final_indexes = _publish_formal_run_manifest_and_indexes(
-            root=root,
-            identity=identity,
-            run_role="COMMON_PARENT",
-            run_id=f"PARENT_{identity.training_seed}",
-            arm_id="COMMON_PARENT_NR",
-            release_authorization=release_authorization,
-            release_expected_bindings=release_expected_bindings,
-            execution_claim_binding=dict(execution_claim_binding or {}),
-            execution_claim_snapshot=dict(execution_claim_snapshot or {}),
-            run_intent_snapshot=dict(run_intent_snapshot or {}),
+        def finalize_parent() -> dict[str, Any]:
+            final_indexes = _publish_formal_run_manifest_and_indexes(
+                root=root,
+                identity=identity,
+                run_role="COMMON_PARENT",
+                run_id=f"PARENT_{identity.training_seed}",
+                arm_id="COMMON_PARENT_NR",
+                release_authorization=release_authorization,
+                release_expected_bindings=release_expected_bindings,
+                execution_claim_binding=dict(execution_claim_binding or {}),
+                execution_claim_snapshot=dict(execution_claim_snapshot or {}),
+                run_intent_snapshot=dict(run_intent_snapshot or {}),
+            )
+            finalized_receipt = {**receipt, "final_indexes": final_indexes}
+            atomic_write_json(root / "PARENT_RECEIPT.json", finalized_receipt)
+            from .run_validation import build_artifact_index
+            atomic_write_json(root / "ARTIFACT_INDEX.json", build_artifact_index(root))
+            completion = publish_formal_completion(
+                root,
+                run_role="COMMON_PARENT",
+                run_id=f"PARENT_{identity.training_seed}",
+                arm_id="COMMON_PARENT_NR",
+                training_seed=identity.training_seed,
+                terminal_epoch=120,
+                fixed_checkpoint_sha256=checkpoint_sha,
+            )
+            return {**finalized_receipt, "status": completion["status"], "formal_completion": completion}
+
+        return execute_fenced_finalization(
+            dict(execution_claim_binding or {}),
+            expected_job_bindings=execution_job,
+            operation=finalize_parent,
         )
-        receipt = {**receipt, "final_indexes": final_indexes}
-        atomic_write_json(root / "PARENT_RECEIPT.json", receipt)
-        from .run_validation import build_artifact_index
-        atomic_write_json(root / "ARTIFACT_INDEX.json", build_artifact_index(root))
-        completion = publish_formal_completion(
-            root,
-            run_role="COMMON_PARENT",
-            run_id=f"PARENT_{identity.training_seed}",
-            arm_id="COMMON_PARENT_NR",
-            training_seed=identity.training_seed,
-            terminal_epoch=120,
-            fixed_checkpoint_sha256=checkpoint_sha,
-        )
-        return {**receipt, "status": completion["status"], "formal_completion": completion}
     return receipt
 
 

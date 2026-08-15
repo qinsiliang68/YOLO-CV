@@ -16,7 +16,9 @@ from stage1_sctsr_v4.formal_execution import (
     JOB_BINDING_FIELDS,
     claim_formal_execution,
     execution_fence_guard,
+    execute_fenced_finalization,
     execution_signature_payload,
+    mark_execution_failed,
     output_root_digest,
     publish_execution_claim_snapshot,
     validate_execution_claim_binding,
@@ -601,3 +603,124 @@ def test_repository_execution_templates_are_inactive_and_complete(repository_roo
         "experiment_id": "dynamic_replay_budget_efficiency_20260807",
         "registry_root_digest": "REPLACE_WITH_SHA256_OF_CANONICAL_SHARED_REGISTRY_ABSOLUTE_ROOT",
     }
+
+
+def test_logical_job_identity_is_independent_of_storage_root_but_first_start_binds_storage(tmp_path):
+    release, trust, bindings = _release()
+    claim_root, registry = _claim_registry(tmp_path)
+    first_job = _job(tmp_path)
+    second_job = {**first_job, "output_root_digest": output_root_digest(tmp_path / "different-storage")}
+    first_token = _token(release, registry, first_job, execution_id="EXEC_ROOT_A", nonce="EXEC_ROOT_A_NONCE_0123456789ABCDEF0123456789")
+    second_token = _token(release, registry, second_job, execution_id="EXEC_ROOT_B", nonce="EXEC_ROOT_B_NONCE_0123456789ABCDEF0123456789")
+    common = {
+        "claim_registry_root": claim_root,
+        "release": release,
+        "release_trust_policy": trust,
+        "expected_release_bindings": bindings,
+        "release_manifest_sha256": stable_digest(release),
+        "verification_secret": SECRET,
+        "now_utc": NOW,
+    }
+
+    first = claim_formal_execution(first_token, expected_job_bindings=first_job, **common)
+    with pytest.raises(SctsrError) as caught:
+        claim_formal_execution(second_token, expected_job_bindings=second_job, **common)
+
+    assert caught.value.code is ErrorCode.LOGICAL_JOB_LEASE_ACTIVE
+    assert first["authorized_output_root_digest"] == first_job["output_root_digest"]
+
+
+def test_fenced_finalization_publishes_terminal_complete_and_blocks_resume(tmp_path):
+    release, trust, bindings = _release()
+    claim_root, registry = _claim_registry(tmp_path)
+    job = _job(tmp_path)
+    token_path = tmp_path / "START.json"
+    atomic_write_json(token_path, _token(release, registry, job, execution_id="EXEC_FINAL_COMPLETE"))
+    common = {
+        "claim_registry_root": claim_root,
+        "release": release,
+        "release_trust_policy": trust,
+        "expected_release_bindings": bindings,
+        "release_manifest_sha256": stable_digest(release),
+        "verification_secret": SECRET,
+    }
+    claim = claim_formal_execution(token_path, expected_job_bindings=job, now_utc=NOW, **common)
+
+    result = execute_fenced_finalization(
+        claim,
+        expected_job_bindings=job,
+        operation=lambda: {"status": "FORMAL_PARENT_COMPLETE", "receipt_sha256": "A" * 64},
+        now_utc=NOW,
+    )
+
+    assert result["status"] == "FORMAL_PARENT_COMPLETE"
+    heartbeat = json.loads((claim_root / "claims" / f'{claim["logical_job_digest"]}.heartbeat.json').read_text(encoding="utf-8"))
+    assert heartbeat["status"] == "COMPLETE"
+    assert heartbeat["terminal_receipt_sha256"]
+
+
+def test_failed_finalization_marks_failed_and_allows_immediate_resume(tmp_path):
+    release, trust, bindings = _release()
+    claim_root, registry = _claim_registry(tmp_path)
+    start_job = _job(tmp_path)
+    start_path = tmp_path / "START_FAIL.json"
+    atomic_write_json(start_path, _token(release, registry, start_job, execution_id="EXEC_FINAL_FAIL", expires_at_utc="2026-08-14T23:00:00Z"))
+    common = {
+        "claim_registry_root": claim_root,
+        "release": release,
+        "release_trust_policy": trust,
+        "expected_release_bindings": bindings,
+        "release_manifest_sha256": stable_digest(release),
+        "verification_secret": SECRET,
+    }
+    claim = claim_formal_execution(start_path, expected_job_bindings=start_job, now_utc=NOW, **common)
+    with pytest.raises(RuntimeError):
+        execute_fenced_finalization(
+            claim,
+            expected_job_bindings=start_job,
+            operation=lambda: (_ for _ in ()).throw(RuntimeError("endpoint failed")),
+            now_utc=NOW,
+        )
+    heartbeat = json.loads((claim_root / "claims" / f'{claim["logical_job_digest"]}.heartbeat.json').read_text(encoding="utf-8"))
+    assert heartbeat["status"] == "FAILED"
+
+    resume_job = {**start_job, "action": "RESUME", "resume_checkpoint_sha256": "3" * 64, "resume_from_receipt_digest": "4" * 64}
+    resume_path = tmp_path / "RESUME_FAIL.json"
+    atomic_write_json(resume_path, _token(release, registry, resume_job, execution_id="EXEC_FINAL_RESUME", expires_at_utc="2026-08-14T23:00:00Z"))
+    resumed = claim_formal_execution(resume_path, expected_job_bindings=resume_job, now_utc=NOW, **common)
+    assert resumed["fence_generation"] == claim["fence_generation"] + 1
+
+
+def test_training_exception_can_mark_active_attempt_failed_idempotently(tmp_path):
+    release, trust, bindings = _release()
+    claim_root, registry = _claim_registry(tmp_path)
+    job = _job(tmp_path)
+    token_path = tmp_path / "START_TRAIN_FAIL.json"
+    atomic_write_json(token_path, _token(release, registry, job, execution_id="EXEC_TRAIN_FAIL"))
+    claim = claim_formal_execution(
+        token_path,
+        claim_registry_root=claim_root,
+        release=release,
+        release_trust_policy=trust,
+        expected_release_bindings=bindings,
+        release_manifest_sha256=stable_digest(release),
+        expected_job_bindings=job,
+        verification_secret=SECRET,
+        now_utc=NOW,
+    )
+
+    first = mark_execution_failed(
+        claim,
+        expected_job_bindings=job,
+        error=RuntimeError("training failed"),
+        now_utc=NOW,
+    )
+    second = mark_execution_failed(
+        claim,
+        expected_job_bindings=job,
+        error=RuntimeError("training failed"),
+        now_utc=NOW,
+    )
+
+    assert first == second
+    assert first["status"] == "FAILED"

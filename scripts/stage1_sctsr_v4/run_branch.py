@@ -9,7 +9,12 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 from stage1_sctsr_v4.arm_spec import ArmId
 from stage1_sctsr_v4.cli_support import add_execution_arguments, add_output_argument, require_receipt_outside_artifact_root, run_cli
 from stage1_sctsr_v4.errors import ErrorCode, SctsrError
-from stage1_sctsr_v4.formal_execution import build_execution_job_bindings, claim_formal_execution
+from stage1_sctsr_v4.formal_execution import (
+    build_execution_job_bindings,
+    claim_formal_execution,
+    execute_fenced_finalization,
+    mark_execution_failed,
+)
 from stage1_sctsr_v4.formal_completion import publish_formal_completion
 from stage1_sctsr_v4.formal_cli import (
     build_prepared_trainer,
@@ -235,99 +240,110 @@ def main() -> int:
             schedule=schedule,
             identity_pool_manifests=arguments.identity_pool,
         )
-        result = run_prepared_branch(
-            trainer=trainer,
-            identity=identity,
-            parent_checkpoint=arguments.parent_checkpoint,
-            lineage=lineage,
-            schedule=schedule,
-            replay_batch_provider=trainer.replay_batch_provider,
-            output_root=arguments.output_root,
-            release_authorization=arguments.release_authorization,
-            release_trust_policy=arguments.release_trust_policy,
-            release_expected_bindings=authorization["expected_bindings"],
-            identity_pool_binding=pool_binding,
-            parent_artifact_index_binding=parent_binding,
-            prepared_trainer_binding=trainer_binding,
-            formal_input_binding=authorization["formal_input_binding"],
-            execution_claim_binding=execution_claim,
-            run_intent_binding=run_intent_binding,
-            resume_context=resume_context,
-            execution_mode="formal",
-        )
-        endpoint_variant = str(runtime_policy["formal_endpoint_model_variant"])
-        if endpoint_variant == "EMA":
-            endpoint_model = getattr(getattr(trainer, "ema", None), "ema", None)
-        elif endpoint_variant == "MODEL":
-            endpoint_model = getattr(trainer, "model", None)
-        else:
-            raise SctsrError(
-                ErrorCode.PREDICTION_IDENTITY_MISMATCH,
-                "Runtime policy selects an unsupported formal endpoint model variant",
-                observed=endpoint_variant,
+        try:
+            result = run_prepared_branch(
+                trainer=trainer,
+                identity=identity,
+                parent_checkpoint=arguments.parent_checkpoint,
+                lineage=lineage,
+                schedule=schedule,
+                replay_batch_provider=trainer.replay_batch_provider,
+                output_root=arguments.output_root,
+                release_authorization=arguments.release_authorization,
+                release_trust_policy=arguments.release_trust_policy,
+                release_expected_bindings=authorization["expected_bindings"],
+                identity_pool_binding=pool_binding,
+                parent_artifact_index_binding=parent_binding,
+                prepared_trainer_binding=trainer_binding,
+                formal_input_binding=authorization["formal_input_binding"],
+                execution_claim_binding=execution_claim,
+                run_intent_binding=run_intent_binding,
+                resume_context=resume_context,
+                execution_mode="formal",
             )
-        if endpoint_model is None:
-            raise SctsrError(
-                ErrorCode.PARENT_CHECKPOINT_INCOMPLETE,
-                "Prepared trainer does not expose the frozen endpoint model variant",
-                observed=endpoint_variant,
-            )
-        transform = getattr(getattr(getattr(trainer, "test_loader", None), "dataset", None), "torch_transforms", None)
-        if not callable(transform):
-            raise SctsrError(ErrorCode.UPSTREAM_BINDING_FAILED, "Prepared val_model loader has no frozen evaluation transform")
-        from stage1_sctsr_v4.dataset_adapter import revalidate_materialized_dataset_binding
+        except BaseException as exc:
+            mark_execution_failed(execution_claim, expected_job_bindings=execution_job, error=exc)
+            raise
+        def finalize_branch():
+            endpoint_variant = str(runtime_policy["formal_endpoint_model_variant"])
+            if endpoint_variant == "EMA":
+                endpoint_model = getattr(getattr(trainer, "ema", None), "ema", None)
+            elif endpoint_variant == "MODEL":
+                endpoint_model = getattr(trainer, "model", None)
+            else:
+                raise SctsrError(
+                    ErrorCode.PREDICTION_IDENTITY_MISMATCH,
+                    "Runtime policy selects an unsupported formal endpoint model variant",
+                    observed=endpoint_variant,
+                )
+            if endpoint_model is None:
+                raise SctsrError(
+                    ErrorCode.PARENT_CHECKPOINT_INCOMPLETE,
+                    "Prepared trainer does not expose the frozen endpoint model variant",
+                    observed=endpoint_variant,
+                )
+            transform = getattr(getattr(getattr(trainer, "test_loader", None), "dataset", None), "torch_transforms", None)
+            if not callable(transform):
+                raise SctsrError(ErrorCode.UPSTREAM_BINDING_FAILED, "Prepared val_model loader has no frozen evaluation transform")
+            from stage1_sctsr_v4.dataset_adapter import revalidate_materialized_dataset_binding
 
-        for materialized_role in ("train_materialized_content_binding", "val_model_materialized_content_binding"):
-            revalidate_materialized_dataset_binding(trainer_binding["dataset_binding"][materialized_role])
-        endpoint = publish_formal_endpoint(
-            model=endpoint_model,
-            transform=transform,
-            run_root=arguments.output_root,
-            repository_root=arguments.repository_root,
-            dataset_root=trainer_binding["dataset_content_binding"]["dataset_root"],
-            asset_registry_path=arguments.asset_registry,
-            checkpoint_path=Path(result["fixed_formal_endpoint"]["path"]),
-            run_id=lineage.logical_run_id,
-            arm_id=schedule.arm_id.value,
-            model_variant=endpoint_variant,
-            batch_size=int(runtime_policy["formal_endpoint_batch_size"]),
-        )
-        branch_receipt_path = arguments.output_root / "BRANCH_RECEIPT.json"
-        branch_receipt = load_json(branch_receipt_path)
-        atomic_write_json(
-            branch_receipt_path,
-            {
-                **branch_receipt,
-                "status": "FORMAL_BRANCH_ENDPOINT_COMPLETE_PENDING_COMMIT",
+            for materialized_role in ("train_materialized_content_binding", "val_model_materialized_content_binding"):
+                revalidate_materialized_dataset_binding(trainer_binding["dataset_binding"][materialized_role])
+            endpoint = publish_formal_endpoint(
+                model=endpoint_model,
+                transform=transform,
+                run_root=arguments.output_root,
+                repository_root=arguments.repository_root,
+                dataset_root=trainer_binding["dataset_content_binding"]["dataset_root"],
+                asset_registry_path=arguments.asset_registry,
+                checkpoint_path=Path(result["fixed_formal_endpoint"]["path"]),
+                run_id=lineage.logical_run_id,
+                arm_id=schedule.arm_id.value,
+                model_variant=endpoint_variant,
+                batch_size=int(runtime_policy["formal_endpoint_batch_size"]),
+            )
+            branch_receipt_path = arguments.output_root / "BRANCH_RECEIPT.json"
+            branch_receipt = load_json(branch_receipt_path)
+            atomic_write_json(
+                branch_receipt_path,
+                {
+                    **branch_receipt,
+                    "status": "FORMAL_BRANCH_ENDPOINT_COMPLETE_PENDING_COMMIT",
+                    "formal_endpoint_evidence": endpoint,
+                },
+            )
+            from stage1_sctsr_v4.run_validation import build_artifact_index
+
+            atomic_write_json(arguments.output_root / "ARTIFACT_INDEX.json", build_artifact_index(arguments.output_root))
+            completion = publish_formal_completion(
+                arguments.output_root,
+                run_role="BRANCH",
+                run_id=lineage.logical_run_id,
+                arm_id=schedule.arm_id.value,
+                training_seed=identity.training_seed,
+                terminal_epoch=200,
+                fixed_checkpoint_sha256=result["fixed_formal_endpoint"]["sha256"],
+            )
+            return {
+                **result,
+                "status": completion["status"],
                 "formal_endpoint_evidence": endpoint,
-            },
-        )
-        from stage1_sctsr_v4.run_validation import build_artifact_index
+                "formal_completion": completion,
+                "upstream_binding_digest": binding.binding_digest,
+                "prepared_trainer_binding": trainer_binding,
+                "formal_authorization": authorization,
+                "execution_claim": execution_claim,
+                "run_intent_binding": run_intent_binding,
+                "identity_pool_binding": pool_binding,
+                "parent_artifact_index_binding": parent_binding,
+                "resume_context": None if resume_context is None else resume_context.as_dict(),
+            }
 
-        atomic_write_json(arguments.output_root / "ARTIFACT_INDEX.json", build_artifact_index(arguments.output_root))
-        completion = publish_formal_completion(
-            arguments.output_root,
-            run_role="BRANCH",
-            run_id=lineage.logical_run_id,
-            arm_id=schedule.arm_id.value,
-            training_seed=identity.training_seed,
-            terminal_epoch=200,
-            fixed_checkpoint_sha256=result["fixed_formal_endpoint"]["sha256"],
+        return execute_fenced_finalization(
+            execution_claim,
+            expected_job_bindings=execution_job,
+            operation=finalize_branch,
         )
-        return {
-            **result,
-            "status": completion["status"],
-            "formal_endpoint_evidence": endpoint,
-            "formal_completion": completion,
-            "upstream_binding_digest": binding.binding_digest,
-            "prepared_trainer_binding": trainer_binding,
-            "formal_authorization": authorization,
-            "execution_claim": execution_claim,
-            "run_intent_binding": run_intent_binding,
-            "identity_pool_binding": pool_binding,
-            "parent_artifact_index_binding": parent_binding,
-            "resume_context": None if resume_context is None else resume_context.as_dict(),
-        }
 
     return run_cli("run_branch", arguments.output, action)
 
