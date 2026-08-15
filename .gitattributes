@@ -51,6 +51,16 @@ artifacts/stage1_sample_value_experiments/experiments/oof_dynamics_gap_value_202
 # source-formatting heuristic; each receipt is SHA-bound separately.
 docs/stage1_sctsr_v4/tdd_receipts/** -whitespace
 
+# Current SCTSR review and command evidence is hashed from LF Git blobs. Make
+# checkout bytes identical on Windows and Linux. The older implementation-audit
+# bundle below remains an explicit immutable binary-text exception because its
+# manifest binds the original mixed-newline blob identities.
+docs/stage1_sctsr_v4/tdd_receipts/**/*.log text eol=lf
+docs/stage1_sctsr_v4/tdd_receipts/**/*.txt text eol=lf
+artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/08_reports/sctsr_v4_*/**/*.log text eol=lf
+artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/08_reports/sctsr_v4_*/**/*.txt text eol=lf
+artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/08_reports/sctsr_v4_*/**/*.csv text eol=lf
+
 # SCTSR v4 implementation-audit evidence is byte-bound by an explicit
 # SHA-256 manifest. Preserve the exact stdout, stderr, JSON, Parquet, reviewed
 # snapshots, and synthetic receipts instead of applying text normalization.

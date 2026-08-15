@@ -28,7 +28,7 @@ source manifest 和签名 release；不得手改本表后继续使用旧 release
 | --- | --- | ---: | --- |
 | taskbook | `artifacts/.../03_preregistration_v4_sctsr/SCTSR_EXPERT_IMPLEMENTATION_TASKBOOK.md` | 87,333 | file SHA `732FF49F...98A66`; Git blob `b201d021...05c6be` |
 | contract | `configs/stage1_sctsr_v4/contract_v1.json` | 2,885 | file SHA `DF30244A...E0271` |
-| R2 addendum policy | `configs/stage1_sctsr_v4/r2_matching_policy_v1.json` | 1,122 | file SHA `E58E9D70...5EA3C`; digest `33B4681F...E7D4F` |
+| R2 content-disjoint v2 policy | `configs/stage1_sctsr_v4/r2_matching_policy_v1.json` | 1,584 | file SHA `F99AC1610E1BA3C317221B43E8ABDDA501E7FBB9D8E2F2BF20216F73621DD9B7`; digest `2C94BC1C2CF2B517F96969294788FD90ADA670C7658C652DEFFEC6631FC99EAA` |
 | arms | `configs/stage1_sctsr_v4/arms_phase1_v1.json` | 6,126 | file SHA `DD7A3FF7...07277` |
 | contract+arms semantic | derived by validator | N/A | `8AA9CC9F...E9E0C` |
 | runtime policy | `configs/stage1_sctsr_v4/runtime_policy_v1.json` | 1,138 | file SHA `5628D5BE...49626`; digest `12A07710...8838` |
@@ -106,8 +106,11 @@ identity。R2 builder 只能从参考表先投影白名单字段，再交给 mat
   `D9702F54DA3D9C7C4E27B657B7EC7A5FD235DEC72E2257AE5029E0C62D7482C7`；
 - R2 old strict status：`R2_QUOTA_INFEASIBLE`；
 - shortage：172 joint strata / 378 occurrences；
-- owner-approved active policy pool digest：
-  `957346D5178CA9397181D0DB47250533E9D659A74A3E7AAFF171FBEE5A0D194B`。
+- owner-approved content-disjoint v2 pool identity digest：
+  `A6DAA20A70F02B30D15B7C3E4079EA86903051AEED264F53E0A104A4C1AA80B6`；
+- R2 selected-content digest：
+  `A48B721CA37AD66D65B8C5972C5AE66C328C09194BA3C8C22C19B8FECE40F819`；
+- T/R2 image-SHA overlap：`0`；R2 unique image SHA：`3,000`。
 
 内容隔离 overlay 为 102 行、22,377 bytes、SHA
 `CED3DE0E070F82DD5AE4B692D478FF6D3FA0015DB62186F72110E16DFCD0C417`；

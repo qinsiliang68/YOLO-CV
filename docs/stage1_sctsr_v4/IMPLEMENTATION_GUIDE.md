@@ -90,7 +90,7 @@ uv run python scripts/stage1_sctsr_v4/validate_dataset_content.py `
   仅对 filename-bucket surrogate `oof_group_id` 使用 owner-approved 最小偏移；
 - `CURRENT_LOSS_HELD`：接口存在但第一阶段必须拒绝启用。
 
-R2 matcher 在匹配前只接收预终端白名单投影。loss、confidence、RHO、gradient、forgetting、AUM、未来结果和 endpoint 字段不可见。算法先耗尽每个四字段 exact cell，再只在同 label/dynamic/fold cell 内填充不可避免的 378 个 group deficit；必须记录逐 occurrence displacement，且 group TV 恰为 0.126。三字段 quota 仍不可满足、出现第二字段 relaxation、replacement 或回用 T 时必须抛出 `R2_QUOTA_INFEASIBLE`。
+R2 matcher 在匹配前只接收预终端白名单投影。loss、confidence、RHO、gradient、forgetting、AUM、未来结果和 endpoint 字段不可见。算法同时排除 T sample ID、T image SHA 和候选内部 image-SHA alias；先耗尽每个四字段 exact cell，再只在同 label/dynamic/fold cell 内填充 379 个记录的 group displacement（原 quota 缺口 378，加 1 个内容别名排除），group TV 为 `0.12633333333333333`。三字段 quota 仍不可满足、出现第二字段 relaxation、replacement、内容重复或回用 T 时必须抛出 `R2_QUOTA_INFEASIBLE`。
 
 `R2_U` 与 `R2_F` 不是两套各 3,000 IDs 的抽样。两者及
 `T_TO_R2_AT_160` fallback 必须复用 selection seed `20260812`、3,000 unique 和
@@ -109,6 +109,7 @@ U 是 E121–E200 每 epoch 5/1000；F 是 E121–E160 每 epoch 10/1000、之�
 未来正式运行必须先由 release authority 提供：
 
 - 有效签名 release manifest 和登记 trust key；
+- 绑定同一 experiment ID、精确 release ID 与 canonical shared root 的 v2 claim registry；
 - clean source-tree manifest；
 - contract、arms、asset registry、runtime policy、formal seed registry；
 - formal identity；

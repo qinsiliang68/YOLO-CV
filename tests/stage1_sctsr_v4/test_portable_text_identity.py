@@ -3,6 +3,7 @@ from __future__ import annotations
 import hashlib
 import json
 import subprocess
+from pathlib import Path
 
 
 FORMAL_CSV_PATHS = (
@@ -71,3 +72,52 @@ def test_formal_csv_and_r2_evidence_bytes_are_lf_portable_git_blobs(repository_r
         assert row["bytes"] == len(blob)
         assert row["sha256"] == _sha(blob)
         assert (repository_root / path).read_bytes() == blob
+
+
+def test_every_registered_evidence_text_has_portable_checkout_identity(repository_root):
+    manifest_paths = subprocess.check_output(
+        ("git", "ls-files", "*EVIDENCE_MANIFEST.json"),
+        cwd=repository_root,
+        text=True,
+    ).splitlines()
+    text_suffixes = {".log", ".txt", ".csv", ".json", ".md", ".yaml", ".yml"}
+    immutable_legacy_root = (
+        "artifacts/stage1_sample_value_experiments/experiments/"
+        "dynamic_replay_budget_efficiency_20260807/08_reports/"
+        "sctsr_v4_implementation_audit_20260813/"
+    )
+    checked = 0
+    legacy_checked = 0
+    legacy_unmaterialized = 0
+    for manifest_relative in manifest_paths:
+        manifest_path = repository_root / manifest_relative
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+        for row in manifest.get("files", []):
+            relative = row.get("relative_path", row.get("path"))
+            if not isinstance(relative, str) or Path(relative).suffix.lower() not in text_suffixes:
+                continue
+            candidates = [manifest_path.parent / relative, repository_root / relative]
+            existing = [candidate.resolve() for candidate in candidates if candidate.is_file()]
+            if not existing:
+                legacy_unmaterialized += 1
+                continue
+            path = existing[0]
+            repository_relative = path.relative_to(repository_root).as_posix()
+            blob = _git_blob(repository_root, repository_relative)
+            worktree = path.read_bytes()
+            assert int(row["bytes"]) == len(blob)
+            assert str(row["sha256"]).upper() == _sha(blob)
+            attributes = _attributes(repository_root, [repository_relative])[repository_relative]
+            if repository_relative.startswith(immutable_legacy_root):
+                assert attributes == {"text": "unset", "eol": "unset"}
+                assert worktree == blob
+                legacy_checked += 1
+            else:
+                assert attributes == {"text": "set", "eol": "lf"}
+                assert b"\r\n" not in blob
+                assert b"\r\n" not in worktree
+                assert worktree == blob
+                checked += 1
+    assert checked > 0
+    assert legacy_checked > 0
+    assert legacy_unmaterialized > 0

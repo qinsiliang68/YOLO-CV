@@ -65,7 +65,8 @@
 - [ ] E11 R2 terminal fields不可访问。
 - [ ] E12 planned/actual occurrence和cumulative history守恒。
 - [ ] E13 `R2_U`、`R2_F` 和 `T_TO_R2_AT_160` fallback 的 R2 pool digest完全相同。
-- [ ] E14 R2 displacement ledger恰为378行、digest匹配、只改变`oof_group_id`。
+- [ ] E14 R2 displacement ledger恰为379行（378 quota deficit + 1 content alias exclusion）、digest匹配、只改变`oof_group_id`。
+- [ ] E15 T/R2 sample-ID overlap=0、image-SHA overlap=0，R2 为3,000 unique IDs/3,000 unique image SHAs。
 
 ## F. Release、token 和 intent
 
@@ -73,7 +74,7 @@
 - [ ] F02 discovery seeds在签名 release前冻结。
 - [ ] F03 release绑定 source/contract/assets/runtime/seeds和expiry。
 - [ ] F04 每 logical process有唯一 token和action START/RESUME。
-- [ ] F05 execution claim registry为全机器同一 canonical shared root。
+- [ ] F05 execution claim registry为 v2、全机器同一 canonical shared root，并绑定 exact experiment/release ID。
 - [ ] F06 copied registry descriptor不能重复 claim。
 - [ ] F07 run-intent acknowledgement字段完整、digest和runbook SHA有效。
 - [ ] F08 acknowledgement bind exact role/run/arm/seed/output/parent/schedule/pool/

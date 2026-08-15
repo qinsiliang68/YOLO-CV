@@ -15,6 +15,11 @@
 9. 发生 OOM、disk full、kill 或 receipt 损坏时，为什么不能直接 `--resume`？
 10. 本机是否在共享 canonical execution-claim registry 上 claim？
 
+当前部署可使用 13 台 3090，其中最多 12 台并行、1 台作为故障替补。任务可由 operator
+随机分配，不要求复杂 GPU 调度器；正确性只依赖每个逻辑 job 的 one-use token、全部机器
+共享的 v2 claim registry、单进程指定一个 numeric CUDA device，以及同一 logical key
+只能存在一条 fence chain。不得为提高利用率复制 registry 或换 output root 重开任务。
+
 任何答案不清楚，停止并阅读 `EXPERIMENT_INTENT.md`、`FAIRNESS_CONTRACT.md` 和
 `FAILURE_AND_RECOVERY.md`。不得以“命令能跑”代替理解。
 

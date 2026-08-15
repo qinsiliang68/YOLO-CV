@@ -139,8 +139,9 @@ OOM 后禁止：
 1. 验证旧 volume 内容 SHA 未变；
 2. quarantine partial generation；
 3. 重算 remaining capacity；
-4. 如迁移 output root，视为新 job，不是原地 resume，除非 token 和 lineage明确
-   绑定迁移且所有相对/绝对身份已审计；
+4. output root 不参与科研 logical key，但首个 START fence 会把它固定为授权存储根；
+   RESUME 必须使用原 root。迁移只能使用未来 owner-signed migration receipt，不能
+   通过换目录隐式重开同一任务；
 5. 不删除 completed generations。
 
 ## 9. Endpoint partial failure

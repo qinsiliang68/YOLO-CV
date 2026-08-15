@@ -14,8 +14,11 @@ multi-label 主训练任务，也不覆盖任何历史 120/240-run 结果。SCTS
 - R2 四字段 exact quota 在真实资产上缺 172 strata / 378 occurrences；
 - owner 已于 2026-08-15 批准只放宽 filename-bucket surrogate `oof_group_id`，
   其余三字段 exact、3,000 unique、T overlap=0 保持不变；
-- `R2_U`、`R2_F` 和 fallback 必须复用 digest 为
-  `957346D5...A0D194B` 的同一 R2 pool；
+- `R2_U`、`R2_F` 和 fallback 必须复用 content-disjoint v2 pool，identity digest 为
+  `A6DAA20A70F02B30D15B7C3E4079EA86903051AEED264F53E0A104A4C1AA80B6`，
+  selected-content digest 为
+  `A48B721CA37AD66D65B8C5972C5AE66C328C09194BA3C8C22C19B8FECE40F819`；
+- T/R2 sample ID 交集和实际 image SHA-256 交集都必须为 0；
 - 正式 seed、matrix release 和 execution token 尚未发布；
 - `val_target` 不存在，故 A/gradient-alignment保持 HELD，但不阻断第一阶段
   timing/stop/fallback 代码审查；
@@ -26,6 +29,8 @@ multi-label 主训练任务，也不覆盖任何历史 120/240-run 结果。SCTS
 验证。R2 规格阻断已经由 owner addendum 解除，但这不等于训练授权；release
 authority 仍必须把 addendum、可物化 R2 pool 和新的 contract/source identities
 一并冻结，并另行签发 seed、release、token 和 shared claim registry。
+claim registry 必须使用 v2 schema，并同时绑定 experiment ID、精确 release ID 和
+canonical shared root；旧 v1 registry 不可用于本实现。
 
 ## 阅读顺序
 

@@ -13,10 +13,13 @@
 2026-08-15 owner 已批准唯一推荐修订：保持 3,000 unique、零 overlap 和
 `(label, dynamic bucket, OOF fold)` exact，四字段先按可用容量填满，再在相同三字段
 cell 内随机填充不可避免的 378 个 deficit；group TV 为容量下界 0.126。正式 matcher
-已显式激活该版本化政策，真实资产物化得到预注册 R2 digest
-`957346D5178CA9397181D0DB47250533E9D659A74A3E7AAFF171FBEE5A0D194B`。
+已显式激活 content-disjoint v2 政策，真实资产物化得到 R2 identity digest
+`A6DAA20A70F02B30D15B7C3E4079EA86903051AEED264F53E0A104A4C1AA80B6`，
+selected-content digest
+`A48B721CA37AD66D65B8C5972C5AE66C328C09194BA3C8C22C19B8FECE40F819`。
 `R2_U`、`R2_F` 和 fallback 必须复用该同一 pool。任何第二字段放宽、replacement、
-T overlap 或标签替换仍失败封闭。详见 `SPECIFICATION_CHANGE_REQUEST_R2_INFEASIBLE.md`
+T sample/content overlap 或标签替换仍失败封闭。当前 3,000 个 R2 identity 对应
+3,000 个唯一图像 SHA，T/R2 image-SHA overlap=0。详见 `SPECIFICATION_CHANGE_REQUEST_R2_INFEASIBLE.md`
 、canonical `SCTSR_R2_MATCHING_ADDENDUM_20260815.md` 及
 `SCTSR_DATA_CONTENT_AND_T_REPAIR_ADDENDUM_20260815.md`。
 
@@ -54,6 +57,6 @@ BudgetedReplay 报告所称的三个源码载体在既有现场审计中为 `REP
 2. owner 对 v3 231 基线矛盾作修订或恢复缺失测试；
 3. 3090 正式规格单 epoch engineering benchmark 通过；
 4. release authority 登记 key、8+14 training seeds、签名 release、逐 job token 和
-   10 台机器共享 claim registry；
+   全部训练机共享的 v2 claim registry；registry 必须绑定 exact experiment/release；
 5. 只在所有机器 preflight PASS 后另行授权正式训练；
 6. blind/test 继续密封。
