@@ -15,6 +15,7 @@
     "disabled_phase2": "stage1.sctsr.disabled_phase2.v1",
     "dataset_content_ledger": "stage1.sctsr.dataset_content_ledger.v1",
     "dataset_content_exclusions": "stage1.sctsr.dataset_content_exclusions.v1",
+    "deployment_plan": "stage1.sctsr.deployment_plan.v1",
     "epoch_artifact_index": "stage1.sctsr.epoch_artifact_index.v1",
     "epoch_evidence_summary": "stage1.sctsr.epoch_evidence_summary.v1",
     "epoch_exposure_ledger": "stage1.sctsr.epoch_exposure_ledger.v1",
