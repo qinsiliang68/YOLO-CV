@@ -1,5 +1,5 @@
 {
-  "schema_version": "stage1.sctsr.formal_execution_token.v1",
+  "schema_version": "stage1.sctsr.formal_execution_token.v2",
   "authorization": "SIGNED_SCTSR_V4_FORMAL_EXECUTION",
   "formal_execution_authorized": false,
   "execution_id": "FUTURE_UNIQUE_EXECUTION_ID",
@@ -10,6 +10,7 @@
   "expires_at_utc": "FUTURE_UTC_TIMESTAMP_Z_WITHIN_24_HOURS",
   "nonce": "FUTURE_ONE_ATTEMPT_NONCE_AT_LEAST_32_CHARACTERS",
   "release_id": "FUTURE_SIGNED_MATRIX_RELEASE_ID",
+  "experiment_id": "dynamic_replay_budget_efficiency_20260807",
   "release_nonce": "FUTURE_SIGNED_MATRIX_RELEASE_NONCE",
   "release_manifest_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
   "claim_registry_digest": "0000000000000000000000000000000000000000000000000000000000000000",

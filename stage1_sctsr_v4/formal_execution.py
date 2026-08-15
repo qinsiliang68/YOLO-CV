@@ -23,9 +23,9 @@ from .formal_release import (
 from .serialization import _fsync_directory, atomic_write_bytes, atomic_write_json, canonical_json_bytes, load_json, sha256_file, stable_digest
 
 
-EXECUTION_TOKEN_SCHEMA = "stage1.sctsr.formal_execution_token.v1"
-CLAIM_REGISTRY_SCHEMA = "stage1.sctsr.execution_claim_registry.v1"
-FORMAL_EXECUTION_CLAIM_SCHEMA = "stage1.sctsr.formal_execution_claim.v2"
+EXECUTION_TOKEN_SCHEMA = "stage1.sctsr.formal_execution_token.v2"
+CLAIM_REGISTRY_SCHEMA = "stage1.sctsr.execution_claim_registry.v2"
+FORMAL_EXECUTION_CLAIM_SCHEMA = "stage1.sctsr.formal_execution_claim.v3"
 LOGICAL_JOB_FENCE_SCHEMA = "stage1.sctsr.logical_job_fence.v2"
 LOGICAL_JOB_HEARTBEAT_SCHEMA = "stage1.sctsr.logical_job_heartbeat.v2"
 LOGICAL_JOB_TERMINAL_RECEIPT_SCHEMA = "stage1.sctsr.logical_job_terminal_receipt.v1"
@@ -56,7 +56,7 @@ JOB_BINDING_FIELDS = (
 )
 MAX_EXECUTION_TOKEN_LIFETIME = timedelta(hours=24)
 REQUIRED_CLAIM_REGISTRY_FIELDS = frozenset(
-    {"schema_version", "registry_id", "mode", "state", "experiment_id", "registry_root_digest"}
+    {"schema_version", "registry_id", "mode", "state", "experiment_id", "release_id", "registry_root_digest"}
 )
 REQUIRED_EXECUTION_TOKEN_FIELDS = frozenset(
     {
@@ -71,6 +71,7 @@ REQUIRED_EXECUTION_TOKEN_FIELDS = frozenset(
         "expires_at_utc",
         "nonce",
         "release_id",
+        "experiment_id",
         "release_nonce",
         "release_manifest_sha256",
         "claim_registry_digest",
@@ -86,6 +87,7 @@ REQUIRED_EXECUTION_CLAIM_FIELDS = frozenset(
         "execution_nonce_sha256",
         "execution_token_sha256",
         "release_id",
+        "experiment_id",
         "release_manifest_sha256",
         "claim_registry_digest",
         "job_binding_digest",
@@ -212,7 +214,12 @@ def build_execution_job_bindings(
     }
 
 
-def logical_job_invariants(job_bindings: Mapping[str, Any]) -> dict[str, Any]:
+def logical_job_invariants(
+    job_bindings: Mapping[str, Any],
+    *,
+    experiment_id: str,
+    release_id: str,
+) -> dict[str, Any]:
     """Return the immutable identity shared by START and every RESUME attempt."""
 
     if set(job_bindings) != set(JOB_BINDING_FIELDS):
@@ -222,11 +229,22 @@ def logical_job_invariants(job_bindings: Mapping[str, Any]) -> dict[str, Any]:
             observed=sorted(job_bindings),
             expected=sorted(JOB_BINDING_FIELDS),
         )
-    return {field: job_bindings[field] for field in LOGICAL_JOB_INVARIANT_FIELDS}
+    if not experiment_id.strip() or not release_id.strip():
+        _fail("Logical job namespace is missing", field="logical_job_namespace")
+    return {
+        "experiment_id": experiment_id,
+        "release_id": release_id,
+        **{field: job_bindings[field] for field in LOGICAL_JOB_INVARIANT_FIELDS},
+    }
 
 
-def logical_job_digest(job_bindings: Mapping[str, Any]) -> str:
-    return stable_digest(logical_job_invariants(job_bindings))
+def logical_job_digest(
+    job_bindings: Mapping[str, Any],
+    *,
+    experiment_id: str,
+    release_id: str,
+) -> str:
+    return stable_digest(logical_job_invariants(job_bindings, experiment_id=experiment_id, release_id=release_id))
 
 
 def _fence_path(claims_root: Path, job_digest: str, generation: int) -> Path:
@@ -555,6 +573,8 @@ def _validate_claim_registry(value: Mapping[str, Any]) -> Mapping[str, Any]:
     if mismatch or not isinstance(value.get("registry_id"), str) or len(str(value["registry_id"])) < 16:
         _fail("Execution claim registry is not the active SCTSR shared registry", field="claim_registry", observed=mismatch or value.get("registry_id"))
     _sha256(value.get("registry_root_digest"), field="registry_root_digest", allow_zero=False)
+    if not isinstance(value.get("release_id"), str) or len(str(value["release_id"])) < 8:
+        _fail("Execution claim registry release namespace is missing", field="claim_registry.release_id")
     return value
 
 
@@ -580,6 +600,20 @@ def verify_formal_execution_token(
     )
     trust = _load_mapping(release_trust_policy, role="Release trust policy")
     registry = _validate_claim_registry(claim_registry)
+    if registry.get("release_id") != release_manifest.get("release_id"):
+        _fail(
+            "Execution claim registry belongs to a different signed release",
+            field="claim_registry.release_id",
+            observed=registry.get("release_id"),
+            expected=release_manifest.get("release_id"),
+        )
+    if manifest.get("experiment_id") != registry.get("experiment_id"):
+        _fail(
+            "Execution token belongs to a different experiment namespace",
+            field="experiment_id",
+            observed=manifest.get("experiment_id"),
+            expected=registry.get("experiment_id"),
+        )
 
     if set(manifest) != REQUIRED_EXECUTION_TOKEN_FIELDS:
         _fail(
@@ -777,7 +811,11 @@ def claim_formal_execution(
         _fail("Execution token bytes changed during verification", field="execution_token_path")
     nonce_digest = hashlib.sha256(str(verified["nonce"]).encode("utf-8")).hexdigest().upper()
     claim_path = claims_root / f"{nonce_digest}.claim.json"
-    job_digest = logical_job_digest(expected_job_bindings)
+    job_digest = logical_job_digest(
+        expected_job_bindings,
+        experiment_id=str(registry_descriptor["experiment_id"]),
+        release_id=str(verified["release_id"]),
+    )
     heartbeat_path = _heartbeat_path(claims_root, job_digest)
     claimed_at_value = (now_utc or datetime.now(timezone.utc)).astimezone(timezone.utc)
     claimed_at = claimed_at_value.isoformat().replace("+00:00", "Z")
@@ -853,6 +891,7 @@ def claim_formal_execution(
             "execution_nonce_sha256": nonce_digest,
             "execution_token_sha256": token_sha,
             "release_id": verified["release_id"],
+            "experiment_id": registry_descriptor["experiment_id"],
             "release_manifest_sha256": verified["release_manifest_sha256"],
             "claim_registry_digest": verified["claim_registry_digest"],
             "job_binding_digest": verified["job_binding_digest"],
@@ -893,7 +932,11 @@ def claim_formal_execution(
                 "execution_claim_path": claim_path.as_posix(),
                 "execution_claim_sha256": sha256_file(claim_path),
                 "authorized_output_root_digest": expected_job_bindings["output_root_digest"],
-                "job_invariants": logical_job_invariants(expected_job_bindings),
+                "job_invariants": logical_job_invariants(
+                    expected_job_bindings,
+                    experiment_id=str(registry_descriptor["experiment_id"]),
+                    release_id=str(verified["release_id"]),
+                ),
                 "claimed_at_utc": claimed_at,
             }
             fence = {**fence_core, "fence_digest": stable_digest(fence_core)}
@@ -977,7 +1020,6 @@ def validate_execution_claim_binding(
         or claim.get("job_bindings") != dict(expected_job_bindings)
         or binding["job_binding_digest"] != stable_digest(dict(expected_job_bindings))
         or claim.get("logical_job_digest") != binding["logical_job_digest"]
-        or claim.get("logical_job_digest") != logical_job_digest(expected_job_bindings)
         or claim.get("fence_generation") != binding["fence_generation"]
     ):
         _fail("Execution claim content differs from the requested job", field="execution_claim_binding")
@@ -998,6 +1040,18 @@ def validate_execution_claim_binding(
         or claim.get("claim_registry_digest") != binding["claim_registry_digest"]
     ):
         _fail("Execution claim registry identity differs from the signed token", field="claim_registry_digest")
+    expected_logical_job_digest = logical_job_digest(
+        expected_job_bindings,
+        experiment_id=str(registry["experiment_id"]),
+        release_id=str(claim["release_id"]),
+    )
+    if (
+        claim.get("experiment_id") != registry.get("experiment_id")
+        or claim.get("release_id") != registry.get("release_id")
+        or claim.get("logical_job_digest") != expected_logical_job_digest
+        or binding.get("logical_job_digest") != expected_logical_job_digest
+    ):
+        _fail("Execution claim logical namespace differs from its registry", field="logical_job_digest")
     claims_root = claim_path.parent
     fence_path = Path(str(binding["fence_claim_path"])).resolve()
     expected_fence_path = _fence_path(claims_root, str(binding["logical_job_digest"]), int(binding["fence_generation"])).resolve()
@@ -1026,7 +1080,11 @@ def validate_execution_claim_binding(
             fence.get("execution_claim_sha256") != binding["claim_sha256"],
             fence.get("authorized_output_root_digest") != binding["authorized_output_root_digest"],
             fence.get("authorized_output_root_digest") != expected_job_bindings["output_root_digest"],
-            fence.get("job_invariants") != logical_job_invariants(expected_job_bindings),
+            fence.get("job_invariants") != logical_job_invariants(
+                expected_job_bindings,
+                experiment_id=str(registry["experiment_id"]),
+                release_id=str(claim["release_id"]),
+            ),
         )
     ):
         _fail("Logical-job fence does not bind the execution claim", field="fence_claim_path")

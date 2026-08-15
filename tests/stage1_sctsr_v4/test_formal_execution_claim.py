@@ -18,6 +18,7 @@ from stage1_sctsr_v4.formal_execution import (
     execution_fence_guard,
     execute_fenced_finalization,
     execution_signature_payload,
+    logical_job_digest,
     mark_execution_failed,
     output_root_digest,
     publish_execution_claim_snapshot,
@@ -83,6 +84,7 @@ def _claim_registry(tmp_path):
         "mode": "SHARED_MULTI_MACHINE_EXCLUSIVE_CREATE",
         "state": "ACTIVE",
         "experiment_id": "dynamic_replay_budget_efficiency_20260807",
+        "release_id": "OWNER_RELEASE_20260814_001",
         "registry_root_digest": output_root_digest(root),
     }
     atomic_write_json(root / "CLAIM_REGISTRY.json", descriptor)
@@ -130,6 +132,7 @@ def _token(
         "expires_at_utc": expires_at_utc,
         "nonce": nonce or f"EXECUTION_NONCE_{execution_id}_0123456789ABCDEF0123456789ABCDEF",
         "release_id": release["release_id"],
+        "experiment_id": registry["experiment_id"],
         "release_nonce": release["nonce"],
         "release_manifest_sha256": stable_digest(release),
         "claim_registry_digest": stable_digest(registry),
@@ -587,7 +590,8 @@ def test_repository_execution_templates_are_inactive_and_complete(repository_roo
         "issued_at_utc",
         "expires_at_utc",
         "nonce",
-        "release_id",
+            "release_id",
+            "experiment_id",
         "release_nonce",
         "release_manifest_sha256",
         "claim_registry_digest",
@@ -601,6 +605,7 @@ def test_repository_execution_templates_are_inactive_and_complete(repository_roo
         "mode": "SHARED_MULTI_MACHINE_EXCLUSIVE_CREATE",
         "state": "INACTIVE_TEMPLATE",
         "experiment_id": "dynamic_replay_budget_efficiency_20260807",
+        "release_id": "FUTURE_SIGNED_MATRIX_RELEASE_ID",
         "registry_root_digest": "REPLACE_WITH_SHA256_OF_CANONICAL_SHARED_REGISTRY_ABSOLUTE_ROOT",
     }
 
@@ -628,6 +633,15 @@ def test_logical_job_identity_is_independent_of_storage_root_but_first_start_bin
 
     assert caught.value.code is ErrorCode.LOGICAL_JOB_LEASE_ACTIVE
     assert first["authorized_output_root_digest"] == first_job["output_root_digest"]
+
+
+def test_logical_job_identity_is_namespaced_by_experiment_and_release(tmp_path):
+    job = _job(tmp_path)
+    first = logical_job_digest(job, experiment_id="EXPERIMENT_A", release_id="RELEASE_1")
+    other_experiment = logical_job_digest(job, experiment_id="EXPERIMENT_B", release_id="RELEASE_1")
+    other_release = logical_job_digest(job, experiment_id="EXPERIMENT_A", release_id="RELEASE_2")
+
+    assert len({first, other_experiment, other_release}) == 3
 
 
 def test_fenced_finalization_publishes_terminal_complete_and_blocks_resume(tmp_path):

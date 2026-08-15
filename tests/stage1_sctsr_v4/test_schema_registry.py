@@ -32,9 +32,10 @@ def test_schema_registry_registers_formal_input_and_detailed_self_audit_schemas(
 
 
 def test_schema_registry_registers_one_attempt_formal_execution_schemas():
-    assert REQUIRED_SCHEMAS["formal_execution_token"] == "stage1.sctsr.formal_execution_token.v1"
-    assert REQUIRED_SCHEMAS["formal_execution_claim"] == "stage1.sctsr.formal_execution_claim.v2"
-    assert REQUIRED_SCHEMAS["execution_claim_registry"] == "stage1.sctsr.execution_claim_registry.v1"
+    assert REQUIRED_SCHEMAS["formal_execution_token"] == "stage1.sctsr.formal_execution_token.v2"
+    assert REQUIRED_SCHEMAS["formal_execution_claim"] == "stage1.sctsr.formal_execution_claim.v3"
+    assert REQUIRED_SCHEMAS["execution_claim_registry"] == "stage1.sctsr.execution_claim_registry.v2"
+    assert REQUIRED_SCHEMAS["logical_job_terminal_receipt"] == "stage1.sctsr.logical_job_terminal_receipt.v1"
     assert REQUIRED_SCHEMAS["execution_attempt_snapshot"] == "stage1.sctsr.execution_attempt_snapshot.v2"
 
 

@@ -1,8 +1,9 @@
 {
-  "schema_version": "stage1.sctsr.execution_claim_registry.v1",
+  "schema_version": "stage1.sctsr.execution_claim_registry.v2",
   "registry_id": "FUTURE_OWNER_PROVISIONED_SHARED_REGISTRY",
   "mode": "SHARED_MULTI_MACHINE_EXCLUSIVE_CREATE",
   "state": "INACTIVE_TEMPLATE",
   "experiment_id": "dynamic_replay_budget_efficiency_20260807",
+  "release_id": "FUTURE_SIGNED_MATRIX_RELEASE_ID",
   "registry_root_digest": "REPLACE_WITH_SHA256_OF_CANONICAL_SHARED_REGISTRY_ABSOLUTE_ROOT"
 }
