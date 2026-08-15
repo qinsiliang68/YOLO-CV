@@ -331,6 +331,46 @@ def test_formal_resume_rejects_already_complete_run(tmp_path):
     assert captured.value.code is ErrorCode.RESUME_GENERATION_MISMATCH
 
 
+def test_terminal_epoch_can_be_inspected_only_for_finalization_recovery(tmp_path):
+    root = tmp_path / "run"
+    _checkpoint, start_generation = _build_completed_epoch(root, epoch=200)
+    kwargs = {
+        "run_root": root,
+        "expected_run_id": RUN_ID,
+        "expected_arm_id": ARM_ID,
+        "expected_training_seed": SEED,
+        "expected_source_tree_digest": SOURCE_SHA,
+        "expected_contract_digest": CONTRACT_SHA,
+        "expected_asset_registry_digest": ASSET_SHA,
+        "expected_previous_checkpoint_sha256": PARENT_SHA,
+        "expected_previous_generation_digest": start_generation,
+        "epoch_start": 200,
+        "epoch_end": 200,
+        "minimum_free_bytes": 1,
+    }
+
+    with pytest.raises(SctsrError):
+        inspect_formal_resume_context(**kwargs)
+
+    context = inspect_formal_resume_context(
+        **kwargs,
+        allow_terminal_epoch_for_finalization=True,
+    )
+    assert context.last_complete_epoch == 200
+    assert context.resume_epoch == 201
+    assert context.terminal_epoch_complete is True
+
+
+def test_formal_branch_training_never_writes_complete_status_before_endpoint(repository_root):
+    training_source = (repository_root / "stage1_sctsr_v4" / "formal_training.py").read_text(encoding="utf-8")
+    runner_source = (repository_root / "scripts" / "stage1_sctsr_v4" / "run_branch.py").read_text(encoding="utf-8")
+
+    assert '"FORMAL_BRANCH_COMPLETE"' not in training_source
+    assert runner_source.index("endpoint = publish_formal_endpoint(") < runner_source.index(
+        "completion = publish_formal_completion("
+    )
+
+
 def test_branch_runner_continues_at_resume_epoch_without_overwriting_completed_generation(monkeypatch, tmp_path):
     import stage1_sctsr_v4.formal_training as formal
 

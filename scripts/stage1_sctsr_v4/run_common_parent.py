@@ -99,6 +99,7 @@ def main() -> int:
                 "epoch_start": 1,
                 "epoch_end": 120,
                 "minimum_free_bytes": int(runtime_policy["minimum_resume_free_bytes"]),
+                "allow_terminal_epoch_for_finalization": True,
             }
             resume_preview = inspect_formal_resume_context(**resume_kwargs)
             trainer_setup_root = arguments.resume_setup_root.resolve()

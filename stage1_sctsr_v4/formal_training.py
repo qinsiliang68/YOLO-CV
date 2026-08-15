@@ -23,6 +23,7 @@ from .formal_execution import (
     publish_execution_claim_snapshot,
     validate_execution_claim_binding,
 )
+from .formal_completion import publish_formal_completion
 from .logical_artifact_index import LogicalArtifactEntry, LogicalArtifactIndex
 from .recovery import FormalResumeContext
 from .replay_step_plan import build_replay_step_plan
@@ -319,8 +320,34 @@ def _validate_resume_root_and_bindings(
         )
     if context.training_seed != identity.training_seed:
         raise SctsrError(ErrorCode.RESUME_GENERATION_MISMATCH, "Resume context training seed differs from the prepared identity")
-    if (root / "RUN_MANIFEST.json").exists() or (root / "PARENT_RECEIPT.json").exists() or (root / "BRANCH_RECEIPT.json").exists():
-        raise SctsrError(ErrorCode.RESUME_GENERATION_MISMATCH, "A terminal or published run may not enter resume")
+    if (root / "FORMAL_COMPLETION_RECEIPT.json").exists():
+        raise SctsrError(ErrorCode.RESUME_GENERATION_MISMATCH, "A canonically completed run may not enter resume")
+    published_control = [
+        path
+        for path in (root / "RUN_MANIFEST.json", root / "PARENT_RECEIPT.json", root / "BRANCH_RECEIPT.json")
+        if path.exists()
+    ]
+    if published_control and not context.terminal_epoch_complete:
+        raise SctsrError(
+            ErrorCode.RESUME_GENERATION_MISMATCH,
+            "A nonterminal resume found finalization control artifacts",
+            observed=[path.name for path in published_control],
+        )
+    for state_path in (root / "PARENT_RECEIPT.json", root / "BRANCH_RECEIPT.json"):
+        if not state_path.exists():
+            continue
+        state = load_json(state_path)
+        allowed = {
+            "FORMAL_PARENT_EPOCHS_COMPLETE_PENDING_FINALIZATION",
+            "FORMAL_BRANCH_EPOCHS_COMPLETE_PENDING_ENDPOINT",
+            "FORMAL_BRANCH_ENDPOINT_COMPLETE_PENDING_COMMIT",
+        }
+        if state.get("status") not in allowed:
+            raise SctsrError(
+                ErrorCode.RESUME_GENERATION_MISMATCH,
+                "Finalization recovery found an unregistered run-state status",
+                observed=state.get("status"),
+            )
     formal_identity = load_json(root / "FORMAL_IDENTITY.json")
     if formal_identity != asdict(identity):
         raise SctsrError(ErrorCode.RESUME_GENERATION_MISMATCH, "Run-root formal identity differs from the resume identity")
@@ -608,17 +635,36 @@ def _validate_parent_completion_receipt(
                 expected=value,
                 artifact_path=str(receipt_path),
             )
-    if receipt.get("status") not in {"FORMAL_PARENT_COMPLETE", "IMPLEMENTED_NOT_FORMALLY_RUN"}:
+    effective_status = receipt.get("status")
+    completion = None
+    if effective_status == "FORMAL_PARENT_EPOCHS_COMPLETE_PENDING_FINALIZATION":
+        try:
+            from .formal_completion import validate_formal_completion
+
+            completion = validate_formal_completion(receipt_path.parent, expected_run_role="COMMON_PARENT")
+            effective_status = completion["receipt"]["status"]
+        except SctsrError as exc:
+            raise SctsrError(
+                ErrorCode.BRANCH_LINEAGE_MISMATCH,
+                "Parent has E120 evidence but lacks a valid atomic completion receipt",
+                artifact_path=str(receipt_path),
+            ) from exc
+    if effective_status not in {"FORMAL_PARENT_COMPLETE", "IMPLEMENTED_NOT_FORMALLY_RUN"}:
         raise SctsrError(ErrorCode.BRANCH_LINEAGE_MISMATCH, "Parent receipt is not complete", artifact_path=str(receipt_path))
-    if require_formal and receipt.get("status") != "FORMAL_PARENT_COMPLETE":
+    if require_formal and effective_status != "FORMAL_PARENT_COMPLETE":
         raise SctsrError(
             ErrorCode.BRANCH_LINEAGE_MISMATCH,
             "A formal branch may only descend from a formally completed common parent",
-            observed=receipt.get("status"),
+            observed=effective_status,
             expected="FORMAL_PARENT_COMPLETE",
             artifact_path=str(receipt_path),
         )
-    return {**receipt, "_receipt_path": receipt_path.as_posix()}
+    return {
+        **receipt,
+        "status": effective_status,
+        "formal_completion": None if completion is None else completion["receipt"],
+        "_receipt_path": receipt_path.as_posix(),
+    }
 
 
 def _manifest_entry(
@@ -698,7 +744,11 @@ def _publish_complete_logical_timeline(
     )
     logical = LogicalArtifactIndex(entries)
     logical.validate(require_complete_timeline=True, logical_run_id=lineage.logical_run_id)
-    generation_index_path = child_root / "ARTIFACT_INDEX.json"
+    generation_index_path = (
+        child_root / "ARTIFACT_INDEX_GENERATIONS.json"
+        if (child_root / "ARTIFACT_INDEX_GENERATIONS.json").is_file()
+        else child_root / "ARTIFACT_INDEX.json"
+    )
     generation_index = load_json(generation_index_path)
     combined = {
         "schema_version": "stage1.sctsr.combined_artifact_index.v1",
@@ -736,13 +786,22 @@ def _publish_formal_run_manifest_and_indexes(
     from .run_validation import build_artifact_index
     from .serialization import load_json
 
-    generation_index_path = root / "ARTIFACT_INDEX.json"
+    generation_index_path = (
+        root / "ARTIFACT_INDEX_GENERATIONS.json"
+        if (root / "ARTIFACT_INDEX_GENERATIONS.json").is_file()
+        else root / "ARTIFACT_INDEX.json"
+    )
     if not generation_index_path.is_file():
         raise SctsrError(ErrorCode.ARTIFACT_VALIDATION_FAILED, "Formal run lacks its epoch-generation index")
     generation_index = load_json(generation_index_path)
     if generation_index.get("schema_version") != "stage1.sctsr.epoch_artifact_index.v1":
         raise SctsrError(ErrorCode.ARTIFACT_VALIDATION_FAILED, "Formal epoch-generation index schema is invalid")
-    atomic_write_json(root / "ARTIFACT_INDEX_GENERATIONS.json", generation_index)
+    registered_generation_index = root / "ARTIFACT_INDEX_GENERATIONS.json"
+    if registered_generation_index.is_file():
+        if load_json(registered_generation_index) != generation_index:
+            raise SctsrError(ErrorCode.ARTIFACT_VALIDATION_FAILED, "Published generation index changed during finalization recovery")
+    else:
+        atomic_write_json(registered_generation_index, generation_index)
     release = release_authorization if isinstance(release_authorization, Mapping) else load_json(release_authorization)
     release_sha = stable_digest(release) if isinstance(release_authorization, Mapping) else sha256_file(release_authorization)
     formal_input_snapshot = validate_formal_input_snapshot(root)
@@ -782,15 +841,12 @@ def _publish_formal_run_manifest_and_indexes(
         "best_pt_used": False,
     }
     atomic_write_json(root / "RUN_MANIFEST.json", manifest)
-    # Replace the mutable transaction index with a final exhaustive byte index;
-    # the original generation index remains immutable under its explicit name.
-    atomic_write_json(generation_index_path, build_artifact_index(root))
     return {
         "run_manifest_path": (root / "RUN_MANIFEST.json").as_posix(),
         "run_manifest_sha256": sha256_file(root / "RUN_MANIFEST.json"),
         "artifact_index_path": generation_index_path.as_posix(),
-        "generation_index_path": (root / "ARTIFACT_INDEX_GENERATIONS.json").as_posix(),
-        "generation_index_sha256": sha256_file(root / "ARTIFACT_INDEX_GENERATIONS.json"),
+        "generation_index_path": registered_generation_index.as_posix(),
+        "generation_index_sha256": sha256_file(registered_generation_index),
     }
 
 
@@ -978,9 +1034,17 @@ def run_prepared_common_parent(
             {**result, "epoch_evidence": final_evidence if evidence_enabled else "NOT_COLLECTED_SYNTHETIC_ONLY"}
         )
     if evidence_enabled:
-        assert final_evidence is not None
-        checkpoint = Path(final_evidence["checkpoint_path"])
-        checkpoint_sha = str(final_evidence["checkpoint_sha256"])
+        if final_evidence is None:
+            if resume_context is None or not resume_context.terminal_epoch_complete:
+                raise SctsrError(
+                    ErrorCode.ATOMIC_TRANSACTION_INCOMPLETE,
+                    "Common parent reached finalization without E120 epoch evidence",
+                )
+            checkpoint = Path(resume_context.checkpoint_path)
+            checkpoint_sha = resume_context.checkpoint_sha256
+        else:
+            checkpoint = Path(final_evidence["checkpoint_path"])
+            checkpoint_sha = str(final_evidence["checkpoint_sha256"])
     else:
         checkpoint = root / "epoch_0120.pt"
         checkpoint_sha = save_checkpoint_atomic(checkpoint, _checkpoint_payload(trainer, identity, epoch=120, global_step=global_step))
@@ -990,8 +1054,12 @@ def run_prepared_common_parent(
         pass
     receipt_chain = validate_receipt_chain(root / "08_receipts" / "epoch_receipts.jsonl") if evidence_enabled else None
     receipt = {
-        "schema_version": "stage1.sctsr.formal_parent_receipt.v2",
-        "status": "IMPLEMENTED_NOT_FORMALLY_RUN" if execution_mode != "formal" else "FORMAL_PARENT_COMPLETE",
+        "schema_version": "stage1.sctsr.formal_parent_receipt.v3",
+        "status": (
+            "IMPLEMENTED_NOT_FORMALLY_RUN"
+            if execution_mode != "formal"
+            else "FORMAL_PARENT_EPOCHS_COMPLETE_PENDING_FINALIZATION"
+        ),
         "parent_id": f"PARENT_{identity.training_seed}", "training_seed": identity.training_seed,
         "epoch_start": 1, "epoch_end": 120, "global_step": global_step,
         "checkpoint_path": checkpoint.as_posix(), "checkpoint_sha256": checkpoint_sha,
@@ -1027,6 +1095,16 @@ def run_prepared_common_parent(
         atomic_write_json(root / "PARENT_RECEIPT.json", receipt)
         from .run_validation import build_artifact_index
         atomic_write_json(root / "ARTIFACT_INDEX.json", build_artifact_index(root))
+        completion = publish_formal_completion(
+            root,
+            run_role="COMMON_PARENT",
+            run_id=f"PARENT_{identity.training_seed}",
+            arm_id="COMMON_PARENT_NR",
+            training_seed=identity.training_seed,
+            terminal_epoch=120,
+            fixed_checkpoint_sha256=checkpoint_sha,
+        )
+        return {**receipt, "status": completion["status"], "formal_completion": completion}
     return receipt
 
 
@@ -1280,8 +1358,12 @@ def run_prepared_branch(
         )
     receipt_chain = validate_receipt_chain(root / "08_receipts" / "epoch_receipts.jsonl") if evidence_enabled else None
     receipt = {
-        "schema_version": "stage1.sctsr.formal_branch_receipt.v2",
-        "status": "FORMAL_BRANCH_COMPLETE" if execution_mode == "formal" else "IMPLEMENTED_NOT_FORMALLY_RUN", "logical_run_id": lineage.logical_run_id,
+        "schema_version": "stage1.sctsr.formal_branch_receipt.v3",
+        "status": (
+            "FORMAL_BRANCH_EPOCHS_COMPLETE_PENDING_ENDPOINT"
+            if execution_mode == "formal"
+            else "IMPLEMENTED_NOT_FORMALLY_RUN"
+        ), "logical_run_id": lineage.logical_run_id,
         "arm_id": schedule.arm_id.value, "training_seed": identity.training_seed,
         "parent_checkpoint_sha256": parent_sha, "lineage_digest": lineage.lineage_digest,
         "epoch_start": 121, "epoch_end": 200, "global_step": global_step,
@@ -1319,6 +1401,4 @@ def run_prepared_branch(
         )
         receipt = {**receipt, "final_indexes": final_indexes}
         atomic_write_json(root / "BRANCH_RECEIPT.json", receipt)
-        from .run_validation import build_artifact_index
-        atomic_write_json(root / "ARTIFACT_INDEX.json", build_artifact_index(root))
     return receipt

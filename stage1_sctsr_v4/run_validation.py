@@ -59,7 +59,7 @@ def build_artifact_index(run_root: str | Path) -> dict[str, Any]:
     root = Path(run_root).resolve()
     files = []
     for path in root.rglob("*"):
-        if path.is_file() and path.name != "ARTIFACT_INDEX.json":
+        if path.is_file() and path.name not in {"ARTIFACT_INDEX.json", "FORMAL_COMPLETION_RECEIPT.json"}:
             files.append(
                 {
                     "path": path.relative_to(root).as_posix(),
@@ -90,7 +90,7 @@ def _validate_exhaustive_index(
     actual_paths = {
         path.relative_to(root).as_posix()
         for path in root.rglob("*")
-        if path.is_file() and path.name != "ARTIFACT_INDEX.json"
+        if path.is_file() and path.name not in {"ARTIFACT_INDEX.json", "FORMAL_COMPLETION_RECEIPT.json"}
     }
     _require(
         indexed_paths == actual_paths,
@@ -575,11 +575,25 @@ def _validate_formal_tree(root: Path, manifest: Mapping[str, Any]) -> dict[str, 
     _require(receipt_path.is_file(), "Formal run terminal receipt is missing", observed=receipt_name)
     receipt = load_json(receipt_path)
     expected_receipt_schema = (
-        "stage1.sctsr.formal_parent_receipt.v2"
+        "stage1.sctsr.formal_parent_receipt.v3"
         if role == "COMMON_PARENT"
-        else "stage1.sctsr.formal_branch_receipt.v2"
+        else "stage1.sctsr.formal_branch_receipt.v3"
     )
     _require(receipt.get("schema_version") == expected_receipt_schema, "Formal terminal receipt schema is stale or invalid")
+    expected_pending_status = (
+        "FORMAL_PARENT_EPOCHS_COMPLETE_PENDING_FINALIZATION"
+        if role == "COMMON_PARENT"
+        else "FORMAL_BRANCH_ENDPOINT_COMPLETE_PENDING_COMMIT"
+    )
+    _require(
+        receipt.get("status") == expected_pending_status,
+        "Formal run-state receipt claims completion before the atomic completion marker",
+        observed=receipt.get("status"),
+        expected=expected_pending_status,
+    )
+    from .formal_completion import validate_formal_completion
+
+    completion = validate_formal_completion(root, expected_run_role=str(role))
     expected = (1, 120) if role == "COMMON_PARENT" else (121, 200)
     _require((receipt.get("epoch_start"), receipt.get("epoch_end")) == expected, "Formal receipt epoch range is incomplete", observed=(receipt.get("epoch_start"), receipt.get("epoch_end")), expected=expected)
     _require(receipt.get("epoch_evidence_enabled") is True and receipt.get("best_pt_used") is False, "Formal receipt lacks mandatory evidence or used best.pt")
@@ -972,6 +986,7 @@ def _validate_formal_tree(root: Path, manifest: Mapping[str, Any]) -> dict[str, 
         "total_optimizer_visible_occurrences": total_occurrences,
         "total_replay_occurrences": total_replay,
         "fixed_endpoint_checkpoint_sha256": final_checkpoint_sha,
+        "formal_completion_receipt_sha256": completion["receipt_sha256"],
         "endpoint_evidence": endpoint_evidence,
     }
 

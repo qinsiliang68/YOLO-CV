@@ -1,7 +1,10 @@
 from __future__ import annotations
 
 import csv
+import os
+import uuid
 from dataclasses import dataclass
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Callable, Iterable, Iterator, Mapping, Sequence
 
@@ -235,6 +238,72 @@ def build_formal_endpoint_receipt(
     return payload
 
 
+def prepare_formal_endpoint_publication(
+    run_root: str | Path,
+    *,
+    run_id: str,
+    validate_existing: Callable[[], Mapping[str, Any]],
+) -> dict[str, Any]:
+    """Reuse a complete endpoint or preserve every partial byte before retry.
+
+    This function is called only after the new execution attempt owns the
+    latest logical-job fence.  It never deletes prior output and it refuses to
+    touch a canonically completed run.
+    """
+
+    root = Path(run_root).resolve()
+    if (root / "FORMAL_COMPLETION_RECEIPT.json").exists():
+        raise SctsrError(
+            ErrorCode.ATOMIC_TRANSACTION_INCOMPLETE,
+            "Canonical formal completion already exists; endpoint is immutable",
+        )
+    paths = _endpoint_artifact_paths(root, run_id)
+    receipt_path = root / "08_receipts" / "FORMAL_ENDPOINT_RECEIPT.json"
+    all_paths = {**paths, "receipt": receipt_path}
+    existing = {name: path for name, path in all_paths.items() if path.exists()}
+    if not existing:
+        return {"action": "BUILD_FRESH", "quarantined_artifacts": []}
+    if len(existing) == len(all_paths):
+        try:
+            validation = dict(validate_existing())
+        except (SctsrError, OSError, ValueError):
+            validation = None
+        else:
+            return {
+                "action": "REUSE_VALID_ENDPOINT",
+                "validation": validation,
+                "quarantined_artifacts": [],
+            }
+    suffix = f"{datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%S%fZ')}.{uuid.uuid4().hex[:12]}"
+    quarantine_root = root / "09_quarantine" / f"formal_endpoint.incomplete.{suffix}"
+    records: list[dict[str, Any]] = []
+    for name, source in sorted(existing.items()):
+        relative = source.relative_to(root)
+        target = quarantine_root / relative
+        target.parent.mkdir(parents=True, exist_ok=True)
+        os.replace(source, target)
+        records.append(
+            {
+                "role": name,
+                "source": relative.as_posix(),
+                "target": target.relative_to(root).as_posix(),
+                "bytes": target.stat().st_size,
+                "sha256": sha256_file(target),
+            }
+        )
+    atomic_write_json(
+        quarantine_root / "QUARANTINE_RECEIPT.json",
+        {
+            "schema_version": "stage1.sctsr.formal_endpoint_quarantine.v1",
+            "status": "QUARANTINED_INCOMPLETE_OR_INVALID_ENDPOINT",
+            "run_id": run_id,
+            "artifacts": records,
+            "artifact_count": len(records),
+        },
+    )
+    return {"action": "BUILD_FRESH", "quarantined_artifacts": records}
+
+
 def publish_formal_endpoint(
     *,
     model: torch.nn.Module,
@@ -265,19 +334,37 @@ def publish_formal_endpoint(
     registry = load_asset_registry(registry_source)
     paths = _endpoint_artifact_paths(root, run_id)
     receipt_path = root / "08_receipts" / "FORMAL_ENDPOINT_RECEIPT.json"
-    existing = sorted(name for name, path in {**paths, "receipt": receipt_path}.items() if path.exists())
-    if existing:
-        raise SctsrError(
-            ErrorCode.ATOMIC_TRANSACTION_INCOMPLETE,
-            "Formal endpoint publication is immutable and found existing output",
-            observed=existing,
-            required_action="Validate the complete endpoint or quarantine the partial endpoint before a new generation.",
-        )
     checkpoint = Path(checkpoint_path).resolve()
     from .checkpointing import load_checkpoint
 
     checkpoint_payload = load_checkpoint(checkpoint, expected_epoch=200)
     checkpoint_sha = sha256_file(checkpoint)
+    from .run_validation import validate_formal_endpoint_evidence
+
+    endpoint_manifest = {
+        "run_id": run_id,
+        "arm_id": arm_id,
+        "training_seed": int(checkpoint_payload["training_seed"]),
+        "source_tree_digest": str(checkpoint_payload["source_tree_digest"]),
+        "asset_registry_digest": registry.digest,
+    }
+    preparation = prepare_formal_endpoint_publication(
+        root,
+        run_id=run_id,
+        validate_existing=lambda: validate_formal_endpoint_evidence(
+            root,
+            manifest=endpoint_manifest,
+            checkpoint_path=checkpoint,
+            repository_root=repository,
+        ),
+    )
+    if preparation["action"] == "REUSE_VALID_ENDPOINT":
+        return {
+            **preparation["validation"],
+            "dataset_root": data_root.as_posix(),
+            "endpoint_publication_action": preparation["action"],
+            "quarantined_artifacts": [],
+        }
     build_split_identity_bundle(
         registry,
         repository_root=repository,
@@ -347,21 +434,18 @@ def publish_formal_endpoint(
         model_variant=model_variant,
     )
     atomic_write_json(receipt_path, receipt)
-    from .run_validation import validate_formal_endpoint_evidence
-
     validation = validate_formal_endpoint_evidence(
         root,
-        manifest={
-            "run_id": run_id,
-            "arm_id": arm_id,
-            "training_seed": binding.training_seed,
-            "source_tree_digest": binding.source_tree_digest,
-            "asset_registry_digest": registry.digest,
-        },
+        manifest=endpoint_manifest,
         checkpoint_path=checkpoint,
         repository_root=repository,
     )
-    return {**validation, "dataset_root": data_root.as_posix()}
+    return {
+        **validation,
+        "dataset_root": data_root.as_posix(),
+        "endpoint_publication_action": preparation["action"],
+        "quarantined_artifacts": preparation["quarantined_artifacts"],
+    }
 
 
 def _ema_model_state(ema_state: Mapping[str, object]) -> Mapping[str, object]:

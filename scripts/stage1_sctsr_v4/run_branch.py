@@ -10,6 +10,7 @@ from stage1_sctsr_v4.arm_spec import ArmId
 from stage1_sctsr_v4.cli_support import add_execution_arguments, add_output_argument, require_receipt_outside_artifact_root, run_cli
 from stage1_sctsr_v4.errors import ErrorCode, SctsrError
 from stage1_sctsr_v4.formal_execution import build_execution_job_bindings, claim_formal_execution
+from stage1_sctsr_v4.formal_completion import publish_formal_completion
 from stage1_sctsr_v4.formal_cli import (
     build_prepared_trainer,
     load_formal_identity,
@@ -141,6 +142,7 @@ def main() -> int:
                 "epoch_start": 121,
                 "epoch_end": 200,
                 "minimum_free_bytes": int(runtime_policy["minimum_resume_free_bytes"]),
+                "allow_terminal_epoch_for_finalization": True,
             }
             resume_preview = inspect_formal_resume_context(**resume_kwargs)
             trainer_setup_root = arguments.resume_setup_root.resolve()
@@ -288,13 +290,31 @@ def main() -> int:
         )
         branch_receipt_path = arguments.output_root / "BRANCH_RECEIPT.json"
         branch_receipt = load_json(branch_receipt_path)
-        atomic_write_json(branch_receipt_path, {**branch_receipt, "formal_endpoint_evidence": endpoint})
+        atomic_write_json(
+            branch_receipt_path,
+            {
+                **branch_receipt,
+                "status": "FORMAL_BRANCH_ENDPOINT_COMPLETE_PENDING_COMMIT",
+                "formal_endpoint_evidence": endpoint,
+            },
+        )
         from stage1_sctsr_v4.run_validation import build_artifact_index
 
         atomic_write_json(arguments.output_root / "ARTIFACT_INDEX.json", build_artifact_index(arguments.output_root))
+        completion = publish_formal_completion(
+            arguments.output_root,
+            run_role="BRANCH",
+            run_id=lineage.logical_run_id,
+            arm_id=schedule.arm_id.value,
+            training_seed=identity.training_seed,
+            terminal_epoch=200,
+            fixed_checkpoint_sha256=result["fixed_formal_endpoint"]["sha256"],
+        )
         return {
             **result,
+            "status": completion["status"],
             "formal_endpoint_evidence": endpoint,
+            "formal_completion": completion,
             "upstream_binding_digest": binding.binding_digest,
             "prepared_trainer_binding": trainer_binding,
             "formal_authorization": authorization,

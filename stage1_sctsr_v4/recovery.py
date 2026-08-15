@@ -49,6 +49,7 @@ class FormalResumeContext:
     receipt_chain_digest: str
     history: ReplayHistoryState
     quarantined_partial_paths: tuple[str, ...]
+    terminal_epoch_complete: bool
 
     def as_dict(self) -> dict[str, Any]:
         payload = {
@@ -69,6 +70,7 @@ class FormalResumeContext:
             "receipt_chain_digest": self.receipt_chain_digest,
             "history": self.history.snapshot(),
             "quarantined_partial_paths": list(self.quarantined_partial_paths),
+            "terminal_epoch_complete": self.terminal_epoch_complete,
         }
         return {**payload, "resume_context_digest": stable_digest(payload)}
 
@@ -352,6 +354,7 @@ def prepare_formal_resume_context(
     epoch_start: int,
     epoch_end: int,
     minimum_free_bytes: int,
+    allow_terminal_epoch_for_finalization: bool = False,
     _mutate: bool = True,
 ) -> FormalResumeContext:
     """Re-audit an interrupted formal run and return its exact continuation.
@@ -414,7 +417,7 @@ def prepare_formal_resume_context(
             expected=f"epochs {epoch_start}..last, generation 1",
         )
     last_epoch = epochs[-1]
-    if last_epoch >= epoch_end:
+    if last_epoch > epoch_end or (last_epoch == epoch_end and not allow_terminal_epoch_for_finalization):
         raise SctsrError(
             ErrorCode.RESUME_GENERATION_MISMATCH,
             "Run already contains its terminal completed epoch and may not be resumed",
@@ -557,7 +560,12 @@ def prepare_formal_resume_context(
     if chain["receipt_chain_digest"] != pointer["receipt_chain_digest"]:
         raise SctsrError(ErrorCode.RESUME_GENERATION_MISMATCH, "Pointer does not bind the complete receipt chain")
     try:
-        generation_index = json.loads((root / "ARTIFACT_INDEX.json").read_text(encoding="utf-8"))
+        generation_index_path = (
+            root / "ARTIFACT_INDEX_GENERATIONS.json"
+            if (root / "ARTIFACT_INDEX_GENERATIONS.json").is_file()
+            else root / "ARTIFACT_INDEX.json"
+        )
+        generation_index = json.loads(generation_index_path.read_text(encoding="utf-8"))
     except (OSError, UnicodeDecodeError, json.JSONDecodeError) as exc:
         raise SctsrError(ErrorCode.RESUME_GENERATION_MISMATCH, "Mutable generation index is missing or corrupt") from exc
     index_rows = generation_index.get("epoch_generations")
@@ -621,6 +629,7 @@ def prepare_formal_resume_context(
         receipt_chain_digest=str(chain["receipt_chain_digest"]),
         history=history,
         quarantined_partial_paths=quarantined,
+        terminal_epoch_complete=last_epoch == epoch_end,
     )
 
 
