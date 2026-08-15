@@ -266,4 +266,3 @@ def validate_deployment_plan(plan: Mapping[str, Any]) -> dict[str, Any]:
         "machine_job_counts": dict(sorted(counts.items())),
         "plan_digest": plan["plan_digest"],
     }
-
