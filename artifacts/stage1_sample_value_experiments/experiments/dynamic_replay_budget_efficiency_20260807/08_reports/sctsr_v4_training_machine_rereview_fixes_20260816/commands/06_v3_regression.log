@@ -1,0 +1,6 @@
+COMMAND=uv run --isolated --python 3.11 --extra dev pytest tests/stage1_dynamic_replay_v3 -q
+EXPECTED_EXIT_CODE=0
+OBSERVED_EXIT_CODE=0
+STDERR=EMPTY
+STDOUT_FINAL=181 passed, 3 skipped in 6.04s
+EVIDENCE_ROLE=PROTECTED_V3_REGRESSION_TERMINAL_TRANSCRIPT_SUMMARY

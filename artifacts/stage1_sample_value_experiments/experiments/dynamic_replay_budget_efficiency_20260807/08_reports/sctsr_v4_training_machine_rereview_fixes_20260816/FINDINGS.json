@@ -1,0 +1,49 @@
+{
+  "schema_version": "stage1.sctsr.training_machine_rereview_fix_findings.v1",
+  "reviewed_training_machine_commit": "EB3EFECE2C5ED01D918DC1701759473E5BC9AD42",
+  "implementation_base_commit": "1F0F12827DC6F79E107459FCB3135B99EAAA1423",
+  "implementation_freeze_commit": "C9DC0B9044E9188E602AB4DF97DC3906127211F5",
+  "findings": [
+    {
+      "finding_id": "TM-REREVIEW-P1-POST-CLAIM-ACTIVE-LEAK",
+      "severity": "P1",
+      "status": "RESOLVED_LOCALLY_PENDING_TRAINING_MACHINE_REREVIEW",
+      "violated_contract": "Every BaseException after claim success must terminalize the current fence and permit an authorized immediate RESUME.",
+      "implementation": [
+        "stage1_sctsr_v4/formal_execution.py:1299",
+        "scripts/stage1_sctsr_v4/run_common_parent.py:20",
+        "scripts/stage1_sctsr_v4/run_common_parent.py:192",
+        "scripts/stage1_sctsr_v4/run_branch.py:40",
+        "scripts/stage1_sctsr_v4/run_branch.py:244"
+      ],
+      "tests": [
+        "tests/stage1_sctsr_v4/test_formal_execution_claim.py:756",
+        "tests/stage1_sctsr_v4/test_formal_resume.py"
+      ],
+      "observed_after_fix": "Five runner-level fault injections preserve the original exception, publish FAILED heartbeat plus hash-bound terminal receipt, preserve logical_job_digest, and allow immediate generation+1 RESUME.",
+      "remaining_action": "Training machine must repeat the fault injection and real CUDA engineering canary on the new frozen source."
+    },
+    {
+      "finding_id": "TM-REREVIEW-P2-MATERIALIZED-SIBLING-TREE-ESCAPE",
+      "severity": "P2",
+      "status": "RESOLVED_LOCALLY_PENDING_TRAINING_MACHINE_REREVIEW",
+      "violated_contract": "The complete materialized classification view and every un-resolved ancestor must be exact, registered, and non-reparse.",
+      "implementation": [
+        "stage1_sctsr_v4/dataset_adapter.py:333",
+        "stage1_sctsr_v4/dataset_adapter.py:356",
+        "stage1_sctsr_v4/dataset_adapter.py:405",
+        "stage1_sctsr_v4/dataset_adapter.py:600",
+        "stage1_sctsr_v4/formal_cli.py:724"
+      ],
+      "binding_schema": "stage1.sctsr.materialized_dataset_binding.v4",
+      "tests": [
+        "tests/stage1_sctsr_v4/test_dataset_adapter.py:375",
+        "tests/stage1_sctsr_v4/test_dataset_adapter.py:395",
+        "tests/stage1_sctsr_v4/test_dataset_adapter.py:413",
+        "tests/stage1_sctsr_v4/test_dataset_adapter.py:482"
+      ],
+      "observed_after_fix": "Sibling class/role entries fail both setup and revalidation; ancestor reparse fails before recursion; exact train and val hardlink trees pass.",
+      "remaining_action": "Training machine must repeat materialized-tree negative probes on Windows and rerun the real image/weight CUDA canary."
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+COMMAND=uv run --locked --python 3.11 --extra dev pytest -q tests/stage1_sctsr_v4/test_formal_execution_claim.py -k claimed_runner_phase_failure
+EXPECTED_EXIT_CODE=1
+OBSERVED_EXIT_CODE=1
+STDERR=EMPTY
+STDOUT_FINAL=5 failed, 21 deselected in 3.00s
+FAILURE_REASON=Both runner modules lacked an importable execute_claimed_runner_phase boundary before the runner-level TDD change.
+FAILED_CASES=COMMON_PARENT/resume_preparation;COMMON_PARENT/trainer_setup;BRANCH/resume_preparation;BRANCH/trainer_setup;BRANCH/finalization_context
+EVIDENCE_ROLE=TDD_RED_TERMINAL_TRANSCRIPT_SUMMARY

@@ -1,0 +1,13 @@
+{
+  "schema_version": "stage1.sctsr.training_machine_rereview_fix_commands.v1",
+  "implementation_freeze_commit": "C9DC0B9044E9188E602AB4DF97DC3906127211F5",
+  "commands": [
+    {"command_id": "RUNNER_RED", "path": "commands/01_runner_red.log", "expected_exit_code": 1, "observed_exit_code": 1, "status": "EXPECTED_FAILURE_OBSERVED"},
+    {"command_id": "RUNNER_GREEN", "path": "commands/02_runner_green.log", "expected_exit_code": 0, "observed_exit_code": 0, "status": "PASS"},
+    {"command_id": "DATASET_GREEN", "path": "commands/03_dataset_green.log", "expected_exit_code": 0, "observed_exit_code": 0, "status": "PASS"},
+    {"command_id": "V4_PYTHON311", "path": "commands/04_v4_python311.log", "expected_exit_code": 0, "observed_exit_code": 0, "status": "PASS", "passed": 468},
+    {"command_id": "V4_PYTHON312", "path": "commands/05_v4_python312.log", "expected_exit_code": 0, "observed_exit_code": 0, "status": "PASS", "passed": 468},
+    {"command_id": "V3_REGRESSION", "path": "commands/06_v3_regression.log", "expected_exit_code": 0, "observed_exit_code": 0, "status": "PASS", "passed": 181, "skipped": 3},
+    {"command_id": "STATIC_CHECKS", "path": "commands/07_static_checks.log", "expected_exit_code": 0, "observed_exit_code": 0, "status": "PASS"}
+  ]
+}

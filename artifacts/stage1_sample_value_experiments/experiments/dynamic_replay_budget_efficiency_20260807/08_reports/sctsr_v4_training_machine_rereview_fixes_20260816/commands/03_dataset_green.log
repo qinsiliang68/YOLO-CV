@@ -1,0 +1,8 @@
+COMMAND=uv run --locked --python 3.11 --extra dev pytest -q tests/stage1_sctsr_v4/test_dataset_adapter.py
+EXPECTED_EXIT_CODE=0
+OBSERVED_EXIT_CODE=0
+STDERR=EMPTY
+STDOUT_FINAL=17 passed in 1.68s
+COVERAGE=preexisting sibling class; preexisting sibling role; post-setup sibling class; post-setup sibling role; every un-resolved ancestor reparse check; exact train+val hardlink trees; byte and inode replacement
+PRIOR_RED=The initial combined TDD run observed 11 failed and 45 passed; dataset failures were unexpected materialized_role_root and missing _is_symlink_or_reparse contract members.
+EVIDENCE_ROLE=TDD_GREEN_TERMINAL_TRANSCRIPT_SUMMARY

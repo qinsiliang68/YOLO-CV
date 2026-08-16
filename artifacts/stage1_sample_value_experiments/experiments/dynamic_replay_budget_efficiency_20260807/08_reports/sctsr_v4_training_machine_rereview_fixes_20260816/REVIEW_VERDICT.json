@@ -1,0 +1,24 @@
+{
+  "schema_version": "stage1.sctsr.training_machine_rereview_fix_verdict.v1",
+  "status": "READY_FOR_TRAINING_MACHINE_REREVIEW",
+  "not_status": [
+    "FORMAL_TRAINING_AUTHORIZED",
+    "METHOD_EFFECTIVENESS_CONFIRMED",
+    "READY_FOR_FORMAL_AUTHORIZATION_REVIEW_WITHOUT_MACHINE_RERUN"
+  ],
+  "implementation_base_commit": "1F0F12827DC6F79E107459FCB3135B99EAAA1423",
+  "implementation_freeze_commit": "C9DC0B9044E9188E602AB4DF97DC3906127211F5",
+  "runbook_freeze_commit": "A6BAAD0DCE9CBD427570AA267614A1566434B25F",
+  "training_machine_source_finding_commit": "EB3EFECE2C5ED01D918DC1701759473E5BC9AD42",
+  "p1_open": 0,
+  "p2_open": 0,
+  "formal_training_started": false,
+  "assignments_generated": false,
+  "engineering_gate_generated": false,
+  "pilot_release_generated": false,
+  "formal_release_generated": false,
+  "test_accessed": false,
+  "blind_holdout_opened": false,
+  "method_effectiveness_claimed": false,
+  "required_next_action": "Training machine pulls the final response branch, repeats both negative probes and the RTX 3090 engineering canary, then issues its independent verdict."
+}
