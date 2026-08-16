@@ -1,0 +1,49 @@
+{
+  "schema_version": "stage1.sctsr.training_machine_final_rereview.v1",
+  "status": "PASS",
+  "readiness_state": "READY_FOR_FORMAL_AUTHORIZATION_REVIEW",
+  "formal_training_authorized": false,
+  "source_head": "6d1ab662fa4baa8d030dd2e3629ea9829e3497c0",
+  "training_machine": {
+    "hostname": "DESKTOP-DGQTJ9O",
+    "gpu_name": "NVIDIA GeForce RTX 3090",
+    "gpu_uuid": "GPU-396ff5c3-1c32-1614-80fe-f2822833da4b",
+    "python": "3.11.15",
+    "torch": "2.11.0+cu128",
+    "cuda_build": "12.8",
+    "nvidia_driver": "531.29"
+  },
+  "verification": {
+    "claim_negative_tests": "5 passed",
+    "dataset_negative_tests": "17 passed",
+    "v4_suite": "468 passed",
+    "v3_regression": "181 passed, 3 skipped",
+    "compileall": "PASS",
+    "engineering_canary": "PASS",
+    "canary_registered_artifacts_verified": 15,
+    "canary_registered_artifacts_expected": 15,
+    "source_git_clean_after_verification": true,
+    "leftover_training_processes": 0
+  },
+  "canary": {
+    "source_tree_digest": "5AD51BE111606DEB8661689BD762825A05CCF10733F16DDB4A2959035F7CAD52",
+    "artifact_manifest_digest": "00666CF5EF41E93C72DC285DEC95E3211C8114EF4A81AA2B36F7A848FCB2349B",
+    "authoritative_receipt_bytes": 9601,
+    "authoritative_receipt_sha256": "6DD6303053243C74AAE797A2FE2DFA7C4AEF6A968AD2AA25A45F3D923A3D6407",
+    "authoritative_artifact_manifest_bytes": 2980,
+    "authoritative_artifact_manifest_sha256": "1228D70C5946DCCA7EB6FDCF5C6BB6AD901896740FF2D2BE0C0868E35BA6ED8F",
+    "git_copy_receipt_bytes": 9601,
+    "git_copy_receipt_sha256": "6DD6303053243C74AAE797A2FE2DFA7C4AEF6A968AD2AA25A45F3D923A3D6407",
+    "git_copy_artifact_manifest_bytes": 2980,
+    "git_copy_artifact_manifest_sha256": "1228D70C5946DCCA7EB6FDCF5C6BB6AD901896740FF2D2BE0C0868E35BA6ED8F"
+  },
+  "formal_side_effects": {
+    "assignments_generated": false,
+    "engineering_gate_generated": false,
+    "pilot_release_generated": false,
+    "formal_training_started": false,
+    "blind_holdout_opened": false,
+    "test_accessed": false,
+    "method_effectiveness_claimed": false
+  }
+}
