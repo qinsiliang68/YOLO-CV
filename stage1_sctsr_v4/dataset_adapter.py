@@ -316,6 +316,144 @@ class IdentityFilteringDataset(torch.utils.data.Dataset):
         return getattr(self.base_dataset, name)
 
 
+_WINDOWS_REPARSE_POINT_ATTRIBUTE = 0x400
+
+
+def _absolute_without_resolving(path: str | Path) -> Path:
+    return Path(os.path.abspath(os.fspath(path)))
+
+
+def _is_symlink_or_reparse(path: Path) -> bool:
+    stat_result = path.lstat()
+    return path.is_symlink() or bool(
+        int(getattr(stat_result, "st_file_attributes", 0)) & _WINDOWS_REPARSE_POINT_ATTRIBUTE
+    )
+
+
+def _validate_non_reparse_chain(path: Path, *, stop: Path) -> None:
+    try:
+        path.relative_to(stop)
+    except ValueError as exc:
+        raise SctsrError(
+            ErrorCode.DATASET_CONTENT_MISMATCH,
+            "Materialized dataset path escapes its bound role root",
+            artifact_path=str(path),
+            expected=stop.as_posix(),
+        ) from exc
+    current = path
+    while True:
+        if _is_symlink_or_reparse(current):
+            raise SctsrError(
+                ErrorCode.DATASET_CONTENT_MISMATCH,
+                "Materialized dataset path uses a symlink, junction, or reparse point",
+                artifact_path=str(current),
+            )
+        if current == stop:
+            return
+        current = current.parent
+
+
+def _validate_materialized_role_set(
+    materialized_root: Path,
+    *,
+    allowed_role_roots: set[Path],
+    enforce_exact_top_level: bool,
+) -> None:
+    if not materialized_root.is_dir() or _is_symlink_or_reparse(materialized_root):
+        raise SctsrError(
+            ErrorCode.DATASET_CONTENT_MISMATCH,
+            "Materialized classification root is missing or is a reparse point",
+            artifact_path=str(materialized_root),
+        )
+    for role_root in allowed_role_roots:
+        if role_root.parent != materialized_root:
+            raise SctsrError(
+                ErrorCode.DATASET_CONTENT_MISMATCH,
+                "A materialized role root is not a direct child of the classification root",
+                artifact_path=str(role_root),
+                expected=materialized_root.as_posix(),
+            )
+    if not enforce_exact_top_level:
+        return
+    observed: set[Path] = set()
+    with os.scandir(materialized_root) as entries:
+        for entry in entries:
+            entry_path = _absolute_without_resolving(entry.path)
+            entry_stat = entry.stat(follow_symlinks=False)
+            if entry.is_symlink() or int(getattr(entry_stat, "st_file_attributes", 0)) & _WINDOWS_REPARSE_POINT_ATTRIBUTE:
+                raise SctsrError(
+                    ErrorCode.DATASET_CONTENT_MISMATCH,
+                    "Materialized classification root contains a symlink, junction, or reparse point",
+                    artifact_path=str(entry_path),
+                )
+            if not entry.is_dir(follow_symlinks=False) or entry_path not in allowed_role_roots:
+                raise SctsrError(
+                    ErrorCode.DATASET_CONTENT_MISMATCH,
+                    "Materialized classification root contains an unregistered sibling role or file",
+                    artifact_path=str(entry_path),
+                )
+            observed.add(entry_path)
+    if observed != allowed_role_roots:
+        raise SctsrError(
+            ErrorCode.DATASET_CONTENT_MISMATCH,
+            "Materialized classification root does not contain the exact registered role set",
+            observed=sorted(path.as_posix() for path in observed),
+            expected=sorted(path.as_posix() for path in allowed_role_roots),
+        )
+
+
+def _validate_exact_role_tree(role_root: Path, *, selected_paths: set[Path]) -> None:
+    if not role_root.is_dir():
+        raise SctsrError(
+            ErrorCode.DATASET_CONTENT_MISMATCH,
+            "Materialized role root is missing",
+            artifact_path=str(role_root),
+        )
+    _validate_non_reparse_chain(role_root, stop=role_root)
+    allowed_directories = {role_root}
+    for selected in selected_paths:
+        _validate_non_reparse_chain(selected, stop=role_root)
+        current = selected.parent
+        while current != role_root:
+            allowed_directories.add(current)
+            current = current.parent
+
+    pending = [role_root]
+    while pending:
+        current = pending.pop()
+        with os.scandir(current) as entries:
+            for entry in entries:
+                entry_path = _absolute_without_resolving(entry.path)
+                entry_stat = entry.stat(follow_symlinks=False)
+                if entry.is_symlink() or int(getattr(entry_stat, "st_file_attributes", 0)) & _WINDOWS_REPARSE_POINT_ATTRIBUTE:
+                    raise SctsrError(
+                        ErrorCode.DATASET_CONTENT_MISMATCH,
+                        "Materialized role tree contains a symlink, junction, or reparse point",
+                        artifact_path=str(entry_path),
+                    )
+                if entry.is_dir(follow_symlinks=False):
+                    if entry_path not in allowed_directories:
+                        raise SctsrError(
+                            ErrorCode.DATASET_CONTENT_MISMATCH,
+                            "Materialized role tree contains an unregistered directory",
+                            artifact_path=str(entry_path),
+                        )
+                    pending.append(entry_path)
+                elif entry.is_file(follow_symlinks=False):
+                    if entry_path not in selected_paths:
+                        raise SctsrError(
+                            ErrorCode.DATASET_CONTENT_MISMATCH,
+                            "Materialized role tree contains an unregistered file",
+                            artifact_path=str(entry_path),
+                        )
+                else:
+                    raise SctsrError(
+                        ErrorCode.DATASET_CONTENT_MISMATCH,
+                        "Materialized role tree contains an unsupported filesystem entry",
+                        artifact_path=str(entry_path),
+                    )
+
+
 def validate_materialized_dataset_bytes(
     dataset: Any,
     expected_content: Mapping[str, Mapping[str, Any]],
@@ -323,6 +461,8 @@ def validate_materialized_dataset_bytes(
     role: str,
     dataset_root: str | Path | None = None,
     materialized_data_root: str | Path | None = None,
+    materialized_role_root: str | Path | None = None,
+    allowed_materialized_role_roots: Sequence[str | Path] | None = None,
     evidence_path: str | Path | None = None,
 ) -> dict[str, Any]:
     """Hash the exact physical files exposed by an upstream dataset.
@@ -330,7 +470,10 @@ def validate_materialized_dataset_bytes(
     ``dataset_root`` is the immutable canonical image root referenced by the
     registered content ledger. ``materialized_data_root`` is the separate
     Ultralytics classification view containing ``train/`` and ``val/``
-    hardlinks. When omitted, the legacy same-root layout is used.
+    hardlinks. ``materialized_role_root`` is the exact train/val subtree that
+    this loader may consume.  The allowed role-root set binds the complete
+    classification-view top level.  When omitted, the legacy same-root layout
+    is retained only for isolated unit fixtures; formal callers bind both.
     """
 
     identities = getattr(dataset, "identities", None)
@@ -351,20 +494,49 @@ def validate_materialized_dataset_bytes(
     materialized_root = (
         canonical_root
         if materialized_data_root is None
-        else Path(materialized_data_root).resolve()
+        else _absolute_without_resolving(materialized_data_root)
     )
+    role_directory = "train" if role == "train" else "val"
+    bound_role_root = (
+        None
+        if materialized_root is None
+        else (
+            materialized_root / role_directory
+            if materialized_role_root is None
+            else _absolute_without_resolving(materialized_role_root)
+        )
+    )
+    allowed_role_roots = (
+        set()
+        if materialized_root is None
+        else (
+            {bound_role_root}
+            if allowed_materialized_role_roots is None
+            else {
+                _absolute_without_resolving(root)
+                for root in allowed_materialized_role_roots
+            }
+        )
+    )
+    if materialized_root is not None:
+        if bound_role_root not in allowed_role_roots:
+            raise SctsrError(
+                ErrorCode.DATASET_CONTENT_MISMATCH,
+                "The bound materialized role root is absent from the registered role set",
+                artifact_path=str(bound_role_root),
+            )
+        _validate_materialized_role_set(
+            materialized_root,
+            allowed_role_roots=allowed_role_roots,
+            enforce_exact_top_level=materialized_data_root is not None,
+        )
     selected_paths: set[Path] = set()
-    scan_roots: set[Path] = set()
     for identity, raw_path in zip(identities, physical_paths, strict=True):
         sample_id = str(identity.sample_id)
         expected = expected_content.get(sample_id)
-        path = Path(str(raw_path)).resolve()
-        if materialized_root is not None and path != materialized_root and materialized_root not in path.parents:
-            raise SctsrError(
-                ErrorCode.DATASET_CONTENT_MISMATCH,
-                "Materialized loader path escapes the authorized classification data root",
-                artifact_path=str(path),
-            )
+        path = _absolute_without_resolving(str(raw_path))
+        if bound_role_root is not None:
+            _validate_non_reparse_chain(path, stop=bound_role_root)
         if expected is None or not path.is_file():
             raise SctsrError(
                 ErrorCode.DATASET_CONTENT_MISMATCH,
@@ -386,7 +558,6 @@ def validate_materialized_dataset_bytes(
             )
         total_bytes += observed_bytes
         selected_paths.add(path)
-        scan_roots.add(path.parent)
         canonical_path = None if canonical_root is None else (canonical_root / Path(sample_id)).resolve()
         if canonical_path is not None:
             try:
@@ -418,28 +589,15 @@ def validate_materialized_dataset_bytes(
                 "samefile_as_canonical": samefile_as_canonical,
             }
         )
-    for selected in selected_paths:
-        current = selected
-        while True:
-            stat_result = current.lstat()
-            attributes = int(getattr(stat_result, "st_file_attributes", 0))
-            if current.is_symlink() or attributes & 0x400:
-                raise SctsrError(ErrorCode.DATASET_CONTENT_MISMATCH, "Materialized dataset path uses a symlink or reparse point", artifact_path=str(current))
-            if canonical_root is None or current == canonical_root or canonical_root not in current.parents:
-                break
-            current = current.parent
-    for scan_root in scan_roots:
-        for entry in scan_root.rglob("*"):
-            resolved = entry.resolve()
-            attributes = int(getattr(entry.lstat(), "st_file_attributes", 0))
-            if entry.is_symlink() or attributes & 0x400:
-                raise SctsrError(ErrorCode.DATASET_CONTENT_MISMATCH, "Materialized dataset contains a symlink or reparse point", artifact_path=str(entry))
-            if entry.is_file() and resolved not in selected_paths:
-                raise SctsrError(ErrorCode.DATASET_CONTENT_MISMATCH, "Materialized dataset contains an unregistered extra file", artifact_path=str(entry))
-            if entry.is_dir() and not any(resolved in selected.parents for selected in selected_paths):
-                raise SctsrError(ErrorCode.DATASET_CONTENT_MISMATCH, "Materialized dataset contains an unregistered extra directory", artifact_path=str(entry))
+    if bound_role_root is not None:
+        _validate_materialized_role_set(
+            materialized_root,
+            allowed_role_roots=allowed_role_roots,
+            enforce_exact_top_level=materialized_data_root is not None,
+        )
+        _validate_exact_role_tree(bound_role_root, selected_paths=selected_paths)
     payload = {
-        "schema_version": "stage1.sctsr.materialized_dataset_binding.v3",
+        "schema_version": "stage1.sctsr.materialized_dataset_binding.v4",
         "status": "PASS",
         "role": role,
         "row_count": len(evidence),
@@ -447,7 +605,9 @@ def validate_materialized_dataset_bytes(
         "dataset_root": "NOT_BOUND" if canonical_root is None else canonical_root.as_posix(),
         "canonical_dataset_root": "NOT_BOUND" if canonical_root is None else canonical_root.as_posix(),
         "materialized_data_root": "NOT_BOUND" if materialized_root is None else materialized_root.as_posix(),
-        "materialized_roots": sorted(path.as_posix() for path in scan_roots),
+        "materialized_role_root": "NOT_BOUND" if bound_role_root is None else bound_role_root.as_posix(),
+        "allowed_materialized_role_roots": sorted(path.as_posix() for path in allowed_role_roots),
+        "materialized_top_level_exact": materialized_data_root is not None,
         "materialized_content_digest": stable_digest(
             sorted(evidence, key=lambda row: row["sample_id"])
         ),
@@ -456,7 +616,7 @@ def validate_materialized_dataset_bytes(
         manifest = write_zstd_parquet(
             sorted(evidence, key=lambda row: row["sample_id"]),
             evidence_path,
-            schema_version="stage1.sctsr.materialized_dataset_rows.v2",
+            schema_version="stage1.sctsr.materialized_dataset_rows.v3",
         )
         payload["evidence"] = {
             "path": Path(manifest.path).resolve().as_posix(),
@@ -473,7 +633,7 @@ def validate_materialized_dataset_bytes(
 def revalidate_materialized_dataset_binding(binding: Mapping[str, Any]) -> dict[str, Any]:
     """Re-hash every prepared loader file from its immutable row ledger."""
 
-    if binding.get("schema_version") != "stage1.sctsr.materialized_dataset_binding.v3":
+    if binding.get("schema_version") != "stage1.sctsr.materialized_dataset_binding.v4":
         raise SctsrError(ErrorCode.SCHEMA_VALIDATION_FAILED, "Materialized dataset binding schema is not registered")
     core = {key: value for key, value in binding.items() if key != "binding_digest"}
     if binding.get("binding_digest") != stable_digest(core):
@@ -491,34 +651,42 @@ def revalidate_materialized_dataset_binding(binding: Mapping[str, Any]) -> dict[
     )
     rows = read_columnar(path)
     observed: list[dict[str, Any]] = []
-    selected_paths = {Path(str(row["loader_path_resolved"])).resolve() for row in rows}
+    selected_paths = {_absolute_without_resolving(str(row["loader_path_resolved"])) for row in rows}
     materialized_data_root_value = str(binding.get("materialized_data_root", "NOT_BOUND"))
-    materialized_data_root = None if materialized_data_root_value == "NOT_BOUND" else Path(materialized_data_root_value).resolve()
-    if materialized_data_root is not None and any(
-        selected != materialized_data_root and materialized_data_root not in selected.parents
-        for selected in selected_paths
-    ):
-        raise SctsrError(ErrorCode.DATASET_CONTENT_MISMATCH, "A materialized dataset row escapes the bound classification data root")
-    materialized_roots = {Path(str(value)).resolve() for value in binding.get("materialized_roots", ())}
-    if not materialized_roots:
-        raise SctsrError(ErrorCode.DATASET_CONTENT_MISMATCH, "Materialized dataset binding has no scan roots")
-    for scan_root in materialized_roots:
-        if not scan_root.is_dir():
-            raise SctsrError(ErrorCode.DATASET_CONTENT_MISMATCH, "A materialized dataset scan root is missing", artifact_path=str(scan_root))
-        root_stat = scan_root.lstat()
-        if scan_root.is_symlink() or int(getattr(root_stat, "st_file_attributes", 0)) & 0x400:
-            raise SctsrError(ErrorCode.DATASET_CONTENT_MISMATCH, "Materialized dataset scan root became a symlink or reparse point", artifact_path=str(scan_root))
-        for entry in scan_root.rglob("*"):
-            resolved = entry.resolve()
-            attributes = int(getattr(entry.lstat(), "st_file_attributes", 0))
-            if entry.is_symlink() or attributes & 0x400:
-                raise SctsrError(ErrorCode.DATASET_CONTENT_MISMATCH, "Materialized dataset contains a symlink or reparse point", artifact_path=str(entry))
-            if entry.is_file() and resolved not in selected_paths:
-                raise SctsrError(ErrorCode.DATASET_CONTENT_MISMATCH, "Materialized dataset contains a post-setup unregistered file", artifact_path=str(entry))
-            if entry.is_dir() and not any(resolved in selected.parents for selected in selected_paths):
-                raise SctsrError(ErrorCode.DATASET_CONTENT_MISMATCH, "Materialized dataset contains a post-setup unregistered directory", artifact_path=str(entry))
+    materialized_data_root = (
+        None
+        if materialized_data_root_value == "NOT_BOUND"
+        else _absolute_without_resolving(materialized_data_root_value)
+    )
+    role_root_value = str(binding.get("materialized_role_root", "NOT_BOUND"))
+    materialized_role_root = (
+        None
+        if role_root_value == "NOT_BOUND"
+        else _absolute_without_resolving(role_root_value)
+    )
+    allowed_role_roots = {
+        _absolute_without_resolving(value)
+        for value in binding.get("allowed_materialized_role_roots", ())
+    }
+    if materialized_data_root is None or materialized_role_root is None or not allowed_role_roots:
+        raise SctsrError(
+            ErrorCode.DATASET_CONTENT_MISMATCH,
+            "Materialized dataset binding lacks the formal role-root contract",
+        )
+    if materialized_role_root not in allowed_role_roots:
+        raise SctsrError(
+            ErrorCode.DATASET_CONTENT_MISMATCH,
+            "Materialized dataset binding role root is outside the allowed role set",
+        )
+    _validate_materialized_role_set(
+        materialized_data_root,
+        allowed_role_roots=allowed_role_roots,
+        enforce_exact_top_level=bool(binding.get("materialized_top_level_exact")),
+    )
+    _validate_exact_role_tree(materialized_role_root, selected_paths=selected_paths)
     for row in rows:
-        physical = Path(str(row["loader_path_resolved"])).resolve()
+        physical = _absolute_without_resolving(str(row["loader_path_resolved"]))
+        _validate_non_reparse_chain(physical, stop=materialized_role_root)
         if not physical.is_file():
             raise SctsrError(ErrorCode.DATASET_CONTENT_MISMATCH, "A bound materialized dataset file is missing", artifact_path=str(physical))
         stat_result = physical.stat()

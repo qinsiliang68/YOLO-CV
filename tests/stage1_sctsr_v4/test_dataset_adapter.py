@@ -330,3 +330,176 @@ def test_materialized_binding_accepts_separate_hardlink_only_classification_view
     assert binding["canonical_dataset_root"] == (tmp_path / "dataset").resolve().as_posix()
     assert binding["materialized_data_root"] == (tmp_path / "classification_view").resolve().as_posix()
     assert revalidate_materialized_dataset_binding(binding)["status"] == "PASS"
+
+
+def _single_materialized_dataset(staged: Path, sample_id: str):
+    class PhysicalBase(torch.utils.data.Dataset):
+        samples = ((str(staged), 0),)
+
+        def __len__(self):
+            return 1
+
+        def __getitem__(self, index):
+            return {"img": torch.zeros((1, 2, 2)), "cls": torch.tensor(0)}
+
+    return IdentityAugmentingDataset(PhysicalBase(), (DatasetIdentity(sample_id, 0, sample_id),))
+
+
+def _role_root_binding_fixture(tmp_path: Path):
+    canonical_root = tmp_path / "canonical"
+    materialized_root = tmp_path / "classification_view"
+    role_root = materialized_root / "train"
+    canonical = canonical_root / "Det" / "images" / "normal_train" / "a.png"
+    staged = role_root / "no_target" / "a.png"
+    canonical.parent.mkdir(parents=True)
+    staged.parent.mkdir(parents=True)
+    canonical.write_bytes(b"frozen")
+    os.link(canonical, staged)
+    sample_id = "Det/images/normal_train/a.png"
+    content = {
+        sample_id: {
+            "image_bytes": canonical.stat().st_size,
+            "image_sha256": __import__("hashlib").sha256(canonical.read_bytes()).hexdigest().upper(),
+        }
+    }
+    return {
+        "canonical_root": canonical_root,
+        "materialized_root": materialized_root,
+        "role_root": role_root,
+        "staged": staged,
+        "dataset": _single_materialized_dataset(staged, sample_id),
+        "content": content,
+    }
+
+
+def test_materialized_role_root_rejects_preexisting_sibling_class(tmp_path: Path):
+    fixture = _role_root_binding_fixture(tmp_path)
+    injected = fixture["role_root"] / "injected_class" / "extra.png"
+    injected.parent.mkdir()
+    injected.write_bytes(b"extra")
+
+    with pytest.raises(SctsrError) as caught:
+        validate_materialized_dataset_bytes(
+            fixture["dataset"],
+            fixture["content"],
+            role="train",
+            dataset_root=fixture["canonical_root"],
+            materialized_data_root=fixture["materialized_root"],
+            materialized_role_root=fixture["role_root"],
+            allowed_materialized_role_roots=(fixture["role_root"],),
+            evidence_path=tmp_path / "binding" / "train.parquet",
+        )
+    assert caught.value.code is ErrorCode.DATASET_CONTENT_MISMATCH
+
+
+def test_materialized_role_root_rejects_preexisting_sibling_role(tmp_path: Path):
+    fixture = _role_root_binding_fixture(tmp_path)
+    (fixture["materialized_root"] / "injected_role").mkdir()
+
+    with pytest.raises(SctsrError) as caught:
+        validate_materialized_dataset_bytes(
+            fixture["dataset"],
+            fixture["content"],
+            role="train",
+            dataset_root=fixture["canonical_root"],
+            materialized_data_root=fixture["materialized_root"],
+            materialized_role_root=fixture["role_root"],
+            allowed_materialized_role_roots=(fixture["role_root"],),
+            evidence_path=tmp_path / "binding" / "train.parquet",
+        )
+    assert caught.value.code is ErrorCode.DATASET_CONTENT_MISMATCH
+
+
+def test_materialized_role_contract_accepts_exact_train_and_val_hardlink_trees(tmp_path: Path):
+    canonical_root = tmp_path / "canonical"
+    materialized_root = tmp_path / "classification_view"
+    train_role = materialized_root / "train"
+    val_role = materialized_root / "val"
+    train_role.mkdir(parents=True)
+    val_role.mkdir(parents=True)
+    content = {}
+    bindings = []
+    for role, role_root, source_role in (
+        ("train", train_role, "normal_train"),
+        ("val_model", val_role, "normal_val_model"),
+    ):
+        sample_id = f"Det/images/{source_role}/{role}.png"
+        canonical = canonical_root / sample_id
+        staged = role_root / "no_target" / f"{role}.png"
+        canonical.parent.mkdir(parents=True)
+        staged.parent.mkdir(parents=True)
+        canonical.write_bytes(role.encode("ascii"))
+        os.link(canonical, staged)
+        content[sample_id] = {
+            "image_bytes": canonical.stat().st_size,
+            "image_sha256": __import__("hashlib").sha256(canonical.read_bytes()).hexdigest().upper(),
+        }
+        bindings.append(
+            validate_materialized_dataset_bytes(
+                _single_materialized_dataset(staged, sample_id),
+                content,
+                role=role,
+                dataset_root=canonical_root,
+                materialized_data_root=materialized_root,
+                materialized_role_root=role_root,
+                allowed_materialized_role_roots=(train_role, val_role),
+                evidence_path=tmp_path / "binding" / f"{role}.parquet",
+            )
+        )
+
+    assert [revalidate_materialized_dataset_binding(binding)["status"] for binding in bindings] == ["PASS", "PASS"]
+
+
+def test_materialized_role_root_revalidation_rejects_sibling_class_and_role(tmp_path: Path):
+    fixture = _role_root_binding_fixture(tmp_path)
+    binding = validate_materialized_dataset_bytes(
+        fixture["dataset"],
+        fixture["content"],
+        role="train",
+        dataset_root=fixture["canonical_root"],
+        materialized_data_root=fixture["materialized_root"],
+        materialized_role_root=fixture["role_root"],
+        allowed_materialized_role_roots=(fixture["role_root"],),
+        evidence_path=tmp_path / "binding" / "train.parquet",
+    )
+
+    sibling_class = fixture["role_root"] / "injected_class" / "extra.png"
+    sibling_class.parent.mkdir()
+    sibling_class.write_bytes(b"extra")
+    with pytest.raises(SctsrError) as caught:
+        revalidate_materialized_dataset_binding(binding)
+    assert caught.value.code is ErrorCode.DATASET_CONTENT_MISMATCH
+
+    sibling_class.unlink()
+    sibling_class.parent.rmdir()
+    sibling_role = fixture["materialized_root"] / "injected_role"
+    sibling_role.mkdir()
+    with pytest.raises(SctsrError) as caught:
+        revalidate_materialized_dataset_binding(binding)
+    assert caught.value.code is ErrorCode.DATASET_CONTENT_MISMATCH
+
+
+def test_materialized_role_root_checks_every_ancestor_for_reparse_points(tmp_path: Path, monkeypatch):
+    import stage1_sctsr_v4.dataset_adapter as adapter
+
+    fixture = _role_root_binding_fixture(tmp_path)
+    original = adapter._is_symlink_or_reparse
+    poisoned = fixture["role_root"] / "no_target"
+    monkeypatch.setattr(
+        adapter,
+        "_is_symlink_or_reparse",
+        lambda path: Path(path) == poisoned or original(Path(path)),
+    )
+
+    with pytest.raises(SctsrError) as caught:
+        validate_materialized_dataset_bytes(
+            fixture["dataset"],
+            fixture["content"],
+            role="train",
+            dataset_root=fixture["canonical_root"],
+            materialized_data_root=fixture["materialized_root"],
+            materialized_role_root=fixture["role_root"],
+            allowed_materialized_role_roots=(fixture["role_root"],),
+            evidence_path=tmp_path / "binding" / "train.parquet",
+        )
+    assert caught.value.code is ErrorCode.DATASET_CONTENT_MISMATCH

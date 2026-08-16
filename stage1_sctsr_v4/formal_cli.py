@@ -721,12 +721,15 @@ def validate_prepared_trainer_datasets(
             expected={"rows": len(expected), "role": "val_model/study"},
         )
     content = load_registered_dataset_content_map(registry=registry, repository_root=repository_root)
+    allowed_materialized_role_roots = (dataset_root / "train", dataset_root / "val")
     train_content_binding = validate_materialized_dataset_bytes(
         train_dataset,
         content,
         role="train",
         dataset_root=canonical_dataset_root,
         materialized_data_root=dataset_root,
+        materialized_role_root=dataset_root / "train",
+        allowed_materialized_role_roots=allowed_materialized_role_roots,
         evidence_path=evidence_root / "train_materialized_files.parquet",
     )
     val_content_binding = validate_materialized_dataset_bytes(
@@ -735,6 +738,8 @@ def validate_prepared_trainer_datasets(
         role="val_model",
         dataset_root=canonical_dataset_root,
         materialized_data_root=dataset_root,
+        materialized_role_root=dataset_root / "val",
+        allowed_materialized_role_roots=allowed_materialized_role_roots,
         evidence_path=evidence_root / "val_model_materialized_files.parquet",
     )
     return {
