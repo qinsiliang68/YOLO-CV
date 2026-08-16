@@ -6,9 +6,11 @@ import json
 import threading
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timezone
+from pathlib import Path
 
 import pytest
 
+import stage1_sctsr_v4.formal_execution as formal_execution
 from stage1_sctsr_v4.errors import ErrorCode, SctsrError
 from stage1_sctsr_v4.formal_execution import (
     CLAIM_REGISTRY_SCHEMA,
@@ -738,3 +740,74 @@ def test_training_exception_can_mark_active_attempt_failed_idempotently(tmp_path
 
     assert first == second
     assert first["status"] == "FAILED"
+
+
+@pytest.mark.parametrize("runner_role", ["COMMON_PARENT", "BRANCH"])
+@pytest.mark.parametrize("failure_stage", ["resume_preparation", "trainer_setup", "finalization_context"])
+def test_claimed_runner_phase_failure_terminalizes_and_allows_immediate_resume(
+    tmp_path,
+    runner_role,
+    failure_stage,
+):
+    release, trust, bindings = _release()
+    claim_root, registry = _claim_registry(tmp_path)
+    start_job = _job(tmp_path, logical_run_id=f"{runner_role}_FAILURE")
+    start_path = tmp_path / f"{runner_role}_{failure_stage}_START.json"
+    atomic_write_json(
+        start_path,
+        _token(
+            release,
+            registry,
+            start_job,
+            execution_id=f"EXEC_{runner_role}_{failure_stage}_START",
+            expires_at_utc="2026-08-14T23:00:00Z",
+        ),
+    )
+    common = {
+        "claim_registry_root": claim_root,
+        "release": release,
+        "release_trust_policy": trust,
+        "expected_release_bindings": bindings,
+        "release_manifest_sha256": stable_digest(release),
+        "verification_secret": SECRET,
+    }
+    claim = claim_formal_execution(start_path, expected_job_bindings=start_job, now_utc=NOW, **common)
+    original = RuntimeError(f"{runner_role}:{failure_stage}")
+
+    with pytest.raises(RuntimeError, match=failure_stage) as caught:
+        formal_execution.execute_claimed_phase(
+            claim,
+            expected_job_bindings=start_job,
+            operation=lambda: (_ for _ in ()).throw(original),
+            now_utc=NOW,
+        )
+
+    assert caught.value is original
+    heartbeat_path = claim_root / "claims" / f'{claim["logical_job_digest"]}.heartbeat.json'
+    heartbeat = json.loads(heartbeat_path.read_text(encoding="utf-8"))
+    assert heartbeat["status"] == "FAILED"
+    assert heartbeat["logical_job_digest"] == claim["logical_job_digest"]
+    terminal_path = Path(heartbeat["terminal_receipt_path"])
+    assert terminal_path.is_file()
+    assert hashlib.sha256(terminal_path.read_bytes()).hexdigest().upper() == heartbeat["terminal_receipt_sha256"]
+
+    resume_job = {
+        **start_job,
+        "action": "RESUME",
+        "resume_checkpoint_sha256": "3" * 64,
+        "resume_from_receipt_digest": "4" * 64,
+    }
+    resume_path = tmp_path / f"{runner_role}_{failure_stage}_RESUME.json"
+    atomic_write_json(
+        resume_path,
+        _token(
+            release,
+            registry,
+            resume_job,
+            execution_id=f"EXEC_{runner_role}_{failure_stage}_RESUME",
+            expires_at_utc="2026-08-14T23:00:00Z",
+        ),
+    )
+    resumed = claim_formal_execution(resume_path, expected_job_bindings=resume_job, now_utc=NOW, **common)
+    assert resumed["logical_job_digest"] == claim["logical_job_digest"]
+    assert resumed["fence_generation"] == claim["fence_generation"] + 1

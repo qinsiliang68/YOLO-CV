@@ -293,6 +293,40 @@ def test_formal_runner_claims_logical_job_before_mutating_resume_state(script_na
     assert preview_call < claim_call < mutate_call
 
 
+@pytest.mark.parametrize(
+    ("script_name", "required_after_claim"),
+    [
+        (
+            "run_common_parent.py",
+            ("prepare_formal_resume_context(", "build_prepared_trainer(", "run_prepared_common_parent("),
+        ),
+        (
+            "run_branch.py",
+            (
+                "prepare_formal_resume_context(",
+                "build_prepared_trainer(",
+                "run_prepared_branch(",
+                'result.pop("_finalization_context")',
+                "execute_fenced_finalization(",
+            ),
+        ),
+    ],
+)
+def test_formal_runner_wraps_every_post_claim_stage_in_terminalizing_phase(
+    script_name,
+    required_after_claim,
+    repository_root,
+):
+    source = (repository_root / "scripts" / "stage1_sctsr_v4" / script_name).read_text(encoding="utf-8")
+    claim_call = source.index("execution_claim = claim_formal_execution(")
+    phase_definition = source.index("def execute_claimed_runner_phase():", claim_call)
+    phase_call = source.index("return execute_claimed_phase(", phase_definition)
+
+    assert claim_call < phase_definition < phase_call
+    for snippet in required_after_claim:
+        assert phase_definition < source.index(snippet, phase_definition) < phase_call
+
+
 def test_formal_resume_rejects_checkpoint_rng_not_bound_by_epoch_summary(tmp_path):
     root = tmp_path / "run"
     _, start_generation = _build_completed_epoch(root, summary_rng_digest="9" * 64)

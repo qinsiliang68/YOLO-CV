@@ -8,7 +8,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from stage1_sctsr_v4.cli_support import add_execution_arguments, add_output_argument, require_receipt_outside_artifact_root, run_cli
 from stage1_sctsr_v4.errors import ErrorCode, SctsrError
-from stage1_sctsr_v4.formal_execution import build_execution_job_bindings, claim_formal_execution, mark_execution_failed
+from stage1_sctsr_v4.formal_execution import build_execution_job_bindings, claim_formal_execution, execute_claimed_phase
 from stage1_sctsr_v4.formal_cli import build_prepared_trainer, load_formal_identity, prepare_formal_authorization
 from stage1_sctsr_v4.formal_training import run_prepared_common_parent
 from stage1_sctsr_v4.recovery import inspect_formal_resume_context, prepare_formal_resume_context
@@ -171,26 +171,28 @@ def main() -> int:
             release_manifest_sha256=authorization["release_manifest_sha256"],
             expected_job_bindings=execution_job,
         )
-        if resume_kwargs is not None:
-            resume_context = prepare_formal_resume_context(**resume_kwargs)
-            if (
-                resume_context.checkpoint_sha256 != resume_preview.checkpoint_sha256
-                or resume_context.receipt_chain_digest != resume_preview.receipt_chain_digest
-                or resume_context.resume_epoch != resume_preview.resume_epoch
-            ):
-                raise SctsrError(
-                    ErrorCode.RESUME_GENERATION_MISMATCH,
-                    "Resume state changed between read-only inspection and fenced preparation",
-                )
-        trainer, binding, trainer_binding = build_prepared_trainer(
-            repository_root=arguments.repository_root,
-            identity_manifest=arguments.identity_manifest,
-            trainer_overrides_path=arguments.trainer_overrides,
-            identity=identity,
-            output_root=trainer_setup_root,
-            asset_registry_path=arguments.asset_registry,
-        )
-        try:
+
+        def execute_claimed_runner_phase():
+            claimed_resume_context = resume_context
+            if resume_kwargs is not None:
+                claimed_resume_context = prepare_formal_resume_context(**resume_kwargs)
+                if (
+                    claimed_resume_context.checkpoint_sha256 != resume_preview.checkpoint_sha256
+                    or claimed_resume_context.receipt_chain_digest != resume_preview.receipt_chain_digest
+                    or claimed_resume_context.resume_epoch != resume_preview.resume_epoch
+                ):
+                    raise SctsrError(
+                        ErrorCode.RESUME_GENERATION_MISMATCH,
+                        "Resume state changed between read-only inspection and fenced preparation",
+                    )
+            trainer, binding, trainer_binding = build_prepared_trainer(
+                repository_root=arguments.repository_root,
+                identity_manifest=arguments.identity_manifest,
+                trainer_overrides_path=arguments.trainer_overrides,
+                identity=identity,
+                output_root=trainer_setup_root,
+                asset_registry_path=arguments.asset_registry,
+            )
             result = run_prepared_common_parent(
                 trainer=trainer,
                 identity=identity,
@@ -202,21 +204,24 @@ def main() -> int:
                 formal_input_binding=authorization["formal_input_binding"],
                 execution_claim_binding=execution_claim,
                 run_intent_binding=run_intent_binding,
-                resume_context=resume_context,
+                resume_context=claimed_resume_context,
                 execution_mode="formal",
             )
-        except BaseException as exc:
-            mark_execution_failed(execution_claim, expected_job_bindings=execution_job, error=exc)
-            raise
-        return {
-            **result,
-            "upstream_binding_digest": binding.binding_digest,
-            "prepared_trainer_binding": trainer_binding,
-            "formal_authorization": authorization,
-            "execution_claim": execution_claim,
-            "run_intent_binding": run_intent_binding,
-            "resume_context": None if resume_context is None else resume_context.as_dict(),
-        }
+            return {
+                **result,
+                "upstream_binding_digest": binding.binding_digest,
+                "prepared_trainer_binding": trainer_binding,
+                "formal_authorization": authorization,
+                "execution_claim": execution_claim,
+                "run_intent_binding": run_intent_binding,
+                "resume_context": None if claimed_resume_context is None else claimed_resume_context.as_dict(),
+            }
+
+        return execute_claimed_phase(
+            execution_claim,
+            expected_job_bindings=execution_job,
+            operation=execute_claimed_runner_phase,
+        )
 
     return run_cli("run_common_parent", arguments.output, action)
 

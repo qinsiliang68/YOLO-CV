@@ -1296,6 +1296,42 @@ def mark_execution_failed(
         )
 
 
+def execute_claimed_phase(
+    binding: Mapping[str, Any],
+    *,
+    expected_job_bindings: Mapping[str, Any],
+    operation: Callable[[], Any],
+    now_utc: datetime | None = None,
+) -> Any:
+    """Terminalize every exception after a logical job has been claimed.
+
+    Runners must enter this helper immediately after ``claim_formal_execution``
+    succeeds.  Resume preparation, trainer construction, training, result
+    extraction, and fenced finalization therefore share one fail-closed error
+    boundary.  ``mark_execution_failed`` is intentionally idempotent when an
+    inner fenced finalizer already wrote FAILED.
+
+    If a stale or already-complete fence prevents terminalization, preserve the
+    original exception as the raised value and attach the fencing failure as
+    its cause.  This prevents an error-reporting failure from hiding the actual
+    setup/training failure while still refusing to mutate a newer generation.
+    """
+
+    try:
+        return operation()
+    except BaseException as exc:
+        try:
+            mark_execution_failed(
+                binding,
+                expected_job_bindings=expected_job_bindings,
+                error=exc,
+                now_utc=now_utc,
+            )
+        except BaseException as terminalization_error:
+            raise exc.with_traceback(exc.__traceback__) from terminalization_error
+        raise
+
+
 def publish_execution_claim_snapshot(
     run_root: str | Path,
     binding: Mapping[str, Any],
