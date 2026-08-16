@@ -1,0 +1,47 @@
+{
+  "schema_version": "stage1.sctsr.training_machine_rereview_evidence_index.v1",
+  "status": "PASS",
+  "review_date": "2026-08-16",
+  "source_commit": "1f0f12827dc6f79e107459fcb3135b99eaaa1423",
+  "source_archive": {
+    "bytes": 1885693,
+    "sha256": "EEABEF90AC3AF924DB23C49ED7E828109939BCE37F602ACC0D2486BBB93D056A"
+  },
+  "training_machine": {
+    "physical_id": "physical64",
+    "host": "DESKTOP-DGQTJ9O",
+    "address": "192.168.100.9",
+    "gpu": "NVIDIA GeForce RTX 3090",
+    "gpu_uuid": "GPU-396ff5c3-1c32-1614-80fe-f2822833da4b"
+  },
+  "files": [
+    {
+      "path": "TRAINING_MACHINE_ENGINEERING_CANARY_RECEIPT.json",
+      "bytes": 9563,
+      "sha256": "2DF902B61ACBC0E621153A8C159A228D5911E65D414653F2905ACBB17484ADE8"
+    },
+    {
+      "path": "ENGINEERING_CANARY_REPORT.json",
+      "bytes": 9221,
+      "sha256": "4782692C7F47927A7AFAE2FDDEA4BF7562D2F4A63EE02C4B487098B280ED5F27"
+    },
+    {
+      "path": "ENGINEERING_CANARY_ARTIFACT_MANIFEST.json",
+      "bytes": 2980,
+      "sha256": "83DA12A29D650ACF0F4D0BFB56CF2ED1751A5211A474B44F8E2D477305C71462"
+    }
+  ],
+  "artifact_manifest_verification": {
+    "registered_file_count": 15,
+    "matching_bytes_and_sha256": 15,
+    "extra_files": 0,
+    "missing_files": 0,
+    "manifest_digest": "4BDE30A609A7C3C897F64BEE588C11CEC844E9F875BACF5285E684708563F321"
+  },
+  "large_artifacts_collected_to_git": false,
+  "large_artifact_location": "D:/ssh/AI/artifacts/sctsr_rereview_1f0f128_canary_20260816",
+  "formal_training_started": false,
+  "test_accessed": false,
+  "blind_holdout_opened": false,
+  "method_effectiveness_claimed": false
+}
