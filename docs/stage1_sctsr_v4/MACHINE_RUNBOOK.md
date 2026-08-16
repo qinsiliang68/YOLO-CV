@@ -74,6 +74,12 @@ RESUME_RECEIPT_DIGEST=<full 64 hex; START uses 64 zeroes>
 同一物理文件；同名同标签同 SHA 的独立 copy 也不接受。classification view 中出现
 额外 class、额外图片、symlink、junction、缺失 link 或训练期间 inode 漂移时立即停止。
 
+正式 loader 的目录合同是 `materialized_dataset_binding.v4`：classification view 顶层
+只允许冻结的 `train/` 与 `val/` role roots；每个 role root 内只允许 loader 选中物理
+文件及这些文件到 role root 的祖先目录闭包。setup 和终态重验都先以不跟随链接的方式
+检查每一级祖先的 symlink/junction/reparse attribute，再核对 exact tree。任何 sibling
+class、sibling role、嵌套额外目录或 unsupported filesystem entry 都失败，不能自动忽略。
+
 ## 3. 只读环境预检
 
 ```powershell
@@ -259,6 +265,12 @@ NR 没有 identity pool；单 pool arm 传一次；T→R2 传 T 和 R2 各一次
 - 旧 START token 不可用于 resume；
 - 同 token/nonce 不可再 claim；
 - 手工把 `.inprogress` 改名成 `.complete` 永久作废。
+
+claim 成功后，resume preparation、trainer setup、training、branch finalization context
+提取和 fenced finalization 全部处于同一个 terminalization boundary。任一阶段抛出异常，
+当前 fence 必须立即写 `FAILED` heartbeat 和 hash-bound terminal receipt；只有随后签发的
+合法 RESUME token 才能以 `fence_generation + 1` 接管，不能等待 lease 自然过期或手工改
+claim registry。
 
 RESUME 命令参数与 START 相同，另加：
 
