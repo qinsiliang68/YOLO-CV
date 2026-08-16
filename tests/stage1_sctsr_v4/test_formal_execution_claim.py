@@ -2,7 +2,9 @@ from __future__ import annotations
 
 import hashlib
 import hmac
+import importlib.util
 import json
+import sys
 import threading
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timezone
@@ -10,7 +12,6 @@ from pathlib import Path
 
 import pytest
 
-import stage1_sctsr_v4.formal_execution as formal_execution
 from stage1_sctsr_v4.errors import ErrorCode, SctsrError
 from stage1_sctsr_v4.formal_execution import (
     CLAIM_REGISTRY_SCHEMA,
@@ -742,13 +743,33 @@ def test_training_exception_can_mark_active_attempt_failed_idempotently(tmp_path
     assert first["status"] == "FAILED"
 
 
-@pytest.mark.parametrize("runner_role", ["COMMON_PARENT", "BRANCH"])
-@pytest.mark.parametrize("failure_stage", ["resume_preparation", "trainer_setup", "finalization_context"])
+@pytest.mark.parametrize(
+    ("runner_role", "script_name", "failure_stage"),
+    [
+        ("COMMON_PARENT", "run_common_parent.py", "resume_preparation"),
+        ("COMMON_PARENT", "run_common_parent.py", "trainer_setup"),
+        ("BRANCH", "run_branch.py", "resume_preparation"),
+        ("BRANCH", "run_branch.py", "trainer_setup"),
+        ("BRANCH", "run_branch.py", "finalization_context"),
+    ],
+)
 def test_claimed_runner_phase_failure_terminalizes_and_allows_immediate_resume(
     tmp_path,
+    repository_root,
     runner_role,
+    script_name,
     failure_stage,
 ):
+    module_name = f"sctsr_runner_{runner_role.casefold()}_{failure_stage}"
+    spec = importlib.util.spec_from_file_location(
+        module_name,
+        repository_root / "scripts" / "stage1_sctsr_v4" / script_name,
+    )
+    assert spec is not None and spec.loader is not None
+    runner_module = importlib.util.module_from_spec(spec)
+    sys.modules[module_name] = runner_module
+    spec.loader.exec_module(runner_module)
+
     release, trust, bindings = _release()
     claim_root, registry = _claim_registry(tmp_path)
     start_job = _job(tmp_path, logical_run_id=f"{runner_role}_FAILURE")
@@ -775,8 +796,8 @@ def test_claimed_runner_phase_failure_terminalizes_and_allows_immediate_resume(
     original = RuntimeError(f"{runner_role}:{failure_stage}")
 
     with pytest.raises(RuntimeError, match=failure_stage) as caught:
-        formal_execution.execute_claimed_phase(
-            claim,
+        runner_module.execute_claimed_runner_phase(
+            execution_claim=claim,
             expected_job_bindings=start_job,
             operation=lambda: (_ for _ in ()).throw(original),
             now_utc=NOW,

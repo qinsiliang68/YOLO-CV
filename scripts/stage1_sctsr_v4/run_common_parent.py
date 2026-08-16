@@ -17,6 +17,23 @@ from stage1_sctsr_v4.serialization import load_json, stable_digest
 from stage1_sctsr_v4.synthetic_execution import run_synthetic_common_parent
 
 
+def execute_claimed_runner_phase(
+    *,
+    execution_claim,
+    expected_job_bindings,
+    operation,
+    now_utc=None,
+):
+    """Expose the runner's post-claim terminalization boundary for fault injection."""
+
+    return execute_claimed_phase(
+        execution_claim,
+        expected_job_bindings=expected_job_bindings,
+        operation=operation,
+        now_utc=now_utc,
+    )
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="Run the E1-E120 SCTSR common parent")
     parser.add_argument("--repository-root", type=Path, required=True)
@@ -172,7 +189,7 @@ def main() -> int:
             expected_job_bindings=execution_job,
         )
 
-        def execute_claimed_runner_phase():
+        def operation_after_claim():
             claimed_resume_context = resume_context
             if resume_kwargs is not None:
                 claimed_resume_context = prepare_formal_resume_context(**resume_kwargs)
@@ -217,10 +234,10 @@ def main() -> int:
                 "resume_context": None if claimed_resume_context is None else claimed_resume_context.as_dict(),
             }
 
-        return execute_claimed_phase(
-            execution_claim,
+        return execute_claimed_runner_phase(
+            execution_claim=execution_claim,
             expected_job_bindings=execution_job,
-            operation=execute_claimed_runner_phase,
+            operation=operation_after_claim,
         )
 
     return run_cli("run_common_parent", arguments.output, action)

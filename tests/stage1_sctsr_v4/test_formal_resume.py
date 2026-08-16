@@ -319,8 +319,8 @@ def test_formal_runner_wraps_every_post_claim_stage_in_terminalizing_phase(
 ):
     source = (repository_root / "scripts" / "stage1_sctsr_v4" / script_name).read_text(encoding="utf-8")
     claim_call = source.index("execution_claim = claim_formal_execution(")
-    phase_definition = source.index("def execute_claimed_runner_phase():", claim_call)
-    phase_call = source.index("return execute_claimed_phase(", phase_definition)
+    phase_definition = source.index("def operation_after_claim():", claim_call)
+    phase_call = source.index("return execute_claimed_runner_phase(", phase_definition)
 
     assert claim_call < phase_definition < phase_call
     for snippet in required_after_claim:
