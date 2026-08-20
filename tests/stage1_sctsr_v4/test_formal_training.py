@@ -6,7 +6,14 @@ import torch
 
 from stage1_sctsr_v4.branch_lineage import BranchLineage
 from stage1_sctsr_v4.fixed_step_runtime import ExponentialMovingAverage
-from stage1_sctsr_v4.formal_training import FormalIdentity, run_prepared_branch, run_prepared_common_parent
+from stage1_sctsr_v4.formal_training import (
+    FORMAL_AMP_GROWTH_INTERVAL,
+    FORMAL_AMP_INITIAL_SCALE,
+    FormalIdentity,
+    _lock_formal_amp_scaler_growth,
+    run_prepared_branch,
+    run_prepared_common_parent,
+)
 from stage1_sctsr_v4.identity_pool import IdentityRecord, identity_digest
 from stage1_sctsr_v4.schedule import build_schedule
 from stage1_sctsr_v4.arm_spec import ArmId
@@ -29,6 +36,22 @@ class FakeTrainer:
         self.scaler = FakeScaler()
         self.ema = ExponentialMovingAverage.from_model(self.model)
         self.train_loader = SimpleNamespace(sampler=SimpleNamespace(set_epoch=lambda _epoch: None))
+
+
+def test_formal_amp_scaler_cannot_grow_into_a_late_skipped_optimizer_step():
+    scaler = torch.amp.GradScaler(
+        "cpu",
+        enabled=True,
+        init_scale=FORMAL_AMP_INITIAL_SCALE,
+        growth_interval=2,
+    )
+    trainer = SimpleNamespace(amp=True, scaler=scaler)
+
+    _lock_formal_amp_scaler_growth(trainer)
+
+    state = scaler.state_dict()
+    assert state["scale"] == FORMAL_AMP_INITIAL_SCALE
+    assert state["growth_interval"] == FORMAL_AMP_GROWTH_INTERVAL
 
 
 def _identity(seed=7):

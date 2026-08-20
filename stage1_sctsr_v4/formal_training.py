@@ -39,6 +39,59 @@ CANONICAL_BATCH_SIZE = 128
 CANONICAL_BASE_DENOMINATOR = 120_000
 CANONICAL_BASE_STEPS = 938
 KEEP_CHECKPOINTS = {120, 140, 150, 160, 180, 200}
+FORMAL_AMP_INITIAL_SCALE = 65_536.0
+FORMAL_AMP_GROWTH_INTERVAL = 1_000_000_000
+
+
+def _lock_formal_amp_scaler_growth(trainer: Any) -> None:
+    """Keep the formal AMP scale at its frozen, known-good initial value.
+
+    Dynamic scale growth can make an otherwise stable long run skip a later
+    optimizer update.  A skipped update invalidates the fixed 938-update epoch,
+    and restoring the previous epoch also restores the scale that deterministically
+    causes the same skip.  Formal runs therefore retain the prepared trainer's
+    initial scale and disable growth for the bounded E1-E200 trajectory.  Backoff
+    remains enabled so any genuine overflow still fails closed in the overlay.
+    """
+
+    if not bool(getattr(trainer, "amp", False)):
+        return
+    scaler = getattr(trainer, "scaler", None)
+    if (
+        scaler is None
+        or not callable(getattr(scaler, "state_dict", None))
+        or not callable(getattr(scaler, "load_state_dict", None))
+    ):
+        raise SctsrError(ErrorCode.UPSTREAM_BINDING_FAILED, "Formal AMP trainer has no stateful GradScaler")
+    if callable(getattr(scaler, "is_enabled", None)) and not bool(scaler.is_enabled()):
+        raise SctsrError(ErrorCode.UPSTREAM_BINDING_FAILED, "Formal AMP trainer has a disabled GradScaler")
+    state = dict(scaler.state_dict())
+    required = {"scale", "growth_factor", "backoff_factor", "growth_interval", "_growth_tracker"}
+    if not required.issubset(state):
+        raise SctsrError(
+            ErrorCode.UPSTREAM_BINDING_FAILED,
+            "Formal AMP GradScaler state is incomplete",
+            observed=sorted(state),
+            expected=sorted(required),
+        )
+    if float(state["scale"]) != FORMAL_AMP_INITIAL_SCALE:
+        raise SctsrError(
+            ErrorCode.CONFIGURATION_MISMATCH,
+            "Formal AMP GradScaler must start and resume at the frozen stable scale",
+            failing_field="scaler_state.scale",
+            observed=float(state["scale"]),
+            expected=FORMAL_AMP_INITIAL_SCALE,
+        )
+    state["growth_interval"] = FORMAL_AMP_GROWTH_INTERVAL
+    scaler.load_state_dict(state)
+    verified = dict(scaler.state_dict())
+    if int(verified.get("growth_interval", -1)) != FORMAL_AMP_GROWTH_INTERVAL:
+        raise SctsrError(
+            ErrorCode.UPSTREAM_BINDING_FAILED,
+            "Formal AMP GradScaler rejected the frozen growth interval",
+            observed=verified.get("growth_interval"),
+            expected=FORMAL_AMP_GROWTH_INTERVAL,
+        )
 
 
 def publish_formal_input_snapshot(
@@ -1066,6 +1119,8 @@ def run_prepared_common_parent(
             original_binding=original_trainer_binding,
             resume_binding=dict(prepared_trainer_binding or {}),
         )
+    if execution_mode == "formal":
+        _lock_formal_amp_scaler_growth(trainer)
     execution_claim_snapshot = (
         publish_execution_claim_snapshot(root, dict(execution_claim_binding), expected_job_bindings=execution_job)
         if execution_mode == "formal"
@@ -1365,6 +1420,8 @@ def run_prepared_branch(
             original_binding=original_trainer_binding,
             resume_binding=dict(prepared_trainer_binding or {}),
         )
+    if execution_mode == "formal":
+        _lock_formal_amp_scaler_growth(trainer)
     execution_claim_snapshot = (
         publish_execution_claim_snapshot(root, dict(execution_claim_binding), expected_job_bindings=execution_job)
         if execution_mode == "formal"
