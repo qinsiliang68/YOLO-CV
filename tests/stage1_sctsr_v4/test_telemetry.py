@@ -20,6 +20,24 @@ def test_bad_cadence_rejected(tmp_path):
     with pytest.raises(SctsrError):validate_telemetry_for_closeout(rows)
 
 
+def test_sample_timestamp_is_provider_acquisition_start(tmp_path, monkeypatch):
+    clock=[100.0]
+
+    def slow_gpu_probe():
+        clock[0]+=0.7
+        return None,"NVIDIA_SMI_TIMEOUT"
+
+    monkeypatch.setattr(telemetry_module.time,"monotonic",lambda:clock[0])
+    monkeypatch.setattr(telemetry_module,"_nvidia_smi",slow_gpu_probe)
+    row=sample_telemetry(
+        run_id='r',arm_id='NR',training_seed=1,epoch=1,
+        run_path=tmp_path,artifact_path=tmp_path,
+    )
+
+    assert row.monotonic_seconds==pytest.approx(100.0)
+    assert clock[0]==pytest.approx(100.7)
+
+
 def test_sampler_reanchors_after_slow_first_provider_sample(tmp_path, monkeypatch):
     base=sample_telemetry(run_id='r',arm_id='NR',training_seed=1,epoch=1,run_path=tmp_path,artifact_path=tmp_path)
     clock=[100.0]

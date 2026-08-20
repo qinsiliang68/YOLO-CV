@@ -129,6 +129,12 @@ def sample_telemetry(
     row_generation: int = 1,
     process_pid: int | None = None,
 ) -> TelemetryRow:
+    # Timestamp the acquisition boundary, not the completion of the slowest
+    # provider.  In particular, nvidia-smi can take hundreds of milliseconds
+    # on Windows; recording its completion time turns provider latency into a
+    # false cadence gap even when the sampler started exactly on schedule.
+    sample_started_at_utc = datetime.now(timezone.utc).isoformat()
+    sample_started_monotonic = time.monotonic()
     pid = int(process_pid or os.getpid())
     process_errors: list[str] = []
     system_errors: list[str] = []
@@ -210,8 +216,8 @@ def sample_telemetry(
             provider_errors.append(f"{provider}:{reason}")
 
     return TelemetryRow(
-        timestamp_utc=datetime.now(timezone.utc).isoformat(),
-        monotonic_seconds=time.monotonic(),
+        timestamp_utc=sample_started_at_utc,
+        monotonic_seconds=sample_started_monotonic,
         run_id=run_id,
         arm_id=arm_id,
         training_seed=training_seed,
