@@ -314,6 +314,38 @@ _RESUME_STABLE_TRAINER_BINDING_FIELDS = (
 )
 
 
+def _resume_stable_trainer_binding_value(field: str, value: Any) -> Any:
+    """Remove only location-derived fields from a resume identity comparison.
+
+    A freshly prepared resume trainer writes its row-level dataset evidence
+    below the immutable resume setup root.  That location must differ from the
+    original trainer root, while the evidence bytes and all scientific dataset
+    fields must remain identical.  The materialized binding digest also
+    changes because it signs the evidence path, so compare the underlying
+    identity after independently validating each binding's signed ledger.
+    """
+
+    if field != "dataset_binding" or not isinstance(value, Mapping):
+        return value
+    normalized = dict(value)
+    for binding_field in (
+        "train_materialized_content_binding",
+        "val_model_materialized_content_binding",
+    ):
+        binding = normalized.get(binding_field)
+        if not isinstance(binding, Mapping):
+            continue
+        stable_binding = dict(binding)
+        stable_binding.pop("binding_digest", None)
+        evidence = stable_binding.get("evidence")
+        if isinstance(evidence, Mapping):
+            stable_evidence = dict(evidence)
+            stable_evidence.pop("path", None)
+            stable_binding["evidence"] = stable_evidence
+        normalized[binding_field] = stable_binding
+    return normalized
+
+
 def _validate_resume_root_and_bindings(
     *,
     output_root: str | Path,
@@ -374,7 +406,8 @@ def _validate_resume_root_and_bindings(
     mismatch = {
         field: {"original": original_binding.get(field), "resume": prepared_trainer_binding.get(field)}
         for field in _RESUME_STABLE_TRAINER_BINDING_FIELDS
-        if original_binding.get(field) != prepared_trainer_binding.get(field)
+        if _resume_stable_trainer_binding_value(field, original_binding.get(field))
+        != _resume_stable_trainer_binding_value(field, prepared_trainer_binding.get(field))
     }
     if mismatch:
         raise SctsrError(
