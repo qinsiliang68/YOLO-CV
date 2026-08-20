@@ -20,14 +20,14 @@ def _trainer(tmp_path, *, head_outputs=2, model_names=None, class_to_idx=None):
         for name in CLASSES:
             (root / name).mkdir(parents=True)
     mapping = CLASS_TO_IDX if class_to_idx is None else class_to_idx
+    train_image_folder = SimpleNamespace(classes=CLASSES, class_to_idx=mapping)
+    val_image_folder = SimpleNamespace(classes=CLASSES, class_to_idx=mapping)
     train_dataset = SimpleNamespace(
-        classes=CLASSES,
-        class_to_idx=mapping,
+        base=train_image_folder,
         samples=[(str(train_root / "no_target" / "a.png"), 0), (str(train_root / "target_defect" / "b.png"), 1)],
     )
     val_dataset = SimpleNamespace(
-        classes=CLASSES,
-        class_to_idx=mapping,
+        base=val_image_folder,
         samples=[(str(val_root / "no_target" / "c.png"), 0), (str(val_root / "target_defect" / "d.png"), 1)],
     )
     model = torch.nn.Sequential(torch.nn.Linear(4, head_outputs))
@@ -45,6 +45,17 @@ def test_binary_contract_accepts_exact_two_class_training_system(tmp_path):
     assert report["status"] == "PASS"
     assert report["class_counts"]["train"] == {"0": 1, "1": 1}
     assert len(report["binary_contract_digest"]) == 64
+
+
+def test_binary_contract_reads_frozen_imagefolder_identity_not_dataset_top_level(tmp_path):
+    trainer = _trainer(tmp_path)
+    trainer.train_loader.dataset.classes = ["spoofed"]
+    trainer.train_loader.dataset.class_to_idx = {"spoofed": 0}
+
+    report = validate_binary_classification_contract(trainer, tmp_path)
+
+    assert report["datasets"]["train"]["classes"] == CLASSES
+    assert report["datasets"]["train"]["class_to_idx"] == CLASS_TO_IDX
 
 
 @pytest.mark.parametrize("mutation", ["extra_dir", "swapped_index", "wrong_names", "three_output_head"])

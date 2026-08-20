@@ -804,8 +804,13 @@ def validate_binary_classification_contract(trainer: Any, data_root: str | Path)
     class_counts: dict[str, dict[str, int]] = {}
     dataset_identities: dict[str, Any] = {}
     for role, dataset in datasets.items():
-        classes = list(getattr(dataset, "classes", []))
-        class_to_idx = dict(getattr(dataset, "class_to_idx", {}))
+        # Frozen Ultralytics ClassificationDataset wraps torchvision ImageFolder
+        # as ``dataset.base``.  The SCTSR train/val wrappers delegate that
+        # attribute to the upstream dataset, while keeping their effective
+        # (possibly filtered) sample lists at the wrapper level.
+        image_folder = getattr(dataset, "base", None)
+        classes = list(getattr(image_folder, "classes", []))
+        class_to_idx = dict(getattr(image_folder, "class_to_idx", {}))
         samples = getattr(dataset, "samples", None)
         if classes != expected_classes or class_to_idx != expected_class_to_idx or not isinstance(samples, (list, tuple)):
             raise SctsrError(
