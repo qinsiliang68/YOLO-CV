@@ -346,15 +346,28 @@ class TelemetrySampler:
         self._thread: threading.Thread | None = None
 
     def _run(self) -> None:
-        target = time.monotonic()
+        # Anchor the cadence to the first completed sample.  Some providers
+        # (notably the first nvidia-smi probe on Windows) can take longer than
+        # one second to warm up.  Anchoring before that call leaves ``target``
+        # in the past and the old loop immediately emitted a catch-up sample,
+        # creating a sub-second interval that closeout correctly rejected.
+        # Re-anchor after any missed target so telemetry never catches up by
+        # producing an artificial burst of closely spaced rows.
+        target: float | None = None
         while not self._stop.is_set():
             try:
-                self.rows.append(self.sample_function(**self.kwargs))
+                row = self.sample_function(**self.kwargs)
+                self.rows.append(row)
             except BaseException as exc:
                 self.errors.append(exc)
                 self._stop.set()
                 return
-            target += self.cadence_seconds
+            if target is None:
+                target = row.monotonic_seconds + self.cadence_seconds
+            else:
+                target += self.cadence_seconds
+                if target <= row.monotonic_seconds:
+                    target = row.monotonic_seconds + self.cadence_seconds
             self._stop.wait(max(0.0, target - time.monotonic()))
 
     def start(self) -> "TelemetrySampler":

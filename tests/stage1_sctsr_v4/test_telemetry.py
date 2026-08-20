@@ -1,7 +1,8 @@
 from dataclasses import replace
 import pytest
+import stage1_sctsr_v4.telemetry as telemetry_module
 from stage1_sctsr_v4.errors import ErrorCode,SctsrError
-from stage1_sctsr_v4.telemetry import sample_telemetry,validate_telemetry_for_closeout
+from stage1_sctsr_v4.telemetry import TelemetrySampler,sample_telemetry,validate_telemetry_for_closeout
 
 def test_real_process_and_disk_telemetry(tmp_path):
     r=sample_telemetry(run_id='r',arm_id='NR',training_seed=1,epoch=1,run_path=tmp_path,artifact_path=tmp_path)
@@ -17,3 +18,39 @@ def test_bad_cadence_rejected(tmp_path):
     r=sample_telemetry(run_id='r',arm_id='NR',training_seed=1,epoch=1,run_path=tmp_path,artifact_path=tmp_path)
     rows=[r,replace(r,monotonic_seconds=r.monotonic_seconds+1),replace(r,monotonic_seconds=r.monotonic_seconds+3)]
     with pytest.raises(SctsrError):validate_telemetry_for_closeout(rows)
+
+
+def test_sampler_reanchors_after_slow_first_provider_sample(tmp_path, monkeypatch):
+    base=sample_telemetry(run_id='r',arm_id='NR',training_seed=1,epoch=1,run_path=tmp_path,artifact_path=tmp_path)
+    clock=[100.0]
+    durations=iter((1.2,0.328,0.328))
+    calls=[0]
+
+    def fake_sample(**_kwargs):
+        clock[0]+=next(durations)
+        calls[0]+=1
+        return replace(base,monotonic_seconds=clock[0])
+
+    class FakeStop:
+        def is_set(self):
+            return calls[0]>=3
+
+        def set(self):
+            calls[0]=3
+
+        def wait(self,delay):
+            if calls[0]<3:
+                clock[0]+=delay
+            return calls[0]>=3
+
+    monkeypatch.setattr(telemetry_module.time,'monotonic',lambda:clock[0])
+    sampler=TelemetrySampler(
+        run_id='r',arm_id='NR',training_seed=1,epoch=1,
+        run_path=tmp_path,artifact_path=tmp_path,row_generation=1,
+        sample_function=fake_sample,
+    )
+    sampler._stop=FakeStop()
+    sampler._run()
+
+    validate_telemetry_for_closeout(sampler.rows)
+    assert sampler.rows[1].monotonic_seconds-sampler.rows[0].monotonic_seconds==pytest.approx(1.328)
