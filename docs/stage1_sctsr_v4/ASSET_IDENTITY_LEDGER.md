@@ -69,11 +69,11 @@ test/blind manifest 不在 v4 registry 中。
 - path：
   `artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/03_preregistration_v4_sctsr/assets/DATASET_CONTENT_LEDGER_v1.parquet`；
 - rows：384,000；
-- bytes：19,350,859；
+- bytes：19,350,718；
 - SHA-256：
-  `B2B61509AB4451C881FE7E9D0AAFB3F9D3CC0981A78AB9337C54C320E3E96D2C`；
+  `0EA7FBA0CBFCC00B8A77E138EF31C187B3BD722006DFFDB1D15D5A7F3BC3B89C`；
 - content digest：
-  `EDA93977CE43E946D4C795A8FBA30BF39B6AF510034276E739BC51D88DB1DD6E`；
+  `034A19A59D19C3FDE2152843C254E66D932C930C1AA0417692BD7509CBA7AE0E`；
 - physical image bytes represented：82,637,967,451；
 - format：canonical Zstd Parquet；
 - test/blind rows：0。

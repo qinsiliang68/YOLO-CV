@@ -139,7 +139,7 @@ byte-level ledger：
 - 120,000 val_op；
 - 82,637,967,451 个物理图像字节；
 - ledger SHA：
-  `B2B61509AB4451C881FE7E9D0AAFB3F9D3CC0981A78AB9337C54C320E3E96D2C`。
+  `0EA7FBA0CBFCC00B8A77E138EF31C187B3BD722006DFFDB1D15D5A7F3BC3B89C`。
 
 相同文件名/标签但不同图像字节必须失败。不得自动搜索另一个数据目录、相似文件、
 软链接目标或 latest dataset。test/blind 不在 ledger 中，也不得在 formal runner

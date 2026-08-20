@@ -6,11 +6,13 @@ from pathlib import Path
 import pytest
 from PIL import Image
 
-from stage1_sctsr_v4.asset_registry import AssetRecord, AssetRegistry
+from stage1_sctsr_v4.asset_registry import AssetRecord, AssetRegistry, load_asset_registry
 from stage1_sctsr_v4.dataset_content_ledger import (
+    DATASET_CONTENT_ASSET_ID,
     DATASET_CONTENT_DIGEST_ALGORITHM,
     DATASET_CONTENT_SCHEMA_VERSION,
     build_dataset_content_ledger,
+    registered_dataset_manifest_asset_ids,
     validate_registered_dataset_content,
 )
 from stage1_sctsr_v4.errors import ErrorCode, SctsrError
@@ -236,3 +238,29 @@ def test_formal_dataset_content_ledger_rejects_extra_identity_outside_registered
             verify_physical_files=False,
         )
     assert error.value.code is ErrorCode.DATASET_CONTENT_MISMATCH
+
+
+def test_frozen_dataset_content_ledger_binds_current_registered_manifest_hashes() -> None:
+    """Prevent a repaired manifest registry from retaining a stale frozen ledger."""
+
+    parquet = pytest.importorskip("pyarrow.parquet")
+    repository = Path(__file__).resolve().parents[2]
+    registry = load_asset_registry(repository / "configs/stage1_sctsr_v4/asset_registry_v1.json")
+    by_id = {record.asset_id: record for record in registry.assets}
+    ledger_record = by_id[DATASET_CONTENT_ASSET_ID]
+    ledger_path = repository / ledger_record.relative_path
+
+    observed: set[tuple[str, str]] = set()
+    for batch in parquet.ParquetFile(ledger_path).iter_batches(
+        batch_size=65_536,
+        columns=("manifest_asset_id", "manifest_sha256"),
+    ):
+        asset_ids = batch.column(0).to_pylist()
+        manifest_hashes = batch.column(1).to_pylist()
+        observed.update(zip(asset_ids, manifest_hashes, strict=True))
+
+    expected = {
+        (asset_id, by_id[asset_id].sha256)
+        for asset_id in registered_dataset_manifest_asset_ids(registry)
+    }
+    assert observed == expected
