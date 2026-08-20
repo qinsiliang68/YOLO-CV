@@ -18,7 +18,7 @@ from .errors import ErrorCode, SctsrError
 from .formal_training import FormalIdentity
 from .formal_pool_inputs import load_formal_pool_inputs
 from .identity_pool import FixedIdentityPoolSpec, IdentityPool, IdentityRecord, partition_five_groups
-from .dataset_adapter import DatasetIdentity, load_identity_manifest, validate_materialized_dataset_bytes
+from .dataset_adapter import DatasetIdentity, _is_symlink_or_reparse, load_identity_manifest, validate_materialized_dataset_bytes
 from .dataset_content_ledger import (
     load_registered_dataset_content_map,
     registered_dataset_manifest_asset_ids,
@@ -758,6 +758,38 @@ def validate_prepared_trainer_datasets(
     }
 
 
+def clear_ultralytics_classification_caches(data_root: str | Path) -> list[dict[str, Any]]:
+    """Remove only frozen Ultralytics train/val scan caches around setup."""
+
+    root = Path(data_root).resolve()
+    removed: list[dict[str, Any]] = []
+    for role in ("train", "val"):
+        cache_path = root / f"{role}.cache"
+        if not cache_path.exists() and not cache_path.is_symlink():
+            continue
+        if _is_symlink_or_reparse(cache_path) or not cache_path.is_file():
+            raise SctsrError(
+                ErrorCode.DATASET_CONTENT_MISMATCH,
+                "Ultralytics classification cache is indirect or is not a regular file",
+                artifact_path=str(cache_path),
+            )
+        record = {
+            "role": role,
+            "path": cache_path.as_posix(),
+            "bytes": cache_path.stat().st_size,
+            "sha256": sha256_file(cache_path),
+        }
+        cache_path.unlink()
+        if cache_path.exists() or cache_path.is_symlink():
+            raise SctsrError(
+                ErrorCode.DATASET_CONTENT_MISMATCH,
+                "Ultralytics classification cache could not be removed before exact role-tree validation",
+                artifact_path=str(cache_path),
+            )
+        removed.append(record)
+    return removed
+
+
 def validate_binary_classification_contract(trainer: Any, data_root: str | Path) -> dict[str, Any]:
     """Fail before optimizer step zero unless every binary identity agrees."""
 
@@ -1194,6 +1226,7 @@ def build_prepared_trainer(
         DatasetIdentity(sample_id=sample_id, y_true=label, source_path=sample_id)
         for sample_id, label in sorted(load_registered_split_labels(registry, root, "val_model").items())
     )
+    pre_setup_caches = clear_ultralytics_classification_caches(data_root)
     try:
         trainer = module.SctsrClassificationTrainer(
             overrides=clean,
@@ -1205,6 +1238,7 @@ def build_prepared_trainer(
         # _do_train, which can auto-reduce batch and final-evaluate best.pt.
         trainer._setup_train()
         trainer.accumulate = 1
+        post_setup_caches = clear_ultralytics_classification_caches(data_root)
         binary_contract_binding = validate_binary_classification_contract(trainer, data_root)
         dataset_binding = validate_prepared_trainer_datasets(
             trainer,
@@ -1264,6 +1298,11 @@ def build_prepared_trainer(
         "dataset_binding": dataset_binding,
         "dataset_content_binding": dataset_content_binding,
         "binary_classification_binding": binary_contract_binding,
+        "ultralytics_classification_cache_contract": {
+            "pre_setup_removed": pre_setup_caches,
+            "post_setup_removed": post_setup_caches,
+            "remaining_cache_files": [],
+        },
         "output_root": output.as_posix(),
         "training_seed": identity.training_seed,
         "formal_training_started": False,
