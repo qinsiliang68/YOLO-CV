@@ -1,0 +1,93 @@
+{
+  "schema_version": "sctsr.v4.completed_parent_collection.v2",
+  "status": "PASS_LIGHTWEIGHT_COLLECTION",
+  "generated_at_utc": "2026-08-21T22:05:43.4968792Z",
+  "collection_policy": "LIGHTWEIGHT_JSON_ONLY_NO_PT_NO_DATASET",
+  "base_manifest": "COMPLETED_PARENT_COLLECTION_MANIFEST.json",
+  "base_manifest_sha256": "59E071C80874F8747E6744526B6BF7BD845516218CA2A425AB299F2309D0BDA0",
+  "base_completed_parent_count": 2,
+  "completed_parent_count": 3,
+  "covered_nodes": ["P12", "P13", "P14"],
+  "added_parents": [
+    {
+      "node": "P14",
+      "source_ip": "192.168.100.23",
+      "logical_run_id": "PARENT_322761319",
+      "training_seed": 322761319,
+      "status": "FORMAL_PARENT_COMPLETE",
+      "terminal_epoch": 120,
+      "checkpoint_sha256": "1AE55561CE2178E7879803A0D53613E519863096B2845B7743A8F44D858417C8",
+      "artifact_index_digest": "0909F1B9D5A5DD4322AD77223D9B0303D242B2ADF60ADDD82795B2E7A35C5F70",
+      "runner_status": "PASS",
+      "claim_status": "COMPLETE",
+      "fence_generation": 2,
+      "execution_id": "EXEC_SCTSR_D_322761319_PARENT_TERMINAL_FINALIZATION_E121_FENCE2_20260821_P14_DC4152F_R3",
+      "local_archive": "completed_parents/P14_PARENT_322761319",
+      "local_file_count": 12,
+      "local_files": [
+        {
+          "name": "ARTIFACT_INDEX.json",
+          "bytes": 210817,
+          "sha256": "A85478D1D80D6441AECBA4488A84C7C6772EBA6A97A4CB2C538B759465E08C66"
+        },
+        {
+          "name": "ARTIFACT_INDEX_GENERATIONS.json",
+          "bytes": 57675,
+          "sha256": "7A610AFAD4629674D162C94D1B5EA2F5002B0F42945B1D7E03D419E6405C4135"
+        },
+        {
+          "name": "D84955B5A5C8E5C51F452B7B05AF68A800B1022DAF2C897A1FC2516F190E90A6.fence_00000002.terminal.json",
+          "bytes": 645,
+          "sha256": "AC1CADD165BFBAF88229513697D467F30CCDC6EA4F49B9D2E4165976F26E62FB"
+        },
+        {
+          "name": "D84955B5A5C8E5C51F452B7B05AF68A800B1022DAF2C897A1FC2516F190E90A6.heartbeat.json",
+          "bytes": 828,
+          "sha256": "47CBE86DC6F39D058631EE9A91062F036821F08AC7F3817B14FE18160F6D7D0A"
+        },
+        {
+          "name": "FORMAL_COMPLETION_RECEIPT.json",
+          "bytes": 1066,
+          "sha256": "A4E16038B2A54A5B39A39D2B9BD5CFB642C50A56961B468D1C0339A57A1BFCD0"
+        },
+        {
+          "name": "GENERATION_MANIFEST.json",
+          "bytes": 2141,
+          "sha256": "F461B9A350A691A83F0916B5606FFF5C1DD9C1811AFD0840383711C3B8C3FDDF"
+        },
+        {
+          "name": "P14_TERMINAL_FINALIZATION_E121_FENCE2_V3_DC4152F_TASK_START_20260821T203646Z.json",
+          "bytes": 11805,
+          "sha256": "371E6523E056B5FDF00F29F8C9E6081AE197CBBDEFCA45748BDF6403E5D9CE21"
+        },
+        {
+          "name": "PARENT_RECEIPT.json",
+          "bytes": 2174,
+          "sha256": "CB428B526F2CC901FB0D55272CC7E6B358B5259B43E30FF8780C4E76590084DE"
+        },
+        {
+          "name": "prepare_terminal_finalization_epoch_0121_fence_2_v3_dc4152f.json",
+          "bytes": 2863,
+          "sha256": "EBE42A7E41DE199514FCB90A20C3E5A761A26AA1953937552A08E30FABEC821F"
+        },
+        {
+          "name": "ROLLING_RECOVERY_POINTER.json",
+          "bytes": 1275,
+          "sha256": "29292AE17484F65435441C462CE6C348A3EEFED5BF6B9852FD794423ECDB73E3"
+        },
+        {
+          "name": "RUN_MANIFEST.json",
+          "bytes": 5533,
+          "sha256": "862A35C8848D3011A715D04F43D4A41D1DA4324FEA0A55578E5DC3103EFAC304"
+        },
+        {
+          "name": "sctsr_v4_formal_discovery_parent_322761319_20260821_v2_20a9558.terminal_finalization_epoch0121_fence2_v3_fixdc4152f.run_common_parent.cli_receipt.json",
+          "bytes": 28407,
+          "sha256": "BBA695D714B8C34A9B1E021AA63D455CE7006803ECC9FE2893D6D794832D7AB4"
+        }
+      ],
+      "bulk_checkpoints_collected": false,
+      "datasets_collected": false
+    }
+  ]
+}
