@@ -18,6 +18,11 @@ from .errors import ErrorCode, SctsrError
 from .ledger_schema import TELEMETRY_SCHEMA
 
 TELEMETRY_CADENCE_SECONDS = 1.0
+# Keep the only bounded external provider comfortably inside the sampler's
+# one-second deadline.  A three-second nvidia-smi timeout previously allowed
+# one transient Windows probe stall to create a multi-second acquisition gap,
+# which then quarantined an otherwise valid training epoch at closeout.
+NVIDIA_SMI_TIMEOUT_SECONDS = 0.5
 
 
 @dataclass(frozen=True, slots=True)
@@ -96,7 +101,7 @@ def _nvidia_smi() -> tuple[dict[str, Any] | None, str]:
             check=True,
             capture_output=True,
             text=True,
-            timeout=3,
+            timeout=NVIDIA_SMI_TIMEOUT_SECONDS,
             encoding="utf-8",
             errors="replace",
         )

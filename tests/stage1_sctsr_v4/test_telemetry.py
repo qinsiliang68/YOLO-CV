@@ -1,4 +1,5 @@
 from dataclasses import replace
+import subprocess
 import pytest
 import stage1_sctsr_v4.telemetry as telemetry_module
 from stage1_sctsr_v4.errors import ErrorCode,SctsrError
@@ -18,6 +19,24 @@ def test_bad_cadence_rejected(tmp_path):
     r=sample_telemetry(run_id='r',arm_id='NR',training_seed=1,epoch=1,run_path=tmp_path,artifact_path=tmp_path)
     rows=[r,replace(r,monotonic_seconds=r.monotonic_seconds+1),replace(r,monotonic_seconds=r.monotonic_seconds+3)]
     with pytest.raises(SctsrError):validate_telemetry_for_closeout(rows)
+
+
+def test_nvidia_smi_timeout_cannot_overrun_formal_cadence(monkeypatch):
+    observed = {}
+
+    def timed_out_probe(*_args, **kwargs):
+        observed["timeout"] = kwargs["timeout"]
+        raise subprocess.TimeoutExpired(cmd="nvidia-smi", timeout=kwargs["timeout"])
+
+    monkeypatch.setattr(telemetry_module.shutil, "which", lambda _name: "nvidia-smi.exe")
+    monkeypatch.setattr(telemetry_module.subprocess, "run", timed_out_probe)
+
+    gpu, reason = telemetry_module._nvidia_smi()
+
+    assert gpu is None
+    assert reason == "NVIDIA_SMI_TIMEOUTEXPIRED"
+    assert observed["timeout"] == telemetry_module.NVIDIA_SMI_TIMEOUT_SECONDS
+    assert observed["timeout"] < telemetry_module.TELEMETRY_CADENCE_SECONDS
 
 
 def test_sample_timestamp_is_provider_acquisition_start(tmp_path, monkeypatch):
