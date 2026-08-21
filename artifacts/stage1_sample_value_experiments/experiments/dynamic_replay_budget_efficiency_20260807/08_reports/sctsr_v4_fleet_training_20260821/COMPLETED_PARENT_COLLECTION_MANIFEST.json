@@ -1,0 +1,167 @@
+{
+    "schema_version":  "sctsr.v4.completed_parent_collection.v1",
+    "status":  "PASS_LIGHTWEIGHT_COLLECTION",
+    "generated_at_utc":  "2026-08-21T20:37:35.3394378Z",
+    "collection_policy":  "LIGHTWEIGHT_JSON_ONLY_NO_PT_NO_DATASET",
+    "completed_parent_count":  2,
+    "parents":  [
+                    {
+                        "node":  "P12",
+                        "source_ip":  "192.168.100.8",
+                        "logical_run_id":  "PARENT_725590974",
+                        "training_seed":  725590974,
+                        "status":  "FORMAL_PARENT_COMPLETE",
+                        "terminal_epoch":  120,
+                        "checkpoint_sha256":  "0B392643AE9E42AB8E451931C03054D5858F53F89C60337F1893FEBDC789A110",
+                        "artifact_index_digest":  "2606187187C0A29F2057DC94C4F02771A43CD795863D4AEE3CD205CFD3ECE711",
+                        "runner_status":  "PASS",
+                        "claim_status":  "COMPLETE",
+                        "fence_generation":  2,
+                        "execution_id":  "EXEC_SCTSR_D_725590974_PARENT_TERMINAL_FINALIZATION_E121_FENCE2_20260821_P12_DC4152F_R3",
+                        "local_file_count":  12,
+                        "local_files":  [
+                                            {
+                                                "name":  "prepare_terminal_finalization_epoch_0121_fence_2_v3_dc4152f.json",
+                                                "bytes":  2866,
+                                                "sha256":  "2AB00628FE5D406FA1D7C01AD7C87F3C50D4D27A84CB51DDA593E1DF2877356A"
+                                            },
+                                            {
+                                                "name":  "PARENT_RECEIPT.json",
+                                                "bytes":  2174,
+                                                "sha256":  "59A7AAAD6A93E52FAA9FDF6620CE63C55F62BA40195A7F9A9C01B18D4287B135"
+                                            },
+                                            {
+                                                "name":  "P12_TERMINAL_FINALIZATION_E121_FENCE2_V3_DC4152F_TASK_START_20260821T190516Z.json",
+                                                "bytes":  11848,
+                                                "sha256":  "1BC1AF074DF543003717CDBEF34A1978F4879623278F0F0BC27B50FE6C5594D4"
+                                            },
+                                            {
+                                                "name":  "sctsr_v4_formal_discovery_parent_725590974_20260821_v6_20a9558.terminal_finalization_epoch0121_fence2_v3_fixdc4152f.run_common_parent.cli_receipt.json",
+                                                "bytes":  28426,
+                                                "sha256":  "E0D458E5B4D8C508C3DB446E2A4254A0C9E0EC13A43C4645CA36F1C0FD10AB9C"
+                                            },
+                                            {
+                                                "name":  "RUN_MANIFEST.json",
+                                                "bytes":  5535,
+                                                "sha256":  "DF4A2589766DCCCF9797A74FBB61AD83CFA322E1CAB0084D1D609298C581DCDF"
+                                            },
+                                            {
+                                                "name":  "ROLLING_RECOVERY_POINTER.json",
+                                                "bytes":  1275,
+                                                "sha256":  "8738E80169D6EEE04A37E90220104BD2E82942D0DAA567B3BDC48969527FDDDF"
+                                            },
+                                            {
+                                                "name":  "ARTIFACT_INDEX.json",
+                                                "bytes":  210827,
+                                                "sha256":  "DBB6CCAB40F258262AD06C500972AB6B9699BBFF4C61A7A7B8ADEB60C8B5C25A"
+                                            },
+                                            {
+                                                "name":  "0B6E0281637B74371C0145C8A453D1F9DFC0670670DE1C0F14AC0296F4B4D1EB.heartbeat.json",
+                                                "bytes":  829,
+                                                "sha256":  "E61529910EF743915410E48FAFFC4B2C413715370562A491183704BDCAE6EF96"
+                                            },
+                                            {
+                                                "name":  "0B6E0281637B74371C0145C8A453D1F9DFC0670670DE1C0F14AC0296F4B4D1EB.fence_00000002.terminal.json",
+                                                "bytes":  645,
+                                                "sha256":  "A306282A9EC00C2373BDA6263F1FC1272F099DD3A6041BDE94B6E73AC6FC5A8C"
+                                            },
+                                            {
+                                                "name":  "GENERATION_MANIFEST.json",
+                                                "bytes":  2141,
+                                                "sha256":  "2213FC502CC5749A7E32865D703D63858F294F6EB0F85729B64B211A73E0CB43"
+                                            },
+                                            {
+                                                "name":  "FORMAL_COMPLETION_RECEIPT.json",
+                                                "bytes":  1066,
+                                                "sha256":  "18F0F40F00AA27422C1449A6FFEB2DC64FCB778AA5BB69F71047FCF5AB8E0CEE"
+                                            },
+                                            {
+                                                "name":  "ARTIFACT_INDEX_GENERATIONS.json",
+                                                "bytes":  57675,
+                                                "sha256":  "5D15A9307531C06EF0648B5E4BC336A6C5FB3D250ED257027C415E1DB29B08EF"
+                                            }
+                                        ],
+                        "bulk_checkpoints_collected":  false,
+                        "datasets_collected":  false
+                    },
+                    {
+                        "node":  "P13",
+                        "source_ip":  "192.168.100.18",
+                        "logical_run_id":  "PARENT_2019192314",
+                        "training_seed":  2019192314,
+                        "status":  "FORMAL_PARENT_COMPLETE",
+                        "terminal_epoch":  120,
+                        "checkpoint_sha256":  "437AB72E2A54A50AF6F01608133EAED31E594A4CE26AE86EDA369B5202A76A4A",
+                        "artifact_index_digest":  "A7C5D945D8A44779F0D292ADB0DA0E849EA2465FB332161A9D20E85807AE4D26",
+                        "runner_status":  "PASS",
+                        "claim_status":  "COMPLETE",
+                        "fence_generation":  2,
+                        "execution_id":  "EXEC_SCTSR_D_2019192314_PARENT_TERMINAL_FINALIZATION_E121_FENCE2_20260821_P13_DC4152F_R2",
+                        "local_file_count":  12,
+                        "local_files":  [
+                                            {
+                                                "name":  "prepare_terminal_finalization_epoch_0121_fence_2_v2_dc4152f.json",
+                                                "bytes":  3268,
+                                                "sha256":  "662B6E2722AFB8E931F98D958366F0EBAEED5396D1ADA194DED570F4B49AD908"
+                                            },
+                                            {
+                                                "name":  "PARENT_RECEIPT.json",
+                                                "bytes":  2183,
+                                                "sha256":  "96886AD12BFD80FF3749DFD1247E938FFA2D6815B39D34C127A22AF6720C1B51"
+                                            },
+                                            {
+                                                "name":  "P13_TERMINAL_FINALIZATION_E121_FENCE2_DC4152F_TASK_START_20260821T173029Z.json",
+                                                "bytes":  11735,
+                                                "sha256":  "4936C916DE6E6CE09187F5ACC801991C2EF9080267A9257C6A204E8A786C7CA9"
+                                            },
+                                            {
+                                                "name":  "sctsr_v4_formal_discovery_parent_2019192314_20260821_v5_20a9558.terminal_finalization_epoch0121_fence2_fixdc4152f.run_common_parent.cli_receipt.json",
+                                                "bytes":  28445,
+                                                "sha256":  "B842E70D67D1E1BC3A3D66AA7F3E0E716E5FBE2AA888658BF4FB4FE29622BDDC"
+                                            },
+                                            {
+                                                "name":  "RUN_MANIFEST.json",
+                                                "bytes":  5538,
+                                                "sha256":  "8F86057786104303F3DE94A9CE52EAB8E98DC23985F16F22BEEFC875D0DE4D2A"
+                                            },
+                                            {
+                                                "name":  "ROLLING_RECOVERY_POINTER.json",
+                                                "bytes":  1279,
+                                                "sha256":  "450E45E8D6D9EEB2BC7DE40F5514205B7CCCCD2CDFED1F9B4C55A3B2B6341907"
+                                            },
+                                            {
+                                                "name":  "ARTIFACT_INDEX.json",
+                                                "bytes":  211317,
+                                                "sha256":  "9EAFE279EDF466B434B64C6E84B066183C111AC186754C86615435D28D3C3BCF"
+                                            },
+                                            {
+                                                "name":  "3CFB2030450AD1CDFC23EB08828E3360324552650F13349D2CED5970502EA6A4.heartbeat.json",
+                                                "bytes":  830,
+                                                "sha256":  "1B6C29FD16AB042B770E0D2CE93BD29B03E06EF68B1756009F7A737FBABA28FA"
+                                            },
+                                            {
+                                                "name":  "3CFB2030450AD1CDFC23EB08828E3360324552650F13349D2CED5970502EA6A4.fence_00000002.terminal.json",
+                                                "bytes":  646,
+                                                "sha256":  "04684374ECA8FC569228EB0C75FF245E1588BB26E227052F20048DC65BAF966B"
+                                            },
+                                            {
+                                                "name":  "GENERATION_MANIFEST.json",
+                                                "bytes":  2147,
+                                                "sha256":  "441A7D86D662F770545F5E5FD43AE918502DE95115C61AEDAD33F41B0EF8DABD"
+                                            },
+                                            {
+                                                "name":  "FORMAL_COMPLETION_RECEIPT.json",
+                                                "bytes":  1068,
+                                                "sha256":  "5D6766909551BB118FF3B3D3FAAFE11D19A62C08B4A831E160E652C74B53D622"
+                                            },
+                                            {
+                                                "name":  "ARTIFACT_INDEX_GENERATIONS.json",
+                                                "bytes":  57915,
+                                                "sha256":  "A7CC4FAF1F0141B9310E7180AA28FAC84D4EDC0924F437D6ED17A5302823E6F5"
+                                            }
+                                        ],
+                        "bulk_checkpoints_collected":  false,
+                        "datasets_collected":  false
+                    }
+                ]
+}
