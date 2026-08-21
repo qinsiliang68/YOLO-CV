@@ -1,0 +1,100 @@
+{
+  "schema_version": "sctsr.v4.completed_parent_collection.v3",
+  "status": "PASS_LIGHTWEIGHT_COLLECTION",
+  "generated_at_utc": "2026-08-21T23:45:42.5641364Z",
+  "collection_policy": "LIGHTWEIGHT_JSON_ONLY_NO_PT_NO_DATASET",
+  "base_manifest": "COMPLETED_PARENT_COLLECTION_MANIFEST_V2.json",
+  "base_manifest_sha256": "8AB201104F7CEF717D82D5F4B4378420EAA02C6BA6EB2948E28F3F43025D805C",
+  "base_completed_parent_count": 3,
+  "completed_parent_count": 4,
+  "covered_nodes": ["P12", "P13", "P14", "P24"],
+  "added_parents": [
+    {
+      "node": "P24",
+      "source_ip": "192.168.100.20",
+      "logical_run_id": "PARENT_1583055843",
+      "training_seed": 1583055843,
+      "status": "FORMAL_PARENT_COMPLETE",
+      "terminal_epoch": 120,
+      "checkpoint_sha256": "6E41D43889AD6DFE1D961BFBCFACE825F6E772F35F0119A56DFBF7385221F7B6",
+      "artifact_index_digest": "510D55BA5D0F45F1785B9355F4535BA59973E763E2F56D8E2A1518AD3C0C7DCA",
+      "runner_status": "PASS",
+      "claim_status": "COMPLETE",
+      "fence_generation": 2,
+      "execution_id": "EXEC_SCTSR_D_1583055843_PARENT_TERMINAL_FINALIZATION_E121_FENCE2_20260821_P24_DC4152F_R3",
+      "start_probe_status": "FAIL_TASK_NOT_RUNNING",
+      "start_probe_interpretation": "IMMUTABLE_FIVE_SECOND_PROCESS_DETECTION_RACE_SUPERSEDED_BY_PASS_TASK_COMPLETED_OUTCOME",
+      "local_archive": "completed_parents/P24_PARENT_1583055843",
+      "local_file_count": 13,
+      "local_files": [
+        {
+          "name": "57E588BB910B9ED83D60FE6370830AD16F4BC255C791F60CA68A3E0D317A88D1.fence_00000002.terminal.json",
+          "bytes": 646,
+          "sha256": "D894E9623A7B3772BC0FCE0CB41C800673C6006ACD42F315907B34D68285CFC7"
+        },
+        {
+          "name": "57E588BB910B9ED83D60FE6370830AD16F4BC255C791F60CA68A3E0D317A88D1.heartbeat.json",
+          "bytes": 830,
+          "sha256": "23A7F16AE6586DA62A0D4BBA15BD2C6F2E5EE8175F40C057CEF3185F032B5D5E"
+        },
+        {
+          "name": "ARTIFACT_INDEX.json",
+          "bytes": 211313,
+          "sha256": "E1373CFD451CF395B266FB30FDBD455668735AD67147CF7F4AB4DCA0958542E4"
+        },
+        {
+          "name": "ARTIFACT_INDEX_GENERATIONS.json",
+          "bytes": 57915,
+          "sha256": "112512F5069B4E1581C09FE2ED256982D5652DCE054D871826BB0DCCAF7F8572"
+        },
+        {
+          "name": "FORMAL_COMPLETION_RECEIPT.json",
+          "bytes": 1068,
+          "sha256": "69D3B543437723CC15EBCA95B71483F10EAF4B3927ABB8A31F2513393D19F51A"
+        },
+        {
+          "name": "GENERATION_MANIFEST.json",
+          "bytes": 2147,
+          "sha256": "DDC10344C4AF87FB9A763334B4647E2B4CDEAB8587419313BF17F308B51F1BDD"
+        },
+        {
+          "name": "P24_TERMINAL_FINALIZATION_E121_FENCE2_V3_DC4152F_TASK_OUTCOME_20260821T234259Z.json",
+          "bytes": 2709,
+          "sha256": "63198FC8FACA10CD4CD8F1F39D410673DF57603CA006D8A6A4521D196FE48063"
+        },
+        {
+          "name": "P24_TERMINAL_FINALIZATION_E121_FENCE2_V3_DC4152F_TASK_START_20260821T221647Z.json",
+          "bytes": 1115,
+          "sha256": "CD1A0389AAB501723A953F97570809FA16D4404FCE60F2C2367DB5DB747F7A2F"
+        },
+        {
+          "name": "PARENT_RECEIPT.json",
+          "bytes": 2182,
+          "sha256": "6DF3D8D5F42D78F2352646382C70F5473321C34DC3D8786E6EA5BD518B6B4947"
+        },
+        {
+          "name": "prepare_terminal_finalization_epoch_0121_fence_2_v3_dc4152f.json",
+          "bytes": 2871,
+          "sha256": "0AAA2754B8A9A0BCE9D2443C6FBB47388000D4A88017CF05FB8BDA98E7A781E6"
+        },
+        {
+          "name": "ROLLING_RECOVERY_POINTER.json",
+          "bytes": 1279,
+          "sha256": "E579CA7695405BEF4293C9B72295563CFF8EC463C75E99F2245E78299C868FC7"
+        },
+        {
+          "name": "RUN_MANIFEST.json",
+          "bytes": 5537,
+          "sha256": "3C97CB9F79C15804E5EA7DA1E30DBB65AA6190AE542AD3AA5DD1150A2EA30D9D"
+        },
+        {
+          "name": "sctsr_v4_formal_discovery_parent_1583055843_20260821_v3_20a9558.terminal_finalization_epoch0121_fence2_v3_fixdc4152f.run_common_parent.cli_receipt.json",
+          "bytes": 28419,
+          "sha256": "8E47F04709A4D41711F47D4DA8D7020A0F3E2A9A4C002381B0C50DCC581CDCC4"
+        }
+      ],
+      "bulk_checkpoints_collected": false,
+      "datasets_collected": false
+    }
+  ]
+}

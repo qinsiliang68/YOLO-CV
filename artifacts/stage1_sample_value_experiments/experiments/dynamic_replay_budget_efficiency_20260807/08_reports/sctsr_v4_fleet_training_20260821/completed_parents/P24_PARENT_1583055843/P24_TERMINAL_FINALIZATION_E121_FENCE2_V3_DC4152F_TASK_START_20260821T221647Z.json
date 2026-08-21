@@ -1,0 +1,28 @@
+{
+    "status":  "FAIL_TASK_NOT_RUNNING",
+    "task_name":  "SCTSR_P24_FORMAL_PARENT_1583055843_TERMINAL_FINALIZATION_E121_FENCE2_20260821_V3_DC4152F",
+    "output_root":  "D:/ssh/AI/artifacts/sctsr_v4_formal_discovery_parent_1583055843_20260821_v3_20a9558",
+    "started_at_utc":  "2026-08-21T22:16:47.5829337Z",
+    "task_state":  "Running",
+    "last_task_result":  267009,
+    "processes":  [
+
+                  ],
+    "gpu":  "GPU-c9ed29e4-649e-9ce2-1839-bf76680ecff2, 0, 0, 31, 370.00",
+    "available_memory_mb":  26438,
+    "disks":  [
+                  {
+                      "DeviceID":  "C:",
+                      "FreeSpace":  45506818048,
+                      "Size":  251723583488
+                  },
+                  {
+                      "DeviceID":  "D:",
+                      "FreeSpace":  883908280320,
+                      "Size":  998055604224
+                  }
+              ],
+    "preparation_receipt_sha256":  "0AAA2754B8A9A0BCE9D2443C6FBB47388000D4A88017CF05FB8BDA98E7A781E6",
+    "training_epochs_rerun":  0,
+    "failed_artifacts_preserved":  true
+}
