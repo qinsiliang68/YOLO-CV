@@ -194,8 +194,8 @@ def validate_formal_input_snapshot(
                 failing_field=role,
             )
     return {
+        **raw,
         "status": "PASS",
-        "snapshot_digest": raw["snapshot_digest"],
         "external_binding_digest": external["binding_digest"],
         "manifest_sha256": sha256_file(path),
     }
