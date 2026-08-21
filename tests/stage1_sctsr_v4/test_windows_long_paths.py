@@ -8,7 +8,7 @@ import pytest
 
 from stage1_sctsr_v4.columnar import validate_columnar_file, write_zstd_parquet
 from stage1_sctsr_v4.filesystem import windows_safe_resolved_path
-from stage1_sctsr_v4.recovery import quarantine_inprogress
+from stage1_sctsr_v4.recovery import _canonical_windows_path, quarantine_inprogress
 from stage1_sctsr_v4.synthetic_canary import run_synthetic_canary
 from stage1_sctsr_v4.run_validation import validate_run_tree
 from stage1_sctsr_v4.serialization import atomic_write_json, load_json, sha256_file
@@ -24,6 +24,22 @@ def test_resolved_junction_path_is_not_double_prefixed_as_unc(monkeypatch: pytes
 
     assert str(actual) == str(extended_target)
     assert not str(actual).startswith("\\\\?\\UNC\\?\\")
+
+
+@pytest.mark.skipif(os.name != "nt", reason="Win32 extended path contract")
+def test_resume_path_comparison_normalizes_posix_extended_drive_prefix():
+    extended = _canonical_windows_path("//?/C:/training/run/epoch_0120.generation_1.complete")
+    ordinary = _canonical_windows_path(r"C:\training\run\epoch_0120.generation_1.complete")
+
+    assert extended == ordinary
+
+
+@pytest.mark.skipif(os.name != "nt", reason="Win32 extended path contract")
+def test_resume_path_comparison_normalizes_posix_extended_unc_prefix():
+    extended = _canonical_windows_path("//?/UNC/server/share/run/epoch_0120.generation_1.complete")
+    ordinary = _canonical_windows_path(r"\\server\share\run\epoch_0120.generation_1.complete")
+
+    assert extended == ordinary
 
 
 @pytest.mark.skipif(os.name != "nt", reason="Win32 extended path contract")

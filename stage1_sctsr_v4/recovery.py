@@ -248,7 +248,11 @@ def validate_recovery_pointer(path: str | Path) -> dict[str, Any]:
 def _canonical_windows_path(path: str | Path) -> Path:
     raw = str(path)
     if os.name == "nt":
-        if raw.startswith("\\\\?\\UNC\\"):
+        if raw.upper().startswith("//?/UNC/"):
+            raw = "//" + raw[8:]
+        elif raw.startswith("//?/"):
+            raw = raw[4:]
+        elif raw.startswith("\\\\?\\UNC\\"):
             raw = "\\\\" + raw[8:]
         elif raw.startswith("\\\\?\\"):
             raw = raw[4:]
