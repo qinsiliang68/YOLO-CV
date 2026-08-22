@@ -10,7 +10,7 @@ from stage1_sctsr_v4.columnar import validate_columnar_file, write_zstd_parquet
 from stage1_sctsr_v4.filesystem import windows_safe_resolved_path
 from stage1_sctsr_v4.recovery import _canonical_windows_path, quarantine_inprogress
 from stage1_sctsr_v4.synthetic_canary import run_synthetic_canary
-from stage1_sctsr_v4.run_validation import validate_run_tree
+from stage1_sctsr_v4.run_validation import _validated_resume_setup_root, validate_run_tree
 from stage1_sctsr_v4.serialization import atomic_write_json, load_json, sha256_file
 
 
@@ -40,6 +40,24 @@ def test_resume_path_comparison_normalizes_posix_extended_unc_prefix():
     ordinary = _canonical_windows_path(r"\\server\share\run\epoch_0120.generation_1.complete")
 
     assert extended == ordinary
+
+
+@pytest.mark.skipif(os.name != "nt", reason="Win32 extended path contract")
+def test_resume_setup_namespace_accepts_posix_extended_root(tmp_path: Path):
+    run_root = tmp_path / "formal_parent"
+    setup_root = run_root / "10_resume_setup" / "epoch_0121.generation_1"
+    extended_setup = "//?/" + setup_root.resolve().as_posix()
+
+    assert _validated_resume_setup_root(windows_safe_resolved_path(run_root), extended_setup) == _canonical_windows_path(setup_root)
+
+
+@pytest.mark.skipif(os.name != "nt", reason="Win32 extended path contract")
+def test_resume_setup_namespace_rejects_sibling_root(tmp_path: Path):
+    run_root = tmp_path / "formal_parent"
+    sibling = tmp_path / "other_parent" / "10_resume_setup" / "epoch_0121.generation_1"
+
+    with pytest.raises(ValueError):
+        _validated_resume_setup_root(windows_safe_resolved_path(run_root), sibling)
 
 
 @pytest.mark.skipif(os.name != "nt", reason="Win32 extended path contract")

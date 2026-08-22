@@ -21,7 +21,7 @@ from .prediction_artifact import (
     sample_label_identity_digest,
     validate_prediction_rows,
 )
-from .recovery import validate_recovery_pointer
+from .recovery import _canonical_windows_path, validate_recovery_pointer
 from .schedule import schedule_from_dict
 from .selection_ledger import validate_selection_rows
 from .serialization import load_json, sha256_file, stable_digest
@@ -65,6 +65,12 @@ def _resume_trainer_binding_field_matches(
         field,
         resume_binding.get(field),
     )
+
+
+def _validated_resume_setup_root(run_root: Path, setup_root_value: object) -> Path:
+    setup_root = _canonical_windows_path(str(setup_root_value))
+    setup_root.relative_to(_canonical_windows_path(run_root / "10_resume_setup"))
+    return setup_root
 
 
 def build_artifact_index(run_root: str | Path) -> dict[str, Any]:
@@ -718,9 +724,8 @@ def _validate_formal_tree(root: Path, manifest: Mapping[str, Any]) -> dict[str, 
                     "Resume trainer changed a stable scientific binding",
                     observed=field,
                 )
-            setup_root = Path(str(resume_binding.get("output_root", ""))).resolve()
             try:
-                setup_root.relative_to((root / "10_resume_setup").resolve())
+                setup_root = _validated_resume_setup_root(root, resume_binding.get("output_root", ""))
             except ValueError as exc:
                 raise _closeout_failure("Resume trainer setup root escapes the run-root resume namespace") from exc
             _require(setup_root.is_dir(), "Resume trainer setup evidence is missing", observed=setup_root.as_posix())
