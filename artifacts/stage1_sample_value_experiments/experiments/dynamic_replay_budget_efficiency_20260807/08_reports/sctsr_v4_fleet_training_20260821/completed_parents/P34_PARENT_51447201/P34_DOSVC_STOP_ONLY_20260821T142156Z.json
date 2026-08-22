@@ -1,0 +1,10 @@
+{
+    "schema_version":  "sctsr.p34.network_risk_service_action.v1",
+    "status":  "PASS_STOPPED",
+    "service":  "DoSvc",
+    "state":  "Stopped",
+    "start_mode":  "Disabled",
+    "disable_attempt":  "ACCESS_DENIED_PRESERVED_IN_OPERATOR_LOG",
+    "recorded_at_utc":  "2026-08-21T14:21:56.7590517Z",
+    "todesk_untouched":  true
+}

@@ -1,0 +1,42 @@
+{
+    "status":  "PASS_DOSVC_STOPPED_TRAINING_UNCHANGED",
+    "node":  "P34",
+    "recorded_at_utc":  "2026-08-22T03:17:47.2845271Z",
+    "service":  "DoSvc",
+    "before":  "Running",
+    "after":  "Stopped",
+    "task_name":  "SCTSR_P34_FORMAL_PARENT_51447201_RESUME_EPOCH27_FENCE2_20260821_V1_20A9558",
+    "task_state":  "Running",
+    "training_process_count_before":  11,
+    "training_process_count_after":  11,
+    "todesk_before":  [
+                          {
+                              "Id":  19324,
+                              "ProcessName":  "AutodeskDesktopApp"
+                          },
+                          {
+                              "Id":  5228,
+                              "ProcessName":  "ToDesk"
+                          },
+                          {
+                              "Id":  15184,
+                              "ProcessName":  "ToDesk"
+                          }
+                      ],
+    "todesk_after":  [
+                         {
+                             "Id":  19324,
+                             "ProcessName":  "AutodeskDesktopApp"
+                         },
+                         {
+                             "Id":  5228,
+                             "ProcessName":  "ToDesk"
+                         },
+                         {
+                             "Id":  15184,
+                             "ProcessName":  "ToDesk"
+                         }
+                     ],
+    "training_stopped":  false,
+    "cleanup_performed":  false
+}

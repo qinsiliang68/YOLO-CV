@@ -1,0 +1,57 @@
+{
+    "status":  "PASS_TASK_RUNNING",
+    "task_name":  "SCTSR_P34_FORMAL_PARENT_51447201_TERMINAL_FINALIZATION_E121_FENCE3_20260822_V4_DYNAMIC_ROOT_DC4152F",
+    "output_root":  "D:/ssh/AI/artifacts/sctsr_v4_formal_discovery_parent_51447201_20260821_v1_20a9558",
+    "started_at_utc":  "2026-08-22T04:23:20.0070736Z",
+    "task_state":  "Running",
+    "last_task_result":  267009,
+    "processes":  [
+                      {
+                          "Id":  18348,
+                          "ProcessName":  "powershell",
+                          "StartTime":  "\/Date(1787372602883)\/",
+                          "Path":  "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe"
+                      },
+                      {
+                          "Id":  20264,
+                          "ProcessName":  "powershell",
+                          "StartTime":  "\/Date(1787372599885)\/",
+                          "Path":  "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe"
+                      },
+                      {
+                          "Id":  9544,
+                          "ProcessName":  "python",
+                          "StartTime":  "\/Date(1787372603136)\/",
+                          "Path":  "C:\\Users\\ASUS\\Desktop\\ssh\\AI\\sctsr_source_505ef13_sparse_v1\\.venv\\Scripts\\python.exe"
+                      },
+                      {
+                          "Id":  23136,
+                          "ProcessName":  "python",
+                          "StartTime":  "\/Date(1787372603143)\/",
+                          "Path":  "C:\\Users\\ASUS\\Desktop\\ssh\\AI\\uv-python\\cpython-3.11-windows-x86_64-none\\python.exe"
+                      },
+                      {
+                          "Id":  24652,
+                          "ProcessName":  "uv",
+                          "StartTime":  "\/Date(1787372603118)\/",
+                          "Path":  "C:\\Users\\ASUS\\.local\\bin\\uv.exe"
+                      }
+                  ],
+    "gpu":  "GPU-3afbb383-8cb9-f2f7-4914-beeb0b1fec38, 422, 1, 34, 370.00",
+    "available_memory_mb":  21424,
+    "disks":  [
+                  {
+                      "DeviceID":  "C:",
+                      "FreeSpace":  43419742208,
+                      "Size":  251723583488
+                  },
+                  {
+                      "DeviceID":  "D:",
+                      "FreeSpace":  243585667072,
+                      "Size":  332859580416
+                  }
+              ],
+    "preparation_receipt_sha256":  "28647B4405FC67152F7549C2EB302BCC4DF1FE2F4DC90CFC091DF6E489EA7158",
+    "training_epochs_rerun":  0,
+    "failed_artifacts_preserved":  true
+}

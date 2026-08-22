@@ -1,0 +1,30 @@
+{
+    "status":  "PASS_DOSVC_STOPPED",
+    "node":  "P34",
+    "recorded_at_utc":  "2026-08-22T04:23:09.2890790Z",
+    "before":  "Running",
+    "after":  "Stopped",
+    "python_uv_process_count":  0,
+    "todesk_before":  [
+                          {
+                              "Id":  5228,
+                              "ProcessName":  "ToDesk"
+                          },
+                          {
+                              "Id":  15184,
+                              "ProcessName":  "ToDesk"
+                          }
+                      ],
+    "todesk_after":  [
+                         {
+                             "Id":  5228,
+                             "ProcessName":  "ToDesk"
+                         },
+                         {
+                             "Id":  15184,
+                             "ProcessName":  "ToDesk"
+                         }
+                     ],
+    "training_stopped":  false,
+    "cleanup_performed":  false
+}

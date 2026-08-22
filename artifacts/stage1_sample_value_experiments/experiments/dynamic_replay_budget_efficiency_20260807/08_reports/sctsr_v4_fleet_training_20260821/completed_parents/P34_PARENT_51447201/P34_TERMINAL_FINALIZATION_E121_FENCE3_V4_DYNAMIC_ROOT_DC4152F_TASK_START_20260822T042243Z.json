@@ -1,0 +1,7 @@
+{
+    "status":  "FAIL",
+    "task_name":  "SCTSR_P34_FORMAL_PARENT_51447201_TERMINAL_FINALIZATION_E121_FENCE3_20260822_V4_DYNAMIC_ROOT_DC4152F",
+    "output_root":  "D:/ssh/AI/artifacts/sctsr_v4_formal_discovery_parent_51447201_20260821_v1_20a9558",
+    "started_at_utc":  "2026-08-22T04:22:43.1280710Z",
+    "error":  "Delivery Optimization is not stopped"
+}
