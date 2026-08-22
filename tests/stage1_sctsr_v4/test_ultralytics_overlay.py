@@ -31,5 +31,6 @@ def test_upstream_overlay_keeps_one_step():
     def provider(ids,e,s,seed):return {'img':torch.randn(len(ids),4),'cls':torch.zeros(len(ids),dtype=torch.long),'sample_ids':tuple(ids),'augmentation_digests':('r',)*len(ids)}
     receipts=[];r=run_ultralytics_classification_epoch(trainer=t,replay_plan=plan,replay_batch_provider=provider,training_seed=1,epoch=121,global_step_start=0,step_receipt_sink=receipts.append);assert r['optimizer_steps']==1 and r['replay_occurrences']==2 and r['ema_updates_delta']==1
     assert receipts[0].optimizer_step_delta==1 and receipts[0].ema_update_delta==1
+    assert receipts[0].combined_loss_for_reporting == receipts[0].base_loss + receipts[0].replay_loss
     assert receipts[0].rng_before_replay==receipts[0].rng_after_replay
     assert receipts[0].bn_before_replay==receipts[0].bn_after_replay

@@ -23,6 +23,7 @@ def run(fixture,replay_ids,seed=7):
 def test_replay_does_not_add_optimizer_steps(synthetic_fixture):
     _,result=run(synthetic_fixture,[x.sample_id for x in synthetic_fixture.t_pool.records[:2]])
     assert result.optimizer_steps==2;assert result.replay_occurrences==2;assert result.ema_updates_delta==2
+    assert all(record.combined_loss_for_reporting == record.base_loss + record.replay_loss for record in result.records)
 
 def test_replay_changes_parameter_trajectory(synthetic_fixture):
     a,ra=run(synthetic_fixture,[]);b,rb=run(synthetic_fixture,[x.sample_id for x in synthetic_fixture.t_pool.records[:2]])

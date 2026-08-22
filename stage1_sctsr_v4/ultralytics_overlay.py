@@ -430,6 +430,11 @@ def run_ultralytics_classification_epoch(
         global_step += 1
         optimizer_steps += 1
         if step_receipt_sink is not None:
+            # Persist the exact scalar operands used by the evidence validator.
+            # Adding the float32 tensors first can differ from adding their
+            # serialized float64 values by more than the ledger's 1e-8 guard.
+            base_loss_for_reporting = float(base_loss.detach().cpu())
+            replay_loss_for_reporting = float(replay_loss.detach().cpu())
             step_receipt_sink(
                 UpstreamStepReceipt(
                     epoch=epoch,
@@ -438,9 +443,9 @@ def run_ultralytics_classification_epoch(
                     global_step_after=global_step,
                     base_batch_size=int(batch["cls"].shape[0]),
                     replay_microbatch_size=len(replay_ids),
-                    base_loss=float(base_loss.detach().cpu()),
-                    replay_loss=float(replay_loss.detach().cpu()),
-                    combined_loss_for_reporting=float((base_loss + replay_loss).detach().cpu()),
+                    base_loss=base_loss_for_reporting,
+                    replay_loss=replay_loss_for_reporting,
+                    combined_loss_for_reporting=base_loss_for_reporting + replay_loss_for_reporting,
                     base_loss_items=_loss_items(trainer.loss_items, base_loss),
                     parameter_grad_norm_before_clip=float(clip_probe.get("before", 0.0)),
                     parameter_grad_norm_after_clip=float(clip_probe.get("after", 0.0)),

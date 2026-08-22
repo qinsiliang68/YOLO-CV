@@ -442,14 +442,19 @@ def run_fixed_step_epoch(
             ema.update(model)
         after_ema = ema.updates if ema is not None else 0
 
+        # Persist the exact scalar operands used by the evidence validator.
+        # Adding the float32 tensors first can differ from adding their
+        # serialized float64 values by more than the ledger's 1e-8 guard.
+        base_loss_for_reporting = float(base_loss.detach().cpu())
+        replay_loss_for_reporting = float(replay_loss.detach().cpu())
         step_records.append(
             StepRuntimeRecord(
                 base_step_index=step_index,
                 base_batch_size=int(labels.shape[0]),
                 replay_microbatch_size=len(replay_ids),
-                base_loss=float(base_loss.detach().cpu()),
-                replay_loss=float(replay_loss.detach().cpu()),
-                combined_loss_for_reporting=float((base_loss + replay_loss).detach().cpu()),
+                base_loss=base_loss_for_reporting,
+                replay_loss=replay_loss_for_reporting,
+                combined_loss_for_reporting=base_loss_for_reporting + replay_loss_for_reporting,
                 parameter_grad_norm_before_clip=grad_before,
                 parameter_grad_norm_after_clip=grad_after,
                 clip_max_norm=clip_max_norm,
