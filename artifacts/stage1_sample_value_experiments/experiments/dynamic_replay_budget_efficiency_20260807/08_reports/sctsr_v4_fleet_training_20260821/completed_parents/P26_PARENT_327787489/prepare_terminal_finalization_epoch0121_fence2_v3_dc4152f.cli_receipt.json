@@ -1,0 +1,11 @@
+{
+    "status":  "PASS",
+    "exit_code":  0,
+    "started_at_utc":  "2026-08-22T01:42:29.4457546Z",
+    "finished_at_utc":  "2026-08-22T01:42:35.0323287Z",
+    "script_path":  "C:/Users/ASUS/Desktop/ssh/AI/sctsr_v4_fleet_control_20260821/P26_parent_327787489_v3_20a9558/recovery/prepare_parent_terminal_recovery_v3_dc4152f.py",
+    "script_sha256":  "4A7A907730A2C8C9E80731144EC428178D29FF4426D57F4598739F0957778167",
+    "log_path":  "C:/Users/ASUS/Desktop/ssh/AI/sctsr_v4_fleet_control_20260821/P26_parent_327787489_v3_20a9558/logs/prepare_terminal_finalization_epoch0121_fence2_v3_dc4152f.console.log",
+    "log_bytes":  1072,
+    "log_sha256":  "C0409459ECD3A4C7EF81AB20A901217C0F46EF5D7897FAB9937B44A16D998C8D"
+}

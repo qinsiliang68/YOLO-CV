@@ -1,0 +1,75 @@
+{
+    "status":  "PASS_TASK_RUNNING",
+    "task_name":  "SCTSR_P26_FORMAL_PARENT_327787489_TERMINAL_FINALIZATION_E121_FENCE2_20260822_V3_DYNAMIC_ROOT_DC4152F",
+    "output_root":  "D:/ssh/AI/artifacts/sctsr_v4_formal_discovery_parent_327787489_20260821_v3_20a9558",
+    "started_at_utc":  "2026-08-22T01:47:07.6969661Z",
+    "task_state":  "Running",
+    "last_task_result":  267009,
+    "processes":  [
+                      {
+                          "Id":  10472,
+                          "ProcessName":  "powershell",
+                          "StartTime":  "\/Date(1784867274992)\/",
+                          "Path":  "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe"
+                      },
+                      {
+                          "Id":  11736,
+                          "ProcessName":  "powershell",
+                          "StartTime":  "\/Date(1787363227545)\/",
+                          "Path":  "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe"
+                      },
+                      {
+                          "Id":  20516,
+                          "ProcessName":  "powershell",
+                          "StartTime":  "\/Date(1784768424087)\/",
+                          "Path":  "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe"
+                      },
+                      {
+                          "Id":  20528,
+                          "ProcessName":  "powershell",
+                          "StartTime":  "\/Date(1784949988344)\/",
+                          "Path":  "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe"
+                      },
+                      {
+                          "Id":  22248,
+                          "ProcessName":  "powershell",
+                          "StartTime":  "\/Date(1787363230924)\/",
+                          "Path":  "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe"
+                      },
+                      {
+                          "Id":  10188,
+                          "ProcessName":  "python",
+                          "StartTime":  "\/Date(1787363231202)\/",
+                          "Path":  "C:\\Users\\ASUS\\Desktop\\ssh\\AI\\sctsr_source_505ef13_sparse_v1\\.venv\\Scripts\\python.exe"
+                      },
+                      {
+                          "Id":  17620,
+                          "ProcessName":  "python",
+                          "StartTime":  "\/Date(1787363231213)\/",
+                          "Path":  "C:\\Users\\ASUS\\AppData\\Roaming\\uv\\python\\cpython-3.11-windows-x86_64-none\\python.exe"
+                      },
+                      {
+                          "Id":  19712,
+                          "ProcessName":  "uv",
+                          "StartTime":  "\/Date(1787363231182)\/",
+                          "Path":  "C:\\Users\\ASUS\\.local\\bin\\uv.exe"
+                      }
+                  ],
+    "gpu":  "GPU-2d7ed3d0-1cd5-4928-a569-7bed902a2ff4, 409, 1, 33, 370.00",
+    "available_memory_mb":  24486,
+    "disks":  [
+                  {
+                      "DeviceID":  "C:",
+                      "FreeSpace":  45946703872,
+                      "Size":  251723583488
+                  },
+                  {
+                      "DeviceID":  "D:",
+                      "FreeSpace":  755773378560,
+                      "Size":  998055604224
+                  }
+              ],
+    "preparation_receipt_sha256":  "DBFEECCB80A58C0E82441217665122E63893E58D3B39DC368892EDF688A774A9",
+    "training_epochs_rerun":  0,
+    "failed_artifacts_preserved":  true
+}
