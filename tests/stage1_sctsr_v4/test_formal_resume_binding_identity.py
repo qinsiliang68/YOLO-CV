@@ -3,6 +3,7 @@ from __future__ import annotations
 from copy import deepcopy
 
 from stage1_sctsr_v4.formal_training import _resume_stable_trainer_binding_value
+from stage1_sctsr_v4.run_validation import _resume_trainer_binding_field_matches
 from stage1_sctsr_v4.serialization import stable_digest
 
 
@@ -56,6 +57,11 @@ def test_resume_dataset_identity_allows_only_relocated_evidence_ledgers() -> Non
     assert _resume_stable_trainer_binding_value("dataset_binding", original) == _resume_stable_trainer_binding_value(
         "dataset_binding", resumed
     )
+    assert _resume_trainer_binding_field_matches(
+        {"dataset_binding": original},
+        {"dataset_binding": resumed},
+        "dataset_binding",
+    )
 
 
 def test_resume_dataset_identity_still_rejects_changed_evidence_or_content() -> None:
@@ -71,6 +77,11 @@ def test_resume_dataset_identity_still_rejects_changed_evidence_or_content() -> 
     )
     assert _resume_stable_trainer_binding_value("dataset_binding", original) != _resume_stable_trainer_binding_value(
         "dataset_binding", changed_evidence
+    )
+    assert not _resume_trainer_binding_field_matches(
+        {"dataset_binding": original},
+        {"dataset_binding": changed_evidence},
+        "dataset_binding",
     )
 
     changed_content = deepcopy(original)

@@ -12,6 +12,7 @@ from .epoch_transaction import validate_receipt_chain
 from .errors import ErrorCode, SctsrError
 from .evaluation import compute_tie_safe_frontier
 from .exposure_ledger import validate_exposure_rows
+from .formal_training import _resume_stable_trainer_binding_value
 from .logical_artifact_index import LogicalArtifactEntry, LogicalArtifactIndex
 from .occurrence_ledger import validate_occurrence_rows
 from .prediction_artifact import (
@@ -53,6 +54,17 @@ def _closeout_failure(message: str, *, observed: Any = None, expected: Any = Non
 def _require(condition: bool, message: str, *, observed: Any = None, expected: Any = None) -> None:
     if not condition:
         raise _closeout_failure(message, observed=observed, expected=expected)
+
+
+def _resume_trainer_binding_field_matches(
+    original_binding: Mapping[str, Any],
+    resume_binding: Mapping[str, Any],
+    field: str,
+) -> bool:
+    return _resume_stable_trainer_binding_value(field, original_binding.get(field)) == _resume_stable_trainer_binding_value(
+        field,
+        resume_binding.get(field),
+    )
 
 
 def build_artifact_index(run_root: str | Path) -> dict[str, Any]:
@@ -701,7 +713,11 @@ def _validate_formal_tree(root: Path, manifest: Mapping[str, Any]) -> dict[str, 
                 "dataset_content_binding",
                 "training_seed",
             ):
-                _require(resume_binding.get(field) == trainer_binding.get(field), "Resume trainer changed a stable scientific binding", observed=field)
+                _require(
+                    _resume_trainer_binding_field_matches(trainer_binding, resume_binding, field),
+                    "Resume trainer changed a stable scientific binding",
+                    observed=field,
+                )
             setup_root = Path(str(resume_binding.get("output_root", ""))).resolve()
             try:
                 setup_root.relative_to((root / "10_resume_setup").resolve())
