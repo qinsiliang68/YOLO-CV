@@ -1,0 +1,17 @@
+{
+    "schema_version":  "sctsr.p25.dosvc_stop.v1",
+    "status":  "PASS_DOSVC_STOPPED",
+    "node":  "P25",
+    "recorded_at_utc":  "2026-08-21T23:48:41.5521620Z",
+    "dosvc_before":  "Running",
+    "dosvc_after":  "Stopped",
+    "todesk_before":  [
+                          "4548|ToDesk",
+                          "11604|ToDesk"
+                      ],
+    "todesk_after":  [
+                         "4548|ToDesk",
+                         "11604|ToDesk"
+                     ],
+    "todesk_untouched":  true
+}

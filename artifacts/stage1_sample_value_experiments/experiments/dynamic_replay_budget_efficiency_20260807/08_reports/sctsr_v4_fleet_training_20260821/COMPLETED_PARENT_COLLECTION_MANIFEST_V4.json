@@ -1,0 +1,147 @@
+{
+  "schema_version": "sctsr.v4.completed_parent_collection.v4",
+  "status": "PASS_LIGHTWEIGHT_COLLECTION",
+  "generated_at_utc": "2026-08-22T01:34:55.6529823Z",
+  "collection_policy": "LIGHTWEIGHT_JSON_AND_CONSOLE_LOGS_NO_PT_NO_DATASET",
+  "base_manifest": "COMPLETED_PARENT_COLLECTION_MANIFEST_V3.json",
+  "base_manifest_sha256": "7B39ACD56FB58998234F60833C50CCED01347AEC82055730EEA54B7523F7F356",
+  "base_completed_parent_count": 4,
+  "completed_parent_count": 5,
+  "covered_nodes": ["P12", "P13", "P14", "P24", "P25"],
+  "added_parents": [
+    {
+      "node": "P25",
+      "source_ip": "192.168.100.6",
+      "logical_run_id": "PARENT_431404666",
+      "training_seed": 431404666,
+      "status": "FORMAL_PARENT_COMPLETE",
+      "terminal_epoch": 120,
+      "checkpoint_sha256": "E8CE7912A4199047B2812981425F00031CDE45D070A7DD74ECBC761576792665",
+      "artifact_index_digest": "F8792CE1F4992C87E82BBC7553112099F9DEB890E8DDE93F1140096B075F9723",
+      "runner_status": "PASS",
+      "claim_status": "COMPLETE",
+      "fence_generation": 2,
+      "execution_id": "EXEC_SCTSR_D_431404666_PARENT_TERMINAL_FINALIZATION_E121_FENCE2_20260821_P25_DC4152F_R3",
+      "training_epochs_rerun": 0,
+      "launcher_attempts": 5,
+      "failed_launcher_attempts": 4,
+      "failed_attempt_artifacts_preserved": true,
+      "local_archive": "completed_parents/P25_PARENT_431404666",
+      "local_file_count": 22,
+      "local_files": [
+        {
+          "name": "3E71965C105F974FBF0DF14E86993488F9B77242CA18E1C8BA6BBD3E70B6CBFC.fence_00000002.terminal.json",
+          "bytes": 645,
+          "sha256": "2DE670ED2C0A52019D4A36DCB33C7170FBCFCEADEEF9EA703648D05D524BCD7C"
+        },
+        {
+          "name": "3E71965C105F974FBF0DF14E86993488F9B77242CA18E1C8BA6BBD3E70B6CBFC.heartbeat.json",
+          "bytes": 828,
+          "sha256": "563F7A5709B69972CB12316D358728DFCF1C9318E2BFDA62C38121A9B9D2E4CC"
+        },
+        {
+          "name": "ARTIFACT_INDEX.json",
+          "bytes": 210813,
+          "sha256": "1F0DCCFE3DE088DE856C16EE84AE154C63996ED1ADEB586F449BC16B990351FA"
+        },
+        {
+          "name": "ARTIFACT_INDEX_GENERATIONS.json",
+          "bytes": 57675,
+          "sha256": "291827E4E260EE91C489807064D7C1570E7822DB5C2CA2D23106FA06A85F2AA3"
+        },
+        {
+          "name": "FORMAL_COMPLETION_RECEIPT.json",
+          "bytes": 1066,
+          "sha256": "84D9587F791F676DB947BC71446F6B55CB8A262435C5C7CC270C1ED034BE2F86"
+        },
+        {
+          "name": "GENERATION_MANIFEST.json",
+          "bytes": 2141,
+          "sha256": "6DB1FC926D85E6FB27859199B025DF9CC1AC01D0A6F5D4073CC6C7FB5791D821"
+        },
+        {
+          "name": "P25_DOSVC_STOP_BEFORE_TERMINAL_FINALIZATION_20260821T234841Z.json",
+          "bytes": 533,
+          "sha256": "CEF3D6D3A1E424FB8DA2C3651E7DE0F853DF6AA341A3E6955992E17B8F9229AA"
+        },
+        {
+          "name": "P25_TERMINAL_FINALIZATION_E121_FENCE2_V3_DC4152F_TASK_START_20260821T235303Z.json",
+          "bytes": 1740,
+          "sha256": "E0EE58B8DCDAA411CA5E5F5AE7FB933DEB191119831D6FE3CDDEF0F9B44AE327"
+        },
+        {
+          "name": "P25_TERMINAL_FINALIZATION_E121_FENCE2_V4_DC4152F_TASK_START_20260821T235617Z.json",
+          "bytes": 1740,
+          "sha256": "68E9C7515A1FD8EF59FD152D599A8BE2DD398BFFC8AA709238CFCD5EAA9FA782"
+        },
+        {
+          "name": "P25_TERMINAL_FINALIZATION_E121_FENCE2_V5_DC4152F_TASK_START_20260821T235904Z.json",
+          "bytes": 1738,
+          "sha256": "A4FDBBB798CECF25F7CDBDE9F10E5516CE77357C876D4D4180EC7D94F6EE6AD0"
+        },
+        {
+          "name": "P25_TERMINAL_FINALIZATION_E121_FENCE2_V5B_PYTHONPATH_DC4152F_TASK_START_20260822T000224Z.json",
+          "bytes": 1750,
+          "sha256": "73231D5652BBEAF80A00A6CF5C393F52B9ECBA70C51383418B2EAD07FA2C81EA"
+        },
+        {
+          "name": "P25_TERMINAL_FINALIZATION_E121_FENCE2_V5C_DYNAMIC_ROOT_DC4152F_TASK_OUTCOME_20260822T013132Z.json",
+          "bytes": 5415,
+          "sha256": "33946A33A4D9D4E29D6330657E83387733AB394FB0805097BD7419D36E5E06D6"
+        },
+        {
+          "name": "P25_TERMINAL_FINALIZATION_E121_FENCE2_V5C_DYNAMIC_ROOT_DC4152F_TASK_START_20260822T000537Z.json",
+          "bytes": 3046,
+          "sha256": "7DC690E745BD64E46B8A7439CBB326311CE28551C95CEB62F557A3967BB7817B"
+        },
+        {
+          "name": "PARENT_RECEIPT.json",
+          "bytes": 2173,
+          "sha256": "187F4B63AB93E2F9F22DD240DAED4D4FAF8346F605BCA0F42D313076629622ED"
+        },
+        {
+          "name": "prepare_terminal_finalization_epoch_0121_fence_2_v3_dc4152f.json",
+          "bytes": 2863,
+          "sha256": "0446917012F34EA0F0DD185A40F3B8073E49C193A06F53F5BFB009A57D7FEE86"
+        },
+        {
+          "name": "ROLLING_RECOVERY_POINTER.json",
+          "bytes": 1275,
+          "sha256": "2C59A6BE66679F0DA4DB73C895E980E351C7F60D3E7E681604C892DF9FBF7528"
+        },
+        {
+          "name": "run_common_parent.terminal_finalization_epoch0121_fence2_v5_fixdc4152f.console.log",
+          "bytes": 1550,
+          "sha256": "0AEE288578A7A9120DE8C6B2295C573C6198D5A11EF11B74BA576F01BC217BDF"
+        },
+        {
+          "name": "run_common_parent.terminal_finalization_epoch0121_fence2_v5b_pythonpath_fixdc4152f.console.log",
+          "bytes": 2016,
+          "sha256": "474DA319BAE68F25BEA6901519A83C46D103654821783D5E468685E78207A5DC"
+        },
+        {
+          "name": "run_common_parent.terminal_finalization_epoch0121_fence2_v5c_dynamic_root_fixdc4152f.console.log",
+          "bytes": 1559572,
+          "sha256": "A53FF2E4AB192E96B03FB796FFD4850D6FB803C9B6AC4D4E3B261F8CEA3DBF3B"
+        },
+        {
+          "name": "RUN_MANIFEST.json",
+          "bytes": 5532,
+          "sha256": "D48E06A55BDD03798E26E7D1172FF2F79274E609C6F7EEE35521C005790BA257"
+        },
+        {
+          "name": "sctsr_v4_formal_discovery_parent_431404666_20260821_v2_20a9558.run_common_parent.cli_receipt.json",
+          "bytes": 2724,
+          "sha256": "D85C8BE5AD7873F101569FC8D4FB4F64B5A276F2D601DB2826215C16EEF50157"
+        },
+        {
+          "name": "sctsr_v4_formal_discovery_parent_431404666_20260821_v2_20a9558.terminal_finalization_epoch0121_fence2_v5c_dynamic_root_fixdc4152f.run_common_parent.cli_receipt.json",
+          "bytes": 28376,
+          "sha256": "A706E598FDC552259363DE6F223E3E4C3E6750788205BFDF60E3244F7E595B48"
+        }
+      ],
+      "bulk_checkpoints_collected": false,
+      "datasets_collected": false
+    }
+  ]
+}

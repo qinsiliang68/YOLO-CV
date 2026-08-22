@@ -1,0 +1,39 @@
+{
+    "status":  "FAIL_TASK_NOT_RUNNING",
+    "task_name":  "SCTSR_P25_FORMAL_PARENT_431404666_TERMINAL_FINALIZATION_E121_FENCE2_20260821_V5B_PYTHONPATH_DC4152F",
+    "output_root":  "D:/ssh/AI/artifacts/sctsr_v4_formal_discovery_parent_431404666_20260821_v2_20a9558",
+    "started_at_utc":  "2026-08-22T00:02:24.5152647Z",
+    "task_state":  "Ready",
+    "last_task_result":  1,
+    "processes":  [
+                      {
+                          "Id":  2432,
+                          "ProcessName":  "powershell",
+                          "StartTime":  "\/Date(1787356944218)\/",
+                          "Path":  "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe"
+                      },
+                      {
+                          "Id":  8956,
+                          "ProcessName":  "powershell",
+                          "StartTime":  "\/Date(1787356944387)\/",
+                          "Path":  "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe"
+                      }
+                  ],
+    "gpu":  "GPU-d066e77b-915d-62f8-7f35-15f75ac5e4de, 0, 0, 31, 370.00",
+    "available_memory_mb":  23276,
+    "disks":  [
+                  {
+                      "DeviceID":  "C:",
+                      "FreeSpace":  54790287360,
+                      "Size":  251723583488
+                  },
+                  {
+                      "DeviceID":  "D:",
+                      "FreeSpace":  898039132160,
+                      "Size":  1000203087872
+                  }
+              ],
+    "preparation_receipt_sha256":  "0446917012F34EA0F0DD185A40F3B8073E49C193A06F53F5BFB009A57D7FEE86",
+    "training_epochs_rerun":  0,
+    "failed_artifacts_preserved":  true
+}
