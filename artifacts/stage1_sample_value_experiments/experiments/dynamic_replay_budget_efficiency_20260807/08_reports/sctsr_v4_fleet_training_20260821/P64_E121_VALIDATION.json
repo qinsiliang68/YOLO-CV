@@ -1,0 +1,93 @@
+{
+  "schema_version": "stage1.sctsr.p64.epoch121_deployment_validation.final.v1",
+  "status": "PASS",
+  "validated_at_utc": "2026-08-24T17:39:04.723114+00:00",
+  "node_id": "P64",
+  "run_id": "SCTSR_DISCOVERY_S008_T_U",
+  "arm_id": "T_U",
+  "training_seed": 906427910,
+  "epoch": 121,
+  "generation": 1,
+  "validator_corrections": [
+    "V1 incorrectly treated raw schedule sample_ids order as runtime step-slot order.",
+    "V2 incorrectly treated replay_role as the pool policy. replay_role is the per-sample label role; selection_policy and identity_pool_id bind T_STRESS."
+  ],
+  "v2_receipt_path": "C:\\Users\\ASUS\\Desktop\\ssh\\AI\\sctsr_fleet_deploy_20260821\\P64\\s008_t_u_20260824_v1\\P64_EPOCH0121_DEPLOYMENT_VALIDATION_V2.json",
+  "v2_receipt_sha256": "8AE4C82E365BC054EDB9B1487112BA52C143AB17C5625213164D51A8DE135A68",
+  "v2_material_checks_pass": true,
+  "parent_sha256": "4016DEDC5339B2076B6020163D163E334DAFC5848DA5044AA54B96FEBDFE4570",
+  "source_tree_digest": "97F3E579511066B4028226165D3000F0C217F2F8FE80E483908848B1AF37823B",
+  "generation_digest": "14897598D5BF748C4E012D44F44D160255B233A5B9012EE0AF70DA8F7B14B0F1",
+  "generation_manifest_sha256": "943AED2E093A3E354DB3065337269F1A3D307295CA496BCD78F8F1E452C0DBEC",
+  "checkpoint_sha256": "A57889B91356CCA3C77E4B3A8ADBCEA9F0E8C197FBB9F32D979C70251A5FEF6F",
+  "all_generation_files_match": true,
+  "occurrence_rows": 120600,
+  "base_rows": 120000,
+  "base_step_count": 938,
+  "replay_rows": 600,
+  "unique_replay_ids": 600,
+  "replay_id_set_matches_schedule": true,
+  "replay_slot_mapping_matches_frozen_plan": true,
+  "all_replay_slots_bind_to_base_step": true,
+  "schedule_identity_policy": "T_STRESS",
+  "selection_policy_values": [
+    "T_STRESS"
+  ],
+  "identity_pool_id_values": [
+    "T_STRESS_POOL"
+  ],
+  "replay_role_values": [
+    "normal_replay"
+  ],
+  "replay_roles_match_labels": true,
+  "schedule_digest": "2BEAB0016B677EB548FC5CA9288C29FDFDCD746777C058D4D98A7D5E85110CA4",
+  "identity_pool_digest": "D9702F54DA3D9C7C4E27B657B7EC7A5FD235DEC72E2257AE5029E0C62D7482C7",
+  "latest_completed_epoch": 122,
+  "active_epochs": [
+    123
+  ],
+  "files": [
+    {
+      "path": "04_ledgers/exposure/run_id=SCTSR_DISCOVERY_S008_T_U/epoch=0121/part-00000.parquet",
+      "bytes": 15706,
+      "sha256": "AB4AE35C8070DC21C61EA73CDA68281A8170F308D5A9ACC37B5AFB8BD33DDE72",
+      "matches_generation_manifest": true
+    },
+    {
+      "path": "04_ledgers/occurrence/run_id=SCTSR_DISCOVERY_S008_T_U/epoch=0121/part-00000.parquet",
+      "bytes": 25268820,
+      "sha256": "EB59A42A785AE3C28EE4732C5430D47A3D25CC885A7CB9C41F400507484D75A7",
+      "matches_generation_manifest": true
+    },
+    {
+      "path": "04_ledgers/optimizer_step/run_id=SCTSR_DISCOVERY_S008_T_U/epoch=0121/part-00000.parquet",
+      "bytes": 13387312,
+      "sha256": "B3A70EDA1BDFE81F69C1C022C1E6EEB190B473E1D38C6044A5887CA5EB88F97B",
+      "matches_generation_manifest": true
+    },
+    {
+      "path": "04_ledgers/telemetry/run_id=SCTSR_DISCOVERY_S008_T_U/epoch=0121/part-00000.parquet",
+      "bytes": 41687,
+      "sha256": "8DC49DB8B4AB8D2980CB28FDBF8BC5E4A4AAD98FE4A5646EBA1A24983115FDAF",
+      "matches_generation_manifest": true
+    },
+    {
+      "path": "05_checkpoints/rolling_epoch_0121.generation_1.pt",
+      "bytes": 205985518,
+      "sha256": "A57889B91356CCA3C77E4B3A8ADBCEA9F0E8C197FBB9F32D979C70251A5FEF6F",
+      "matches_generation_manifest": true
+    },
+    {
+      "path": "EPOCH_EVIDENCE_SUMMARY.json",
+      "bytes": 53857,
+      "sha256": "526371DB7760C5C628F8B42047C83561C578C7C8AAE2E0D7FC8E011EE91490D3",
+      "matches_generation_manifest": true
+    },
+    {
+      "path": "TRANSACTION_IDENTITY.json",
+      "bytes": 760,
+      "sha256": "D311952C1AC075AD5A3D46653FE89018E4B39EA184190FB1928084DD6AC03243",
+      "matches_generation_manifest": true
+    }
+  ]
+}
