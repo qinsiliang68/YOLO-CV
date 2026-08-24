@@ -1,0 +1,123 @@
+{
+  "schema_version": "stage1.sctsr.p56.epoch121_deployment_validation.final.v1",
+  "status": "PASS",
+  "validated_at_utc": "2026-08-24T19:26:26.317922Z",
+  "node_id": "P56",
+  "hostname": "DESKTOP-1KDVL14",
+  "run_id": "SCTSR_DISCOVERY_S003_T_U",
+  "arm_id": "T_U",
+  "training_seed": 322761319,
+  "epoch": 121,
+  "generation": 1,
+  "execution_claim_generation": 2,
+  "source_commit": "20a9558e36b8782857f54670ae8cf79d3fb2554d",
+  "source_tree_digest": "2CF4A100203B46EF69E5BF47AE378F1241BB59985E393C844D8324290C047A90",
+  "parent_sha256": "1AE55561CE2178E7879803A0D53613E519863096B2845B7743A8F44D858417C8",
+  "generation_digest": "FA5E479475C9A849F55F9844B336D404F8205E6367FD4FD0807C9B7147885161",
+  "generation_manifest_sha256": "DF5BEB4A0A5C631188D182FB9B7933387A595B332605072E9A9E76C0A9B20036",
+  "checkpoint_sha256": "52CB20F26AEF3B6CD54622C000C859E919FC820B2FF7D9AD6BD731BDB23ECD62",
+  "all_generation_files_match": true,
+  "occurrence_rows": 120600,
+  "base_rows": 120000,
+  "base_step_count": 938,
+  "replay_rows": 600,
+  "unique_replay_ids": 600,
+  "replay_id_set_matches_schedule": true,
+  "replay_slot_mapping_matches_frozen_plan": true,
+  "all_replay_ids_in_identity_pool": true,
+  "schedule_identity_policy": "T_STRESS",
+  "selection_policy_values": [
+    "T_STRESS"
+  ],
+  "identity_pool_id_values": [
+    "T_STRESS_POOL"
+  ],
+  "replay_role_values": [
+    "normal_replay"
+  ],
+  "replay_roles_match_training_identity_manifest": true,
+  "schedule_digest": "2BEAB0016B677EB548FC5CA9288C29FDFDCD746777C058D4D98A7D5E85110CA4",
+  "schedule_file_sha256": "9424D568CC9B6EC023B7DDD58DD854F83B26B405F8E315F4B814F76821BDD755",
+  "identity_pool_digest": "D9702F54DA3D9C7C4E27B657B7EC7A5FD235DEC72E2257AE5029E0C62D7482C7",
+  "identity_pool_file_sha256": "341342CD371758D56676A2FF6306CEDB5998D064103842CDEB3866AD77404207",
+  "latest_completed_epoch_at_snapshot": 122,
+  "active_epochs_at_snapshot": [
+    123
+  ],
+  "task_state_at_snapshot": "Running",
+  "resource_snapshot": {
+    "gpu_uuid": "GPU-a65bd2f0-c81a-9dfa-b816-262b6f46951a",
+    "gpu_memory_used_mib": 7184,
+    "gpu_memory_total_mib": 24576,
+    "gpu_temperature_c": 81,
+    "gpu_power_w": 256.47,
+    "gpu_power_limit_w": 370.0,
+    "gpu_utilization_percent": 17,
+    "temperature_policy_result": "NORMAL_78_TO_82C_NO_ADJUSTMENT",
+    "system_memory_free_gib": 13.48,
+    "c_free_gib": 60.31,
+    "d_free_gib": 231.87
+  },
+  "data_materialization": {
+    "canonical_hardlink_count": 384000,
+    "canonical_logical_bytes": 82637967451,
+    "classification_view_hardlink_count": 143996,
+    "canonical_receipt_sha256": "50E054BF4697B005CF31777D417B4F9A52D061F75D0286F5A3D08D46C4AED064",
+    "classification_view_receipt_sha256": "0AE2924D97C1F20E2BEDD19C407C675F754931C218D13AE9F7B4251EDBDC0927",
+    "image_content_network_copy_bytes": 0,
+    "physical_content_sha_pass_count": 1,
+    "resume_reused_completed_validation": true
+  },
+  "recovery": {
+    "mode": "LEGAL_PREOUTPUT_RESUME_GENERATION_2",
+    "failed_generation_1_terminal_digest": "1D47E32B87991AF82608A72BB4DA21C9E190957FC4106D363A0FA1C903D8D8AE",
+    "generation_2_token_sha256": "00C6E0136DA5C0BAD0FBCB509BA8A3AAFA68AC176BA5DD11A8BEA1C73A4E1A1D",
+    "generation_2_ack_sha256": "0C2BDE5423F897C792AA355641F8F24447C900B1CCC90F558AF69E7A4A3F0798",
+    "failed_attempts_preserved": true,
+    "failed_setup_directory": "D:\\ssh\\AI\\artifacts\\sctsr_v4_formal_discovery_s003_t_u_20260825_20a9558.setup_failed.86E308ED747D"
+  },
+  "files": [
+    {
+      "path": "04_ledgers/exposure/run_id=SCTSR_DISCOVERY_S003_T_U/epoch=0121/part-00000.parquet",
+      "bytes": 15710,
+      "sha256": "CF98DB54A86C24C8657A15E9FFA1FC2D5775DC0837920A99A3DAE75780661535",
+      "matches_generation_manifest": true
+    },
+    {
+      "path": "04_ledgers/occurrence/run_id=SCTSR_DISCOVERY_S003_T_U/epoch=0121/part-00000.parquet",
+      "bytes": 25270422,
+      "sha256": "81371F1FE1AF9117510B4382141D3E4BF0B73B408BC195C891CB06D51472E462",
+      "matches_generation_manifest": true
+    },
+    {
+      "path": "04_ledgers/optimizer_step/run_id=SCTSR_DISCOVERY_S003_T_U/epoch=0121/part-00000.parquet",
+      "bytes": 13391506,
+      "sha256": "4BF41FD72A29C90A69C6DBCED998684473AB0C0FDE94988C801953EE4C791801",
+      "matches_generation_manifest": true
+    },
+    {
+      "path": "04_ledgers/telemetry/run_id=SCTSR_DISCOVERY_S003_T_U/epoch=0121/part-00000.parquet",
+      "bytes": 40508,
+      "sha256": "F0A8B943E50DD4FFADB7841719094B56CA931A289D0ED4C0C78BF534963864CB",
+      "matches_generation_manifest": true
+    },
+    {
+      "path": "05_checkpoints/rolling_epoch_0121.generation_1.pt",
+      "bytes": 205985518,
+      "sha256": "52CB20F26AEF3B6CD54622C000C859E919FC820B2FF7D9AD6BD731BDB23ECD62",
+      "matches_generation_manifest": true
+    },
+    {
+      "path": "EPOCH_EVIDENCE_SUMMARY.json",
+      "bytes": 53855,
+      "sha256": "B01858F7F234EF04E7816DFF53B0B19AA9323606FF2176D465ABC9ED5335C521",
+      "matches_generation_manifest": true
+    },
+    {
+      "path": "TRANSACTION_IDENTITY.json",
+      "bytes": 760,
+      "sha256": "52AE36E26BC69C0BADE53789EE23CDF21FA5DE11478B54EDC6C37410B961C802",
+      "matches_generation_manifest": true
+    }
+  ]
+}
