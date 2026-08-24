@@ -496,6 +496,8 @@ def test_materialized_role_contract_accepts_exact_train_and_val_hardlink_trees(t
     val_role = materialized_root / "val"
     train_role.mkdir(parents=True)
     val_role.mkdir(parents=True)
+    (materialized_root / "train.cache").write_bytes(b"regular-train-cache")
+    (materialized_root / "val.cache").write_bytes(b"regular-val-cache")
     content = {}
     bindings = []
     for role, role_root, source_role in (

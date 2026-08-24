@@ -376,6 +376,10 @@ def _validate_materialized_role_set(
     if not enforce_exact_top_level:
         return
     observed: set[Path] = set()
+    allowed_cache_files = {
+        materialized_root / "train.cache",
+        materialized_root / "val.cache",
+    }
     with os.scandir(materialized_root) as entries:
         for entry in entries:
             entry_path = _absolute_without_resolving(entry.path)
@@ -386,6 +390,8 @@ def _validate_materialized_role_set(
                     "Materialized classification root contains a symlink, junction, or reparse point",
                     artifact_path=str(entry_path),
                 )
+            if entry.is_file(follow_symlinks=False) and entry_path in allowed_cache_files:
+                continue
             if not entry.is_dir(follow_symlinks=False) or entry_path not in allowed_role_roots:
                 raise SctsrError(
                     ErrorCode.DATASET_CONTENT_MISMATCH,
