@@ -463,6 +463,7 @@ def validate_materialized_dataset_bytes(
     materialized_data_root: str | Path | None = None,
     materialized_role_root: str | Path | None = None,
     allowed_materialized_role_roots: Sequence[str | Path] | None = None,
+    canonical_physical_verification: Mapping[str, Any] | None = None,
     evidence_path: str | Path | None = None,
 ) -> dict[str, Any]:
     """Hash the exact physical files exposed by an upstream dataset.
@@ -474,6 +475,12 @@ def validate_materialized_dataset_bytes(
     this loader may consume.  The allowed role-root set binds the complete
     classification-view top level.  When omitted, the legacy same-root layout
     is retained only for isolated unit fixtures; formal callers bind both.
+
+    ``canonical_physical_verification`` is the receipt returned by
+    ``validate_registered_dataset_content(..., verify_physical_files=True)``
+    in the same invocation.  The loader file must still be the exact
+    canonical hardlink, so its bytes are already covered by that
+    authoritative pass and are not read again here.
     """
 
     identities = getattr(dataset, "identities", None)
@@ -491,6 +498,22 @@ def validate_materialized_dataset_bytes(
     evidence: list[dict[str, Any]] = []
     total_bytes = 0
     canonical_root = None if dataset_root is None else Path(dataset_root).resolve()
+    reuse_canonical_verification = canonical_physical_verification is not None
+    if reuse_canonical_verification:
+        verification = dict(canonical_physical_verification or {})
+        verification_root = Path(str(verification.get("dataset_root", ""))).resolve()
+        if (
+            canonical_root is None
+            or verification.get("schema_version") != "stage1.sctsr.dataset_content_validation.v1"
+            or verification.get("status") != "PASS"
+            or verification.get("physical_verification_enabled") is not True
+            or int(verification.get("physical_files_verified", 0)) <= 0
+            or verification_root != canonical_root
+        ):
+            raise SctsrError(
+                ErrorCode.DATASET_CONTENT_MISMATCH,
+                "Canonical physical verification cannot be reused for this materialized dataset",
+            )
     materialized_root = (
         canonical_root
         if materialized_data_root is None
@@ -544,10 +567,35 @@ def validate_materialized_dataset_bytes(
                 observed=sample_id,
                 artifact_path=str(path),
             )
-        observed_bytes = path.stat().st_size
-        observed_sha = sha256_file(path)
         expected_bytes = int(expected["image_bytes"])
         expected_sha = str(expected["image_sha256"]).upper()
+        canonical_path = None if canonical_root is None else (canonical_root / Path(sample_id)).resolve()
+        if canonical_path is not None:
+            try:
+                canonical_path.relative_to(canonical_root)
+            except ValueError as exc:
+                raise SctsrError(ErrorCode.DATASET_CONTENT_MISMATCH, "Canonical materialized identity escapes the registered dataset root", observed=sample_id) from exc
+            if not canonical_path.is_file():
+                raise SctsrError(ErrorCode.DATASET_CONTENT_MISMATCH, "Canonical source file is missing", observed=sample_id, artifact_path=str(canonical_path))
+        stat_result = path.stat()
+        observed_bytes = stat_result.st_size
+        samefile_as_canonical = False if canonical_path is None else os.path.samefile(path, canonical_path)
+        if canonical_path is not None and not samefile_as_canonical:
+            raise SctsrError(
+                ErrorCode.DATASET_CONTENT_MISMATCH,
+                "Materialized loader file is not the registered canonical hardlink",
+                artifact_path=str(path),
+                expected=canonical_path.as_posix(),
+            )
+        if canonical_path is not None and canonical_path.stat().st_size != expected_bytes:
+            raise SctsrError(
+                ErrorCode.DATASET_CONTENT_MISMATCH,
+                "Canonical source byte count differs from the frozen content ledger",
+                observed=canonical_path.stat().st_size,
+                expected=expected_bytes,
+                artifact_path=str(canonical_path),
+            )
+        observed_sha = expected_sha if reuse_canonical_verification else sha256_file(path)
         if observed_bytes != expected_bytes or observed_sha != expected_sha:
             raise SctsrError(
                 ErrorCode.DATASET_CONTENT_MISMATCH,
@@ -558,23 +606,6 @@ def validate_materialized_dataset_bytes(
             )
         total_bytes += observed_bytes
         selected_paths.add(path)
-        canonical_path = None if canonical_root is None else (canonical_root / Path(sample_id)).resolve()
-        if canonical_path is not None:
-            try:
-                canonical_path.relative_to(canonical_root)
-            except ValueError as exc:
-                raise SctsrError(ErrorCode.DATASET_CONTENT_MISMATCH, "Canonical materialized identity escapes the registered dataset root", observed=sample_id) from exc
-            if not canonical_path.is_file() or canonical_path.stat().st_size != expected_bytes or sha256_file(canonical_path) != expected_sha:
-                raise SctsrError(ErrorCode.DATASET_CONTENT_MISMATCH, "Canonical source bytes differ from the frozen content ledger", observed=sample_id, artifact_path=str(canonical_path))
-        stat_result = path.stat()
-        samefile_as_canonical = False if canonical_path is None else os.path.samefile(path, canonical_path)
-        if canonical_path is not None and not samefile_as_canonical:
-            raise SctsrError(
-                ErrorCode.DATASET_CONTENT_MISMATCH,
-                "Materialized loader file is not the registered canonical hardlink",
-                artifact_path=str(path),
-                expected=canonical_path.as_posix(),
-            )
         evidence.append(
             {
                 "role": role,
@@ -608,6 +639,11 @@ def validate_materialized_dataset_bytes(
         "materialized_role_root": "NOT_BOUND" if bound_role_root is None else bound_role_root.as_posix(),
         "allowed_materialized_role_roots": sorted(path.as_posix() for path in allowed_role_roots),
         "materialized_top_level_exact": materialized_data_root is not None,
+        "byte_verification_mode": (
+            "REGISTERED_CANONICAL_PHYSICAL_VERIFICATION_REUSED"
+            if reuse_canonical_verification
+            else "DIRECT_LOADER_SHA256"
+        ),
         "materialized_content_digest": stable_digest(
             sorted(evidence, key=lambda row: row["sample_id"])
         ),

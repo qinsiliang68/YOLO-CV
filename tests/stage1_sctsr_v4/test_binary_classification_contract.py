@@ -6,7 +6,7 @@ import pytest
 import torch
 
 from stage1_sctsr_v4.errors import ErrorCode, SctsrError
-from stage1_sctsr_v4.formal_cli import clear_ultralytics_classification_caches, validate_binary_classification_contract
+from stage1_sctsr_v4.formal_cli import inspect_ultralytics_classification_caches, validate_binary_classification_contract
 
 
 CLASSES = ["no_target", "target_defect"]
@@ -76,7 +76,7 @@ def test_binary_contract_rejects_every_two_class_mismatch(tmp_path, mutation):
     assert caught.value.code is ErrorCode.CONFIGURATION_MISMATCH
 
 
-def test_classification_cache_contract_removes_only_exact_regular_role_caches(tmp_path):
+def test_classification_cache_contract_preserves_and_binds_exact_regular_role_caches(tmp_path):
     (tmp_path / "train").mkdir()
     (tmp_path / "val").mkdir()
     (tmp_path / "train.cache").write_bytes(b"train-cache")
@@ -84,12 +84,25 @@ def test_classification_cache_contract_removes_only_exact_regular_role_caches(tm
     unrelated = tmp_path / "unexpected.cache"
     unrelated.write_bytes(b"must-remain")
 
-    removed = clear_ultralytics_classification_caches(tmp_path)
+    observed = inspect_ultralytics_classification_caches(tmp_path, bind_content=True)
 
-    assert [row["role"] for row in removed] == ["train", "val"]
-    assert not (tmp_path / "train.cache").exists()
-    assert not (tmp_path / "val.cache").exists()
+    assert [row["role"] for row in observed] == ["train", "val"]
+    assert [row["bytes"] for row in observed] == [11, 9]
+    assert all(len(row["sha256"]) == 64 for row in observed)
+    assert (tmp_path / "train.cache").read_bytes() == b"train-cache"
+    assert (tmp_path / "val.cache").read_bytes() == b"val-cache"
     assert unrelated.read_bytes() == b"must-remain"
+
+
+def test_classification_cache_pre_setup_inspection_does_not_rehash(tmp_path, monkeypatch):
+    (tmp_path / "train").mkdir()
+    (tmp_path / "val").mkdir()
+    (tmp_path / "train.cache").write_bytes(b"train-cache")
+    monkeypatch.setattr("stage1_sctsr_v4.formal_cli.sha256_file", lambda _path: pytest.fail("cache was re-hashed"))
+
+    observed = inspect_ultralytics_classification_caches(tmp_path, bind_content=False)
+
+    assert observed == [{"role": "train", "path": (tmp_path / "train.cache").as_posix(), "bytes": 11}]
 
 
 def test_classification_cache_contract_rejects_non_regular_role_cache(tmp_path):
@@ -98,6 +111,6 @@ def test_classification_cache_contract_rejects_non_regular_role_cache(tmp_path):
     (tmp_path / "train.cache").mkdir()
 
     with pytest.raises(SctsrError) as caught:
-        clear_ultralytics_classification_caches(tmp_path)
+        inspect_ultralytics_classification_caches(tmp_path, bind_content=False)
 
     assert caught.value.code is ErrorCode.DATASET_CONTENT_MISMATCH

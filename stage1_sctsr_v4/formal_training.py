@@ -342,12 +342,24 @@ def _prepare_run_root_after_upstream_setup(root_value: str | Path, *, execution_
     return root
 
 
-def _revalidate_prepared_dataset_bindings(prepared_trainer_binding: Mapping[str, Any]) -> None:
+def _revalidate_prepared_dataset_bindings(
+    prepared_trainer_binding: Mapping[str, Any],
+    *,
+    trainer: Any | None = None,
+) -> None:
     from .dataset_adapter import revalidate_materialized_dataset_binding
 
     dataset = prepared_trainer_binding.get("dataset_binding")
     if not isinstance(dataset, Mapping):
         raise SctsrError(ErrorCode.UPSTREAM_BINDING_FAILED, "Prepared trainer lacks materialized dataset evidence")
+    dataset_digest = stable_digest(dict(dataset))
+    marker_name = "_sctsr_fresh_materialized_dataset_binding_digest"
+    if trainer is not None and getattr(trainer, marker_name, None) == dataset_digest:
+        # build_prepared_trainer created and byte-bound these loaders in this
+        # invocation. Consume the one-shot marker instead of reading every
+        # hardlink again immediately before the adjacent run call.
+        delattr(trainer, marker_name)
+        return
     for field in ("train_materialized_content_binding", "val_model_materialized_content_binding"):
         binding = dataset.get(field)
         if not isinstance(binding, Mapping):
@@ -1089,7 +1101,7 @@ def run_prepared_common_parent(
     if execution_mode == "formal" and prepared_trainer_binding is None:
         raise SctsrError(ErrorCode.UPSTREAM_BINDING_FAILED, "Formal parent lacks its prepared trainer binding")
     if execution_mode == "formal":
-        _revalidate_prepared_dataset_bindings(dict(prepared_trainer_binding or {}))
+        _revalidate_prepared_dataset_bindings(dict(prepared_trainer_binding or {}), trainer=trainer)
     if execution_mode == "formal" and formal_input_binding is None:
         raise SctsrError(ErrorCode.ARTIFACT_VALIDATION_FAILED, "Formal parent lacks its immutable authorization-input binding")
     if resume_context is not None and execution_mode != "formal":
@@ -1360,7 +1372,7 @@ def run_prepared_branch(
     if execution_mode == "formal":
         if prepared_trainer_binding is None:
             raise SctsrError(ErrorCode.UPSTREAM_BINDING_FAILED, "Formal branch lacks its prepared trainer binding")
-        _revalidate_prepared_dataset_bindings(dict(prepared_trainer_binding))
+        _revalidate_prepared_dataset_bindings(dict(prepared_trainer_binding), trainer=trainer)
     lineage.validate(
         parent_sha=parent_sha, training_seed=identity.training_seed, arm_id=schedule.arm_id.value,
         source_digest=identity.source_tree_digest,

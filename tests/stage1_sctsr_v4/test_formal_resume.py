@@ -515,7 +515,7 @@ def test_branch_runner_continues_at_resume_epoch_without_overwriting_completed_g
 
     monkeypatch.setattr(formal, "require_synthetic_or_authorized", lambda *_args, **_kwargs: None)
     monkeypatch.setattr(formal, "_base_batch_sizes", lambda _trainer: (128,))
-    monkeypatch.setattr(formal, "_revalidate_prepared_dataset_bindings", lambda _binding: None)
+    monkeypatch.setattr(formal, "_revalidate_prepared_dataset_bindings", lambda _binding, **_kwargs: None)
     monkeypatch.setattr(formal, "CANONICAL_BASE_STEPS", 1)
     monkeypatch.setattr(formal, "sample_evidence_from_trainer", lambda _trainer: {})
     monkeypatch.setattr(formal, "prepare_counter_domain_base_loader", lambda *_args, **_kwargs: object())

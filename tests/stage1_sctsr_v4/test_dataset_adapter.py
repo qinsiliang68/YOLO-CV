@@ -372,6 +372,85 @@ def _role_root_binding_fixture(tmp_path: Path):
     }
 
 
+def test_materialized_hardlink_is_hashed_only_once(tmp_path: Path, monkeypatch):
+    import stage1_sctsr_v4.dataset_adapter as adapter
+
+    fixture = _role_root_binding_fixture(tmp_path)
+    original = adapter.sha256_file
+    hashed_paths = []
+
+    def count_hash(path):
+        hashed_paths.append(Path(path))
+        return original(path)
+
+    monkeypatch.setattr(adapter, "sha256_file", count_hash)
+    binding = validate_materialized_dataset_bytes(
+        fixture["dataset"],
+        fixture["content"],
+        role="train",
+        dataset_root=fixture["canonical_root"],
+        materialized_data_root=fixture["materialized_root"],
+        materialized_role_root=fixture["role_root"],
+        allowed_materialized_role_roots=(fixture["role_root"],),
+        evidence_path=tmp_path / "binding" / "train.parquet",
+    )
+
+    assert hashed_paths == [fixture["staged"]]
+    assert binding["byte_verification_mode"] == "DIRECT_LOADER_SHA256"
+
+
+def test_materialized_hardlink_reuses_same_invocation_canonical_verification(tmp_path: Path, monkeypatch):
+    import stage1_sctsr_v4.dataset_adapter as adapter
+
+    fixture = _role_root_binding_fixture(tmp_path)
+    verification = {
+        "schema_version": "stage1.sctsr.dataset_content_validation.v1",
+        "status": "PASS",
+        "dataset_root": fixture["canonical_root"].resolve().as_posix(),
+        "physical_verification_enabled": True,
+        "physical_files_verified": 1,
+    }
+    monkeypatch.setattr(adapter, "sha256_file", lambda _path: pytest.fail("hardlink bytes were read twice"))
+
+    binding = validate_materialized_dataset_bytes(
+        fixture["dataset"],
+        fixture["content"],
+        role="train",
+        dataset_root=fixture["canonical_root"],
+        materialized_data_root=fixture["materialized_root"],
+        materialized_role_root=fixture["role_root"],
+        allowed_materialized_role_roots=(fixture["role_root"],),
+        canonical_physical_verification=verification,
+        evidence_path=tmp_path / "binding" / "train.parquet",
+    )
+
+    assert binding["byte_verification_mode"] == "REGISTERED_CANONICAL_PHYSICAL_VERIFICATION_REUSED"
+
+
+def test_materialized_hardlink_rejects_unrelated_canonical_verification(tmp_path: Path):
+    fixture = _role_root_binding_fixture(tmp_path)
+    verification = {
+        "schema_version": "stage1.sctsr.dataset_content_validation.v1",
+        "status": "PASS",
+        "dataset_root": (tmp_path / "other").resolve().as_posix(),
+        "physical_verification_enabled": True,
+        "physical_files_verified": 1,
+    }
+
+    with pytest.raises(SctsrError) as caught:
+        validate_materialized_dataset_bytes(
+            fixture["dataset"],
+            fixture["content"],
+            role="train",
+            dataset_root=fixture["canonical_root"],
+            materialized_data_root=fixture["materialized_root"],
+            materialized_role_root=fixture["role_root"],
+            allowed_materialized_role_roots=(fixture["role_root"],),
+            canonical_physical_verification=verification,
+        )
+    assert caught.value.code is ErrorCode.DATASET_CONTENT_MISMATCH
+
+
 def test_materialized_role_root_rejects_preexisting_sibling_class(tmp_path: Path):
     fixture = _role_root_binding_fixture(tmp_path)
     injected = fixture["role_root"] / "injected_class" / "extra.png"

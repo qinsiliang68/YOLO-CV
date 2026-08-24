@@ -694,6 +694,7 @@ def validate_prepared_trainer_datasets(
     repository_root: Path,
     dataset_root: Path,
     canonical_dataset_root: Path,
+    canonical_physical_verification: Mapping[str, Any],
     evidence_root: Path,
 ) -> dict[str, Any]:
     """Prove upstream train/validation loaders expose only registered roles."""
@@ -730,6 +731,7 @@ def validate_prepared_trainer_datasets(
         materialized_data_root=dataset_root,
         materialized_role_root=dataset_root / "train",
         allowed_materialized_role_roots=allowed_materialized_role_roots,
+        canonical_physical_verification=canonical_physical_verification,
         evidence_path=evidence_root / "train_materialized_files.parquet",
     )
     val_content_binding = validate_materialized_dataset_bytes(
@@ -740,6 +742,7 @@ def validate_prepared_trainer_datasets(
         materialized_data_root=dataset_root,
         materialized_role_root=dataset_root / "val",
         allowed_materialized_role_roots=allowed_materialized_role_roots,
+        canonical_physical_verification=canonical_physical_verification,
         evidence_path=evidence_root / "val_model_materialized_files.parquet",
     )
     return {
@@ -758,11 +761,22 @@ def validate_prepared_trainer_datasets(
     }
 
 
-def clear_ultralytics_classification_caches(data_root: str | Path) -> list[dict[str, Any]]:
-    """Remove only frozen Ultralytics train/val scan caches around setup."""
+def inspect_ultralytics_classification_caches(
+    data_root: str | Path,
+    *,
+    bind_content: bool,
+) -> list[dict[str, Any]]:
+    """Validate regular role caches and optionally bind their content.
+
+    Ultralytics validates a cache against the current ordered paths and file
+    sizes before using it.  Formal setup additionally validates the resulting
+    loader identities, labels, exact role trees and canonical hardlinks, so a
+    regular cache can be preserved instead of forcing a full image rescan on
+    every invocation.
+    """
 
     root = Path(data_root).resolve()
-    removed: list[dict[str, Any]] = []
+    observed: list[dict[str, Any]] = []
     for role in ("train", "val"):
         cache_path = root / f"{role}.cache"
         if not cache_path.exists() and not cache_path.is_symlink():
@@ -777,17 +791,11 @@ def clear_ultralytics_classification_caches(data_root: str | Path) -> list[dict[
             "role": role,
             "path": cache_path.as_posix(),
             "bytes": cache_path.stat().st_size,
-            "sha256": sha256_file(cache_path),
         }
-        cache_path.unlink()
-        if cache_path.exists() or cache_path.is_symlink():
-            raise SctsrError(
-                ErrorCode.DATASET_CONTENT_MISMATCH,
-                "Ultralytics classification cache could not be removed before exact role-tree validation",
-                artifact_path=str(cache_path),
-            )
-        removed.append(record)
-    return removed
+        if bind_content:
+            record["sha256"] = sha256_file(cache_path)
+        observed.append(record)
+    return observed
 
 
 def validate_binary_classification_contract(trainer: Any, data_root: str | Path) -> dict[str, Any]:
@@ -1226,7 +1234,7 @@ def build_prepared_trainer(
         DatasetIdentity(sample_id=sample_id, y_true=label, source_path=sample_id)
         for sample_id, label in sorted(load_registered_split_labels(registry, root, "val_model").items())
     )
-    pre_setup_caches = clear_ultralytics_classification_caches(data_root)
+    pre_setup_caches = inspect_ultralytics_classification_caches(data_root, bind_content=False)
     try:
         trainer = module.SctsrClassificationTrainer(
             overrides=clean,
@@ -1238,7 +1246,7 @@ def build_prepared_trainer(
         # _do_train, which can auto-reduce batch and final-evaluate best.pt.
         trainer._setup_train()
         trainer.accumulate = 1
-        post_setup_caches = clear_ultralytics_classification_caches(data_root)
+        post_setup_caches = inspect_ultralytics_classification_caches(data_root, bind_content=True)
         binary_contract_binding = validate_binary_classification_contract(trainer, data_root)
         dataset_binding = validate_prepared_trainer_datasets(
             trainer,
@@ -1246,8 +1254,10 @@ def build_prepared_trainer(
             repository_root=root,
             dataset_root=data_root,
             canonical_dataset_root=canonical_dataset_root,
+            canonical_physical_verification=dataset_content_binding,
             evidence_root=output / "trainer" / "sctsr_materialized_bindings",
         )
+        trainer._sctsr_fresh_materialized_dataset_binding_digest = stable_digest(dataset_binding)
     except BaseException as exc:
         if output.exists():
             suffix = stable_digest({"output": output.as_posix(), "exception": type(exc).__name__, "message": str(exc)})[:12]
@@ -1299,9 +1309,10 @@ def build_prepared_trainer(
         "dataset_content_binding": dataset_content_binding,
         "binary_classification_binding": binary_contract_binding,
         "ultralytics_classification_cache_contract": {
-            "pre_setup_removed": pre_setup_caches,
-            "post_setup_removed": post_setup_caches,
-            "remaining_cache_files": [],
+            "policy": "PRESERVE_REGULAR_ROLE_CACHES_AND_VALIDATE_RESULTING_LOADERS",
+            "pre_setup_present": pre_setup_caches,
+            "post_setup_bound": post_setup_caches,
+            "remaining_cache_files": [row["path"] for row in post_setup_caches],
         },
         "output_root": output.as_posix(),
         "training_seed": identity.training_seed,
