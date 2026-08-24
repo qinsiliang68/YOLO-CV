@@ -3,6 +3,7 @@ from __future__ import annotations
 import importlib
 import csv
 import math
+import os
 import sys
 from dataclasses import fields
 from pathlib import Path
@@ -1150,6 +1151,9 @@ def build_prepared_trainer(
     output = Path(output_root).resolve()
     if output.exists():
         raise SctsrError(ErrorCode.ATOMIC_TRANSACTION_INCOMPLETE, "Formal run output root must not exist before upstream setup", artifact_path=str(output))
+    # Formal execution is fully frozen.  Prevent Ultralytics setup probes from
+    # downloading auxiliary models or entering unbounded curl retries.
+    os.environ["YOLO_OFFLINE"] = "true"
     binding = bind_upstream(root)
     # Import the complete frozen trainer dependency graph before hashing the
     # large canonical dataset.  A sparse or incomplete YOLOv11 checkout must

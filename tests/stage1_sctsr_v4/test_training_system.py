@@ -12,6 +12,9 @@ def test_missing_upstream_tree_fails(tmp_path):
 
 def test_frozen_trainer_import_precedes_large_dataset_scan():
     source = inspect.getsource(formal_cli.build_prepared_trainer)
+    assert source.index('os.environ["YOLO_OFFLINE"] = "true"') < source.index(
+        'importlib.import_module("sctsr_classification_trainer")'
+    )
     assert source.index('importlib.import_module("sctsr_classification_trainer")') < source.index(
         "validate_registered_dataset_content("
     )
