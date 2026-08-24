@@ -1,11 +1,20 @@
+import inspect
 from pathlib import Path
 import pytest
 from stage1_sctsr_v4.errors import ErrorCode,SctsrError
+from stage1_sctsr_v4 import formal_cli
 from stage1_sctsr_v4.training_system import assert_formal_authorized,bind_upstream,import_classification_trainer,prepare_classification_overrides,validate_sctsr_adapter_import,validate_upstream_manifest
 
 def test_missing_upstream_tree_fails(tmp_path):
     with pytest.raises(SctsrError) as e:bind_upstream(tmp_path,verify_hashes=False)
     assert e.value.code is ErrorCode.UPSTREAM_BINDING_FAILED
+
+
+def test_frozen_trainer_import_precedes_large_dataset_scan():
+    source = inspect.getsource(formal_cli.build_prepared_trainer)
+    assert source.index('importlib.import_module("sctsr_classification_trainer")') < source.index(
+        "validate_registered_dataset_content("
+    )
 
 def test_formal_authorization_guard(tmp_path):
     with pytest.raises(SctsrError):assert_formal_authorized('formal',tmp_path/'missing')

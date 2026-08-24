@@ -1151,6 +1151,17 @@ def build_prepared_trainer(
     if output.exists():
         raise SctsrError(ErrorCode.ATOMIC_TRANSACTION_INCOMPLETE, "Formal run output root must not exist before upstream setup", artifact_path=str(output))
     binding = bind_upstream(root)
+    # Import the complete frozen trainer dependency graph before hashing the
+    # large canonical dataset.  A sparse or incomplete YOLOv11 checkout must
+    # fail in seconds and before a logical-job claim spends minutes scanning
+    # physical image bytes.
+    yolo_root = root / "YOLOv11"
+    integration_root = root / "integrations" / "ultralytics"
+    for value in (str(yolo_root), str(root), str(integration_root)):
+        if value not in sys.path:
+            sys.path.insert(0, value)
+    module = importlib.import_module("sctsr_classification_trainer")
+    adapter_binding = validate_sctsr_adapter_import(binding, module)
     registry = load_asset_registry(asset_registry_path)
     validate_asset_registry(registry, root, verify_large_files=True)
     pool_inputs = load_formal_pool_inputs(registry, root)
@@ -1223,13 +1234,6 @@ def build_prepared_trainer(
     if not device.isdigit():
         raise SctsrError(ErrorCode.DISTRIBUTED_MODE_NOT_SUPPORTED_IN_V4_PHASE1, "Formal phase 1 requires exactly one numeric CUDA device", observed=clean.get("device"))
     clean.update({"model": model_path.as_posix(), "data": data_root.as_posix(), "project": output.as_posix()})
-    yolo_root = root / "YOLOv11"
-    integration_root = root / "integrations" / "ultralytics"
-    for value in (str(yolo_root), str(root), str(integration_root)):
-        if value not in sys.path:
-            sys.path.insert(0, value)
-    module = importlib.import_module("sctsr_classification_trainer")
-    adapter_binding = validate_sctsr_adapter_import(binding, module)
     val_model_identities = tuple(
         DatasetIdentity(sample_id=sample_id, y_true=label, source_path=sample_id)
         for sample_id, label in sorted(load_registered_split_labels(registry, root, "val_model").items())

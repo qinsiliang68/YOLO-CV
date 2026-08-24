@@ -17,12 +17,7 @@ SOURCE_TREE_INCLUDE_PATHS = (
     ".gitattributes",
     "README.md",
     TASKBOOK_PATH,
-    "YOLOv11/ultralytics/engine/trainer.py",
-    "YOLOv11/ultralytics/models/yolo/classify/train.py",
-    "YOLOv11/ultralytics/nn/tasks.py",
-    "YOLOv11/ultralytics/nn/modules/head.py",
-    "YOLOv11/ultralytics/utils/loss.py",
-    "YOLOv11/ultralytics/utils/torch_utils.py",
+    "YOLOv11/ultralytics",
 )
 
 

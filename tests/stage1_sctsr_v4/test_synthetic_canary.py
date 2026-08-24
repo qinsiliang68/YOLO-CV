@@ -52,7 +52,6 @@ def test_canary_source_manifest_covers_dependency_lock_and_imported_upstream(can
     included = set(manifest['include_paths'])
     assert 'uv.lock' in included
     assert '.gitattributes' in included
-    assert 'YOLOv11/ultralytics/engine/trainer.py' in included
-    assert 'YOLOv11/ultralytics/models/yolo/classify/train.py' in included
+    assert 'YOLOv11/ultralytics' in included
     assert 'integrations/ultralytics' in included
     assert any(path.endswith('SCTSR_EXPERT_IMPLEMENTATION_TASKBOOK.md') for path in included)
