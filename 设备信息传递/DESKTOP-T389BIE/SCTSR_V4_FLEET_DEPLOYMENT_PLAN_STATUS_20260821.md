@@ -2,10 +2,20 @@
 
 ## Current operational state
 
-- Eight eligible `DISCOVERY_PARENT` jobs are already running and have each passed an independent real Epoch 1 artifact validation.
-- No `DISCOVERY_BRANCH` job has been started because its immutable E120 parent dependency is not complete yet.
-- Deployment remains serial: one eligible node is launched and proven before the next node is touched.
-- All epoch transactions, checkpoints, receipts, logs, and any failed generations remain on their original nodes.
+- The eight frozen `DISCOVERY_PARENT` placements have produced their immutable E120 parents; branch execution is in progress.
+- On `P25`, `SCTSR_DISCOVERY_S005_T_TO_R2_AT_160` trained E121-E200 and published its E200 endpoint evidence. Its non-training completion marker remains pending while the closeout-only binding/index defects are fixed; the completed epochs and endpoint are not rerun.
+- On `P25`, `SCTSR_DISCOVERY_S005_T_F` retry-v2 entered real E121 CUDA training at 2026-08-25 10:02 UTC (`epoch_0121.generation_1.inprogress`, RTX 3090 7,212 MiB, 81% utilization). It uses parent SHA `E8CE7912A4199047B2812981425F00031CDE45D070A7DD74ECBC761576792665`, a 3,000-row `T_STRESS` pool, and the frozen 80-epoch participant manifest SHA `3951AFF850A89282A6B96CFC8B7A7AE5E04A0C463296B241975DA7D7A1E9BBB6`.
+- Deployment remains serial. Data/checkpoint/participant correctness is the first gate; documentation and repeated same-invocation hashing are not launch blockers.
+- All epoch transactions, checkpoints, participant ledgers, receipts, logs, and failed attempts remain on their original node's `D:` output root; active source, dataset views, controls, and caches remain on `C:`.
+
+## 2026-08-25 implementation note
+
+- Fixed Windows extended-length traversal for deep preserved quarantine paths in `build_artifact_index`.
+- Removed only adjacent duplicate byte revalidation for terminal-only E200 finalization; normal training still revalidates before endpoint publication.
+- Resume keeps a legal power-of-two AMP backoff instead of resetting the saved optimizer trajectory.
+- External formal asset registries are accepted only when byte-bound to the immutable formal-input snapshot.
+- Focused regression: `25 passed`; compileall and `git diff --check`: PASS.
+- The first `T_F` start failed before output creation/claim/GPU because a deployment shim encoded the parent recovery-pointer byte count as 1,283 instead of 1,275. The failed receipt is preserved; retry-v2 changed only that bound byte count and then entered real training.
 
 ## Frozen placement plan
 

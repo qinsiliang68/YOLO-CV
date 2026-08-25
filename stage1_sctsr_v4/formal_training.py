@@ -43,15 +43,18 @@ FORMAL_AMP_INITIAL_SCALE = 65_536.0
 FORMAL_AMP_GROWTH_INTERVAL = 1_000_000_000
 
 
-def _lock_formal_amp_scaler_growth(trainer: Any) -> None:
-    """Keep the formal AMP scale at its frozen, known-good initial value.
+def _lock_formal_amp_scaler_growth(
+    trainer: Any,
+    *,
+    allow_backed_off_scale: bool = False,
+) -> None:
+    """Freeze AMP growth while preserving a legal checkpoint backoff on resume.
 
     Dynamic scale growth can make an otherwise stable long run skip a later
-    optimizer update.  A skipped update invalidates the fixed 938-update epoch,
-    and restoring the previous epoch also restores the scale that deterministically
-    causes the same skip.  Formal runs therefore retain the prepared trainer's
-    initial scale and disable growth for the bounded E1-E200 trajectory.  Backoff
-    remains enabled so any genuine overflow still fails closed in the overlay.
+    optimizer update. A fresh formal run therefore retains the prepared
+    trainer's initial scale. A resumed checkpoint may retain a positive
+    power-of-two backoff from that scale; resetting it upward would change the
+    saved optimizer trajectory. Growth remains disabled through E200.
     """
 
     if not bool(getattr(trainer, "amp", False)):
@@ -74,13 +77,27 @@ def _lock_formal_amp_scaler_growth(trainer: Any) -> None:
             observed=sorted(state),
             expected=sorted(required),
         )
-    if float(state["scale"]) != FORMAL_AMP_INITIAL_SCALE:
+    observed_scale = float(state["scale"])
+    backoff_ratio = FORMAL_AMP_INITIAL_SCALE / observed_scale if observed_scale > 0.0 else math.nan
+    integral_backoff = math.isfinite(backoff_ratio) and backoff_ratio.is_integer()
+    legal_backed_off_scale = (
+        allow_backed_off_scale
+        and observed_scale <= FORMAL_AMP_INITIAL_SCALE
+        and integral_backoff
+        and int(backoff_ratio) > 0
+        and (int(backoff_ratio) & (int(backoff_ratio) - 1)) == 0
+    )
+    if observed_scale != FORMAL_AMP_INITIAL_SCALE and not legal_backed_off_scale:
         raise SctsrError(
             ErrorCode.CONFIGURATION_MISMATCH,
-            "Formal AMP GradScaler must start and resume at the frozen stable scale",
+            "Formal AMP GradScaler scale is not valid for this start/resume boundary",
             failing_field="scaler_state.scale",
-            observed=float(state["scale"]),
-            expected=FORMAL_AMP_INITIAL_SCALE,
+            observed=observed_scale,
+            expected={
+                "fresh_start": FORMAL_AMP_INITIAL_SCALE,
+                "resume": "positive power-of-two backoff from the initial scale",
+                "resume_backoff_allowed": allow_backed_off_scale,
+            },
         )
     state["growth_interval"] = FORMAL_AMP_GROWTH_INTERVAL
     scaler.load_state_dict(state)
@@ -1132,7 +1149,7 @@ def run_prepared_common_parent(
             resume_binding=dict(prepared_trainer_binding or {}),
         )
     if execution_mode == "formal":
-        _lock_formal_amp_scaler_growth(trainer)
+        _lock_formal_amp_scaler_growth(trainer, allow_backed_off_scale=resume_context is not None)
     execution_claim_snapshot = (
         publish_execution_claim_snapshot(root, dict(execution_claim_binding), expected_job_bindings=execution_job)
         if execution_mode == "formal"
@@ -1433,7 +1450,7 @@ def run_prepared_branch(
             resume_binding=dict(prepared_trainer_binding or {}),
         )
     if execution_mode == "formal":
-        _lock_formal_amp_scaler_growth(trainer)
+        _lock_formal_amp_scaler_growth(trainer, allow_backed_off_scale=resume_context is not None)
     execution_claim_snapshot = (
         publish_execution_claim_snapshot(root, dict(execution_claim_binding), expected_job_bindings=execution_job)
         if execution_mode == "formal"

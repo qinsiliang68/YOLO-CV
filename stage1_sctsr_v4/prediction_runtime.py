@@ -535,6 +535,7 @@ def publish_formal_endpoint(
         registry_path=registry_source,
         split_role="val_op",
         output_path=paths["split_bundle"],
+        formal_input_snapshot_path=root / "00_contract" / "FORMAL_INPUT_SNAPSHOT.json",
     )
     split_sha = sha256_file(paths["split_bundle"])
     endpoint_input_binding = build_endpoint_input_binding(

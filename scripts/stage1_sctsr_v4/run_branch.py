@@ -54,6 +54,28 @@ def execute_claimed_runner_phase(
     )
 
 
+def revalidate_endpoint_dataset_bindings(
+    trainer_binding,
+    *,
+    terminal_epoch_complete: bool,
+) -> None:
+    """Re-hash endpoint inputs unless this invocation only finalizes E200.
+
+    ``build_prepared_trainer`` has already validated the exact loaders and
+    canonical hardlinks in the current invocation.  A normal run revalidates
+    them after training because many hours may have elapsed.  A terminal-only
+    resume has no intervening epoch work, so repeating the same full byte pass
+    immediately before endpoint publication adds no new evidence.
+    """
+
+    if terminal_epoch_complete:
+        return
+    from stage1_sctsr_v4.dataset_adapter import revalidate_materialized_dataset_binding
+
+    for materialized_role in ("train_materialized_content_binding", "val_model_materialized_content_binding"):
+        revalidate_materialized_dataset_binding(trainer_binding["dataset_binding"][materialized_role])
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="Run an E121-E200 SCTSR child from a byte-bound E120 parent")
     parser.add_argument("--repository-root", type=Path, required=True)
@@ -323,10 +345,12 @@ def main() -> int:
                 transform = getattr(getattr(getattr(trainer, "test_loader", None), "dataset", None), "torch_transforms", None)
                 if not callable(transform):
                     raise SctsrError(ErrorCode.UPSTREAM_BINDING_FAILED, "Prepared val_model loader has no frozen evaluation transform")
-                from stage1_sctsr_v4.dataset_adapter import revalidate_materialized_dataset_binding
-
-                for materialized_role in ("train_materialized_content_binding", "val_model_materialized_content_binding"):
-                    revalidate_materialized_dataset_binding(trainer_binding["dataset_binding"][materialized_role])
+                revalidate_endpoint_dataset_bindings(
+                    trainer_binding,
+                    terminal_epoch_complete=bool(
+                        claimed_resume_context is not None and claimed_resume_context.terminal_epoch_complete
+                    ),
+                )
                 endpoint = publish_formal_endpoint(
                     model=endpoint_model,
                     transform=transform,

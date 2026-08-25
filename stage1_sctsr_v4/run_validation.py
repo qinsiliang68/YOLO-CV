@@ -74,7 +74,13 @@ def _validated_resume_setup_root(run_root: Path, setup_root_value: object) -> Pa
 
 
 def build_artifact_index(run_root: str | Path) -> dict[str, Any]:
-    root = Path(run_root).resolve()
+    from .filesystem import windows_safe_resolved_path
+
+    # Quarantined transaction paths include the logical run ID and partition
+    # keys, so a valid Windows run can cross legacy MAX_PATH even when the run
+    # root itself is short.  Start the recursive walk from the extended-length
+    # root; otherwise ``Path.rglob`` fails at the first deep quarantine folder.
+    root = windows_safe_resolved_path(run_root)
     files = []
     for path in root.rglob("*"):
         if path.is_file() and path.name not in {"ARTIFACT_INDEX.json", "FORMAL_COMPLETION_RECEIPT.json"}:

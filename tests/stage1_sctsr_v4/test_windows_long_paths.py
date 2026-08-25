@@ -10,7 +10,7 @@ from stage1_sctsr_v4.columnar import validate_columnar_file, write_zstd_parquet
 from stage1_sctsr_v4.filesystem import windows_safe_resolved_path
 from stage1_sctsr_v4.recovery import _canonical_windows_path, quarantine_inprogress
 from stage1_sctsr_v4.synthetic_canary import run_synthetic_canary
-from stage1_sctsr_v4.run_validation import _validated_resume_setup_root, validate_run_tree
+from stage1_sctsr_v4.run_validation import _validated_resume_setup_root, build_artifact_index, validate_run_tree
 from stage1_sctsr_v4.serialization import atomic_write_json, load_json, sha256_file
 
 
@@ -86,6 +86,36 @@ def test_atomic_json_and_hash_survive_transaction_identity_path_beyond_max_path(
         atomic_write_json(destination, {"status": "INPROGRESS", "generation": 1})
         assert load_json(destination) == {"status": "INPROGRESS", "generation": 1}
         assert len(sha256_file(destination)) == 64
+    finally:
+        shutil.rmtree(windows_safe_resolved_path(root), ignore_errors=True)
+
+
+@pytest.mark.skipif(os.name != "nt", reason="Win32 extended path contract")
+def test_artifact_index_walks_deep_quarantine_from_unprefixed_root(tmp_path: Path):
+    root = tmp_path / "formal_branch"
+    artifact = (
+        windows_safe_resolved_path(root)
+        / "09_quarantine"
+        / ("epoch_0138.generation_1.inprogress.quarantined." + "a" * 80)
+        / "04_ledgers"
+        / "optimizer_step"
+        / ("run_id=SCTSR_DISCOVERY_" + "b" * 70)
+        / "epoch=0138"
+        / ".part-00000.parquet.inprogress"
+    )
+    assert len(str(artifact).removeprefix("\\\\?\\")) > 260
+    try:
+        atomic_write_json(artifact, {"status": "PRESERVED_FAILED_ATTEMPT"})
+
+        index = build_artifact_index(root)
+
+        assert index["files"] == [
+            {
+                "path": artifact.relative_to(windows_safe_resolved_path(root)).as_posix(),
+                "bytes": artifact.stat().st_size,
+                "sha256": sha256_file(artifact),
+            }
+        ]
     finally:
         shutil.rmtree(windows_safe_resolved_path(root), ignore_errors=True)
 

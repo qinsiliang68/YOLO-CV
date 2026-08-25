@@ -258,6 +258,8 @@ def validate_prediction_binding(
             split_path,
             repository_root=repository_root,
             expected_split_role=binding.split_role,
+            allow_external_formal_registry=binding.evaluation_mode == "formal",
+            expected_asset_registry_digest=str(payload["asset_registry_digest"]),
         )
         if str(payload["asset_registry_digest"]).upper() != str(split_bundle["asset_registry_digest"]).upper():
             raise SctsrError(

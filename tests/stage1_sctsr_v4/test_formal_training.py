@@ -2,9 +2,11 @@ from __future__ import annotations
 
 from types import SimpleNamespace
 
+import pytest
 import torch
 
 from stage1_sctsr_v4.branch_lineage import BranchLineage
+from stage1_sctsr_v4.errors import ErrorCode, SctsrError
 from stage1_sctsr_v4.fixed_step_runtime import ExponentialMovingAverage
 from stage1_sctsr_v4.formal_training import (
     FORMAL_AMP_GROWTH_INTERVAL,
@@ -52,6 +54,49 @@ def test_formal_amp_scaler_cannot_grow_into_a_late_skipped_optimizer_step():
     state = scaler.state_dict()
     assert state["scale"] == FORMAL_AMP_INITIAL_SCALE
     assert state["growth_interval"] == FORMAL_AMP_GROWTH_INTERVAL
+
+
+def _amp_trainer_with_scale(scale: float):
+    scaler = torch.amp.GradScaler(
+        "cpu",
+        enabled=True,
+        init_scale=FORMAL_AMP_INITIAL_SCALE,
+        growth_interval=2,
+    )
+    state = scaler.state_dict()
+    state["scale"] = scale
+    scaler.load_state_dict(state)
+    return SimpleNamespace(amp=True, scaler=scaler)
+
+
+def test_formal_amp_resume_preserves_a_legal_backed_off_checkpoint_scale():
+    trainer = _amp_trainer_with_scale(16_384.0)
+
+    _lock_formal_amp_scaler_growth(trainer, allow_backed_off_scale=True)
+
+    state = trainer.scaler.state_dict()
+    assert state["scale"] == 16_384.0
+    assert state["growth_interval"] == FORMAL_AMP_GROWTH_INTERVAL
+
+
+def test_formal_amp_fresh_start_rejects_a_backed_off_scale():
+    trainer = _amp_trainer_with_scale(16_384.0)
+
+    with pytest.raises(SctsrError) as caught:
+        _lock_formal_amp_scaler_growth(trainer)
+
+    assert caught.value.code is ErrorCode.CONFIGURATION_MISMATCH
+    assert caught.value.failing_field == "scaler_state.scale"
+
+
+def test_formal_amp_resume_rejects_a_non_power_of_two_scale():
+    trainer = _amp_trainer_with_scale(12_000.0)
+
+    with pytest.raises(SctsrError) as caught:
+        _lock_formal_amp_scaler_growth(trainer, allow_backed_off_scale=True)
+
+    assert caught.value.code is ErrorCode.CONFIGURATION_MISMATCH
+    assert caught.value.observed == 12_000.0
 
 
 def _identity(seed=7):

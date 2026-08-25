@@ -11,6 +11,9 @@ from .errors import ErrorCode, SctsrError
 from .serialization import atomic_write_json, load_json, sha256_file, stable_digest
 
 
+EXTERNAL_FORMAL_REGISTRY_SCOPE = "EXTERNAL_FORMAL_INPUT_SNAPSHOT"
+
+
 @dataclass(frozen=True, slots=True)
 class AssetRecord:
     asset_id: str
@@ -408,6 +411,81 @@ def load_registered_split_labels(
     return labels
 
 
+def _validate_external_formal_registry_snapshot(
+    snapshot_path: str | Path,
+    registry_path: str | Path,
+) -> dict[str, Any]:
+    """Bind an external registry to the immutable formal-input snapshot."""
+
+    source = Path(snapshot_path).resolve()
+    registry_source = Path(registry_path).resolve()
+    if not source.is_file():
+        raise SctsrError(
+            ErrorCode.ASSET_VALIDATION_FAILED,
+            "Formal input snapshot is missing for the external asset registry",
+            artifact_path=str(source),
+        )
+    run_root = source.parent.parent.resolve()
+    if source != (run_root / "00_contract" / "FORMAL_INPUT_SNAPSHOT.json").resolve():
+        raise SctsrError(ErrorCode.ASSET_VALIDATION_FAILED, "Formal input snapshot path is not canonical")
+    raw = load_json(source)
+    if not isinstance(raw, Mapping) or set(raw) != {"schema_version", "external_binding", "files", "snapshot_digest"}:
+        raise SctsrError(ErrorCode.ASSET_VALIDATION_FAILED, "Formal input snapshot schema is invalid")
+    core = {key: value for key, value in raw.items() if key != "snapshot_digest"}
+    if raw.get("schema_version") != "stage1.sctsr.formal_input_snapshot.v1" or raw.get("snapshot_digest") != stable_digest(core):
+        raise SctsrError(ErrorCode.ASSET_VALIDATION_FAILED, "Formal input snapshot digest is invalid")
+
+    external = raw.get("external_binding")
+    if not isinstance(external, Mapping) or set(external) != {"schema_version", "required_roles", "files", "binding_digest"}:
+        raise SctsrError(ErrorCode.ASSET_VALIDATION_FAILED, "Formal external-input binding schema is invalid")
+    external_core = {key: value for key, value in external.items() if key != "binding_digest"}
+    if external.get("schema_version") != "stage1.sctsr.external_file_binding.v1" or external.get("binding_digest") != stable_digest(external_core):
+        raise SctsrError(ErrorCode.ASSET_VALIDATION_FAILED, "Formal external-input binding digest is invalid")
+    external_files = external.get("files")
+    snapshot_files = raw.get("files")
+    if not isinstance(external_files, Mapping) or not isinstance(snapshot_files, Mapping):
+        raise SctsrError(ErrorCode.ASSET_VALIDATION_FAILED, "Formal asset-registry snapshot row is missing")
+    external_row = external_files.get("asset_registry")
+    snapshot_row = snapshot_files.get("asset_registry")
+    if (
+        not isinstance(external_row, Mapping)
+        or set(external_row) != {"path", "bytes", "sha256"}
+        or not isinstance(snapshot_row, Mapping)
+        or set(snapshot_row) != {"external_path", "snapshot_relative_path", "bytes", "sha256"}
+    ):
+        raise SctsrError(ErrorCode.ASSET_VALIDATION_FAILED, "Formal asset-registry snapshot row is invalid")
+
+    relative = Path(str(snapshot_row["snapshot_relative_path"]))
+    snapshot_copy = (run_root / relative).resolve()
+    try:
+        snapshot_copy.relative_to(run_root)
+    except ValueError as exc:
+        raise SctsrError(ErrorCode.ASSET_VALIDATION_FAILED, "Formal asset-registry snapshot copy escapes the run root") from exc
+    expected_external = Path(str(snapshot_row["external_path"])).resolve()
+    expected_bytes = int(snapshot_row["bytes"])
+    expected_sha = str(snapshot_row["sha256"])
+    if (
+        registry_source != expected_external
+        or Path(str(external_row["path"])).resolve() != expected_external
+        or int(external_row["bytes"]) != expected_bytes
+        or str(external_row["sha256"]) != expected_sha
+        or not registry_source.is_file()
+        or not snapshot_copy.is_file()
+        or registry_source.stat().st_size != expected_bytes
+        or snapshot_copy.stat().st_size != expected_bytes
+        or sha256_file(registry_source) != expected_sha
+        or sha256_file(snapshot_copy) != expected_sha
+    ):
+        raise SctsrError(ErrorCode.ASSET_VALIDATION_FAILED, "External asset registry differs from its formal input snapshot")
+    return {
+        "asset_registry_path_scope": EXTERNAL_FORMAL_REGISTRY_SCOPE,
+        "asset_registry_snapshot_relative_path": relative.as_posix(),
+        "formal_input_snapshot_path": source.as_posix(),
+        "formal_input_snapshot_sha256": sha256_file(source),
+        "formal_input_snapshot_digest": raw["snapshot_digest"],
+    }
+
+
 def build_split_identity_bundle(
     registry: AssetRegistry,
     *,
@@ -415,16 +493,21 @@ def build_split_identity_bundle(
     registry_path: str | Path,
     split_role: str,
     output_path: str | Path,
+    formal_input_snapshot_path: str | Path | None = None,
 ) -> dict[str, Any]:
     root = Path(repository_root).resolve()
     registry_source = Path(registry_path).resolve()
     output = Path(output_path)
     if output.exists():
         raise SctsrError(ErrorCode.ATOMIC_TRANSACTION_INCOMPLETE, "Split identity bundle is immutable; choose a new output path", artifact_path=str(output))
+    external_snapshot_binding: dict[str, Any] | None = None
     try:
         registry_relative = registry_source.relative_to(root).as_posix()
     except ValueError as exc:
-        raise SctsrError(ErrorCode.ASSET_VALIDATION_FAILED, "Asset registry path escapes repository root", artifact_path=str(registry_source)) from exc
+        if formal_input_snapshot_path is None:
+            raise SctsrError(ErrorCode.ASSET_VALIDATION_FAILED, "Asset registry path escapes repository root", artifact_path=str(registry_source)) from exc
+        external_snapshot_binding = _validate_external_formal_registry_snapshot(formal_input_snapshot_path, registry_source)
+        registry_relative = registry_source.as_posix()
     if not registry_source.is_file():
         raise SctsrError(ErrorCode.ASSET_VALIDATION_FAILED, "Asset registry file is missing", artifact_path=str(registry_source))
     registered = load_asset_registry(registry_source)
@@ -447,6 +530,8 @@ def build_split_identity_bundle(
         "formal_training_started": False,
         "blind_holdout_opened": False,
     }
+    if external_snapshot_binding is not None:
+        payload.update(external_snapshot_binding)
     payload["bundle_digest"] = stable_digest(payload)
     atomic_write_json(output, payload)
     return payload
@@ -457,6 +542,8 @@ def load_split_identity_bundle(
     *,
     repository_root: str | Path,
     expected_split_role: str,
+    allow_external_formal_registry: bool = False,
+    expected_asset_registry_digest: str | None = None,
 ) -> tuple[dict[str, int], dict[str, Any]]:
     source = Path(path)
     raw = load_json(source)
@@ -470,11 +557,32 @@ def load_split_identity_bundle(
     if raw.get("bundle_digest") != expected_digest:
         raise SctsrError(ErrorCode.PREDICTION_IDENTITY_MISMATCH, "Prediction split identity bundle digest mismatch")
     root = Path(repository_root).resolve()
-    registry_path = (root / str(raw.get("asset_registry_path", ""))).resolve()
-    try:
-        registry_path.relative_to(root)
-    except ValueError as exc:
-        raise SctsrError(ErrorCode.ASSET_VALIDATION_FAILED, "Split bundle registry path escapes repository root") from exc
+    scope = raw.get("asset_registry_path_scope")
+    if scope is None:
+        registry_path = (root / str(raw.get("asset_registry_path", ""))).resolve()
+        try:
+            registry_path.relative_to(root)
+        except ValueError as exc:
+            raise SctsrError(ErrorCode.ASSET_VALIDATION_FAILED, "Split bundle registry path escapes repository root") from exc
+    elif scope == EXTERNAL_FORMAL_REGISTRY_SCOPE:
+        if not allow_external_formal_registry or expected_asset_registry_digest is None:
+            raise SctsrError(ErrorCode.ASSET_VALIDATION_FAILED, "External formal asset registry was not explicitly authorized for this prediction")
+        registry_path = Path(str(raw.get("asset_registry_path", ""))).resolve()
+        snapshot_binding = _validate_external_formal_registry_snapshot(
+            str(raw.get("formal_input_snapshot_path", "")),
+            registry_path,
+        )
+        for field, value in snapshot_binding.items():
+            if raw.get(field) != value:
+                raise SctsrError(
+                    ErrorCode.PREDICTION_IDENTITY_MISMATCH,
+                    "Split bundle formal-input snapshot binding changed",
+                    failing_field=field,
+                )
+        if str(raw.get("asset_registry_digest", "")).upper() != str(expected_asset_registry_digest).upper():
+            raise SctsrError(ErrorCode.PREDICTION_IDENTITY_MISMATCH, "External split bundle asset registry differs from its checkpoint")
+    else:
+        raise SctsrError(ErrorCode.ASSET_VALIDATION_FAILED, "Split bundle asset registry path scope is invalid")
     if not registry_path.is_file() or sha256_file(registry_path) != raw.get("asset_registry_sha256"):
         raise SctsrError(ErrorCode.ASSET_VALIDATION_FAILED, "Split bundle asset registry identity changed")
     registry = load_asset_registry(registry_path)
