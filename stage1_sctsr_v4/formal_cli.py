@@ -48,6 +48,40 @@ FORMAL_AUTHORIZATION_INPUT_ROLES = (
 )
 
 
+_FRESH_PARENT_ARTIFACT_BINDING_DIGESTS: set[str] = set()
+
+
+def _consume_fresh_parent_artifact_validation(
+    binding: Mapping[str, Any] | None,
+    *,
+    parent_checkpoint: str | Path,
+    parent_sha256: str,
+    parent_root: str | Path,
+) -> bool:
+    """Consume proof that this process just exhaustively audited the parent."""
+
+    if not isinstance(binding, Mapping):
+        return False
+    core = {key: value for key, value in binding.items() if key != "binding_digest"}
+    digest = str(binding.get("binding_digest", ""))
+    checkpoint = Path(parent_checkpoint).resolve()
+    root = Path(parent_root).resolve()
+    expected = {
+        "schema_version": "stage1.sctsr.parent_artifact_binding.v1",
+        "parent_root": root.as_posix(),
+        "artifact_index_path": (root / "ARTIFACT_INDEX.json").as_posix(),
+        "parent_checkpoint_path": checkpoint.as_posix(),
+        "parent_checkpoint_sha256": str(parent_sha256).upper(),
+        "validation_status": "PASS",
+    }
+    if digest != stable_digest(core) or any(binding.get(key) != value for key, value in expected.items()):
+        return False
+    if digest not in _FRESH_PARENT_ARTIFACT_BINDING_DIGESTS:
+        return False
+    _FRESH_PARENT_ARTIFACT_BINDING_DIGESTS.remove(digest)
+    return True
+
+
 def build_external_file_binding(
     paths: Mapping[str, str | Path],
     *,
@@ -552,7 +586,9 @@ def validate_parent_artifact_index(
         "validated_epoch_transactions": report["epoch_transaction_count"],
         "validation_status": "PASS",
     }
-    return {**binding, "binding_digest": stable_digest(binding)}
+    result = {**binding, "binding_digest": stable_digest(binding)}
+    _FRESH_PARENT_ARTIFACT_BINDING_DIGESTS.add(result["binding_digest"])
+    return result
 
 
 def validate_training_identity_manifest(

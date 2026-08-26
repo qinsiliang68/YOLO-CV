@@ -38,7 +38,35 @@ def _failure(message: str, *, artifact_path: str | None = None, observed: Any = 
     )
 
 
-def _validated_inputs(root: Path, run_role: str) -> dict[str, Any]:
+def _validated_artifact_index_payload(index: Mapping[str, Any]) -> None:
+    files = index.get("files")
+    if index.get("schema_version") != "stage1.sctsr.artifact_index.v1" or not isinstance(files, list):
+        raise _failure("Formal artifact index schema is invalid")
+    paths: list[str] = []
+    for row in files:
+        if not isinstance(row, Mapping) or set(row) != {"path", "bytes", "sha256"}:
+            raise _failure("Formal artifact index row fields are invalid", observed=row)
+        relative = Path(str(row["path"]))
+        digest = str(row["sha256"])
+        if relative.is_absolute() or relative.drive or ".." in relative.parts or int(row["bytes"]) < 0:
+            raise _failure("Formal artifact index row escapes its run root", observed=row)
+        try:
+            if len(digest) != 64:
+                raise ValueError
+            bytes.fromhex(digest)
+        except ValueError as exc:
+            raise _failure("Formal artifact index row SHA-256 is invalid", observed=row) from exc
+        paths.append(relative.as_posix())
+    if paths != sorted(paths) or len(paths) != len(set(paths)) or index.get("artifact_index_digest") != stable_digest(files):
+        raise _failure("Formal artifact index ordering or digest is invalid")
+
+
+def _validated_inputs(
+    root: Path,
+    run_role: str,
+    *,
+    artifact_index_already_validated: bool = False,
+) -> dict[str, Any]:
     if run_role not in _RUN_STATE:
         raise _failure("Formal completion run role is invalid", observed=run_role)
     state_name, state_schema, pending_status, _complete_status, terminal_epoch = _RUN_STATE[run_role]
@@ -71,19 +99,21 @@ def _validated_inputs(root: Path, run_role: str) -> dict[str, Any]:
         endpoint = load_json(required["endpoint_receipt"])
         if endpoint.get("status") != "FORMAL_ENDPOINT_COMPLETE_NOT_METHOD_SELECTION":
             raise _failure("Formal endpoint receipt is not complete", observed=endpoint.get("status"))
-    from .run_validation import build_artifact_index
-
     observed_index = load_json(required["artifact_index"])
-    expected_index = build_artifact_index(root)
-    if observed_index != expected_index:
-        raise _failure(
-            "Formal exhaustive artifact index is stale or incomplete",
-            artifact_path=required["artifact_index"].as_posix(),
-            observed={
-                "registered_digest": observed_index.get("artifact_index_digest"),
-                "current_digest": expected_index.get("artifact_index_digest"),
-            },
-        )
+    _validated_artifact_index_payload(observed_index)
+    if not artifact_index_already_validated:
+        from .run_validation import build_artifact_index
+
+        expected_index = build_artifact_index(root)
+        if observed_index != expected_index:
+            raise _failure(
+                "Formal exhaustive artifact index is stale or incomplete",
+                artifact_path=required["artifact_index"].as_posix(),
+                observed={
+                    "registered_digest": observed_index.get("artifact_index_digest"),
+                    "current_digest": expected_index.get("artifact_index_digest"),
+                },
+            )
     return {"paths": required, "state": dict(state), "manifest": dict(manifest), "artifact_index": observed_index}
 
 
@@ -171,10 +201,11 @@ def publish_formal_completion(
     return dict(validate_formal_completion(root, expected_run_role=run_role)["receipt"])
 
 
-def validate_formal_completion(
+def _validate_formal_completion(
     run_root: str | Path,
     *,
     expected_run_role: str,
+    artifact_index_already_validated: bool,
 ) -> dict[str, Any]:
     root = Path(run_root).resolve()
     marker = root / FORMAL_COMPLETION_FILENAME
@@ -218,7 +249,11 @@ def validate_formal_completion(
         )
     ):
         raise _failure("Formal completion receipt identity or digest is invalid", observed=receipt)
-    validated = _validated_inputs(root, expected_run_role)
+    validated = _validated_inputs(
+        root,
+        expected_run_role,
+        artifact_index_already_validated=artifact_index_already_validated,
+    )
     state = validated["state"]
     manifest = validated["manifest"]
     state_run_id = state.get("parent_id") if expected_run_role == "COMMON_PARENT" else state.get("logical_run_id")
@@ -255,3 +290,31 @@ def validate_formal_completion(
     if mismatch:
         raise _failure("Formal completion receipt no longer binds current artifacts", observed=mismatch)
     return {"status": "PASS", "receipt_path": marker.as_posix(), "receipt_sha256": sha256_file(marker), "receipt": dict(receipt)}
+
+
+def validate_formal_completion(
+    run_root: str | Path,
+    *,
+    expected_run_role: str,
+) -> dict[str, Any]:
+    """Exhaustively revalidate a completed formal run."""
+
+    return _validate_formal_completion(
+        run_root,
+        expected_run_role=expected_run_role,
+        artifact_index_already_validated=False,
+    )
+
+
+def _validate_formal_completion_with_prevalidated_artifact_index(
+    run_root: str | Path,
+    *,
+    expected_run_role: str,
+) -> dict[str, Any]:
+    """Recheck the small signed bindings after this process audited the full tree."""
+
+    return _validate_formal_completion(
+        run_root,
+        expected_run_role=expected_run_role,
+        artifact_index_already_validated=True,
+    )

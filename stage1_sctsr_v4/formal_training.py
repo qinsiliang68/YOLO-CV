@@ -734,6 +734,7 @@ def _validate_parent_completion_receipt(
     training_seed: int,
     *,
     require_formal: bool = False,
+    parent_artifact_index_binding: Mapping[str, Any] | None = None,
 ) -> dict[str, Any]:
     checkpoint = Path(parent_checkpoint)
     candidates = tuple(parent / "PARENT_RECEIPT.json" for parent in checkpoint.parents[:7])
@@ -768,9 +769,24 @@ def _validate_parent_completion_receipt(
     completion = None
     if effective_status == "FORMAL_PARENT_EPOCHS_COMPLETE_PENDING_FINALIZATION":
         try:
-            from .formal_completion import validate_formal_completion
+            from .formal_cli import _consume_fresh_parent_artifact_validation
+            from .formal_completion import (
+                _validate_formal_completion_with_prevalidated_artifact_index,
+                validate_formal_completion,
+            )
 
-            completion = validate_formal_completion(receipt_path.parent, expected_run_role="COMMON_PARENT")
+            fresh_parent_validation = _consume_fresh_parent_artifact_validation(
+                parent_artifact_index_binding,
+                parent_checkpoint=checkpoint,
+                parent_sha256=parent_sha,
+                parent_root=receipt_path.parent,
+            )
+            validator = (
+                _validate_formal_completion_with_prevalidated_artifact_index
+                if fresh_parent_validation
+                else validate_formal_completion
+            )
+            completion = validator(receipt_path.parent, expected_run_role="COMMON_PARENT")
             effective_status = completion["receipt"]["status"]
         except SctsrError as exc:
             raise SctsrError(
@@ -1385,6 +1401,7 @@ def run_prepared_branch(
         parent_sha,
         identity.training_seed,
         require_formal=execution_mode == "formal",
+        parent_artifact_index_binding=parent_artifact_index_binding,
     )
     if execution_mode == "formal":
         if prepared_trainer_binding is None:
