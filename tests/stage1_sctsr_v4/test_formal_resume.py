@@ -374,7 +374,7 @@ def test_formal_resume_rejects_checkpoint_rng_not_bound_by_epoch_summary(tmp_pat
     assert captured.value.code is ErrorCode.RESUME_GENERATION_MISMATCH
 
 
-def test_branch_parent_source_digest_is_independent_from_child_source_identity():
+def test_branch_parent_source_and_registry_are_independent_from_child_identity():
     identity = FormalIdentity(
         training_seed=SEED,
         canonical_training_lock_sha256=LOCK_SHA,
@@ -393,13 +393,16 @@ def test_branch_parent_source_digest_is_independent_from_child_source_identity()
         "base_manifest_sha256": BASE_SHA,
         "source_tree_digest": "0" * 64,
         "runtime_config_digest": RUNTIME_SHA,
-        "asset_registry_digest": ASSET_SHA,
+        "asset_registry_digest": "7" * 64,
     }
 
-    _assert_expected_checkpoint_payload(payload, identity)
-    payload["base_manifest_sha256"] = "8" * 64
+    _assert_expected_checkpoint_payload(payload, identity, branch_parent=True)
     with pytest.raises(SctsrError) as caught:
         _assert_expected_checkpoint_payload(payload, identity)
+    assert caught.value.code is ErrorCode.BRANCH_LINEAGE_MISMATCH
+    payload["base_manifest_sha256"] = "8" * 64
+    with pytest.raises(SctsrError) as caught:
+        _assert_expected_checkpoint_payload(payload, identity, branch_parent=True)
     assert caught.value.code is ErrorCode.BRANCH_LINEAGE_MISMATCH
 
 

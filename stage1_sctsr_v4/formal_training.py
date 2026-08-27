@@ -706,15 +706,26 @@ def _run_transactional_epoch(
     return result, evidence_receipt
 
 
-def _assert_expected_checkpoint_payload(payload: Mapping[str, Any], identity: FormalIdentity) -> None:
+def _assert_expected_checkpoint_payload(
+    payload: Mapping[str, Any],
+    identity: FormalIdentity,
+    *,
+    branch_parent: bool = False,
+) -> None:
     expected = {
         "training_seed": identity.training_seed,
         "canonical_training_lock_sha256": identity.canonical_training_lock_sha256,
         "initial_checkpoint_sha256": identity.initial_checkpoint_sha256,
         "base_manifest_sha256": identity.base_manifest_sha256,
+        "source_tree_digest": identity.source_tree_digest,
         "runtime_config_digest": identity.runtime_config_digest,
         "asset_registry_digest": identity.asset_registry_digest,
     }
+    if branch_parent:
+        # The E120 parent is byte-bound by BranchLineage and carries its own
+        # source/registry identities.  The child checkpoint must remain strict.
+        expected.pop("source_tree_digest")
+        expected.pop("asset_registry_digest")
     for field, value in expected.items():
         observed = payload.get(field)
         if observed != value:
@@ -1412,7 +1423,7 @@ def run_prepared_branch(
         contract_digest=identity.effective_contract_digest if execution_mode == "formal" else lineage.child_contract_digest,
     )
     payload = load_checkpoint(parent_checkpoint, expected_sha256=parent_sha, expected_epoch=120)
-    _assert_expected_checkpoint_payload(payload, identity)
+    _assert_expected_checkpoint_payload(payload, identity, branch_parent=True)
     _restore_trainer(payload, trainer)
     sizes = _base_batch_sizes(trainer)
     evidence_enabled = _evidence_enabled(execution_mode, collect_epoch_evidence)
