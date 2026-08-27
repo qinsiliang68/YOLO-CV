@@ -1,0 +1,32 @@
+{
+  "selected": [
+    {
+      "sample_id": "a1",
+      "cluster": "A",
+      "score": 10,
+      "video_id": "vA"
+    },
+    {
+      "sample_id": "b1",
+      "cluster": "B",
+      "score": 8,
+      "video_id": "vB1"
+    },
+    {
+      "sample_id": "b2",
+      "cluster": "B",
+      "score": 7,
+      "video_id": "vB2"
+    },
+    {
+      "sample_id": "b3",
+      "cluster": "B",
+      "score": 6,
+      "video_id": "vB3"
+    }
+  ],
+  "cluster_counts": {
+    "B": 3,
+    "A": 1
+  }
+}

@@ -1,0 +1,113 @@
+{
+  "created_at_utc": "2026-08-09T13:54:31.933920+00:00",
+  "executed_expert_code": false,
+  "git_head": "0a278ea31fcb8007a6ade237924644b58d5a24a6",
+  "p0_01_oof": {
+    "fold_count": 2,
+    "fold_is_not_a_global_trajectory_axis": true,
+    "interpretation": "v3 no longer creates a sample-by-fold Cartesian cube, but it does not bind each row's oof_fold to the containing job/fold lineage or prove held-out training membership.",
+    "observed_rows": [
+      {
+        "oof_fold": "01",
+        "sample_id": "defect/d.png",
+        "source_prediction_relpath": "job-a/fold_00/epoch_200_predictions.csv"
+      },
+      {
+        "oof_fold": "00",
+        "sample_id": "normal/n.png",
+        "source_prediction_relpath": "job-b/fold_01/epoch_200_predictions.csv"
+      }
+    ],
+    "path_fold_mismatch_accepted": true,
+    "row_count": 2
+  },
+  "p0_02_checkpoint": {
+    "best_pt_references": [],
+    "endpoint_epochs": [
+      200
+    ],
+    "interpretation": "No v3 runtime source selects best.pt; the preregistered logical endpoint is epoch 200."
+  },
+  "p0_03_data_roles": {
+    "interpretation": "The old val_op reuse is absent because v3 has no target-gradient/CLD method, but an independent val_target role is also not implemented.",
+    "val_model_references": [
+      "stage1_dynamic_replay_v3/ultralytics_overlay.py:49:raise ValueError(\"Ultralytics v3 runtime requires non-empty train and val_model records\")"
+    ],
+    "val_op_references": [
+      "stage1_dynamic_replay_v3/evaluation.py:23:PREDICTION_ARTIFACT_SCHEMA = \"stage1.dynamic_oof_replay.val_op_predictions.v3\""
+    ],
+    "val_target_references": []
+  },
+  "p0_04_test_oracle": {
+    "interpretation": "No v3 runtime source exposes the reviewed test-oracle canonical path.",
+    "test_oracle_references": []
+  },
+  "p0_05_dual_threshold": {
+    "fn_at_fn_limit_point": 1,
+    "fn_at_target_tn": 2,
+    "frontier": [
+      {
+        "actual_fn": 0,
+        "fn_budget": 0,
+        "threshold": 0.65,
+        "tie_group_size": 1,
+        "tn": 3
+      },
+      {
+        "actual_fn": 1,
+        "fn_budget": 1,
+        "threshold": 0.75,
+        "tie_group_size": 1,
+        "tn": 4
+      }
+    ],
+    "independent_metric_demonstrated": true,
+    "interpretation": "v3 computes FN at the target-TN constraint from a separate feasible candidate set; it does not reuse the FN-limit confusion matrix.",
+    "target_tn_reachable": true,
+    "tn_at_fn_limit": 4
+  },
+  "p0_06_critical_cld": {
+    "critical_cld_references": [],
+    "interpretation": "The conflicting CLD implementation is absent, but target-direction A is not implemented."
+  },
+  "p0_07_matrix": {
+    "all_release_states_held": true,
+    "cycle_counts": {
+      "CYCLE_1": 70,
+      "CYCLE_2": 60,
+      "CYCLE_3": 50,
+      "CYCLE_4": 56
+    },
+    "defect_guard_arms": 0,
+    "gradient_arms": 0,
+    "interpretation": "The preserved v3 matrix is internally consistent and HELD, but its 236-run RHO-only design does not implement the new Q/R/A/D evidence goal.",
+    "run_count": 236,
+    "validation_status": "PASS"
+  },
+  "schema_version": "stage1.v3_p0_review_reproduction.v1",
+  "scientific_result": false,
+  "source_hashes": {
+    "stage1_dynamic_replay_v3/__init__.py": "1CE000AFFA9C972B5B5BD43377E6679743E7116C6559F87308EDA0E21C77B433",
+    "stage1_dynamic_replay_v3/asset_identity.py": "6F8FEE656C64D345C4C36464E7BF5D988931BD96E77AEB1A04231C5A08D1B5A4",
+    "stage1_dynamic_replay_v3/assignment.py": "231DB59F13D2F243F9E70AE9EB67D1E647F4985CDF61E0BBC473A6FAB0E3A78F",
+    "stage1_dynamic_replay_v3/completion.py": "C3B42E3AC7EE814CDB88A8380FFD979D7EBB101408A4DD397056D435C783E992",
+    "stage1_dynamic_replay_v3/controller.py": "B7071EA357FCE8BAF399636E5C78A3400A00D700530DFBFACC1EA73D7D03A632",
+    "stage1_dynamic_replay_v3/draw_plan.py": "7E1B232DFA49A41D42A1A85FB8AFB1B6790B744447F402EF89F23BDDF76C7800",
+    "stage1_dynamic_replay_v3/dynamic_dataset.py": "659F3D5528FB66A554D83562B1C6E89AA4A4AB062A91BA27BCE51912232B0790",
+    "stage1_dynamic_replay_v3/epoch_transaction.py": "6EEF2F9B4AD0D0158FBD3C9FF3D2B827DFAC0B51F5336997489B94B5CB565A3D",
+    "stage1_dynamic_replay_v3/evaluation.py": "1EC5581F6AC8B60289372746F9E5CF3B11E3844A676B1EA8D1C4431F4615CE60",
+    "stage1_dynamic_replay_v3/matrix.py": "BFF7625860AB8651735F17D18899C33FCACC0F04D2AF486E1C0CA1E79DF14B3D",
+    "stage1_dynamic_replay_v3/oof_reference.py": "97731F3F10F01D10E338C754BB3674AA95A52F90BE5165F1AFC10BB29EAB0B7D",
+    "stage1_dynamic_replay_v3/prediction_identity.py": "41D9B08B32907C67455A5278AE040BE6F2DB127216FF16254166212F4D4374F0",
+    "stage1_dynamic_replay_v3/provenance.py": "9B45DBB643BD33D202D3C2C27B21C32766232CAED51983D9C9B9E745815484C0",
+    "stage1_dynamic_replay_v3/resource_monitor.py": "6C0622886C2E540A7295466D8F1552CDCE19E5FAC598EE41D8FB6FC69C0390B1",
+    "stage1_dynamic_replay_v3/runtime_checkpoint.py": "0A73DF574F80B53AD3982506FF5A36E5A20F493B039CF035D2B81542592733C1",
+    "stage1_dynamic_replay_v3/runtime_controller.py": "172D46A92BE58A242A6DFD88B3025AC712363998E191A3A34A7B61E1CC41BD13",
+    "stage1_dynamic_replay_v3/seeds.py": "FD762B835AEE5EDBAE0914D817AB302DBAB0C49CAB5E969865A5B00826AB7872",
+    "stage1_dynamic_replay_v3/smoke.py": "37494BD6959EF4AB393D36BBF7A0D6F20D4091D47D40BEE5D0353FD8E1781CCC",
+    "stage1_dynamic_replay_v3/training_runtime.py": "2CBC9FC24825F623773AE5BCEC75884296D296DF3ECB9139CE2B3F1D218B37AC",
+    "stage1_dynamic_replay_v3/trajectory.py": "E1198CB81D3E36371803AB4AFA750C1A1ADFAD896D3D6A21709443A44C9A74D2",
+    "stage1_dynamic_replay_v3/ultralytics_overlay.py": "70274D3BA6EA9501C2258C7003387E0B2707748CD5D647D1ED7CAC4088E6D89E"
+  },
+  "status": "PASS_AUDIT_REPRODUCTION"
+}

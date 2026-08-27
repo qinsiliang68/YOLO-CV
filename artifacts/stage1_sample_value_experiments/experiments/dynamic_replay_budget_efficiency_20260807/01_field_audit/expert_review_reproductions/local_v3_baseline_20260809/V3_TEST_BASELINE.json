@@ -1,0 +1,43 @@
+{
+  "schema_version": "stage1.v3_test_baseline.v1",
+  "created_at_utc": "2026-08-09T13:51:56.556357+00:00",
+  "git_head": "0a278ea31fcb8007a6ade237924644b58d5a24a6",
+  "git_worktree_clean": false,
+  "git_status_lines": [
+    " M artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/README.md",
+    " M stage1_dynamic_replay_v3/resource_monitor.py",
+    " M tests/stage1_dynamic_replay_v3/test_resource_monitor.py",
+    "?? artifacts/stage1_sample_value_experiments/experiments/dynamic_oof_replay_v3_20260809/",
+    "?? artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/01_field_audit/EXPERT_DELIVERY_AUDIT_INDEX.md",
+    "?? artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/01_field_audit/expert_delivery_audit_v1/",
+    "?? artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/01_field_audit/expert_delivery_audit_v2/",
+    "?? artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/01_field_audit/expert_delivery_audit_v3/",
+    "?? artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/01_field_audit/expert_review_reproductions/",
+    "?? artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/02_literature/GOAL_EXECUTION_CONTRACT_500_300_100_v1.md",
+    "?? artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/02_literature/GOAL_EXECUTION_CONTRACT_500_300_100_v2.md",
+    "?? scripts/stage1_dynamic_replay_v3/audit_expert_deliveries.py",
+    "?? stage1_dynamic_replay_v3/expert_delivery_audit.py",
+    "?? tests/stage1_dynamic_replay_v3/test_expert_delivery_audit.py",
+    "?? tests/stage1_dynamic_replay_v3/test_recovery.py"
+  ],
+  "runs": [
+    {
+      "name": "full_collection",
+      "command": "uv run pytest tests/stage1_dynamic_replay_v3 -q",
+      "exit_code": 2,
+      "log": "full_collection.txt",
+      "log_sha256": "848E0B1C568CA765B3DBB6095AFEBB42C242B9530C7BC10D1514C60600DA7F8E"
+    },
+    {
+      "name": "excluding_unimplemented_recovery",
+      "command": "uv run pytest tests/stage1_dynamic_replay_v3 -q --ignore=tests/stage1_dynamic_replay_v3/test_recovery.py",
+      "exit_code": 0,
+      "log": "excluding_unimplemented_recovery.txt",
+      "log_sha256": "AC11766C1FA2AA7DB824B3EF47E4FEF74F0B0F33173C2696BB3230A09A21F8FC"
+    }
+  ],
+  "interpretation": {
+    "full_collection": "EXPECTED_CURRENT_FAILURE_MISSING_RECOVERY_MODULE",
+    "excluding_unimplemented_recovery": "PASS"
+  }
+}

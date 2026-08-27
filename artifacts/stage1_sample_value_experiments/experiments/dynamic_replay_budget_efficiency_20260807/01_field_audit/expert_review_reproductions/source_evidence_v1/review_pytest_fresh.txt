@@ -1,0 +1,4 @@
+........................................................s                [100%]
+=========================== short test summary info ============================
+SKIPPED [1] tests/test_ultralytics_optional.py:6: optional Ultralytics dependency is not installed
+56 passed, 1 skipped in 14.88s

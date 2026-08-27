@@ -1,0 +1,984 @@
+===== src/stage1_replay/data/oof.py =====
+  171: def _trajectory_key(df: pd.DataFrame) -> tuple[pd.DataFrame, list[str]]:
+  172:     possible = [c for c in ("trajectory_id", "run_id", "seed", "fold") if c in df.columns]
+  173:     if not possible:
+  174:         out = df.copy()
+  175:         out["_trajectory_id"] = "trajectory-0"
+  176:         return out, ["_trajectory_id"]
+  177:     out = df.copy()
+  178:     out["_trajectory_id"] = out[possible].astype(str).agg("|".join, axis=1)
+  179:     return out, ["_trajectory_id"]
+  180: 
+  181: 
+  182: def load_long_dynamics(path: str | Path, *, allow_missing: bool = False) -> TrajectoryCube:
+  183:     df = validate_dynamics(read_table(path))
+  184:     df, _ = _trajectory_key(df)
+  185:     sample_ids = np.asarray(sorted(df["sample_id"].unique()))
+  186:     epochs = np.asarray(sorted(df["epoch"].unique()), dtype=int)
+  187:     trajectory_ids = np.asarray(sorted(df["_trajectory_id"].unique()))
+  188:     sample_index = {x: i for i, x in enumerate(sample_ids)}
+  189:     epoch_index = {int(x): i for i, x in enumerate(epochs)}
+  190:     traj_index = {x: i for i, x in enumerate(trajectory_ids)}
+  191:     values = np.full((len(sample_ids), len(epochs), len(trajectory_ids)), np.nan, dtype=np.float64)
+  192:     for sample_id, epoch, trajectory_id, p_defect in df[["sample_id", "epoch", "_trajectory_id", "p_defect"]].itertuples(index=False, name=None):
+  193:         values[sample_index[str(sample_id)], epoch_index[int(epoch)], traj_index[str(trajectory_id)]] = float(p_defect)
+  194:     missing = int(np.isnan(values).sum())
+  195:     if missing and not allow_missing:
+  196:         raise SchemaError(
+  197:             f"long dynamics is not a complete sample×epoch×trajectory grid: {missing} values missing; "
+  198:             "pass allow_missing=True only when this is intentional"
+  199:         )
+  200:     labels = None
+  201:     if "label" in df.columns:
+  202:         labels_by_sample = df.groupby("sample_id")["label"].agg(lambda s: s.iloc[0])
+  203:         labels = np.asarray([int(labels_by_sample[sid]) for sid in sample_ids], dtype=np.int8)
+  204:     return TrajectoryCube(sample_ids, epochs, trajectory_ids, values, labels, {"source": str(Path(path).resolve())})
+
+===== src/stage1_replay/features/dynamics.py =====
+   60:     counts = mask.sum(axis=1)
+   61:     y_mean = np.divide(np.nansum(y, axis=1), counts, out=np.full_like(counts, np.nan, dtype=float), where=counts > 0)
+   62:     numerator = np.nansum((y - y_mean[:, None, :]) * x_center[None, :, None], axis=1)
+   63:     valid_denom = np.sum(mask * (x_center[None, :, None] ** 2), axis=1)
+   64:     return np.divide(numerator, valid_denom, out=np.full_like(numerator, np.nan), where=valid_denom > 0)
+   65: 
+   66: 
+   67: def _event_counts(correct: np.ndarray) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+   68:     """Event counts per [sample,trajectory] for a boolean [sample,epoch,trajectory] cube."""
+   69:     valid = np.isfinite(correct)
+   70:     c = np.nan_to_num(correct, nan=0.0).astype(bool)
+   71:     transitions_valid = valid[:, 1:, :] & valid[:, :-1, :]
+   72:     forgetting = ((c[:, :-1, :] & ~c[:, 1:, :]) & transitions_valid).sum(axis=1)
+   73:     relearning = ((~c[:, :-1, :] & c[:, 1:, :]) & transitions_valid).sum(axis=1)
+   74:     ever = (c & valid).any(axis=1)
+   75:     never = ~ever
+   76:     stable_final = np.zeros_like(ever, dtype=bool)
+   77:     tail = min(5, c.shape[1])
+   78:     if tail:
+   79:         tail_valid = valid[:, -tail:, :]
+   80:         stable_final = (tail_valid.sum(axis=1) == tail) & c[:, -tail:, :].all(axis=1)
+   81:     return forgetting, relearning, never, stable_final
+   82: 
+   83: 
+   84: def _first_run_epoch(correct: np.ndarray, epochs: np.ndarray, patience: int = 3) -> np.ndarray:
+   85:     n, e, r = correct.shape
+   86:     out = np.full((n, r), np.nan)
+   87:     c = np.nan_to_num(correct, nan=0.0).astype(bool)
+   88:     valid = np.isfinite(correct)
+   89:     if patience <= 1:
+   90:         hit = c & valid
+   91:     else:
+   92:         hit = np.zeros_like(c)
+   93:         for start in range(0, e - patience + 1):
+   94:             block = c[:, start : start + patience, :] & valid[:, start : start + patience, :]
+   95:             hit[:, start, :] = block.all(axis=1)
+
+  120:     parsed = parse_windows(windows)
+  121:     p_defect = np.asarray(cube.p_defect, dtype=float)
+  122:     p_true = cube.true_probability()
+  123:     loss = -np.log(p_true)
+  124:     margin = np.where(cube.labels[:, None, None] == 1, safe_logit(p_defect), -safe_logit(p_defect))
+  125:     correct = np.where(np.isfinite(p_true), p_true >= learned_true_probability, np.nan)
+  126: 
+  127:     df = pd.DataFrame({"sample_id": cube.sample_ids, "label": cube.labels.astype(int)})
+  128:     df["oof_trajectory_count"] = cube.n_trajectories
+  129:     df["oof_observed_fraction"] = np.isfinite(p_defect).mean(axis=(1, 2))
+  130: 
+  131:     # Global summaries: first summarize within a trajectory, then median across trajectories.
+  132:     summary_specs = {
+  133:         "p_true_mean": np.nanmean(p_true, axis=1),
+  134:         "p_true_std": np.nanstd(p_true, axis=1),
+  135:         "loss_mean": np.nanmean(loss, axis=1),
+  136:         "loss_std": np.nanstd(loss, axis=1),
+  137:         "margin_mean": np.nanmean(margin, axis=1),
+  138:         "margin_std": np.nanstd(margin, axis=1),
+  139:         "correct_rate": np.nanmean(correct, axis=1),
+  140:     }
+  141:     for name, per_trajectory in summary_specs.items():
+  142:         df[f"oof_{name}"] = np.nanmedian(per_trajectory, axis=1)
+  143:         df[f"oof_{name}_iqr"] = np.nanpercentile(per_trajectory, 75, axis=1) - np.nanpercentile(
+  144:             per_trajectory, 25, axis=1
+  145:         )
+  146: 
+  147:     p_slope = _linear_slope(p_true, cube.epochs)
+  148:     loss_slope = _linear_slope(loss, cube.epochs)
+  149:     df["oof_p_true_slope"] = np.nanmedian(p_slope, axis=1)
+  150:     df["oof_loss_slope"] = np.nanmedian(loss_slope, axis=1)
+  151:     df["oof_p_true_slope_positive_fraction"] = np.nanmean(p_slope > 0, axis=1)
+  152:     df["oof_loss_slope_negative_fraction"] = np.nanmean(loss_slope < 0, axis=1)
+  153: 
+  154:     for window in parsed:
+  155:         idx = cube.epoch_indices(window.start, window.end)
+  156:         for base_name, values in (("p_true", p_true), ("loss", loss), ("margin", margin), ("p_defect", p_defect)):
+  157:             per_traj = np.nanmean(values[:, idx, :], axis=1)
+  158:             df[f"oof_{window.name}_{base_name}_mean"] = np.nanmedian(per_traj, axis=1)
+  159:             df[f"oof_{window.name}_{base_name}_consistency"] = 1.0 - np.nanstd(per_traj, axis=1)
+  160:         per_traj_correct = np.nanmean(correct[:, idx, :], axis=1)
+  161:         df[f"oof_{window.name}_correct_rate"] = np.nanmedian(per_traj_correct, axis=1)
+  162: 
+  163:     early = parsed[0]
+  164:     late = parsed[-1]
+  165:     if late_window is not None:
+  166:         late = Window("late_ref", int(late_window[0]), int(late_window[1]))
+  167:     early_idx = cube.epoch_indices(early.start, early.end)
+  168:     late_idx = cube.epoch_indices(late.start, late.end)
+  169:     early_loss = np.nanmean(loss[:, early_idx, :], axis=1)
+  170:     late_loss = np.nanmean(loss[:, late_idx, :], axis=1)
+  171:     early_true = np.nanmean(p_true[:, early_idx, :], axis=1)
+  172:     late_true = np.nanmean(p_true[:, late_idx, :], axis=1)
+  173:     df["oof_early_loss"] = np.nanmedian(early_loss, axis=1)
+  174:     df["oof_late_loss"] = np.nanmedian(late_loss, axis=1)
+  175:     df["oof_loss_drop"] = np.nanmedian(early_loss - late_loss, axis=1)
+  176:     df["oof_true_prob_gain"] = np.nanmedian(late_true - early_true, axis=1)
+  177:     df["oof_progress_positive_fraction"] = np.nanmean((early_loss - late_loss) > 0, axis=1)
+  178: 
+  179:     late_loss_trimmed_per_traj = _nan_trimmed_mean(loss[:, late_idx, :], trim_fraction, axis=1)
+  180:     df["oof_reference_loss"] = np.nanmedian(late_loss_trimmed_per_traj, axis=1)
+  181:     late_correct_rate = np.nanmean(correct[:, late_idx, :], axis=1)
+  182:     df["oof_late_stable_correct_fraction"] = np.nanmean(late_correct_rate >= 0.8, axis=1)
+  183:     df["oof_late_true_probability"] = np.nanmedian(late_true, axis=1)
+  184: 
+  185:     forgetting, relearning, never, stable_final = _event_counts(correct)
+  186:     df["oof_forgetting_events"] = np.nanmedian(forgetting, axis=1)
+  187:     df["oof_relearning_events"] = np.nanmedian(relearning, axis=1)
+  188:     df["oof_never_learned_fraction"] = np.mean(never, axis=1)
+  189:     df["oof_stable_final_fraction"] = np.mean(stable_final, axis=1)
+  190:     df["oof_relearnability_ratio"] = np.nanmedian(relearning / (1.0 + forgetting), axis=1)
+  191:     first_epoch = _first_run_epoch(correct, cube.epochs, patience=first_learn_patience)
+  192:     # ``np.nanmedian`` emits an All-NaN warning for samples that are never
+  193:     # learned in any OOF trajectory.  Those samples are a legitimate state,
+  194:     # so preserve NaN explicitly without polluting batch logs.
+  195:     first_epoch_summary = np.full(first_epoch.shape[0], np.nan, dtype=float)
+  196:     observed_first_epoch = np.isfinite(first_epoch)
+  197:     rows_with_observation = observed_first_epoch.any(axis=1)
+  198:     if rows_with_observation.any():
+  199:         first_epoch_summary[rows_with_observation] = np.nanmedian(
+  200:             first_epoch[rows_with_observation], axis=1
+  201:         )
+  202:     df["oof_first_learn_epoch"] = first_epoch_summary
+  203:     df["oof_first_learn_observed_fraction"] = np.mean(observed_first_epoch, axis=1)
+  204: 
+  205:     # AUM for binary classification is the signed true-class logit margin averaged over training.
+
+===== src/stage1_replay/training/runner.py =====
+   35:     cfg = read_json(p) if p.suffix.lower() == ".json" else read_yaml(p)
+   36:     if not isinstance(cfg, dict):
+   37:         raise ConfigurationError("run config must be a mapping")
+   38:     cfg["_path"] = str(p)
+   39:     return cfg
+   40: 
+   41: 
+   42: def find_training_checkpoint(run_dir: str | Path) -> Path | None:
+   43:     weights = Path(run_dir).resolve() / "training" / "ultralytics" / "weights"
+   44:     for name in ("best.pt", "last.pt"):
+   45:         candidate = weights / name
+   46:         if candidate.is_file():
+   47:             return candidate
+   48:     return None
+   49: 
+   50: 
+   51: def train_run(run_config_path: str | Path, *, resume: bool = False, dry_run: bool = False) -> dict[str, Any]:
+   52:     cfg = load_run_config(run_config_path)
+   53:     run_dir = Path(cfg["run_dir"]).resolve()
+   54:     run_dir.mkdir(parents=True, exist_ok=True)
+   55:     status = RunStatus(run_dir)
+
+===== src/stage1_replay/training/ultralytics_backend.py =====
+  135:                 "project": str(request.run_dir.parent),
+  136:                 "name": request.run_dir.name,
+  137:                 "exist_ok": True,
+  138:             }
+  139:         )
+  140:         model.train(trainer=Trainer, **kwargs)
+  141:         checkpoint = request.run_dir / "weights" / "best.pt"
+  142:         if not checkpoint.exists():
+  143:             checkpoint = request.run_dir / "weights" / "last.pt"
+  144:         if not checkpoint.exists():
+  145:             raise Stage1ReplayError(f"Ultralytics run produced no checkpoint under {request.run_dir / 'weights'}")
+  146:         metrics = request.run_dir / "results.csv"
+  147:         return TrainingResult(checkpoint=checkpoint, metrics_path=metrics if metrics.exists() else None, metadata={"backend": "ultralytics"})
+  148: 
+  149:     def predict(self, request: PredictionRequest) -> Path:
+  150:         _, _, YOLO = _build_classes()
+
+===== src/stage1_replay/eval/pipeline.py =====
+   30:     val_cal: pd.DataFrame,
+   31:     val_op: pd.DataFrame,
+   32:     test: pd.DataFrame,
+   33:     calibration_method: str = "temperature",
+   34:     max_fn: int = 95,
+   35:     target_tn: int = 68253,
+   36:     canonical_source: str = "test_oracle_curve",
+   37: ) -> tuple[dict[str, Any], dict[str, pd.DataFrame]]:
+   38:     cal = validate_predictions(val_cal)
+   39:     op = validate_predictions(val_op)
+   40:     tst = validate_predictions(test)
+   41:     _assert_prediction_roles_disjoint({"val_cal": cal, "val_op": op, "test": tst})
+   42:     calibrator = fit_calibrator(cal["label"], cal["p_defect"], method=calibration_method)
+   43:     frames = {"val_cal": cal.copy(), "val_op": op.copy(), "test": tst.copy()}
+   44:     for name, frame in frames.items():
+   45:         frame["p_defect_calibrated"] = calibrator.transform(frame["p_defect"])
+   46:     threshold = select_threshold_on_validation(
+   47:         frames["val_op"]["label"],
+   48:         frames["val_op"]["p_defect_calibrated"],
+   49:         max_fn=max_fn,
+   50:     )
+   51:     val_op_metrics = operating_point_metrics(
+   52:         frames["val_op"]["label"],
+   53:         frames["val_op"]["p_defect_calibrated"],
+   54:         max_fn=max_fn,
+   55:         target_tn=target_tn,
+   56:         fixed_threshold=threshold,
+   57:     )
+   58:     test_metrics = operating_point_metrics(
+   59:         frames["test"]["label"],
+   60:         frames["test"]["p_defect_calibrated"],
+   61:         max_fn=max_fn,
+   62:         target_tn=target_tn,
+   63:         fixed_threshold=threshold,
+   64:     )
+   65:     fixed = confusion_at_threshold(
+   66:         frames["test"]["label"],
+   67:         frames["test"]["p_defect_calibrated"],
+   68:         threshold,
+   69:     ).to_dict()
+   70:     if canonical_source == "test_oracle_curve":
+   71:         canonical_tn = int(test_metrics[f"TN_at_FN{max_fn}"])
+   72:         canonical_fn = int(test_metrics[f"FN_at_TN{target_tn}"])
+   73:     elif canonical_source == "valop_fixed_threshold":
+   74:         canonical_tn = int(fixed["tn"])
+   75:         canonical_fn = int(fixed["fn"])
+   76:     else:
+   77:         raise ValueError("canonical_source must be test_oracle_curve or valop_fixed_threshold")
+   78:     result: dict[str, Any] = {
+   79:         "calibration": calibrator.to_dict(),
+   80:         "operating_threshold_selected_on_val_op": float(threshold),
+   81:         "canonical_source": canonical_source,
+   82:         f"TN_at_FN{max_fn}": canonical_tn,
+   83:         f"FN_at_TN{target_tn}": canonical_fn,
+   84:         "val_op": val_op_metrics,
+   85:         "test_oracle_curve_analysis_only": test_metrics,
+   86:         "test_at_val_op_threshold": fixed,
+   87:     }
+   88:     return result, frames
+   89: 
+   90: 
+
+===== src/stage1_replay/evaluation.py =====
+   35:     _assert_role(val_cal, "val_cal")
+   36:     _assert_role(val_op, "val_op")
+   37:     _assert_role(test, "test")
+   38:     calibrator = fit_calibrator(val_cal, calibration_method)
+   39:     op = apply_calibrator(val_op, calibrator)
+   40:     final = apply_calibrator(test, calibrator)
+   41:     fn_threshold = threshold_for_max_fn(op["label"].to_numpy(), op["p_defect"].to_numpy(), max_fn)
+   42:     tn_threshold = threshold_for_target_tn(op["label"].to_numpy(), op["p_defect"].to_numpy(), target_tn)
+   43:     return {
+   44:         "calibrator": calibrator,
+   45:         "thresholds_selected_on_val_op": {
+   46:             "fn_limit": float(fn_threshold),
+   47:             "tn_target": float(tn_threshold),
+   48:         },
+   49:         "val_op_oracle": canonical_oracle_metrics(op, max_fn=max_fn, target_tn=target_tn),
+   50:         "test_oracle": canonical_oracle_metrics(final, max_fn=max_fn, target_tn=target_tn),
+   51:         "test_at_val_op_fn_threshold": apply_frozen_threshold(final["label"].to_numpy(), final["p_defect"].to_numpy(), fn_threshold),
+   52:         "test_at_val_op_tn_threshold": apply_frozen_threshold(final["label"].to_numpy(), final["p_defect"].to_numpy(), tn_threshold),
+   53:     }
+
+===== src/stage1_replay/dynamics/critical.py =====
+   35:     config: CriticalRegionConfig | None = None,
+   36: ) -> pd.DataFrame:
+   37:     """Construct FN95-local ranking-loss trajectory using val_op only.
+   38: 
+   39:     Weak positive lower tail and dangerous negative upper tail jointly define
+   40:     the local ROC region. Use of test/holdout is rejected by construction.
+   41:     """
+   42:     cfg = config or CriticalRegionConfig()
+   43:     required = {"sample_id", "label", "split"}
+   44:     if not required.issubset(validation_manifest.columns):
+   45:         raise SchemaError(f"validation manifest requires {sorted(required)}")
+   46:     roles = set(validation_manifest["split"].astype(str).unique())
+   47:     forbidden = roles.intersection(cfg.forbidden_splits)
+   48:     if forbidden:
+   49:         raise LeakageError(f"Critical target may not be constructed from roles: {sorted(forbidden)}")
+   50:     if roles != {"val_op"}:
+   51:         raise LeakageError(f"Critical target must use val_op only; observed roles={sorted(roles)}")
+   52:     dyn = validate_dynamics(validation_dynamics)
+   53:     merged = dyn.merge(validation_manifest[["sample_id", "label"]], on="sample_id", how="inner", validate="many_to_one")
+   54:     if merged["sample_id"].nunique() != validation_manifest["sample_id"].nunique():
+   55:         raise SchemaError("validation dynamics do not cover every val_op sample")
+   56:     rows = []
+   57:     for epoch, group in merged.groupby("epoch", sort=True):
+   58:         pos = group[group["label"] == 1].sort_values("p_defect", ascending=True)
+   59:         neg = group[group["label"] == 0].sort_values("p_defect", ascending=False)
+   60:         positive_count = min(
+   61:             len(pos),
+   62:             max(1, int(np.ceil(cfg.max_fn * cfg.positive_tail_multiplier))),
+   63:         )
+   64:         negative_count = min(len(neg), max(1, int(cfg.normal_tail_count)))
+   65:         pos_tail = pos.head(positive_count)["p_defect"].to_numpy(dtype=float)
+   66:         neg_tail = neg.head(negative_count)["p_defect"].to_numpy(dtype=float)
+   67:         threshold_proxy = float(np.partition(pos["p_defect"].to_numpy(), min(cfg.max_fn, len(pos) - 1))[min(cfg.max_fn, len(pos) - 1)])
+   68:         rows.append(
+   69:             {
+   70:                 "epoch": int(epoch),
+   71:                 "critical_loss": _pairwise_logistic(pos_tail, neg_tail, cfg.margin),
+   72:                 "weak_positive_mean": float(pos_tail.mean()),
+   73:                 "dangerous_normal_mean": float(neg_tail.mean()),
+   74:                 "positive_tail_count": int(positive_count),
+   75:                 "normal_tail_count": int(negative_count),
+   76:                 "fn95_threshold_proxy": threshold_proxy,
+   77:             }
+   78:         )
+   79:     result = pd.DataFrame(rows).sort_values("epoch").reset_index(drop=True)
+   80:     result["critical_loss_drop"] = result["critical_loss"].shift(1) - result["critical_loss"]
+   81:     return result
+   82: 
+   83: 
+   84: def _correlation(x: np.ndarray, y: np.ndarray) -> float:
+   85:     finite = np.isfinite(x) & np.isfinite(y)
+   86:     if finite.sum() < 3:
+   87:         return 0.0
+   88:     x2, y2 = x[finite], y[finite]
+   89:     if np.std(x2) < _EPS or np.std(y2) < _EPS:
+   90:         return 0.0
+   91:     return float(np.corrcoef(x2, y2)[0, 1])
+   92: 
+   93: 
+   94: def add_critical_cld(
+   95:     train_dynamics: pd.DataFrame,
+   96:     train_manifest: pd.DataFrame,
+   97:     critical_trajectory: pd.DataFrame,
+   98: ) -> pd.DataFrame:
+   99:     """Critical-CLD adaptation: correlate per-example loss drops with FN95-local target drops."""
+  100:     dyn = validate_dynamics(train_dynamics)
+  101:     merged = dyn.merge(train_manifest[["sample_id", "label"]], on="sample_id", how="inner", validate="many_to_one")
+  102:     merged["p_true"] = np.where(merged["label"] == 1, merged["p_defect"], 1 - merged["p_defect"])
+  103:     merged["loss"] = -np.log(np.clip(merged["p_true"], 1e-7, 1 - 1e-7))
+  104:     target = critical_trajectory[["epoch", "critical_loss_drop"]].copy()
+  105:     rows = []
+  106:     for sample_id, group in merged.groupby("sample_id", sort=True):
+  107:         g = group.sort_values("epoch")[["epoch", "loss"]]
+  108:         g["sample_loss_drop"] = g["loss"].shift(1) - g["loss"]
+  109:         aligned = g.merge(target, on="epoch", how="inner").dropna()
+  110:         corr = _correlation(
+  111:             aligned["sample_loss_drop"].to_numpy(dtype=float),
+  112:             aligned["critical_loss_drop"].to_numpy(dtype=float),
+  113:         )
+  114:         rows.append(
+  115:             {
+  116:                 "sample_id": str(sample_id),
+  117:                 "critical_cld": corr,
+  118:                 "critical_cld_positive": max(corr, 0.0),
+  119:                 "critical_cld_negative": max(-corr, 0.0),
+  120:                 "critical_cld_points": int(len(aligned)),
+  121:             }
+  122:         )
+  123:     return pd.DataFrame(rows)
+  124: 
+  125: 
+
+===== src/stage1_replay/features/alignment.py =====
+  211: def critical_pairwise_loss_trajectory(
+  212:     cube: TrajectoryCube,
+  213:     *,
+  214:     defect_tail_fraction: float = 0.01,
+  215:     normal_tail_fraction: float = 0.05,
+  216:     margin: float = 0.0,
+  217: ) -> np.ndarray:
+  218:     """Critical pairwise loss for every epoch and OOF trajectory."""
+  219:     if cube.labels is None:
+  220:         raise SchemaError("critical loss trajectory requires labels")
+  221:     p = np.asarray(cube.p_defect, dtype=float)
+  222:     y = cube.labels
+  223:     result = np.full((cube.n_epochs, cube.n_trajectories), np.nan)
+  224:     # Region membership is recomputed per trajectory/epoch because the operating tail moves.
+  225:     for t in range(cube.n_epochs):
+  226:         for r in range(cube.n_trajectories):
+  227:             probs = p[:, t, r]
+  228:             valid = np.isfinite(probs)
+  229:             if not valid.any():
+  230:                 continue
+  231:             region = choose_critical_region(
+  232:                 y[valid],
+  233:                 probs[valid],
+  234:                 defect_tail_fraction=defect_tail_fraction,
+  235:                 normal_tail_fraction=normal_tail_fraction,
+  236:                 min_per_class=1,
+  237:             )
+  238:             valid_idx = np.flatnonzero(valid)
+  239:             d = valid_idx[region.defect_indices]
+  240:             n = valid_idx[region.normal_indices]
+  241:             z = safe_logit(probs)
+  242:             arg = margin - (z[d][:, None] - z[n][None, :])
+  243:             result[t, r] = float(np.logaddexp(0.0, arg).mean())
+  244:     return result
+  245: 
+  246: 
+  247: def critical_cld_alignment(
+  248:     train_cube: TrajectoryCube,
+  249:     critical_cube: TrajectoryCube,
+  250:     *,
+  251:     method: str = "pearson",
+  252:     use_differences: bool = True,
+  253:     defect_tail_fraction: float = 0.01,
+  254:     normal_tail_fraction: float = 0.05,
+  255: ) -> pd.DataFrame:
+  256:     """Cheap temporal direction proxy: sample loss changes vs critical-loss changes."""
+  257:     if not np.array_equal(train_cube.epochs, critical_cube.epochs):
+  258:         raise SchemaError("train and critical trajectories must share epochs")
+  259:     sample_loss = np.nanmedian(train_cube.true_loss(), axis=2)
+  260:     critical_loss = np.nanmedian(
+  261:         critical_pairwise_loss_trajectory(
+  262:             critical_cube,
+  263:             defect_tail_fraction=defect_tail_fraction,
+  264:             normal_tail_fraction=normal_tail_fraction,
+  265:         ),
+  266:         axis=1,
+  267:     )
+  268:     if use_differences:
+  269:         sample_loss = np.diff(sample_loss, axis=1)
+  270:         critical_loss = np.diff(critical_loss)
+  271:     rows = []
+  272:     for sid, values in zip(train_cube.sample_ids, sample_loss, strict=True):
+  273:         valid = np.isfinite(values) & np.isfinite(critical_loss)
+  274:         if valid.sum() < 3 or np.std(values[valid]) < 1e-12 or np.std(critical_loss[valid]) < 1e-12:
+  275:             corr = 0.0
+  276:         elif method == "pearson":
+  277:             corr = float(pearsonr(values[valid], critical_loss[valid]).statistic)
+  278:         elif method == "spearman":
+  279:             corr = float(spearmanr(values[valid], critical_loss[valid]).statistic)
+  280:         else:
+  281:             raise ValueError("method must be pearson or spearman")
+  282:         rows.append({"sample_id": sid, "critical_cld_alignment": corr})
+  283:     return pd.DataFrame(rows)
+
+===== src/stage1_replay/features/learnability.py =====
+   59: def add_learnability_scores(
+   60:     features: pd.DataFrame,
+   61:     *,
+   62:     group_columns: Sequence[str] = ("label",),
+   63: ) -> pd.DataFrame:
+   64:     """Add interpretable components without pretending they are proven utility.
+   65: 
+   66:     The default composite is deliberately multiplicative: a sample must be structurally
+   67:     predictable, show historical plasticity, and (when available) retain current residual
+   68:     learnability.  Experiments should still test each component separately.
+   69:     """
+   70:     df = validate_feature_table(features)
+   71:     required = {
+   72:         "oof_reference_loss",
+   73:         "oof_loss_drop",
+   74:         "oof_relearnability_ratio",
+   75:         "oof_late_stable_correct_fraction",
+   76:         "oof_never_learned_fraction",
+   77:     }
+   78:     missing = required - set(df.columns)
+   79:     if missing:
+   80:         raise SchemaError(f"learnability feature table misses {sorted(missing)}")
+   81: 
+   82:     # High percentile = desirable for all *_score columns below.
+   83:     df["structural_predictability_score"] = 1.0 - grouped_percentile(
+   84:         df, "oof_reference_loss", group_columns
+   85:     )
+   86:     df["historical_progress_score"] = grouped_percentile(df, "oof_loss_drop", group_columns)
+   87:     df["relearnability_score"] = grouped_percentile(df, "oof_relearnability_ratio", group_columns)
+   88:     df["consistency_score"] = df["oof_late_stable_correct_fraction"].clip(0, 1)
+   89:     df["never_learned_risk"] = df["oof_never_learned_fraction"].clip(0, 1)
+   90:     df["plasticity_score"] = geometric_mean_columns(
+   91:         df,
+   92:         ["historical_progress_score", "relearnability_score"],
+   93:     )
+   94:     df["slow_learning_score"] = geometric_mean_columns(
+   95:         df,
+   96:         [
+   97:             # Early difficulty, genuine improvement, and late OOF predictability.
+   98:             _ensure_percentile(df, "oof_early_loss", group_columns, "early_difficulty_pct"),
+   99:             "historical_progress_score",
+  100:             "structural_predictability_score",
+  101:         ],
+  102:     )
+  103:     residual = "reducible_gap_pct" if "reducible_gap_pct" in df.columns else "slow_learning_score"
+  104:     df["learnability_candidate_score"] = geometric_mean_columns(
+  105:         df,
+  106:         [residual, "plasticity_score", "structural_predictability_score"],
+  107:     )
+  108:     # Reliability is a gate/diagnostic, not a replacement for intervention evidence.
+  109:     df["reliability_soft_score"] = (
+  110:         df["structural_predictability_score"]
+  111:         * (0.5 + 0.5 * df["consistency_score"])
+  112:         * (1.0 - 0.75 * df["never_learned_risk"])
+  113:     ).clip(0, 1)
+  114:     df["gated_learnability_score"] = (
+  115:         df["learnability_candidate_score"] * df["reliability_soft_score"]
+  116:     )
+  117:     return df
+
+===== src/stage1_replay/selection/diversity.py =====
+   50: def cluster_quota_select(
+   51:     candidates: pd.DataFrame,
+   52:     *,
+   53:     k: int,
+   54:     cluster_column: str,
+   55:     score_column: str = "score",
+   56:     quota: str = "sqrt_size",
+   57:     caps: Mapping[str, int] | None = None,
+   58:     seed: int = 0,
+   59:     within_cluster: str = "top",
+   60: ) -> pd.DataFrame:
+   61:     if cluster_column not in candidates:
+   62:         raise SchemaError(f"cluster quota selection requires {cluster_column}")
+   63:     if k > len(candidates):
+   64:         raise BudgetError("requested unique count exceeds candidate pool")
+   65:     groups = list(candidates.groupby(cluster_column, dropna=False, sort=True))
+   66:     sizes = np.asarray([len(group) for _, group in groups], dtype=float)
+   67:     if quota == "equal":
+   68:         weights = np.ones_like(sizes)
+   69:     elif quota == "proportional":
+   70:         weights = sizes
+   71:     elif quota == "sqrt_size":
+   72:         weights = np.sqrt(sizes)
+   73:     else:
+   74:         raise ValueError("quota must be equal, proportional, or sqrt_size")
+   75:     raw = weights / weights.sum() * k
+   76:     target = np.floor(raw).astype(int)
+   77:     target = np.minimum(target, sizes.astype(int))
+   78:     remaining = k - int(target.sum())
+   79:     while remaining > 0:
+   80:         capacity = sizes.astype(int) - target
+   81:         available = np.flatnonzero(capacity > 0)
+   82:         if len(available) == 0:
+   83:             raise BudgetError("cluster quotas cannot fill requested unique count")
+   84:         priority = (raw - target)[available]
+   85:         idx = available[int(np.argmax(priority))]
+   86:         target[idx] += 1
+   87:         remaining -= 1
+   88: 
+   89:     rng = np.random.default_rng(seed)
+   90:     parts: list[pd.DataFrame] = []
+   91:     for (cluster, group), n in zip(groups, target, strict=True):
+   92:         if n == 0:
+   93:             continue
+   94:         if within_cluster == "top":
+   95:             local = group.sort_values([score_column, "sample_id"], ascending=[False, True]).head(int(n))
+   96:         elif within_cluster == "probability":
+   97:             score = group[score_column].to_numpy(float)
+   98:             weight = np.exp((score - np.max(score)) / max(np.std(score), 1e-6))
+   99:             idx = rng.choice(len(group), size=int(n), replace=False, p=weight / weight.sum())
+  100:             local = group.iloc[idx]
+  101:         elif within_cluster == "random":
+  102:             local = group.iloc[rng.choice(len(group), size=int(n), replace=False)]
+  103:         else:
+  104:             raise ValueError("within_cluster must be top, probability, or random")
+  105:         parts.append(local)
+  106:     provisional = pd.concat(parts, ignore_index=True)
+  107:     # Reapply caps globally in score order; fill deficits from the full pool.
+  108:     ordered = pd.concat(
+  109:         [
+  110:             provisional.sort_values([score_column, "sample_id"], ascending=[False, True]),
+  111:             candidates.sort_values([score_column, "sample_id"], ascending=[False, True]),
+  112:         ],
+  113:         ignore_index=True,
+  114:     ).drop_duplicates("sample_id", keep="first")
+  115:     return select_order_with_caps(ordered, np.arange(len(ordered)), k=k, caps=caps)
+  116: 
+
+===== src/stage1_replay/selection/schedule.py =====
+  119: def build_static_schedule(
+  120:     selection: pd.DataFrame,
+  121:     *,
+  122:     epochs: int,
+  123:     budget_unit: str = "append_slots_per_epoch",
+  124:     seed: int = 0,
+  125:     shuffle_each_epoch: bool = True,
+  126: ) -> ReplaySchedule:
+  127:     if budget_unit not in BUDGET_UNITS:
+  128:         raise BudgetError(f"unknown budget_unit={budget_unit}; allowed={BUDGET_UNITS}")
+  129:     if epochs <= 0:
+  130:         raise BudgetError("epochs must be positive")
+  131:     selected = validate_selection(selection)
+  132:     expanded = _expand_selection(selected)
+  133:     unique_ids = selected["sample_id"].astype(str).to_numpy()
+  134:     lookup = {sid: i for i, sid in enumerate(unique_ids)}
+  135:     if budget_unit in {"append_slots_per_epoch", "unique_samples"}:
+  136:         slots = len(expanded)
+  137:         matrix = np.empty((epochs, slots), dtype=np.int32)
+  138:         base = np.asarray([lookup[sid] for sid in expanded], dtype=np.int32)
+  139:         for epoch in range(epochs):
+  140:             row = base.copy()
+  141:             if shuffle_each_epoch:
+  142:                 np.random.default_rng(child_seed(seed, "schedule", epoch)).shuffle(row)
+  143:             matrix[epoch] = row
+  144:         expected_total = slots * epochs
+  145:     else:
+  146:         # Selection repeat_count is interpreted across the *entire* run.
+  147:         total = len(expanded)
+  148:         if total % epochs != 0:
+  149:             raise BudgetError(
+  150:                 "total_training_exposures must be divisible by epochs for the fixed-length Ultralytics adapter; "
+  151:                 f"got total={total}, epochs={epochs}"
+  152:             )
+  153:         slots = total // epochs
+  154:         all_indices = np.asarray([lookup[sid] for sid in expanded], dtype=np.int32)
+  155:         if shuffle_each_epoch:
+  156:             np.random.default_rng(seed).shuffle(all_indices)
+  157:         matrix = all_indices.reshape(epochs, slots)
+  158:         expected_total = total
+  159:     return ReplaySchedule(
+  160:         sample_ids=unique_ids,
+  161:         slot_sample_indices=matrix,
+  162:         epochs=np.arange(1, epochs + 1),
+  163:         metadata={
+  164:             "budget_unit": budget_unit,
+  165:             "selection_slot_budget": int(selected["repeat_count"].sum()),
+  166:             "expected_total_scheduled_exposures": int(expected_total),
+  167:             "schedule_seed": int(seed),
+  168:             "schedule_type": "static",
+  169:         },
+  170:     )
+
+  173: def build_snapshot_schedule(
+  174:     snapshots: Sequence[tuple[int, pd.DataFrame]],
+  175:     *,
+  176:     epochs: int,
+  177:     seed: int = 0,
+  178: ) -> ReplaySchedule:
+  179:     """Build an offline dynamic schedule from selections activated at 1-indexed epochs.
+  180: 
+  181:     Every snapshot must have the same replay-slot budget. This preserves epoch length,
+  182:     optimizer steps, and LR schedule across T/R1/R2 arms.
+  183:     """
+  184:     if not snapshots:
+  185:         raise BudgetError("at least one schedule snapshot is required")
+  186:     ordered = sorted((int(start), validate_selection(table)) for start, table in snapshots)
+  187:     if ordered[0][0] != 1:
+  188:         raise BudgetError("the first snapshot must start at epoch 1; use a matched-random warm-up snapshot if needed")
+  189:     budgets = {int(table["repeat_count"].sum()) for _, table in ordered}
+  190:     if len(budgets) != 1:
+  191:         raise BudgetError(f"all snapshots must have the same per-epoch slot budget, got {sorted(budgets)}")
+  192:     slots = budgets.pop()
+  193:     all_ids = np.asarray(sorted({str(sid) for _, table in ordered for sid in table["sample_id"]}))
+  194:     lookup = {sid: i for i, sid in enumerate(all_ids)}
+  195:     matrix = np.empty((epochs, slots), dtype=np.int32)
+  196:     snapshot_starts = [start for start, _ in ordered]
+  197:     for epoch in range(1, epochs + 1):
+  198:         active_idx = max(i for i, start in enumerate(snapshot_starts) if start <= epoch)
+  199:         expanded = _expand_selection(ordered[active_idx][1])
+  200:         row = np.asarray([lookup[sid] for sid in expanded], dtype=np.int32)
+  201:         np.random.default_rng(child_seed(seed, "snapshot", epoch)).shuffle(row)
+  202:         matrix[epoch - 1] = row
+  203:     return ReplaySchedule(
+  204:         all_ids,
+  205:         matrix,
+  206:         np.arange(1, epochs + 1),
+  207:         {
+  208:             "budget_unit": "append_slots_per_epoch",
+  209:             "selection_slot_budget": slots,
+  210:             "expected_total_scheduled_exposures": slots * epochs,
+  211:             "schedule_seed": int(seed),
+  212:             "schedule_type": "offline_snapshots",
+  213:             "snapshot_start_epochs": snapshot_starts,
+  214:         },
+  215:     )
+
+===== src/stage1_replay/data/leakage.py =====
+   12: def audit_role_isolation(
+   13:     manifest: pd.DataFrame,
+   14:     *,
+   15:     identity_columns: Iterable[str] = ("sample_id", "path"),
+   16:     group_columns: Iterable[str] = ("duplicate_group",),
+   17:     raise_on_error: bool = False,
+   18: ) -> dict[str, object]:
+   19:     df = validate_dataset_manifest(manifest)
+   20:     problems: list[dict[str, object]] = []
+   21:     for column in identity_columns:
+   22:         if column not in df:
+   23:             continue
+   24:         values = df[column].astype(str)
+   25:         if column == "path":
+   26:             values = values.map(lambda x: str(Path(x).expanduser().resolve()).casefold())
+   27:         tmp = pd.DataFrame({column: values, "split": df["split"]})
+   28:         counts = tmp.groupby(column, dropna=False)["split"].nunique()
+   29:         bad = counts[counts > 1]
+   30:         for value in bad.index[:50]:
+   31:             problems.append({"type": "identity_cross_role", "column": column, "value": str(value)})
+   32:     for column in group_columns:
+   33:         if column not in df:
+   34:             continue
+   35:         nonempty = df[df[column].notna() & (df[column].astype(str).str.len() > 0)]
+   36:         counts = nonempty.groupby(column)["split"].nunique()
+   37:         bad = counts[counts > 1]
+   38:         for value in bad.index[:50]:
+   39:             problems.append({"type": "group_cross_role", "column": column, "value": str(value)})
+   40:     result = {"valid": not problems, "problem_count": len(problems), "problems": problems}
+   41:     if problems and raise_on_error:
+   42:         first = problems[0]
+   43:         raise LeakageError(f"dataset role leakage detected ({len(problems)} problems), first={first}")
+   44:     return result
+
+===== configs/project_learnability.example.yaml =====
+   74: training:
+   75:   model: yolo11m-cls.pt
+   76:   epochs: 200
+   77:   batch: 24
+   78:   imgsz: 416
+   79:   device: 0
+   80:   workers: 8
+   81:   seed: 42
+   82:   deterministic: true
+   83:   pretrained: true
+   84:   optimizer: auto
+   85:   lr0: 0.01
+   86:   lrf: 0.01
+   87:   momentum: 0.937
+   88:   weight_decay: 0.0005
+   89:   warmup_epochs: 3.0
+   90:   patience: 200
+   91:   amp: true
+   92:   cache: false
+   93:   plots: true
+   94:   # Keep all augmentation/scientific settings fixed across T/R1/R2.
+   95:   hsv_h: 0.015
+   96:   hsv_s: 0.7
+   97:   hsv_v: 0.4
+   98:   degrees: 0.0
+   99:   translate: 0.1
+  100:   scale: 0.5
+  101:   shear: 0.0
+  102:   perspective: 0.0
+  103:   flipud: 0.0
+  104:   fliplr: 0.5
+  105:   erasing: 0.4
+  106: 
+  107: evaluation:
+  108:   max_fn: 95
+  109:   target_tn: 68253
+  110:   calibration_method: temperature
+  111:   canonical_source: test_oracle_curve
+  112:   defect_class_index: 1
+  113:   prediction_batch: 64
+  114:   prediction_chunk_size: 4096
+  115: 
+  116: schedule:
+  117:   # B600/B3000/B6000 means this many logical replay slots appended every epoch.
+  118:   budget_unit: append_slots_per_epoch
+  119:   shuffle_each_epoch: true
+  120: 
+  121: controls:
+  122:   # R1 is truly global random; R2 matches the method pool/strata and progressively
+  123:   # relaxes impossible strata with every relaxation recorded.
+  124:   r1_match_columns: []
+  125:   r2_strata_columns: [label, trajectory_cluster]
+  126:   r2_relaxation_order: [trajectory_cluster, label]
+  127:   exclude_target_from_controls: false
+  128: 
+
+===== configs/frozen_stage1.example.yaml =====
+   14: training:
+   15:   model: yolo11m-cls.pt
+   16:   seed: 42
+   17:   epochs: 200
+   18:   batch: 24
+   19:   imgsz: 416
+   20:   workers: 8
+   21:   device: "0"
+   22:   extra:
+   23:     optimizer: auto
+   24:     deterministic: true
+   25:     pretrained: true
+   26:     cache: false
+   27:     save: true
+   28:     plots: true
+   29: 
+   30: prediction:
+   31:   batch: 64
+   32:   workers: 8
+   33:   extra: {}
+   34: 
+   35: evaluation:
+   36:   max_fn: 95
+   37:   target_tn: 68253
+   38:   calibration: temperature
+
+===== docs/METHODS_AND_LITERATURE.md =====
+   61: ## 3. Layer B — slow-learning feature groups
+   62: 
+   63: ### Source
+   64: 
+   65: Nguyen et al., *USEFUL: A Framework for Unified Supervised and Unsupervised Feature Learning*, NeurIPS 2024, as analyzed in the included second-round review.
+   66: 
+   67: ### Source method
+   68: 
+   69: USEFUL identifies an early slow-learnable group and physically over-samples the original samples. Its reported image-classification experiments distinguish slow-learning groups from merely highest-loss or currently misclassified samples, and include random-over-sampling comparisons and multiplier/timing ablations.
+   70: 
+   71: ### Binary-task adaptation
+   72: 
+   73: A two-class softmax output has only one independent probability. Clustering one final probability would reduce to another confidence threshold. Therefore `add_slow_learning_clusters` uses:
+   74: 
+   75: - loss trajectory vectors by default;
+   76: - optionally representation or gradient-embedding columns;
+   77: - class-conditional clustering;
+   78: - the cluster with higher probe/mean loss as the slow group.
+   79: 
+   80: Code:
+   81: 
+   82: ```text
+   83: stage1_replay/dynamics/trajectory.py
+   84: configs/methods/slow_learning.yaml
+   85: ```
+   86: 
+   87: ### Non-claim
+   88: 
+   89: This is a Budgeted-USEFUL adaptation, not the authors' original implementation. The slow group can still contain noise, so it is separately intersected with reducibility and reliability.
+   90: 
+   91: ## 4. Layer C — cross-fitted residual learnability
+   92: 
+   93: ### Sources
+   94: 
+   95: - Mindermann et al., *Prioritized Training on Points that are Learnable, Worth Learning, and Not Yet Learnt*, ICML 2022 (RHO-LOSS).
+   96: - ReLo: reducible-loss replay priority.
+   97: - CSRL: reducible-loss replay/coreset selection.
+   98: - the included second- and third-round reviews for exact distinctions and limitations.
+   99: 
+  100: ### Formula
+  101: 
+  102: When a current-run checkpoint exists:
+  103: 
+  104: \[
+  105: R_i(t)=\left[z_g(L_i^{cur}(t))-z_g(L_i^{OOF-ref})\right]_+.
+  106: \]
+  107: 
+  108: A percentile alternative is also recorded:
+  109: 
+  110: \[
+  111: R_i^{pct}(t)=\left[Q_g(L_i^{cur}(t))-Q_g(L_i^{OOF-ref})\right]_+.
+  112: \]
+  113: 
+  114: Here `g` can be class, source, fold or business-channel strata.
+  115: 
+  116: When no current-run checkpoint table is provided, the package can use an early/probe OOF loss against late OOF reference loss. It marks:
+  117: 
+  118: ```text
+  119: reducible_is_proxy = 1
+  120: ```
+  121: 
+  122: so historical proxy runs cannot be silently mixed with true current-state runs.
+  123: 
+  124: ### Terminology guard
+  125: 
+  126: The code uses:
+  127: 
+  128: ```text
+  129: oof_reference_loss
+  130: cross-fitted reference predictability
+  131: ```
+  132: 
+  133: It does not call this term true irreducible loss, because OOF models can still have capacity, calibration and fold-distribution errors.
+
+===== pyproject.toml =====
+    5: [project]
+    6: name = "stage1-budgeted-replay"
+    7: version = "1.0.0"
+    8: description = "Auditable fixed-budget replay and learnability research pipeline for high-recall Stage-1 binary classification."
+    9: readme = "README.md"
+   10: requires-python = ">=3.10"
+   11: license = {text = "MIT"}
+   12: authors = [{name = "Stage-1 research engineering package"}]
+   13: dependencies = [
+   14:   "numpy>=1.26",
+   15:   "pandas>=2.1",
+   16:   "scipy>=1.11",
+   17:   "scikit-learn>=1.4",
+   18:   "PyYAML>=6.0",
+   19:   "Pillow>=10.0",
+   20:   "tabulate>=0.9",
+   21: ]
+   22: 
+   23: [project.optional-dependencies]
+   24: train = [
+   25:   "torch>=2.2",
+   26:   "torchvision>=0.17",
+   27:   "ultralytics>=8.4.0,<9",
+   28:   "opencv-python-headless>=4.9",
+   29: ]
+   30: parquet = ["pyarrow>=15"]
+   31: stats = ["statsmodels>=0.14"]
+   32: dev = ["pytest>=8", "pytest-cov>=5", "ruff>=0.8", "mypy>=1.11"]
+   33: all = [
+   34:   "torch>=2.2",
+   35:   "torchvision>=0.17",
+   36:   "ultralytics>=8.4.0,<9",
+   37:   "opencv-python-headless>=4.9",
+   38:   "pyarrow>=15",
+   39:   "statsmodels>=0.14",
+   40:   "pytest>=8",
+   41:   "pytest-cov>=5",
+   42:   "ruff>=0.8",
+   43: ]
+
+===== tests/conftest.py =====
+   30: 
+   31: 
+   32: @pytest.fixture
+   33: def train_dynamics(small_manifest: pd.DataFrame) -> pd.DataFrame:
+   34:     rows = []
+   35:     rng = np.random.default_rng(3)
+   36:     for row in small_manifest[small_manifest.split == "train"].itertuples(index=False):
+   37:         for fold in [0, 1]:
+   38:             for epoch in range(1, 7):
+   39:                 target = 0.82 if row.label else 0.18
+   40:                 start = 0.40 if row.label else 0.60
+   41:                 p = start + (target - start) * epoch / 6 + rng.normal(0, 0.03)
+   42:                 rows.append({"sample_id": row.sample_id, "epoch": epoch, "p_defect": float(np.clip(p, 0.01, 0.99)), "fold": fold, "seed": 40 + fold})
+   43:     return pd.DataFrame(rows)
+
+===== tests/test_oof_mmap_conversion.py =====
+    1: from __future__ import annotations
+    2: 
+    3: from pathlib import Path
+    4: 
+    5: import numpy as np
+    6: import pandas as pd
+    7: import pytest
+    8: 
+    9: from stage1_replay.data.convert import convert_long_oof_to_mmap
+   10: from stage1_replay.data.oof import load_long_dynamics, load_mmap_dynamics
+   11: from stage1_replay.exceptions import SchemaError
+   12: 
+   13: 
+   14: def _long_table() -> pd.DataFrame:
+   15:     rows = []
+   16:     for trajectory in ["fold-0", "fold-1"]:
+   17:         for sample_id, label in [("a", 0), ("b", 1), ("c", 0)]:
+   18:             for epoch in [1, 2, 3, 4]:
+   19:                 base = 0.1 * epoch + (0.05 if trajectory == "fold-1" else 0.0)
+   20:                 p_defect = base if label == 1 else 1.0 - base
+   21:                 rows.append(
+   22:                     {
+   23:                         "sample_id": sample_id,
+   24:                         "label": label,
+   25:                         "epoch": epoch,
+   26:                         "trajectory_id": trajectory,
+   27:                         "p_defect": p_defect,
+   28:                     }
+   29:                 )
+   30:     return pd.DataFrame(rows)
+   31: 
+   32: 
+   33: def test_chunked_long_to_mmap_roundtrip(tmp_path: Path):
+   34:     source = tmp_path / "oof.csv"
+   35:     _long_table().to_csv(source, index=False)
+   36:     result = convert_long_oof_to_mmap(source, tmp_path / "mmap", chunksize=5, dtype="float32")
+   37:     assert result["status"] == "VALIDATED"
+   38:     assert result["missing_cells"] == 0
+   39:     assert result["written_cells"] == 24
+   40: 
+   41:     expected = load_long_dynamics(source)
+   42:     observed = load_mmap_dynamics(result["metadata_path"])
+   43:     assert observed.p_defect.dtype == np.dtype("float32")
+   44:     assert observed.sample_ids.tolist() == expected.sample_ids.tolist()
+   45:     assert observed.epochs.tolist() == expected.epochs.tolist()
+   46:     assert observed.trajectory_ids.tolist() == expected.trajectory_ids.tolist()
+   47:     np.testing.assert_allclose(observed.p_defect, expected.p_defect, rtol=1e-6, atol=1e-6)
+   48:     np.testing.assert_array_equal(observed.labels, expected.labels)
+   49: 
+   50: 

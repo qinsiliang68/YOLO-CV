@@ -1,0 +1,19 @@
+{
+  "campaign_id": "dynamic_replay_budget_efficiency_20260807",
+  "canonical_lock_file_sha256": "7AFD96784F4994903892BD5BA8477396AAF5EFFBFF158A1C57225428BF01F74E",
+  "canonical_lock_path": "/mnt/data/dynamic_replay_impl/REPOSITORY/configs/stage1_gapvalue240/CANONICAL_TRAINING_LOCK_v1.json",
+  "canonical_lock_payload_sha256": "A25BBCB921187FF74A6263CD497654DA51F78A070153FBF3E4009FD9EFC96782",
+  "formal_rule": "FAIL_BEFORE_GPU_ON_ANY_UNREGISTERED_DRIFT",
+  "immutable_field_count": 102,
+  "runtime_bound_fields": [
+    "data",
+    "device",
+    "exist_ok",
+    "model",
+    "project",
+    "resume",
+    "save_dir",
+    "seed"
+  ],
+  "schema_version": "1.0"
+}

@@ -1,0 +1,109 @@
+﻿FF                                                                       [100%]
+================================== FAILURES ===================================
+___________ test_current_crosswalk_cli_accepts_complete_v2_evidence ___________
+
+tmp_path = WindowsPath('C:/Users/28898/AppData/Local/Temp/pytest-of-28898/pytest-1351/test_current_crosswalk_cli_acc0')
+
+    def test_current_crosswalk_cli_accepts_complete_v2_evidence(tmp_path: Path) -> None:
+        output = tmp_path / "TRIPARTITE_CROSSWALK_VALIDATION_v2.json"
+        command = [
+            sys.executable,
+            str(
+                REPO_ROOT
+                / "scripts"
+                / "stage1_dynamic_replay_v3"
+                / "validate_tripartite_crosswalk.py"
+            ),
+            "--repo-root",
+            str(REPO_ROOT),
+            "--budgeted-matrix",
+            str(
+                EXPERIMENT_ROOT
+                / "01_field_audit"
+                / "expert_review_reproductions"
+                / "expert_vs_v3_tripartite_v2.csv"
+            ),
+            "--dynamic-matrix",
+            str(
+                EXPERIMENT_ROOT
+                / "01_field_audit"
+                / "expert_review_reproductions"
+                / "dynamic_review_vs_v3_tripartite_v2.csv"
+            ),
+            "--expert-inventory",
+            str(
+                EXPERIMENT_ROOT
+                / "01_field_audit"
+                / "expert_delivery_audit_v3"
+                / "expert_v1_inventory.csv"
+            ),
+            "--output",
+            str(output),
+        ]
+    
+        result = subprocess.run(
+            command,
+            cwd=REPO_ROOT,
+            check=False,
+            capture_output=True,
+            text=True,
+        )
+    
+>       assert result.returncode == 0, result.stderr
+E       AssertionError: 
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['C:\\GitHub\\YOLO-CV\\.venv\\Scripts\\python.exe', 'C:\\GitHub\\YOLO-CV\\scripts\\stage1_dynami...": false,\n  "status": "FAIL",\n  "total_rows": 0,\n  "validation_scope": "TRIPARTITE_CROSSWALK_ONLY"\n}\n', stderr='').returncode
+
+tests\stage1_dynamic_replay_v3\test_tripartite_crosswalk.py:321: AssertionError
+______________ test_builder_executes_and_hash_binds_all_46_rows _______________
+
+tmp_path = WindowsPath('C:/Users/28898/AppData/Local/Temp/pytest-of-28898/pytest-1351/test_builder_executes_and_hash0')
+
+    def test_builder_executes_and_hash_binds_all_46_rows(tmp_path: Path) -> None:
+        budgeted = tmp_path / "budgeted_v2.csv"
+        dynamic = tmp_path / "dynamic_v2.csv"
+        results = tmp_path / "results"
+        receipt = tmp_path / "receipt.json"
+        command = [
+            sys.executable,
+            str(
+                REPO_ROOT
+                / "scripts"
+                / "stage1_dynamic_replay_v3"
+                / "build_tripartite_crosswalk_v2.py"
+            ),
+            "--repo-root",
+            str(REPO_ROOT),
+            "--budgeted-source",
+            str(REPRODUCTION_ROOT / "expert_vs_v3_full_matrix_v1.csv"),
+            "--dynamic-source",
+            str(REPRODUCTION_ROOT / "dynamic_review_vs_v3_matrix_v1.csv"),
+            "--budgeted-output",
+            str(budgeted),
+            "--dynamic-output",
+            str(dynamic),
+            "--result-dir",
+            str(results),
+            "--receipt",
+            str(receipt),
+        ]
+    
+        result = subprocess.run(
+            command,
+            cwd=REPO_ROOT,
+            check=False,
+            capture_output=True,
+            text=True,
+        )
+    
+>       assert result.returncode == 0, result.stderr
+E       AssertionError: C:\Users\28898\AppData\Roaming\uv\python\cpython-3.11-windows-x86_64-none\python.exe: can't open file 'C:\\GitHub\\YOLO-CV\\scripts\\stage1_dynamic_replay_v3\\build_tripartite_crosswalk_v2.py': [Errno 2] No such file or directory
+E         
+E       assert 2 == 0
+E        +  where 2 = CompletedProcess(args=['C:\\GitHub\\YOLO-CV\\.venv\\Scripts\\python.exe', 'C:\\GitHub\\YOLO-CV\\scripts\\stage1_dynami...CV\\\\scripts\\\\stage1_dynamic_replay_v3\\\\build_tripartite_crosswalk_v2.py': [Errno 2] No such file or directory\n").returncode
+
+tests\stage1_dynamic_replay_v3\test_tripartite_crosswalk_builder.py:68: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/stage1_dynamic_replay_v3/test_tripartite_crosswalk.py::test_current_crosswalk_cli_accepts_complete_v2_evidence
+FAILED tests/stage1_dynamic_replay_v3/test_tripartite_crosswalk_builder.py::test_builder_executes_and_hash_binds_all_46_rows
+2 failed in 0.32s

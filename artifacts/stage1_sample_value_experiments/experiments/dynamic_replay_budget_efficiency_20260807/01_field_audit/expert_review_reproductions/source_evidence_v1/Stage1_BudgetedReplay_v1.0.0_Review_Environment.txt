@@ -1,0 +1,8 @@
+platform=Linux-6.18.35-x86_64-with-glibc2.41
+python=3.13.5
+repository=/mnt/data/review_stage1_fresh/Stage1_BudgetedReplay_Learnability_20260809
+pytest=56 passed, 1 skipped, 0 failed
+coverage_total=69%
+limitations=no real CCTV data; no CUDA/GPU; no installed Ultralytics runtime in fresh test; no real checkpoint
+git version 2.47.3
+pip 25.1.1 from /opt/pyvenv/lib/python3.13/site-packages/pip (python 3.13)

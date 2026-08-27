@@ -1,0 +1,12 @@
+{
+  "archive_sha256": "D87E978B79CC30130002728C97DE762015D9B3AC79AF6F6684F4B136FD4F33AD",
+  "executed_expert_code": false,
+  "extraction_result": "VERIFIED_SUBSET_EXTRACT_PASS",
+  "full_manifest_member_count": 1842,
+  "schema_version": "stage1.expert_dynamic_review_source_subset.v1",
+  "selected_file_count": 44,
+  "selection_file": "artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/01_field_audit/expert_review_reproductions/DYNAMIC_REVIEW_SOURCE_SELECTION_v1.txt",
+  "selection_file_sha256": "A1AA1229B9EB7A0A9D7020D0D0A43B44269449AD2C542E0CFB18E6855B279D40",
+  "source_manifest_sha256": "F9A9C80532EED765FED29844BACC21425F0ACC377722509B40E485408777399E",
+  "status": "PASS"
+}

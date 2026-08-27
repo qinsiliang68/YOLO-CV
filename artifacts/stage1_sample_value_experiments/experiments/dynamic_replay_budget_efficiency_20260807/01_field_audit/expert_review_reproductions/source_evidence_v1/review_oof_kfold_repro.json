@@ -1,0 +1,63 @@
+{
+  "rows": 24,
+  "proper_oof_expected_trajectories_per_sample": 2,
+  "fold_assignments": {
+    "s0": 0,
+    "s1": 0,
+    "s2": 1,
+    "s3": 1
+  },
+  "strict_result": "SchemaError: long OOF table is not a complete sample\u00d7epoch\u00d7trajectory grid: 24 cells missing; pass allow_missing=True only when incomplete trajectories are intentional",
+  "cube_shape": [
+    4,
+    3,
+    4
+  ],
+  "trajectory_ids": [
+    "11|0",
+    "11|1",
+    "22|0",
+    "22|1"
+  ],
+  "missing_cells": 24,
+  "observed_fraction_global": 0.5,
+  "features": [
+    {
+      "sample_id": "s0",
+      "oof_trajectory_count": 4,
+      "oof_observed_fraction": 0.5,
+      "oof_never_learned_fraction": 0.5,
+      "oof_late_stable_correct_fraction": 0.5,
+      "eligible_reliability": false,
+      "reliability_flag_count": 1
+    },
+    {
+      "sample_id": "s1",
+      "oof_trajectory_count": 4,
+      "oof_observed_fraction": 0.5,
+      "oof_never_learned_fraction": 0.5,
+      "oof_late_stable_correct_fraction": 0.5,
+      "eligible_reliability": false,
+      "reliability_flag_count": 1
+    },
+    {
+      "sample_id": "s2",
+      "oof_trajectory_count": 4,
+      "oof_observed_fraction": 0.5,
+      "oof_never_learned_fraction": 0.5,
+      "oof_late_stable_correct_fraction": 0.5,
+      "eligible_reliability": false,
+      "reliability_flag_count": 1
+    },
+    {
+      "sample_id": "s3",
+      "oof_trajectory_count": 4,
+      "oof_observed_fraction": 0.5,
+      "oof_never_learned_fraction": 0.5,
+      "oof_late_stable_correct_fraction": 0.5,
+      "eligible_reliability": false,
+      "reliability_flag_count": 1
+    }
+  ],
+  "eligible_count": 0
+}

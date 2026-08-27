@@ -40,3 +40,9 @@ docs/stage1_sctsr_v4/tdd_receipts/** -whitespace
 # SHA-256 manifest. Preserve the exact stdout, stderr, JSON, Parquet, reviewed
 # snapshots, and synthetic receipts instead of applying text normalization.
 artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/08_reports/sctsr_v4_implementation_audit_20260813/** -text -eol -whitespace
+
+# Expert-review reproductions and literature ledgers are evidence snapshots.
+# Preserve their original bytes so embedded SHA-256 identities remain valid;
+# diagnostic logs may intentionally retain whitespace from the source tools.
+artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/01_field_audit/expert_review_reproductions/** -text -eol -whitespace
+artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/02_literature/** -text -eol -whitespace

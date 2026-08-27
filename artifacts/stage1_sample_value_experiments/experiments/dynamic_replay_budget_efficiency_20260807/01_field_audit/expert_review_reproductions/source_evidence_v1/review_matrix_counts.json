@@ -1,0 +1,16 @@
+{
+  "project_learnability": {
+    "methods": 7,
+    "budgets": 3,
+    "seeds": 3,
+    "triads": 63,
+    "arms": 189
+  },
+  "study_matrix": {
+    "methods": 11,
+    "budgets": 3,
+    "seeds": 3,
+    "triads": 99,
+    "arms": 297
+  }
+}

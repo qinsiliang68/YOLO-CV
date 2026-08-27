@@ -1,0 +1,23 @@
+﻿{
+    "schema_version":  "stage1.dynamic_review_validation.v1",
+    "status":  "PASS_WITH_REMAINING_BLOCKERS",
+    "current_git_head":  "0a278ea31fcb8007a6ade237924644b58d5a24a6",
+    "current_worktree_clean":  false,
+    "expert_code_executed":  false,
+    "current_v3_test_count":  32,
+    "current_v3_test_status":  "PASS",
+    "test_log_sha256":  "73013CCBF90B334DA8630AF8CDEAA191D0B675831BE9428B1FB16A81EA7B1EC0",
+    "dynamic_review_matrix_sha256":  "7BC2E95839C41C5C963E515E80014299EB683A40463337601B9DDF3433600287",
+    "expert_review_sha256":  "DACC13945F54B563F08E042F2BFB42E54E284C6A1258BE988AE5E6C6539E6940",
+    "expert_source_subset_receipt_sha256":  "3F3A1E3AF4D935AF37EB77C3019F69EF67F1DB6886CDF3C51871805FABE737B2",
+    "confirmed_present":  [
+                              "F09",
+                              "F12",
+                              "F15"
+                          ],
+    "partially_mitigated":  [
+                                "F07",
+                                "F11"
+                            ],
+    "formal_training_allowed":  false
+}

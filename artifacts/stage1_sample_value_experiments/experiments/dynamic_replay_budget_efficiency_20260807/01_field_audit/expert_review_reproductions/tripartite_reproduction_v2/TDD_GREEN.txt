@@ -1,0 +1,4 @@
+﻿COMMAND=uv run pytest tests/stage1_dynamic_replay_v3/test_tripartite_crosswalk.py tests/stage1_dynamic_replay_v3/test_tripartite_crosswalk_builder.py -q
+EXIT_CODE=0
+.....                                                                    [100%]
+5 passed in 0.96s
