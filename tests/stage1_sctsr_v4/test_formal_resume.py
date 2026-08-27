@@ -297,6 +297,10 @@ def test_resume_inspection_is_read_only_until_execution_claim_succeeds(monkeypat
         "stage1_sctsr_v4.recovery.load_checkpoint",
         lambda *_args, **_kwargs: pytest.fail("fenced preparation repeated the completed-prefix checkpoint audit"),
     )
+    monkeypatch.setattr(
+        "stage1_sctsr_v4.recovery.reconcile_epoch_publications",
+        lambda *_args, **_kwargs: pytest.fail("fenced preparation repeated the completed-prefix publication audit"),
+    )
     resumed = prepare_formal_resume_context(
         run_root=root,
         expected_run_id=RUN_ID,

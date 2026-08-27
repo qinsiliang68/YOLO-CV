@@ -402,18 +402,6 @@ def prepare_formal_resume_context(
         }
         if mismatch:
             raise SctsrError(ErrorCode.RESUME_GENERATION_MISMATCH, "Fenced resume request differs from its validated preview", observed=mismatch)
-        reconcile_epoch_publications(
-            transaction_root,
-            quarantine_root,
-            expected_run_id=expected_run_id,
-            expected_identity={
-                "arm_id": expected_arm_id,
-                "training_seed": expected_training_seed,
-                "source_tree_digest": expected_source_tree_digest,
-                "contract_digest": expected_contract_digest,
-                "asset_registry_digest": expected_asset_registry_digest,
-            },
-        )
         quarantined = tuple(quarantine_inprogress(transaction_root, quarantine_root, reason="FORMAL_RESUME_PRECHECK_PARTIAL"))
         pointer = validate_recovery_pointer(root / "ROLLING_RECOVERY_POINTER.json")
         expected_complete = _canonical_windows_path(Path(validated_preview.checkpoint_path).parents[1])
