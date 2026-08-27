@@ -551,7 +551,16 @@ def test_branch_runner_continues_at_resume_epoch_without_overwriting_completed_g
     resume_binding.pop("binding_digest")
     resume_binding["binding_digest"] = stable_digest(resume_binding)
     pool_binding = {"binding_digest": "A" * 64}
-    parent_binding = {"binding_digest": "B" * 64}
+    parent_binding = {
+        "artifact_index_sha256": "1" * 64,
+        "parent_checkpoint_sha256": parent_sha,
+        "parent_artifact_digest": "2" * 64,
+    }
+    parent_binding["binding_digest"] = stable_digest(parent_binding)
+    resumed_parent_binding = {**parent_binding, "parent_artifact_digest": "3" * 64}
+    resumed_parent_binding["binding_digest"] = stable_digest(
+        {key: value for key, value in resumed_parent_binding.items() if key != "binding_digest"}
+    )
     atomic_write_json(root / "FORMAL_IDENTITY.json", asdict(identity))
     atomic_write_json(root / "FORMAL_AUTHORIZATION_BINDING.json", release_bindings)
     atomic_write_json(root / "PREPARED_TRAINER_BINDING.json", original_binding)
@@ -625,7 +634,7 @@ def test_branch_runner_continues_at_resume_epoch_without_overwriting_completed_g
         execution_mode="formal",
         release_expected_bindings=release_bindings,
         identity_pool_binding=pool_binding,
-        parent_artifact_index_binding=parent_binding,
+        parent_artifact_index_binding=resumed_parent_binding,
         prepared_trainer_binding=resume_binding,
         formal_input_binding={"binding_digest": "F" * 64},
         execution_claim_binding={

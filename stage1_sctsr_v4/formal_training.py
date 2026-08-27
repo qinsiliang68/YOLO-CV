@@ -1460,7 +1460,6 @@ def run_prepared_branch(
             "BRANCH_LINEAGE.json": asdict(lineage),
             "SCHEDULE.json": schedule_to_dict(schedule),
             "IDENTITY_POOL_BINDING.json": dict(identity_pool_binding or {}),
-            "PARENT_ARTIFACT_INDEX_BINDING.json": dict(parent_artifact_index_binding or {}),
         }
         for filename, expected_snapshot in snapshots.items():
             if load_json(root / filename) != expected_snapshot:
@@ -1469,6 +1468,21 @@ def run_prepared_branch(
                     "Formal branch snapshot changed before resume",
                     failing_field=filename,
                 )
+        frozen_parent_binding = load_json(root / "PARENT_ARTIFACT_INDEX_BINDING.json")
+        current_parent_binding = dict(parent_artifact_index_binding or {})
+        derived_parent_fields = {"parent_artifact_digest", "binding_digest"}
+        frozen_parent_core = {
+            key: value for key, value in frozen_parent_binding.items() if key not in derived_parent_fields
+        }
+        current_parent_core = {
+            key: value for key, value in current_parent_binding.items() if key not in derived_parent_fields
+        }
+        if frozen_parent_core != current_parent_core:
+            raise SctsrError(
+                ErrorCode.RESUME_GENERATION_MISMATCH,
+                "Formal branch snapshot changed before resume",
+                failing_field="PARENT_ARTIFACT_INDEX_BINDING.json",
+            )
         _restore_resume_checkpoint(trainer=trainer, identity=identity, context=resume_context)
         resume_binding_receipt_digest = _append_resume_binding_receipt(
             root=root,
