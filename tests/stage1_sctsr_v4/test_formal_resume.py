@@ -262,6 +262,16 @@ def test_resume_inspection_is_read_only_until_execution_claim_succeeds(monkeypat
     half = partial / "half.json"
     half.write_text("{", encoding="utf-8")
 
+    import stage1_sctsr_v4.recovery as recovery
+
+    complete_validation_calls = []
+    original_validate_complete = recovery.validate_complete_generation
+
+    def record_complete_validation(path):
+        complete_validation_calls.append(Path(path))
+        return original_validate_complete(path)
+
+    monkeypatch.setattr(recovery, "validate_complete_generation", record_complete_validation)
     preview = inspect_formal_resume_context(
         run_root=root,
         expected_run_id=RUN_ID,
@@ -279,6 +289,7 @@ def test_resume_inspection_is_read_only_until_execution_claim_succeeds(monkeypat
 
     assert preview.resume_epoch == 122
     assert preview.quarantined_partial_paths == ()
+    assert len(complete_validation_calls) == 1
     assert partial.is_dir()
     assert half.read_text(encoding="utf-8") == "{"
 

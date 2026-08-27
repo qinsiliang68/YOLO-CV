@@ -691,14 +691,202 @@ def prepare_formal_resume_context(
     )
 
 
+def _inspect_formal_resume_context_from_frozen_prefix(
+    *,
+    run_root: str | Path,
+    expected_run_id: str,
+    expected_arm_id: str,
+    expected_training_seed: int,
+    expected_source_tree_digest: str,
+    expected_contract_digest: str,
+    expected_asset_registry_digest: str,
+    expected_previous_checkpoint_sha256: str,
+    expected_previous_generation_digest: str,
+    epoch_start: int,
+    epoch_end: int,
+    minimum_free_bytes: int,
+    allow_terminal_epoch_for_finalization: bool = False,
+) -> FormalResumeContext:
+    """Validate the frozen manifest chain and fully audit only its last checkpoint."""
+
+    canonical_root = Path(run_root).resolve()
+    root = windows_safe_resolved_path(canonical_root)
+    transaction_root = root / "03_epoch_transactions"
+    if not root.is_dir() or not transaction_root.is_dir() or not (1 <= int(epoch_start) <= int(epoch_end) <= 200):
+        raise SctsrError(ErrorCode.RESUME_GENERATION_MISMATCH, "Formal resume root or epoch range is invalid")
+    discovered = sorted(
+        (parsed[0], parsed[1], complete.resolve())
+        for complete in transaction_root.glob("epoch_*.generation_*.complete")
+        if (parsed := _parse_complete(complete)) is not None
+    )
+    if not discovered:
+        raise SctsrError(ErrorCode.RESUME_GENERATION_MISMATCH, "Formal resume found no completed epoch")
+    epochs = [epoch for epoch, generation, _complete in discovered if generation == 1]
+    if len(epochs) != len(discovered) or epochs != list(range(epoch_start, epochs[-1] + 1)):
+        raise SctsrError(
+            ErrorCode.RESUME_GENERATION_MISMATCH,
+            "Completed resume generations are not one contiguous generation-1 prefix",
+            observed=[(epoch, generation) for epoch, generation, _complete in discovered],
+        )
+    last_epoch = epochs[-1]
+    if last_epoch > epoch_end or (last_epoch == epoch_end and not allow_terminal_epoch_for_finalization):
+        raise SctsrError(ErrorCode.RESUME_GENERATION_MISMATCH, "Run already contains its terminal completed epoch and may not be resumed")
+
+    pointer = validate_recovery_pointer(root / "ROLLING_RECOVERY_POINTER.json")
+    if (
+        pointer.get("run_id") != expected_run_id
+        or int(pointer.get("epoch", -1)) != last_epoch
+        or int(pointer.get("generation", -1)) != 1
+        or _canonical_windows_path(pointer.get("complete_path", "")) != _canonical_windows_path(discovered[-1][2])
+    ):
+        raise SctsrError(ErrorCode.RESUME_GENERATION_MISMATCH, "Recovery pointer is not the last contiguous complete generation")
+    receipt_path = Path(pointer["receipt_path"])
+    if not receipt_path.is_absolute():
+        receipt_path = (root / receipt_path).resolve()
+    receipt_path = _require_contained(receipt_path, root, role="Receipt chain")
+    receipts = _load_receipt_rows(receipt_path)
+    generation_index_path = root / "ARTIFACT_INDEX_GENERATIONS.json"
+    if not generation_index_path.is_file():
+        generation_index_path = root / "ARTIFACT_INDEX.json"
+    generation_index = json.loads(generation_index_path.read_text(encoding="utf-8"))
+    index_rows = generation_index.get("epoch_generations")
+    if (
+        generation_index.get("schema_version") != "stage1.sctsr.epoch_artifact_index.v1"
+        or not isinstance(index_rows, list)
+        or generation_index.get("epoch_generation_index_digest") != stable_digest(index_rows)
+        or len(index_rows) != len(discovered)
+        or len(receipts) != len(discovered)
+    ):
+        raise SctsrError(ErrorCode.RESUME_GENERATION_MISMATCH, "Frozen generation index or receipt-chain length is invalid")
+
+    previous_checkpoint = expected_previous_checkpoint_sha256
+    previous_generation = expected_previous_generation_digest
+    largest_generation_bytes = 0
+    last_manifest: dict[str, Any] | None = None
+    for (epoch, generation, complete), index_row, receipt in zip(discovered, index_rows, receipts, strict=True):
+        manifest_path = complete / "GENERATION_MANIFEST.json"
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+        digest_payload = dict(manifest)
+        claimed_digest = digest_payload.pop("generation_digest", None)
+        if (
+            claimed_digest != stable_digest(digest_payload)
+            or manifest.get("run_id") != expected_run_id
+            or int(manifest.get("epoch", -1)) != epoch
+            or int(manifest.get("generation", -1)) != generation
+            or sha256_file(manifest_path) != index_row.get("generation_manifest_sha256")
+            or index_row.get("run_id") != expected_run_id
+            or int(index_row.get("epoch", -1)) != epoch
+            or int(index_row.get("generation", -1)) != generation
+            or _canonical_windows_path(index_row.get("complete_path", "")) != _canonical_windows_path(complete)
+            or index_row.get("generation_digest") != claimed_digest
+            or receipt.get("run_id") != expected_run_id
+            or int(receipt.get("epoch", -1)) != epoch
+            or int(receipt.get("generation", -1)) != generation
+            or receipt.get("generation_digest") != claimed_digest
+            or receipt.get("generation_manifest_sha256") != index_row.get("generation_manifest_sha256")
+            or receipt.get("receipt_digest") != index_row.get("receipt_digest")
+        ):
+            raise SctsrError(ErrorCode.RESUME_GENERATION_MISMATCH, "Frozen generation manifest/index/receipt binding is inconsistent", observed=epoch)
+        identity = manifest.get("identity")
+        expected_identity = {
+            "parent_sha256": previous_checkpoint,
+            "arm_id": expected_arm_id,
+            "training_seed": expected_training_seed,
+            "source_tree_digest": expected_source_tree_digest,
+            "contract_digest": expected_contract_digest,
+            "asset_registry_digest": expected_asset_registry_digest,
+            "previous_generation_digest": previous_generation,
+        }
+        if not isinstance(identity, dict) or any(identity.get(field) != value for field, value in expected_identity.items()):
+            raise SctsrError(ErrorCode.RESUME_GENERATION_MISMATCH, "Frozen generation ancestry or scientific identity changed", observed=epoch)
+        checkpoint_rows = [row for row in manifest.get("files", []) if str(row.get("path", "")).endswith(".pt")]
+        if len(checkpoint_rows) != 1:
+            raise SctsrError(ErrorCode.RESUME_GENERATION_MISMATCH, "Frozen generation does not bind exactly one checkpoint", observed=epoch)
+        previous_checkpoint = str(checkpoint_rows[0]["sha256"])
+        previous_generation = str(claimed_digest)
+        largest_generation_bytes = max(
+            largest_generation_bytes,
+            manifest_path.stat().st_size + sum(int(row.get("bytes", 0)) for row in manifest.get("files", [])),
+        )
+        last_manifest = manifest
+
+    assert last_manifest is not None
+    checkpoint_rows = [row for row in last_manifest["files"] if str(row.get("path", "")).endswith(".pt")]
+    checkpoint_path = _require_contained(discovered[-1][2] / checkpoint_rows[0]["path"], discovered[-1][2], role="Epoch checkpoint")
+    checkpoint_sha = str(checkpoint_rows[0]["sha256"])
+    payload = load_checkpoint(checkpoint_path, expected_sha256=checkpoint_sha, expected_epoch=last_epoch)
+    payload_expected = {
+        "training_seed": expected_training_seed,
+        "source_tree_digest": expected_source_tree_digest,
+        "asset_registry_digest": expected_asset_registry_digest,
+        "global_step": last_epoch * 938,
+        "base_sampler_generation": last_epoch,
+    }
+    if any(payload.get(field) != value for field, value in payload_expected.items()):
+        raise SctsrError(ErrorCode.RESUME_GENERATION_MISMATCH, "Last resume checkpoint payload differs from the formal trajectory")
+    checkpoint_rng = payload["rng_state"].digest()
+    summary = json.loads((discovered[-1][2] / "EPOCH_EVIDENCE_SUMMARY.json").read_text(encoding="utf-8"))
+    history_payload = summary.get("history_after_epoch")
+    if not isinstance(history_payload, dict) or not isinstance(history_payload.get("counts"), dict) or not isinstance(history_payload.get("last_epoch"), dict):
+        raise SctsrError(ErrorCode.RESUME_GENERATION_MISMATCH, "Last epoch replay history is missing")
+    history = ReplayHistoryState(
+        counts={str(key): int(value) for key, value in history_payload["counts"].items()},
+        last_epoch={str(key): int(value) for key, value in history_payload["last_epoch"].items()},
+        cumulative_occurrences=int(history_payload.get("cumulative_occurrences", -1)),
+    )
+    if (
+        set(history.counts) != set(history.last_epoch)
+        or any(value <= 0 for value in history.counts.values())
+        or any(value < epoch_start or value > last_epoch for value in history.last_epoch.values())
+        or sum(history.counts.values()) != history.cumulative_occurrences
+        or history.snapshot() != history_payload
+    ):
+        raise SctsrError(ErrorCode.RESUME_GENERATION_MISMATCH, "Last epoch replay history is internally inconsistent")
+    rng_evidence = summary.get("rng_evidence")
+    last_identity = last_manifest.get("identity", {})
+    if (
+        not isinstance(rng_evidence, dict)
+        or rng_evidence.get("recorder_epoch_start_digest") != last_identity.get("rng_state_digest")
+        or rng_evidence.get("runtime_epoch_start_digest") != last_identity.get("rng_state_digest")
+        or rng_evidence.get("runtime_epoch_end_digest") != checkpoint_rng
+        or rng_evidence.get("finalize_entry_digest") != checkpoint_rng
+        or summary.get("checkpoint_sha256") != checkpoint_sha
+    ):
+        raise SctsrError(ErrorCode.RESUME_GENERATION_MISMATCH, "Last epoch RNG/checkpoint evidence is not a closed continuation boundary")
+    remaining_epochs = epoch_end - last_epoch
+    required_free_bytes = max(
+        int(minimum_free_bytes),
+        math.ceil(largest_generation_bytes * remaining_epochs * 1.25) + 2 * checkpoint_path.stat().st_size,
+    )
+    observed_free_bytes = shutil.disk_usage(root).free
+    if observed_free_bytes < required_free_bytes:
+        raise SctsrError(ErrorCode.DISK_SPACE_PRECHECK_FAILED, "Insufficient disk space for safe formal resume", observed=observed_free_bytes, expected=required_free_bytes)
+    return FormalResumeContext(
+        run_root=canonical_root.as_posix(),
+        run_id=expected_run_id,
+        arm_id=expected_arm_id,
+        training_seed=expected_training_seed,
+        epoch_start=epoch_start,
+        epoch_end=epoch_end,
+        last_complete_epoch=last_epoch,
+        resume_epoch=last_epoch + 1,
+        checkpoint_path=_canonical_windows_path(checkpoint_path).as_posix(),
+        checkpoint_sha256=checkpoint_sha,
+        checkpoint_rng_digest=checkpoint_rng,
+        global_step=int(payload["global_step"]),
+        required_free_bytes=required_free_bytes,
+        previous_generation_digest=previous_generation,
+        receipt_chain_digest=str(pointer["receipt_chain_digest"]),
+        history=history,
+        quarantined_partial_paths=(),
+        terminal_epoch_complete=last_epoch == epoch_end,
+    )
+
+
 def inspect_formal_resume_context(**kwargs: Any) -> FormalResumeContext:
-    """Validate and bind resume state without moving or rewriting any artifact.
+    """Validate the frozen prefix read-only, fully rechecking only its endpoint."""
 
-    Formal runners use this preview to construct the signed RESUME job binding,
-    claim its logical-job fence, and only then invoke the mutating preparation.
-    """
-
-    return prepare_formal_resume_context(**kwargs, _mutate=False)
+    return _inspect_formal_resume_context_from_frozen_prefix(**kwargs)
 
 
 def prepare_resume(
