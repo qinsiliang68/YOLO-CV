@@ -1,0 +1,59 @@
+{
+  "schema_version": "1.0",
+  "status": "PASS",
+  "candidate_version_count": 5336,
+  "manual_review_group_count": 980,
+  "canonical_work_count": "NOT_APPLICABLE_WITH_REASON:identity review not complete",
+  "inputs": [
+    {
+      "role": "OPENALEX_V1",
+      "path": "CANDIDATE_TRIAGE_OPENALEX_v1.csv",
+      "rows": 5171,
+      "bytes": 10339278,
+      "sha256": "0A51E1E30C875203ABEDAE59B62844415E11D7049F234E65FBC82C07D50484D0"
+    },
+    {
+      "role": "LEGACY_155",
+      "path": "../../LITERATURE_EVIDENCE_MATRIX.csv",
+      "rows": 155,
+      "bytes": 304167,
+      "sha256": "6F8AC1D3A3B0A02EE118CC31B89F8A06B26CFCCDC5F81425E828AFA37DFDB2D7"
+    },
+    {
+      "role": "TARGETED_PRIMARY_V1",
+      "path": "TARGETED_PRIMARY_CANDIDATES_v1.csv",
+      "rows": 10,
+      "bytes": 6115,
+      "sha256": "864B2E6F6CB766BFC29E90274F69614F41DDEE2DAEF7D3B6CA1ABC509BF88D2C"
+    },
+    {
+      "role": "OPENALEX_QUERY_PLAN",
+      "path": "QUERY_PLAN_OPENALEX_v1.json",
+      "rows": 80,
+      "bytes": 17893,
+      "sha256": "9198B214BA60B032171EC9626115C8B12FC57998EFD7CB10299BDCB04D943F07"
+    }
+  ],
+  "outputs": [
+    {
+      "role": "CANDIDATE_VERSION_UNIVERSE",
+      "path": "CANDIDATE_VERSION_UNIVERSE_v2.csv",
+      "rows": 5336,
+      "bytes": 11790235,
+      "sha256": "E95FA40DBD1BB42D2C61F72D48AE65BE5FAA50D88212CBF057052E42B312BA22"
+    },
+    {
+      "role": "UNRESOLVED_MANUAL_REVIEW_GROUPS",
+      "path": "MANUAL_REVIEW_GROUPS_v2.csv",
+      "rows": 980,
+      "bytes": 1787040,
+      "sha256": "85C2BA2924A35D3CD7253D0A54966D9AD3BB83BE7BD1A6B9298A0C196FDD5AB7"
+    }
+  ],
+  "selection_credit_granted": false,
+  "reading_credit_granted": false,
+  "formal_training_started": false,
+  "engineering_gate_generated": false,
+  "blind_holdout_opened": false,
+  "note": "Every input record is preserved as a candidate version. Exact title/DOI groups are unresolved review hints, not canonical works or reading evidence."
+}

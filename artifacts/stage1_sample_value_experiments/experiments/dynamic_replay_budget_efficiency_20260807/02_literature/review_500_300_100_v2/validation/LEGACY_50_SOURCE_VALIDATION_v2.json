@@ -1,0 +1,9 @@
+{
+  "schema_version": "1.0",
+  "status": "PASS",
+  "expected_count": 50,
+  "verified_count": 50,
+  "inventory_path": "artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/02_literature/review_500_300_100_v2/validation/LEGACY_50_SOURCE_INVENTORY_v2.csv",
+  "formal_deep_reading_credit_granted": false,
+  "note": "Source-byte validation is not reading evidence. Papers receive DEEP credit only after their v2 notes and page anchors pass the corpus validator."
+}

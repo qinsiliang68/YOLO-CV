@@ -1,0 +1,51 @@
+{
+  "schema_version": "1.0",
+  "status": "PASS",
+  "evidence_stage": "MANUAL_SCREENED_CANDIDATE_BATCH",
+  "reviewed_count": 25,
+  "eligible_candidate_count": 24,
+  "excluded_count": 1,
+  "eligible_queue_ids": [
+    "RG01FDB08536796CF8",
+    "RG0B03E874F7773B58",
+    "RG0F41BBB6BA80A765",
+    "RG0FC21BBDD16AA2D4",
+    "RG105EED7CBC5A1919",
+    "RG3753B55186A38962",
+    "RG3ADE3715B4112D35",
+    "RG4DBE04EFAEAC4D3C",
+    "RG53EB591B693FA2EF",
+    "RG8E5DC4ADFD13AB52",
+    "RG9465CC852E94474E",
+    "RG956A8FDEADC2B6A2",
+    "RG9E8D0DEFF0281A38",
+    "RGA385AC39EC4DB252",
+    "RGA6C2960778DCEDE2",
+    "RGC4A44E0A1148CFB4",
+    "RGC7726D59327313D0",
+    "RGD850F26F2CCD3E44",
+    "RGDC8CD65503E66D87",
+    "RGDF7060DDA7EB2B77",
+    "RGDF8333E1DCDA9A1F",
+    "RGE0493257044E0DAC",
+    "RGE2024D354EF2D0A1",
+    "RGFB5E83D2FC9638A7"
+  ],
+  "excluded_queue_ids": [
+    "RGEE050998522693A1"
+  ],
+  "reading_credit_granted": false,
+  "formal_broad_corpus_count_increment": 0,
+  "credit_note": "Validated manual screening creates eligible candidates only; formal BROAD_500 credit requires promotion into the exact deduplicated corpus.",
+  "queue_file_name": "review_input_020.csv",
+  "queue_sha256": "2ad36e3f226868159b34f414a642502374c07b949e124fcf70ea0d623c3cf4bf",
+  "decision_files": [
+    {
+      "file_name": "batch_020.csv",
+      "row_count": 25,
+      "sha256": "69fe6e09171edece4fb093eee13e863d2e33036c584cc40158c7c53cd87277e5"
+    }
+  ],
+  "merged_output_file_name": "batch_020_candidates.csv",
+  "merged_output_sha256": "f1def2e2ea79a12192f4042eea54719b1c0644a38bfd60d347e829ca94a94c8f"
+}

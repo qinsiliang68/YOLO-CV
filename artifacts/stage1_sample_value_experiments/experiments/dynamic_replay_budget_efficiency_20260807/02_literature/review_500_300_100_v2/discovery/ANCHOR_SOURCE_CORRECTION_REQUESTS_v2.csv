@@ -1,0 +1,5 @@
+paper_id,artifact_role,url,destination,source_authority
+RG23777DF75AF056AE,BROAD_SOURCE,https://arxiv.org/pdf/2310.07931,sources/anchor_supplement_v2/RG23777DF75AF056AE.pdf,OFFICIAL_REPOSITORY
+AX9313629F9AEE4C10,BROAD_SOURCE,https://raw.githubusercontent.com/mlresearch/v235/main/assets/choi24c/choi24c.pdf,sources/anchor_supplement_v2/AX9313629F9AEE4C10.pdf,PRIMARY_PUBLISHER
+AX6B828EA30AEEF829,BROAD_SOURCE,https://arxiv.org/pdf/2002.07394,sources/anchor_supplement_v2/AX6B828EA30AEEF829.pdf,OFFICIAL_REPOSITORY
+AX79D4A4F6C4BBCA52,BROAD_SOURCE,https://arxiv.org/pdf/1906.01827,sources/anchor_supplement_v2/AX79D4A4F6C4BBCA52.pdf,OFFICIAL_REPOSITORY

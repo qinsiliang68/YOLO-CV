@@ -1,0 +1,208 @@
+{
+  "schema_version": "3.0",
+  "paper_id": "P0476",
+  "canonical_work_id": "CW88F86EF870BFBAD35193",
+  "title": "Dataset Pruning: Reducing Training Data by Examining Generalization Influence",
+  "decision": "SCREENED_ELIGIBLE",
+  "reviewed_at": "2026-08-10T18:52:00+08:00",
+  "reviewer": "user_accepted_inherited_fulltext_rebind",
+  "method_source": {
+    "path": "staging/broad_freeze_canonical_repaired_v4/sources/P0476.pdf",
+    "bytes": 1300391,
+    "sha256": "BD66704C09AC2C7FD693E6FDBE41E1C05C984924C59B9E75AAC74933EAD36CE0"
+  },
+  "text_source": {
+    "path": "staging/screened_text_canonical_repaired_v4/text/P0476.txt",
+    "bytes": 53892,
+    "sha256": "D73B18D087CF54A4F2E99365D869412F4E8201B53AA9360D92D76249038002B9"
+  },
+  "rq_ids": [
+    "RQ1",
+    "RQ2",
+    "RQ3",
+    "RQ5"
+  ],
+  "section_evidence": {
+    "METHODS": {
+      "status": "READ",
+      "pages": "3-6, Definition 1, Equations 1-14, Algorithm 1 and Theorem 1",
+      "anchors": [
+        {
+          "page": 4,
+          "line": 65,
+          "quote": "(a) generalization-guaranteed pruning:                (b) cardinality-guaranteed pruning:",
+          "paraphrase_zh": "论文把每个样本的 Hessian 逆加权梯度保留为向量，并优化被删除集合的向量和而不是排序单样本模长，从而显式表示集合内抵消。"
+        }
+      ]
+    },
+    "EXPERIMENTS": {
+      "status": "READ",
+      "pages": "6-9, Sections 6.1-6.5, Figures 1-4 and Table 1",
+      "anchors": [
+        {
+          "page": 8,
+          "line": 17,
+          "quote": "We prune CIFAR10, CIFAR100 Krizhevsky (2009) and TinyImageNet Le & Yang (2015) using a",
+          "paraphrase_zh": "实验在三个图像数据集上以 ResNet-50 选择并重训，与 random、herding、forgetting、GraNd、EL2N 和 individual influence norm 比较。"
+        }
+      ]
+    },
+    "ABLATIONS": {
+      "status": "READ",
+      "pages": "7-9, pruning ratios, architecture transfer and NAS proxy study",
+      "anchors": [
+        {
+          "page": 9,
+          "line": 43,
+          "quote": "Random    Herding     Forgetting   Ours   Whole Dataset",
+          "paraphrase_zh": "NAS proxy 表把 random、herding、forgetting、集合 influence 与全数据同列，精确展示时间、存储、rank correlation 和最终性能。"
+        }
+      ]
+    },
+    "LIMITATIONS": {
+      "status": "NOT_REPORTED_BY_PAPER",
+      "pages": "1-13 including theorem proof, experiments and conclusion",
+      "anchors": [],
+      "absence_reason_zh": "全文没有独立局限章节，也未报告训练 seed、simulated-annealing seed/预算、有限删除近似误差、epsilon 缩放歧义或独立超参选择角色。"
+    }
+  },
+  "formulas": [
+    "A subset is epsilon-redundant when the L2 distance between the full-data ERM parameter and the ERM after removing that subset is at most epsilon.",
+    "For training point z, infinitesimal parameter influence is I_param(z)=-H(theta-hat)^-1 grad_theta L(z,theta-hat), and removing a point is approximated by -I_param(z)/n.",
+    "Fixed-cardinality pruning minimizes ||W-transpose S||_2 subject to sum_i W_i=m, preserving vector direction so individually large but opposing influences may cancel.",
+    "The generalization-gap theorem is local and has an epsilon-scaling ambiguity: Algorithm 1 constrains the already 1/n-scaled vector sum, while Theorem 1 states the constraint on an unscaled sum before deriving an epsilon/n term."
+  ],
+  "algorithm_steps": [
+    "Train an empirical-risk minimizer on the full dataset from a random initialization.",
+    "Approximate every training point's parameter influence using an inverse-Hessian product, implemented on the last linear layer.",
+    "Solve a binary discrete optimization with simulated annealing either to maximize removable count under an aggregate-vector norm threshold or minimize aggregate norm at fixed count.",
+    "Remove the selected identities, initialize a fresh model, and retrain it on the retained dataset under a common training protocol.",
+    "Evaluate final accuracy, convergence time, architecture transfer, and proxy-set NAS rank correlation."
+  ],
+  "variables": [
+    "dataset D, removed subset D-hat, retained dataset, cardinality m, and binary selector W",
+    "full-data parameters theta-hat, removed-data parameters theta-hat-minus-D-hat, and threshold epsilon",
+    "per-sample gradient, Hessian H, parameter influence I_param, and stacked influence matrix S",
+    "pruning ratio, simulated-annealing state, proxy architecture, and retraining initialization",
+    "test accuracy, convergence time, Spearman architecture rank correlation, storage, and approximation residual"
+  ],
+  "selection_timing": "Selection is one-shot after fitting a proxy ERM; the chosen removed/retained IDs are fixed before a separate model is retrained from scratch.",
+  "refresh_rule": "No online refresh is defined. A new proxy checkpoint, architecture, subset size, epsilon, or annealing seed implies a new discrete optimization and selected set.",
+  "budget": {
+    "unit": "unique training identities removed or retained",
+    "denominator": "the complete original training dataset",
+    "unique_sample_definition": "Each training identity has one binary removal variable; class, source, and video coverage are not explicit constraints.",
+    "repeat_definition": "Retained examples repeat through ordinary retraining epochs; removed examples have zero exposure, but per-ID repeat counts are not recorded.",
+    "cumulative_exposure_definition": "Methods share a pruning ratio and nominal 200-epoch retraining protocol, yet actual convergence and optimizer-visible exposure differ from full data and are not matched as replay dose.",
+    "compute_cost": "Influence uses approximate inverse-Hessian products on the last layer plus an unreported simulated-annealing budget; the selected coreset can reduce later repeated training or NAS cost."
+  },
+  "random_baselines": [
+    "uniform random pruning at the same expected number of identities",
+    "Herding class-center selection",
+    "Forgetting-event selection",
+    "GraNd gradient-norm selection",
+    "EL2N error-vector selection",
+    "individual influence-function norm without group interaction"
+  ],
+  "datasets": [
+    "CIFAR-10",
+    "CIFAR-100",
+    "TinyImageNet"
+  ],
+  "models": [
+    "ResNet-50",
+    "ResNet-18",
+    "SENet proxy",
+    "720 candidate ConvNets for NAS"
+  ],
+  "seed_count": "NOT_REPORTED_BY_PAPER",
+  "checkpoint_selection": "The paper does not specify an independent validation rule for the proxy checkpoint, epsilon, pruning ratio, simulated-annealing configuration, or retrained checkpoint; no test-oracle-safe selection contract is reported.",
+  "results": [
+    {
+      "claim": "集合向量优化在较高 pruning ratio 下相对单样本 scalar baselines 的差距扩大。",
+      "locator": "page 8, Figure 1 discussion",
+      "value": "The paper reports the proposed method consistently above baselines, with Forgetting and EL2N close only at small pruning ratios and influence-norm performing poorly at larger ratios; plot-level per-seed values are not supplied.",
+      "anchor": {
+        "page": 8,
+        "line": 31,
+        "quote": "In Fig. 1, our method consistently surpasses all baseline methods.",
+        "paraphrase_zh": "同一讨论把差异归因于 scalar 排序忽略 high/low-score 向量间抵消，直接支持集合条件 D 而非孤立总分。"
+      }
+    },
+    {
+      "claim": "在 40% pruning 的报告设置中，训练收敛时间近乎减半但准确率下降 1.3 个百分点。",
+      "locator": "page 9, Figure 4",
+      "value": "Pruning 40% yields roughly 0.56x convergence time and 1.3% test-accuracy drop.",
+      "anchor": {
+        "page": 9,
+        "line": 32,
+        "quote": "10 models on the proxy dataset and the whole dataset, (c) vergence time is nearly halved with",
+        "paraphrase_zh": "时间节省与精度损失同时存在；这不是固定累计 replay 曝光下的效用改善。"
+      }
+    },
+    {
+      "claim": "2% NAS proxy 上，集合 influence 选择比 random 更能保持架构排序和最终模型性能。",
+      "locator": "page 9, Table 1",
+      "value": "Ours: 85.7% final performance and 0.94 rank correlation at 113 minutes; Random: 79.4% and 0.21; full data: 85.9%, 1.00 and 3029 minutes.",
+      "anchor": {
+        "page": 9,
+        "line": 44,
+        "quote": "Performance (%)    79.4      80.1         82.5       85.7         85.9",
+        "paraphrase_zh": "Table 1 提供精确同预算 proxy 对照，但只是一组未报告 seed 方差的 NAS 排序结果。"
+      }
+    },
+    {
+      "claim": "作者报告由小 SENet 选择的集合可迁移到更大的 ResNet-18/50。",
+      "locator": "page 8, Section 6.4 and Figure 3",
+      "value": "Architecture-transfer curves are reported as favorable, but no seed count, uncertainty interval, or worst architecture-seed pair is provided.",
+      "anchor": {
+        "page": 8,
+        "line": 45,
+        "quote": "network architectures that are inaccessible during dataset pruning. To this end, we use a smaller",
+        "paraphrase_zh": "跨架构迁移是描述性机制证据，不能替代 Stage1 未见 training seed 的配对确认。"
+      }
+    }
+  ],
+  "ablations": [
+    "uniform random, Herding, Forgetting, GraNd, EL2N, and individual influence norm",
+    "multiple pruning ratios",
+    "generalization-threshold versus fixed-cardinality formulations",
+    "same-architecture and SENet-to-ResNet architecture transfer",
+    "2% proxy-set NAS over 720 ConvNet architectures",
+    "CIFAR-10, CIFAR-100, and TinyImageNet"
+  ],
+  "negative_results": [
+    "The 40% coreset trades roughly half convergence time for a reported 1.3-point accuracy loss rather than a uniform gain.",
+    "Individual influence norm performs poorly relative to aggregate-vector optimization at larger pruning ratios.",
+    "Random 2% NAS proxy reduces compute strongly but fails to preserve architecture rank and final performance.",
+    "No variance or seed-level results support the claimed consistency across pruning ratios or architectures.",
+    "The local influence approximation, epsilon scaling, and simulated-annealing convergence are not empirically stress-tested."
+  ],
+  "failure_conditions": [
+    "The Hessian is singular or the last-layer local linearization poorly approximates finite data removal.",
+    "The epsilon convention changes by a factor of n between collector, optimizer, theorem, and report.",
+    "Simulated annealing returns unstable sets across unrecorded seed, schedule, or compute budget.",
+    "Global parameter cancellation hides one component that helps normal-tail targets and another that harms weak defects.",
+    "Source/video duplicates, label noise, or rare target-domain groups are absent from the optimization constraints."
+  ],
+  "limitations": [
+    "Removing data and retraining from scratch is not repeated replay inside a fixed optimizer trajectory.",
+    "Parameter proximity and average expected loss do not guarantee an FN95 local safety frontier.",
+    "The guarantee relies on local Taylor expansion, positive-definite Hessian assumptions, additive infinitesimal influences, and unstated constants.",
+    "The epsilon scaling is ambiguous between Algorithm 1 and Theorem 1.",
+    "Seed counts, uncertainty intervals, annealing details, public code, and exact experiment manifests are absent.",
+    "Nominal subset size does not match cumulative optimizer-visible exposure or steps."
+  ],
+  "transfer_class": "MECHANISM_ONLY",
+  "stage1_mechanism_zh": "该文直接支持 D 必须在集合条件下检查向量和、sum-of-norms、pairwise cosine、cancellation ratio、来源覆盖和有限干预残差；单样本 gradient/influence 模长会丢失方向与抵消。Stage1 还必须分别计算 normal-tail 与 weak-defect 方向，不能用一个全局参数距离抵消好坏。",
+  "stage1_non_inference_zh": "论文不能证明 Dataset-Pruning 或 influence 集合会提高 replay utility：它删除数据并重新训练，未固定基础训练过程、累计 replay 曝光、unique/repeat/steps，也没有 FN95 目标、R1/R2/current-loss/no-replay 或未见 seed 配对。其 epsilon、pruning ratio 和 simulated annealing 均不得直接移植。",
+  "exclusion_reason": "NOT_APPLICABLE_WITH_REASON:eligible as set-conditioned vector interaction and scalar-score counterevidence",
+  "migration_provenance": {
+    "source_review": "../FULL_TEXT_EVIDENCE_NOTES/P038_Dataset_Pruning_ICLR_2023.md",
+    "source_paper_id": "P038",
+    "migration_basis": "CANONICAL_WORK_ID_AND_BYTE_IDENTICAL_PDF_WITH_CURRENT_TEXT_REANCHOR",
+    "content_review_reused": true,
+    "evidence_provenance_class": "USER_ACCEPTED_INHERITED_EVIDENCE",
+    "independent_content_rereview_performed": false
+  }
+}

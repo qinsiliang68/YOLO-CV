@@ -1,0 +1,182 @@
+{
+  "schema_version": "3.0",
+  "paper_id": "P0255",
+  "canonical_work_id": "CWEBFB36A95AA2316D6377",
+  "title": "Adversarial Coreset Selection for Efficient Robust Training",
+  "decision": "SCREENED_ELIGIBLE",
+  "reviewed_at": "2026-08-10T15:45:00+08:00",
+  "reviewer": "codex_primary_fulltext_review",
+  "method_source": {
+    "path": "staging/broad_freeze_anchor_complete_v3/sources/P0255.pdf",
+    "bytes": 1028154,
+    "sha256": "966733F44997F9262AB853AD2DE7BA97B1858B1658119E9F2390104A9EB9B53F"
+  },
+  "text_source": {
+    "path": "staging/screened_text_anchor_complete_v3/text/P0255.txt",
+    "bytes": 159863,
+    "sha256": "26A9F0B1EA188FA841F6F1636C9FDC65C3DFD894E00280EBBF897A37BC75FBA5"
+  },
+  "rq_ids": ["RQ3", "RQ4", "RQ5", "RQ6", "RQ8"],
+  "section_evidence": {
+    "METHODS": {
+      "status": "READ",
+      "pages": "4-10, equations 5-14, Theorems 1-2, and Algorithm 1; proof and greedy solvers in Appendices A-B",
+      "anchors": [
+        {
+          "page": 6,
+          "line": 7,
+          "quote": "bound consists of two terms: an irreducible noise term and an",
+          "paraphrase_zh": "理论把用加权子集训练的额外代价写成对全数据对抗损失梯度的近似误差，因此用该误差作为集合选择目标；其收敛证明依赖凸性、Lipschitz 和有界参数等理想假设。"
+        }
+      ]
+    },
+    "EXPERIMENTS": {
+      "status": "READ",
+      "pages": "9-14 and Appendices C-D on pages 21-24",
+      "anchors": [
+        {
+          "page": 10,
+          "line": 34,
+          "quote": "size (the percentage of training data to be selected) to 50% for",
+          "paraphrase_zh": "主实验按数据集固定 30%-50% 子集预算，在相同攻击目标与训练超参数下比较完整数据训练、Craig/GradMatch 子集训练的精度、鲁棒精度和耗时。"
+        }
+      ]
+    },
+    "ABLATIONS": {
+      "status": "READ",
+      "pages": "12-14, Figures 4-5 and Tables 5-6",
+      "anchors": [
+        {
+          "page": 12,
+          "line": 54,
+          "quote": "In this section, we perform a few ablation studies to examine",
+          "paraphrase_zh": "消融包含同子集规模的随机选择、不同 warm-start、仅用 coreset 与一半干净数据混合、1/5/10 轮刷新频率，以及 10%-50% 子集规模的误差-加速权衡。"
+        }
+      ]
+    },
+    "LIMITATIONS": {
+      "status": "NOT_REPORTED_BY_PAPER",
+      "pages": "1-25 including conclusion, proof appendices, implementation details, and extended results",
+      "anchors": [],
+      "absence_reason_zh": "全文没有独立局限章节；结论未系统讨论凸性证明与深网非凸训练的差距、刷新时仍需全量对抗梯度的成本、主表随机种子数以及与随机选择累计曝光是否严格相同。"
+    }
+  },
+  "formulas": [
+    "The weighted coreset adversarial objective is L_gamma^S(theta) = sum_{j in S} gamma_j max_x_tilde L(theta; x_tilde_j).",
+    "The gradient approximation error epsilon_t is the norm of the full adversarial gradient minus the weighted coreset gradient.",
+    "Theorem 1 adds the accumulated gradient approximation error to Lipschitz convex or strongly-convex convergence bounds.",
+    "The selection objective minimizes the norm between the full-data adversarial loss-gradient sum and a weighted subset-gradient sum; solving it exactly is NP-hard.",
+    "Danskin's theorem is used to compute gradients of the inner maximization before Craig or GradMatch greedy selection."
+  ],
+  "algorithm_steps": [
+    "Warm start for a preregistered fraction of total epochs using the full dataset with uniform weights.",
+    "At each update epoch, assign data to selection batches, construct adversarial examples or logits for all training data, and compute adversarial gradients.",
+    "Run a Craig or GradMatch greedy solver to choose a weighted coreset of fixed size k that approximates the full gradient.",
+    "For the next T epochs, generate adversarial examples only for batches in the frozen coreset and update the network by weighted SGD; then refresh the coreset."
+  ],
+  "variables": [
+    "full training index set V and weighted coreset S with weights gamma",
+    "coreset size k and update period T",
+    "warm-start fraction kappa and total epochs E",
+    "full and subset adversarial loss gradients",
+    "attack norm, radius epsilon, iterations, and step size",
+    "Craig facility-location distances or GradMatch OMP tolerance and regularization"
+  ],
+  "selection_timing": "Selection begins only after the fixed warm-start period. It is executed before training at epochs divisible by the coreset update period T and then held fixed between refreshes.",
+  "refresh_rule": "Recompute full-data adversarial gradients and rerun the greedy solver every T epochs; experiments use update periods from 1 to 20 epochs depending on dataset and ablation.",
+  "budget": {
+    "unit": "weighted optimizer-visible coreset examples per epoch",
+    "denominator": "the entire training dataset V; coreset size is reported as 10%-56% of V depending on experiment",
+    "unique_sample_definition": "Unique members are dataset indices in S at one refresh, but the paper does not publish the union of unique IDs across all refreshes.",
+    "repeat_definition": "Selected members repeat in every optimizer epoch until the next refresh and may be reselected later; no per-ID repeat histogram is reported.",
+    "cumulative_exposure_definition": "Cumulative optimizer-visible exposure is approximately the sum of full-data warm-start epochs and coreset-size times subsequent epochs, but exact per-ID exposure is not released.",
+    "compute_cost": "Refreshes still require adversarial examples and gradients over all data plus an NP-hard objective approximated by Craig or GradMatch; between refreshes attack and SGD cost falls with coreset size."
+  },
+  "random_baselines": [
+    "full-data adversarial training with matched objective, schedule, and model",
+    "uniform random data selection at the same coreset size in the Figure 4 ablation",
+    "early termination with half the epochs as a compute-oriented alternative",
+    "Fast Adversarial Training with and without the same coreset layer"
+  ],
+  "datasets": ["CIFAR-10", "SVHN", "ImageNet-12", "ImageNet-100"],
+  "models": ["ResNet-18", "WideResNet-28-10", "ResNet-34", "ResNet-50"],
+  "seed_count": {
+    "counts": [
+      "5 runs for the Table 5 ONLY-Core versus Half-Half ablation",
+      "NOT_REPORTED_BY_PAPER for the main Tables 1-4 and refresh-frequency Table 6"
+    ],
+    "scope": "Table 5 explicitly states five-run averaging; other tables either say average without a run count or provide no seed statement.",
+    "aggregation": "Table 5 reports averages; no standard deviation, worst seed, or per-seed direction is shown."
+  },
+  "checkpoint_selection": "Experiments use fixed total-epoch endpoints and separately defined half-epoch early-termination arms. No test-selected best checkpoint rule is described, but validation/checkpoint selection details are not reported.",
+  "results": [
+    {
+      "claim": "在半轮数的 CIFAR-10 PGD 实验中，GradMatch 子集将训练时间约减半，同时鲁棒准确率略高于完整训练。",
+      "locator": "page 11, Table 3",
+      "value": "Adv. GradMatch: ACC 84.28%, RACC 48.98%, 523.18 min; full adversarial training: 86.79%, 48.86%, 1024.09 min.",
+      "anchor": {
+        "page": 11,
+        "line": 29,
+        "quote": "Adv. GradMatch (Ours)                 84.28 (−2.51)           48.98 (+0.12)            523.18 (−500.91)",
+        "paraphrase_zh": "相同早停设置下子集方法牺牲 2.51 个百分点干净准确率，鲁棒准确率变化为正 0.12 点，训练时间减少约 501 分钟。"
+      }
+    },
+    {
+      "claim": "用一半干净非 coreset 数据替换一半对抗 coreset 曝光会提高干净准确率但降低鲁棒准确率。",
+      "locator": "page 13, Table 5, averages over 5 runs",
+      "value": "Adv. GradMatch ONLY-Core 80.67% clean/45.23% RACC versus Half-Half 84.31% clean/40.05% RACC.",
+      "anchor": {
+        "page": 13,
+        "line": 12,
+        "quote": "Adv. GradMatch                80.67                  84.31                 45.23               40.05",
+        "paraphrase_zh": "五次运行平均显示，集合组成与曝光类型改变会造成干净和鲁棒目标的方向性权衡，不能只看一个总体分数。"
+      }
+    },
+    {
+      "claim": "降低 coreset 刷新频率增加速度，但可损害鲁棒性能。",
+      "locator": "page 13, Table 6",
+      "value": "Adv. Craig refresh every 1 epoch: RACC 50.06%, 576.42 min; every 10 epochs: 48.90%, 517.40 min.",
+      "anchor": {
+        "page": 13,
+        "line": 21,
+        "quote": "Adv. Craig (Ours)                 84.55 (−2.24) 50.06 (+1.20) 576.42 (1.77×)",
+        "paraphrase_zh": "更频繁地重算当前状态下的集合保留了更高鲁棒准确率，而较慢刷新只换来约 59 分钟额外节省。"
+      }
+    }
+  ],
+  "ablations": [
+    "gradient-matched coreset versus equal-size random subset",
+    "warm-start duration at fixed 50% coreset",
+    "ONLY-Core versus Half-Half clean and adversarial exposures",
+    "coreset refresh every 1, 5, or 10 epochs",
+    "10%-50% coreset size and speed-error frontier",
+    "Craig versus GradMatch, batch-wise selection, and warm-start components",
+    "integration with early termination and Fast Adversarial Training"
+  ],
+  "negative_results": [
+    "Reducing the selected fraction improves speed but increases clean and robust error.",
+    "Less frequent selection refresh improves speed while harming model performance.",
+    "Mixing clean non-coreset examples raises clean accuracy but lowers robust accuracy.",
+    "The coreset does not preserve clean accuracy exactly even when robust accuracy is comparable.",
+    "Most experiments do not report enough seeds to establish direction stability."
+  ],
+  "failure_conditions": [
+    "Full-data gradients at refresh are too expensive or unavailable, eliminating the intended efficiency gain.",
+    "The training-gradient coverage objective is misread as alignment to an independent operational target.",
+    "A stale coreset is reused through a phase where gradient directions change materially.",
+    "Random control does not share the same subset size, warm start, refresh schedule, optimizer steps, and attack cost.",
+    "Small-set greedy selection overfits a single initialization or data order."
+  ],
+  "limitations": [
+    "The convergence theorem assumes convex/Lipschitz or strongly convex losses and bounded parameters, not the non-convex deep networks in experiments.",
+    "Every refresh still requires adversarial computations and gradients for the full dataset.",
+    "Main-table seed counts, variance, and worst-seed outcomes are not reported.",
+    "The random-selection ablation is graphical and does not provide a complete numeric, multi-seed budget ledger.",
+    "Cumulative unique IDs, repeat histograms, optimizer-visible exposure, and optimizer steps are not reported.",
+    "The objective is adversarial clean/robust accuracy, not FN95 or a raw safety-frontier local target."
+  ],
+  "transfer_class": "INSPIRED_ADAPTATION",
+  "stage1_mechanism_zh": "该论文为集合条件 D 提供直接机制：选择应让加权子集覆盖一个明确定义的整体梯度，而不是把样本的孤立标量直接相加；刷新频率消融还说明集合价值依赖当前模型阶段。Stage1 可将其改造为先通过 Q/R 门控候选，再在集合内最小化来源、特征或独立 val_target 梯度覆盖误差，并把刷新周期作为独立析因因素，而不是加入任意权重总分。",
+  "stage1_non_inference_zh": "论文近似的是训练对抗损失的全数据梯度，并非 FN95 局部目标方向，因此不能证明 A；它也不研究固定基础训练上的额外 replay，完整训练、子集训练和早停的累计曝光与 optimizer steps 不同。即使 Figure 4 的同规模随机子集更差，也不能替代 Stage1 中按相同 Q/R 候选池、slots、repeat、累计曝光和 training seed 匹配的 R1/R2/current-loss/no-replay 干预。",
+  "exclusion_reason": "NOT_APPLICABLE_WITH_REASON:eligible for SCREENED evidence tier"
+}

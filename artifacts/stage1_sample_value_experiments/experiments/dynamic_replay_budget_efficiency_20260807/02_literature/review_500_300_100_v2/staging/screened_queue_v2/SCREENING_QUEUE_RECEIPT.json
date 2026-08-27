@@ -1,0 +1,24 @@
+{
+  "schema_version": "2.0",
+  "status": "PASS",
+  "created_at": "2026-08-10T05:16:25.356100+08:00",
+  "primary_count": 300,
+  "reserve_count": 200,
+  "reserve_read_count": 60,
+  "reading_queue_count": 360,
+  "quota_counts": {
+    "RQ1": 39,
+    "RQ2": 39,
+    "RQ3": 39,
+    "RQ4": 40,
+    "RQ5": 40,
+    "RQ6": 39,
+    "RQ7": 39,
+    "RQ8": 25
+  },
+  "formal_screened_increment": 0,
+  "selection_is_provisional_until_full_method_review": true,
+  "formal_training_started": false,
+  "engineering_gate_generated": false,
+  "blind_holdout_opened": false
+}

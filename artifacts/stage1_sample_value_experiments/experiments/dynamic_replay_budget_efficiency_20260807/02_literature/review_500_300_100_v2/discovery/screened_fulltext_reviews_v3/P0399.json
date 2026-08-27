@@ -1,0 +1,158 @@
+{
+  "schema_version": "3.0",
+  "paper_id": "P0399",
+  "canonical_work_id": "CW95905E41363466AB9C06",
+  "title": "A Negative Result on Gradient Matching for Selective Backprop",
+  "decision": "SCREENED_ELIGIBLE",
+  "reviewed_at": "2026-08-10T22:20:00+08:00",
+  "reviewer": "codex_primary_fulltext_review",
+  "method_source": {
+    "path": "staging/broad_freeze_anchor_complete_v3/sources/P0399.pdf",
+    "bytes": 897698,
+    "sha256": "00C79DBC0D19D3E61A386A91311BFEF2CFA83640A71E042EED8BFE522372206C"
+  },
+  "text_source": {
+    "path": "staging/screened_text_anchor_complete_v3/text/P0399.txt",
+    "bytes": 59223,
+    "sha256": "A4183CEBA9A84C09989C3B37B9AA472948E51893D0DCABA65271450457B16095"
+  },
+  "rq_ids": ["RQ2", "RQ3", "RQ4", "RQ6", "RQ7"],
+  "section_evidence": {
+    "METHODS": {
+      "status": "READ",
+      "pages": "2-4 and Appendix A",
+      "anchors": [
+        {
+          "page": 3,
+          "line": 18,
+          "quote": "Denote the last-layer gradient",
+          "paraphrase_zh": "方法从一次前向候选批中，用最后一层逐样本梯度和 OMP 选择一个加权子集，使其梯度和尽量接近完整候选批的平均梯度。"
+        }
+      ]
+    },
+    "EXPERIMENTS": {
+      "status": "READ",
+      "pages": "4-6 and Appendix C",
+      "anchors": [
+        {
+          "page": 4,
+          "line": 42,
+          "quote": "We now present an empirical evaluation",
+          "paraphrase_zh": "实验在五种数据集与模型组合上比较梯度匹配、按 loss 选择和无放回随机子集，并显式对齐选择比例。"
+        }
+      ]
+    },
+    "ABLATIONS": {
+      "status": "READ",
+      "pages": "5-6 and Appendix C.1-C.5",
+      "anchors": [
+        {
+          "page": 5,
+          "line": 50,
+          "quote": "the forward passes",
+          "paraphrase_zh": "论文区分固定候选批和按比例扩大的候选批两种预算语义，并补做标签噪声、学习率调优、梯度估计误差和训练时长分析。"
+        }
+      ]
+    },
+    "LIMITATIONS": {
+      "status": "READ",
+      "pages": "5-6 and Appendix C.4; no dedicated limitations section",
+      "anchors": [
+        {
+          "page": 6,
+          "line": 51,
+          "quote": "One goal of selective backprop",
+          "paraphrase_zh": "更小的梯度近似误差没有转化为更好的测试泛化，这直接限制了把梯度匹配质量解释成样本效用。"
+        }
+      ]
+    }
+  },
+  "formulas": [
+    "min_w ||sum_i w_i g_i - g_bar||_2^2 subject to ||w||_0 <= m",
+    "p(loss) = CDF(loss)^beta for the Selective Backprop loss sampler",
+    "m = rho M for fixed forward-batch size M",
+    "K = H H^T elementwise-multiplied by P P^T for the implicit last-layer gradient Gram matrix"
+  ],
+  "algorithm_steps": [
+    "Run a forward pass on M candidates and compute each candidate's loss and last-layer gradient embedding.",
+    "Use OMP on the implicit gradient Gram matrix to choose at most m candidates and fit nonzero weights.",
+    "Normalize selected weights to sum to m, backpropagate only selected examples, and compare against loss-based and uniform random selection under the same subsampling fraction.",
+    "Repeat with fixed and scaled forward-batch interpretations, label-noise settings, and method-specific learning-rate schedules."
+  ],
+  "variables": ["candidate batch size M", "selected size m", "subsampling fraction rho", "last-layer gradient g_i", "full-batch mean gradient g_bar", "OMP weights w", "loss-selection exponent beta"],
+  "selection_timing": "Selection is online at every training update after a forward pass over the candidate batch; there is no frozen global sample ranking or epoch-level replay pool.",
+  "refresh_rule": "Every update receives a fresh candidate minibatch and recomputes either loss probabilities, gradient-matching OMP weights, or a uniform random subset without replacement.",
+  "budget": {
+    "unit": "backpropagated examples per forward candidate batch",
+    "denominator": "candidate batch size M, with m = rho M",
+    "unique_sample_definition": "At one update the random and target selectors choose a subset without replacement; run-level unique identities are not fixed.",
+    "repeat_definition": "Examples may be revisited through ordinary epoch sampling, but replay repeat-count parity is not an experimental factor.",
+    "cumulative_exposure_definition": "The fixed-batch design keeps update count constant while changing effective examples per update; the scaled-batch design keeps effective batch size constant while reducing update count by rho.",
+    "compute_cost": "Gradient matching adds last-layer embeddings and OMP after the same forward pass; meaningful savings require selected m to be well below candidate M because all M still incur forward cost."
+  },
+  "random_baselines": [
+    "uniform subset without replacement from the same candidate minibatch",
+    "fixed-batch and scaled-batch random variants under the corresponding update-budget interpretation"
+  ],
+  "datasets": ["CIFAR-10", "CIFAR-100", "SVHN", "ImageNet32", "IMDB"],
+  "models": ["ResNet-18", "WideResNet-16-4", "WideResNet-28-2", "pretrained BERT"],
+  "seed_count": {
+    "counts": ["3 random seeds per reported main setting"],
+    "scope": "Figure 1 main test-accuracy comparisons",
+    "aggregation": "Mean curves are shown with the minimum-to-maximum range across the three seeds."
+  },
+  "checkpoint_selection": "Figure 1 reports maximal test accuracy reached during training rather than a fixed final checkpoint, so the headline comparison contains a checkpoint-oracle element that Stage1 must not copy.",
+  "results": [
+    {
+      "claim": "梯度匹配通常优于按 loss 选择，但二者都不能稳定优于同预算随机子集。",
+      "locator": "page 5, Section 5.1 and Figure 1",
+      "value": "Across five dataset/model combinations and multiple rho values, neither informed selector consistently beats random.",
+      "anchor": {
+        "page": 5,
+        "line": 64,
+        "quote": "Figure 1 depicts our main results",
+        "paraphrase_zh": "主结果明确把随机选择加入同预算比较，否定了更难或梯度更匹配就必然获得更好泛化的推断。"
+      }
+    },
+    {
+      "claim": "梯度匹配的全数据梯度近似误差更小，却仍未带来相应的泛化收益。",
+      "locator": "page 6, Section 5.3 and conclusion",
+      "value": "Gradient matching lowers squared L2 error to the full gradient, while Selective Backprop still fails to outperform random selection.",
+      "anchor": {
+        "page": 6,
+        "line": 51,
+        "quote": "One goal of selective backprop",
+        "paraphrase_zh": "该负结果把优化代理质量和真实模型效用分开，是 Stage1 不把 gradient norm 或 gradient matching 当作 utility 的直接依据。"
+      }
+    }
+  ],
+  "ablations": [
+    "loss-based versus gradient-matching versus uniform random selection",
+    "fixed forward-batch size versus scaled forward-batch size",
+    "clean labels versus injected label noise",
+    "shared base learning-rate schedule versus method-specific tuning",
+    "subsampling fraction sweep and gradient-estimation error comparison"
+  ],
+  "negative_results": [
+    "Neither loss-based Selective Backprop nor gradient matching consistently outperforms random selection.",
+    "Loss-based selection degrades markedly under label noise.",
+    "Lower gradient-estimation error does not imply higher held-out accuracy.",
+    "Separate learning-rate tuning yields a similar ordering and also changes epoch budget through schedule stretching."
+  ],
+  "failure_conditions": [
+    "The matched full gradient is dominated by common modes rather than rare endpoint-critical tails.",
+    "The last-layer approximation preserves an aggregate direction but discards parameter interactions relevant to generalization.",
+    "High-loss selection concentrates label noise or irreducible examples.",
+    "Checkpoint-oracle reporting or unequal update semantics hide instability across seeds."
+  ],
+  "limitations": [
+    "This is selective backpropagation, not additional replay while all base samples remain exposed once per epoch.",
+    "The endpoint is maximal test accuracy, not a fixed-checkpoint FN95 safety frontier.",
+    "Three seeds support a useful negative result but do not estimate a high-confidence cross-seed success probability.",
+    "Random is candidate-subset matched, but run-level unique IDs, repeated exposures and augmentation draws are not Stage1-matched."
+  ],
+  "transfer_class": "INSPIRED_ADAPTATION",
+  "stage1_mechanism_zh": "这篇论文应成为 A 层和梯度路线的强制负对照：Stage1 可以计算独立 FN95 目标梯度的正对齐、负对齐和集合匹配，但必须在固定基础顺序、累计 replay 曝光、optimizer steps 与固定 epoch 下，用 R1、R2 和 no-replay 验证真实干预；更低梯度误差本身不获得样本价值资格。",
+  "stage1_non_inference_zh": "论文不能推出最后一层梯度方向对 Stage1 无用，也不能推出随机 replay 永远最优；它反驳的是从更高 loss 或更好全梯度匹配直接跳到更好泛化。其 selective-backprop 预算、最大 test checkpoint 和普通准确率均不同于 Stage1，因此只能约束实验逻辑，不能替代 FN95 replay 实验。",
+  "exclusion_reason": "NOT_APPLICABLE_WITH_REASON:eligible for SCREENED evidence tier"
+}

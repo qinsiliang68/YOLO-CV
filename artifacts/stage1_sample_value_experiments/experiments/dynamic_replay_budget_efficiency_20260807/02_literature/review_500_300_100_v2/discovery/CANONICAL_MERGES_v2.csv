@@ -1,0 +1,2 @@
+alias_queue_id,canonical_queue_id,evidence,adjudicated_at,adjudicator
+RG931A2AD317FD96E0,RGA2C29BF07455BC6D,"Same normalized title, identical four authors, same 2018 study, same TF-IDF/cross-entropy-difference/Feature-Decay methods and experiments; RGA2C29BF07455BC6D is the official ACL DOI version 10.18653/v1/W18-6323.",2026-08-10T07:20:00+08:00,codex_primary_review

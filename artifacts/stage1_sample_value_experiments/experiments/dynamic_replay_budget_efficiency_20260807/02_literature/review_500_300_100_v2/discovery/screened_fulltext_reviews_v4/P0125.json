@@ -1,0 +1,231 @@
+{
+  "schema_version": "3.0",
+  "paper_id": "P0125",
+  "canonical_work_id": "CW4918AE07F58C343F96B6",
+  "title": "DsDm: Model-Aware Dataset Selection with Datamodels",
+  "decision": "SCREENED_ELIGIBLE",
+  "reviewed_at": "2026-08-10T19:06:00+08:00",
+  "reviewer": "user_accepted_inherited_fulltext_rebind",
+  "method_source": {
+    "path": "staging/broad_freeze_canonical_repaired_v4/sources/P0125.pdf",
+    "bytes": 2970361,
+    "sha256": "5025DBC19CC5298AE09E4A9841216AECFC7F3941AB6C2871A8DF3EC74EB43827"
+  },
+  "text_source": {
+    "path": "staging/screened_text_canonical_repaired_v4/text/P0125.txt",
+    "bytes": 227692,
+    "sha256": "496B570DB097A90EFE240F785C87876B240BDDCAD7D22D5422E8FCBF86CE2C6F"
+  },
+  "rq_ids": [
+    "RQ2",
+    "RQ5",
+    "RQ7",
+    "RQ8"
+  ],
+  "section_evidence": {
+    "METHODS": {
+      "status": "READ",
+      "pages": "2-3 and Appendices B.2-B.5, Equations 1-12",
+      "anchors": [
+        {
+          "page": 2,
+          "line": 33,
+          "quote": "2.1. Task-Optimal Dataset Selection",
+          "paraphrase_zh": "论文先把最优集合定义为固定 learner 与目标分布下、包含训练随机性的期望目标损失最小化，再用线性 datamodel/TRAK 近似每个候选的固定效应。"
+        }
+      ]
+    },
+    "EXPERIMENTS": {
+      "status": "READ",
+      "pages": "3-8 and Appendices A, C-D",
+      "anchors": [
+        {
+          "page": 3,
+          "line": 29,
+          "quote": "Target tasks, candidate dataset, and model training.",
+          "paraphrase_zh": "实验从约 2.17 亿 C4 chunks 为四个目标任务选数据，固定总 token 训练 125M 模型，并以独立 target/holdout 划分比较 random、Classifier、DSIR。"
+        }
+      ]
+    },
+    "ABLATIONS": {
+      "status": "READ",
+      "pages": "4, 6-8, 25 and 27, selection size, target mixture and inverse selection",
+      "anchors": [
+        {
+          "page": 27,
+          "line": 21,
+          "quote": "Figure 9: Target task performance by method, training 125M models and varying dataset selection size.",
+          "paraphrase_zh": "附录以同总样本量改变 selection fraction/epochs，展示十个 random 模型范围，并用最差 DSDM 样本作方向反事实。"
+        }
+      ]
+    },
+    "LIMITATIONS": {
+      "status": "NOT_REPORTED_BY_PAPER",
+      "pages": "1-36 including main discussion, compute appendix and experimental appendices",
+      "anchors": [],
+      "absence_reason_zh": "全文没有独立局限章节；线性可加假设、四 reference model 充分性、selected arms 的 seed 分布、固定 token 与重复次数混杂及核心选择代码缺失需由审阅边界单独登记。"
+    }
+  },
+  "formulas": [
+    "For learner A, target distribution D_targ, candidate universe S and size k, the task-optimal set minimizes expected target loss L_D(S)=E_{x~D,A-randomness}[ell(x;A(S))].",
+    "A linear datamodel approximates target-example trained loss as tau_theta_x(1_S)=theta_x-transpose 1_S, assigning each candidate a fixed additive coefficient independent of the rest of the set.",
+    "Averaging target-specific coefficient vectors reduces the estimated size-k objective to choosing the bottom-k entries of (1/n) sum_x theta_x.",
+    "The paper estimates coefficients with four-model projected-gradient TRAK using dimension 16,384; this adds local-linearization, projection, fixed-effect, and ensemble approximations."
+  ],
+  "algorithm_steps": [
+    "Freeze an exact candidate corpus, learner, subset size, target distribution, and disjoint target versus holdout identities.",
+    "Train four 125M reference language models on random 38% candidate subsets for 80,000 batches each.",
+    "For every candidate and target item, compute projected gradients and model-specific TRAK terms, then average across reference models.",
+    "Average target-item datamodel coefficients and select the lowest predicted-loss candidates for the requested prefix size.",
+    "Train downstream models with a fixed total token budget, changing passes over the selected prefix, and evaluate only on holdout tasks; also train inverse-ranked and random controls."
+  ],
+  "variables": [
+    "candidate corpus S, selected subset S-prime, size k, learner A, and learner randomness",
+    "target distribution D_targ, target identities, holdout identities, loss ell, and expected trained loss",
+    "linear coefficient theta_x, inclusion vector 1_S, TRAK projected gradient, Q term, projection dimension d, and reference model m",
+    "selection fraction, unique 1024-token chunks, epochs/passes, fixed token budget, and downstream optimizer steps",
+    "target loss or accuracy, broad benchmark accuracy, random-run range, inverse-selection result, FBP compute, and score sign convention"
+  ],
+  "selection_timing": "Selection is offline before downstream training, conditioned on a fixed 125M proxy learner and explicit target distribution; it is not refreshed as the downstream model changes.",
+  "refresh_rule": "A new target mixture, proxy/reference ensemble, candidate corpus, projection, learner, or selection size creates a new ranking; no epoch-lagged dynamic replay refresh is defined.",
+  "budget": {
+    "unit": "unique 1024-token candidate chunks selected into a training prefix",
+    "denominator": "216,948,746 C4 en.noblocklist chunks",
+    "unique_sample_definition": "Prefix size fixes unique chunks, while the paper does not impose source/domain redundancy constraints beyond candidate preprocessing.",
+    "repeat_definition": "All models consume a fixed total token budget, so smaller prefixes are traversed more epochs and individual chunks repeat more often.",
+    "cumulative_exposure_definition": "Total downstream tokens are fixed, but unique IDs, per-ID repetitions, selection fraction and epochs change together; this deliberately couples selection quality with concentration.",
+    "compute_cost": "Datamodel estimation costs about 1.2e9 forward-backward-pass units; projected-gradient collection across four models contributes roughly 73%, and each reference-model training roughly 7%."
+  },
+  "random_baselines": [
+    "uniform random candidate selection at matched downstream token budget",
+    "ten one-epoch random models shown as a performance range in targeted experiments",
+    "Classifier target-similarity selection",
+    "DSIR n-gram distribution matching",
+    "SemDeDup in broad experiments",
+    "Inverse-DsDm selecting the least preferred examples",
+    "larger random-data models trained with approximately 10x or 2x comparison compute"
+  ],
+  "datasets": [
+    "C4 en.noblocklist candidate corpus",
+    "SQuAD",
+    "Jeopardy",
+    "LAMBADA",
+    "CS-Algorithms",
+    "15 broad downstream language-model benchmarks"
+  ],
+  "models": [
+    "125M GPT-2-style reference and targeted models",
+    "356M, 760M, 1.3B, and 1.8B GPT-style downstream models",
+    "FastText logistic target classifier"
+  ],
+  "seed_count": {
+    "counts": [
+      "4 independently trained reference models for the datamodel estimator",
+      "10 random downstream models defining the shaded random range in targeted plots"
+    ],
+    "scope": "estimator aggregation and random-control variability",
+    "aggregation": "selected methods are generally shown as single curves or points rather than matched ten-seed distributions, so treatment sign stability and worst seed are not established."
+  },
+  "checkpoint_selection": "Target identities select data and disjoint holdout identities evaluate it. Some 125M training settings were selected using held-out C4 perplexity, and broad target mixtures are study choices; no blind-test-driven selection is justified for Stage1.",
+  "results": [
+    {
+      "claim": "固定下游 token budget 时，DsDm 在四个目标任务上比 similarity baselines 更稳定，并匹配高计算 random comparator。",
+      "locator": "page 4, Figure 1",
+      "value": "The paper reports DsDm consistently improving target performance and matching a 1.3B random-data model trained with more than 10x compute; ten one-epoch Random models define the shaded range.",
+      "anchor": {
+        "page": 4,
+        "line": 22,
+        "quote": "Figure 1: Target task performance by selection method, varying dataset selection size.",
+        "paraphrase_zh": "Figure 1 是真实训练干预而非仅看分数，但 selected arms 缺少与十 random runs 对称的逐 seed 分布。"
+      }
+    },
+    {
+      "claim": "更小、更高排名的 prefix 在固定 token 下可优于更大 prefix，selection fraction 与重复次数发生价值反转。",
+      "locator": "page 4, Figure 1 discussion",
+      "value": "DsDm performance decreases as selection fraction grows because smaller selections receive more epochs under the same total tokens.",
+      "anchor": {
+        "page": 4,
+        "line": 26,
+        "quote": "performance decreases with larger selection fraction, indicating that higher ranked D S D M samples",
+        "paraphrase_zh": "该结果直接说明 unique 数量、repeat 浓度和累计 exposure 必须拆开记录，不能只比较名义 subset ratio。"
+      }
+    },
+    {
+      "claim": "逆向选择最低偏好样本会明显输给 random，提供 score 方向的有限训练反事实。",
+      "locator": "page 27, Figure 10",
+      "value": "Models trained on Inverse-DsDm's least preferred examples perform much worse than randomly selected data despite QA-related text.",
+      "anchor": {
+        "page": 27,
+        "line": 44,
+        "quote": "Figure 10: Model performance when training on worst data according to D S D M.",
+        "paraphrase_zh": "最差 prefix 的实际训练失败比语义相似性或分数直方图更接近可证伪 utility 证据。"
+      }
+    },
+    {
+      "claim": "target 选择会改善相关类别并损害无关类别，混合平均会隐藏受保护目标冲突。",
+      "locator": "page 8, broad-capability analysis",
+      "value": "SQuAD/Jeopardy/LAMBADA targets improve corresponding reading, knowledge, or language categories, while single-target selection can reduce unrelated-task performance.",
+      "anchor": {
+        "page": 8,
+        "line": 19,
+        "quote": "targeted towards SQuAD/Jeopardy/LAMBADA improve accuracy on reading comprehension/world knowledge/language",
+        "paraphrase_zh": "目标迁移的正负并存支持 Stage1 把 normal-tail A 与 weak-defect harm 分开，不允许先平均成单一 target score。"
+      }
+    },
+    {
+      "claim": "完整 DsDm estimator 的计算量远大于一次普通下游训练，且关键超参未做充分消融。",
+      "locator": "pages 24-25, Appendix B.5",
+      "value": "Estimated cost is 1.2e9 FBPs; projected gradients are about 73%, with no ablation over reference-model count or training batches.",
+      "anchor": {
+        "page": 24,
+        "line": 53,
+        "quote": "In this work, our total cost is: (m · nmodel ) + (m · |S|) + (ndm ) FBPs.",
+        "paraphrase_zh": "成本分解限制了 Stage1 只能先做小候选池/关键 checkpoint 的低成本方向诊断。"
+      }
+    }
+  ],
+  "ablations": [
+    "DsDm, uniform Random, Classifier, DSIR, SemDeDup, and Inverse-DsDm",
+    "four separate target tasks and a three-target mixture",
+    "selection fraction with fixed downstream token budget and changing epochs",
+    "125M proxy rankings transferred to 356M-1.8B models",
+    "targeted versus broad 15-benchmark evaluation",
+    "10x or 2x compute random-data comparators"
+  ],
+  "negative_results": [
+    "Classifier and DSIR fail to consistently beat Random on SQuAD and CS-Algorithms.",
+    "Single-target selection can reduce performance on unrelated benchmark categories.",
+    "Inverse-DsDm prefixes train much worse models than random despite appearing QA-related.",
+    "Selected arms lack a matched ten-seed downstream distribution and worst-seed report.",
+    "Four reference models and projection dimension 16,384 are unablated implementation choices.",
+    "The public repository audited in the inherited review omits the core end-to-end selection implementation."
+  ],
+  "failure_conditions": [
+    "The linear fixed-effect datamodel misses candidate interactions, redundancy, or a state-dependent sign reversal.",
+    "Target and holdout identities overlap candidate text or blind evaluation leaks into ranking decisions.",
+    "A proxy-language-model ranking fails to transfer to the downstream learner or checkpoint state.",
+    "Fixed total exposure hides severe per-ID repeat concentration as the prefix becomes smaller.",
+    "A target mixture improves its mean while harming a protected role or worst seed.",
+    "Projection, tensor sign convention, candidate order, reference seeds, or score artifacts are not hash bound."
+  ],
+  "limitations": [
+    "DsDm performs offline pretraining-data selection, not additive replay during a fixed base-training trajectory.",
+    "Linear datamodels assume additive fixed effects and omit set interactions and dynamic checkpoint dependence.",
+    "Fixed tokens couple selection size, unique identities, repetition, epochs, and optimizer-visible concentration.",
+    "Selected arms do not report matched cross-seed distributions, sign agreement, or worst-seed treatment effects.",
+    "Estimator computation is enormous and core projected-gradient/selection implementation was unavailable in the inherited repository audit.",
+    "No endpoint is an FN=0..95 frontier or dual FN95/TN safety constraint."
+  ],
+  "transfer_class": "INSPIRED_ADAPTATION",
+  "stage1_mechanism_zh": "该文支持把 A 定义为固定 learner、checkpoint 与独立 target role 条件下的方向，并用真正训练的 random 与 inverse controls 反证分数方向；它还要求 target/holdout 身份分离，以及 unique、repeat、selection fraction、累计曝光和 steps 分列。normal-tail 与 weak-defect target 必须先分开，不能混成加权向量。",
+  "stage1_non_inference_zh": "DsDm 的语言模型结果不能证明 Stage1 replay utility：它是离线 prefix 选择，固定 token 时同时改变 unique 和重复次数，线性 datamodel 不含集合冗余或 checkpoint 状态。它没有严格 R1/R2/current-loss/no-replay、固定基础流、FN95 目标或未见 training seed 配对；四模型/16384 维也不是可移植常数。",
+  "exclusion_reason": "NOT_APPLICABLE_WITH_REASON:eligible as target-conditioned selection, inverse-control, and exposure-concentration evidence",
+  "migration_provenance": {
+    "source_review": "../FULL_TEXT_EVIDENCE_NOTES/P052_DsDm_ICML_2024.md",
+    "source_paper_id": "P052",
+    "migration_basis": "CANONICAL_WORK_ID_AND_BYTE_IDENTICAL_PDF_WITH_CURRENT_TEXT_REANCHOR",
+    "content_review_reused": true,
+    "evidence_provenance_class": "USER_ACCEPTED_INHERITED_EVIDENCE",
+    "independent_content_rereview_performed": false
+  }
+}

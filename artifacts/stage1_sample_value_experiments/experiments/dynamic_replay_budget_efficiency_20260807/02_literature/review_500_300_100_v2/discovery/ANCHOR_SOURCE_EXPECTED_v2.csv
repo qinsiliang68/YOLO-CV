@@ -1,0 +1,22 @@
+paper_id,title
+RGC9DBF113F856F4FE,Dataset Cartography: Mapping and Diagnosing Datasets with Training Dynamics
+RGC0D4513EFDAC52B7,An Empirical Study of Example Forgetting during Deep Neural Network Learning
+AX501F9ECF2E222F25,Active Bias: Training More Accurate Neural Networks by Emphasizing High Variance Samples
+AXA06EB02B84C505EE,Changing the Training Data Distribution to Reduce Simplicity Bias Improves In-distribution Generalization
+AX9313629F9AEE4C10,BWS: Best Window Selection Based on Sample Scores for Data Pruning across Broad Ranges
+RG73E7B805F9AD76C7,Estimating Training Data Influence by Tracing Gradient Descent
+RG08D4BDEF38C63D1C,GLISTER: Generalization based Data Subset Selection for Efficient and Robust Learning
+AX6987DB4646B2490F,GREATS: Online Selection of High-Quality Data for LLM Training in Every Iteration
+AX5D5392D5D7F1038E,Data curation via joint example selection further accelerates multimodal learning
+AX6B828EA30AEEF829,DivideMix: Learning with Noisy Labels as Semi-Supervised Learning
+RG23777DF75AF056AE,D2 Pruning: Message Passing for Balancing Diversity and Difficulty in Data Pruning
+RG4C05ABF685E44621,Coverage-centric Coreset Selection for High Pruning Rates
+AX79D4A4F6C4BBCA52,Coresets for Accelerating Incremental Gradient Methods
+AX5BBB2D6BD039C272,Active Learning Through a Covering Lens
+AXA507196A9C503BF5,Active Learning on a Budget: Opposite Strategies Suit High and Low Budgets
+RGEE7171D25C56697E,Accelerating Deep Learning with Dynamic Data Pruning
+AXB4D35C6558F3F40B,Repeated Random Sampling for Minimizing the Time-to-Accuracy of Learning
+RG015FC4345AA73EEF,Training Region-Based Object Detectors with Online Hard Example Mining
+AX60FA7026B413D57B,Focal Loss for Dense Object Detection
+RG9FA3C12D2147A460,A Neyman-Pearson Approach to Statistical Learning
+AX650ABBBE424F1071,How much does Initialization Affect Generalization?

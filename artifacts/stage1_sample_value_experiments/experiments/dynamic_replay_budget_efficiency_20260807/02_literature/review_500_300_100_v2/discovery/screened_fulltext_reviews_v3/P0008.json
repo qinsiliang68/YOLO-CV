@@ -1,0 +1,158 @@
+{
+  "schema_version": "3.0",
+  "paper_id": "P0008",
+  "canonical_work_id": "CW650ABBBE424F1071637C",
+  "title": "How much does Initialization Affect Generalization?",
+  "decision": "SCREENED_ELIGIBLE",
+  "reviewed_at": "2026-08-10T22:22:00+08:00",
+  "reviewer": "codex_primary_fulltext_review",
+  "method_source": {
+    "path": "staging/broad_freeze_anchor_complete_v3/sources/P0008.pdf",
+    "bytes": 3604674,
+    "sha256": "F934608344387DAD5E095FEFBAD7FCDD0311D5E56D60DCAFF8E3E82BEE392EA3"
+  },
+  "text_source": {
+    "path": "staging/screened_text_anchor_complete_v3/text/P0008.txt",
+    "bytes": 92776,
+    "sha256": "85E71527BFB0D8E724AF3243F8006FCA79F7E37761389CD0F526F2241CF607AF"
+  },
+  "rq_ids": ["RQ1", "RQ8"],
+  "section_evidence": {
+    "METHODS": {
+      "status": "READ",
+      "pages": "3-6, theorem and Fourier-spectrum experiments",
+      "anchors": [
+        {
+          "page": 5,
+          "line": 30,
+          "quote": "Let f : R",
+          "paraphrase_zh": "理论把网络视为参数化函数族，并证明梯度流对足够高频的变化趋于消失，因此初始化中已有的高频成分可能在训练后保留。"
+        }
+      ]
+    },
+    "EXPERIMENTS": {
+      "status": "READ",
+      "pages": "6-9 and Appendix experiments",
+      "anchors": [
+        {
+          "page": 8,
+          "line": 27,
+          "quote": "Experiment 4 We use 9 popular models",
+          "paraphrase_zh": "分类实验跨九种网络和三个图像数据集比较普通随机初始化与随机标签预训练产生的高带宽初始化，并在正确标签上继续训练。"
+        }
+      ]
+    },
+    "ABLATIONS": {
+      "status": "READ",
+      "pages": "7-9 and appendices",
+      "anchors": [
+        {
+          "page": 8,
+          "line": 13,
+          "quote": "Model Random Init",
+          "paraphrase_zh": "作者增加 swapped-label 初始化作为反事实：保留有结构的标签置换，而非随机噪声标签，测试性能恢复到接近普通初始化。"
+        }
+      ]
+    },
+    "LIMITATIONS": {
+      "status": "READ",
+      "pages": "5, 8 and conclusion; no dedicated limitations section",
+      "anchors": [
+        {
+          "page": 8,
+          "line": 49,
+          "quote": "important to note that in the above experiments",
+          "paraphrase_zh": "作者明确承认无法保证随机标签预训练除提高频谱带宽外没有引入其他对抗性影响，因此机制归因不是完全隔离的。"
+        }
+      ]
+    }
+  },
+  "formulas": [
+    "g_theta is the compact-support extension of f_theta on the data neighborhood K",
+    "d/dt F[g_theta(t)](xi) is expressed through the tangent kernel and the loss gradient",
+    "for every epsilon > 0 there exists kappa such that sufficiently high-frequency Fourier updates have magnitude below epsilon",
+    "the discrete gradient-descent statement is justified through a Taylor expansion"
+  ],
+  "algorithm_steps": [
+    "Construct low-dimensional signals and compare ReLU, Gaussian and sinusoidal networks under several initial spectra.",
+    "For image classification, train each architecture either from ordinary random weights or from weights first fitted to randomly shuffled labels.",
+    "Retrain both initializations on the correct labels until training interpolation and compare final test accuracy.",
+    "Use a swapped-label pretraining control and Hessian/flatness analyses to probe alternative explanations."
+  ],
+  "variables": ["initial Fourier spectrum", "frequency index xi", "network parameters theta", "tangent kernel K(theta,x,x_i)", "random initialization", "high-bandwidth initialization", "swapped-label initialization"],
+  "selection_timing": "No samples are selected or replayed; the intervention occurs before ordinary training by changing model initialization through pretraining.",
+  "refresh_rule": "NOT_APPLICABLE_WITH_REASON:the initialization condition is fixed for a run and there is no sample-selection refresh.",
+  "budget": {
+    "unit": "full-model training runs under different initialization procedures",
+    "denominator": "all training examples in each dataset",
+    "unique_sample_definition": "All available training examples are used; no finite replay subset is defined.",
+    "repeat_definition": "Ordinary epoch repetition applies equally after initialization, while pretraining adds a separate optimization history only to high-bandwidth conditions.",
+    "cumulative_exposure_definition": "The paper does not claim matched cumulative example exposure between random initialization and pretraining-derived initialization.",
+    "compute_cost": "High-bandwidth conditions require random-label pretraining before correct-label training, so compute is larger than ordinary random initialization."
+  },
+  "random_baselines": [
+    "ordinary random weight initialization",
+    "swapped-label pretraining control for ResNet-18 and ConvMixer"
+  ],
+  "datasets": ["synthetic one-dimensional signals", "CIFAR-10", "CIFAR-100", "Tiny ImageNet"],
+  "models": ["ReLU MLP", "Gaussian-activation MLP", "sinusoidal network", "VGG11", "VGG16", "AlexNet", "EfficientNet", "DenseNet", "ResNet-18", "ResNet-50", "SENet", "ConvMixer"],
+  "seed_count": {
+    "counts": ["5 runs for every image-classification model and initialization setting"],
+    "scope": "Table 1 image-classification comparisons",
+    "aggregation": "Test accuracy is reported as mean plus or minus standard deviation across five runs."
+  },
+  "checkpoint_selection": "Reported classification models all reach 100% training accuracy; the paper reports their trained test accuracies and does not describe selecting among epochs with the test set.",
+  "results": [
+    {
+      "claim": "相同架构即使都达到 100% 训练准确率，也会因初始化状态不同产生显著不同的测试泛化。",
+      "locator": "page 7, Table 1",
+      "value": "ResNet-18 on CIFAR-10 is 82.44 +/- 0.15 from random initialization versus 68.99 +/- 0.62 from high-bandwidth initialization.",
+      "anchor": {
+        "page": 7,
+        "line": 22,
+        "quote": "ResNet-18",
+        "paraphrase_zh": "训练误差相同不意味着所得函数相同；初始化形成的模型状态能显著改变后续学习轨迹和泛化。"
+      }
+    },
+    {
+      "claim": "swapped-label 预训练没有复现随机标签预训练的严重性能下降。",
+      "locator": "page 8, Table 2",
+      "value": "ResNet-18 gives 82.91 +/- 0.03 after swapped-label initialization versus 82.44 +/- 0.15 from random initialization.",
+      "anchor": {
+        "page": 8,
+        "line": 13,
+        "quote": "Model Random Init",
+        "paraphrase_zh": "这个反事实支持高带宽而非任意预训练历史是性能下降的重要机制，但仍不能排除全部共同变化。"
+      }
+    }
+  ],
+  "ablations": [
+    "ordinary random initialization versus random-label high-bandwidth initialization",
+    "swapped-label pretraining control",
+    "three activation families on synthetic signals",
+    "nine image architectures over three datasets",
+    "flatness and Hessian-eigenvalue analysis across initialization conditions"
+  ],
+  "negative_results": [
+    "Zero training error does not erase initialization-induced differences in generalization.",
+    "The flat-minima explanation is not consistent across ReLU and Gaussian activation families.",
+    "Swapped-label pretraining does not cause the same test degradation as random-label pretraining.",
+    "The theory is qualitative and does not provide a practical frequency cutoff for arbitrary deep architectures."
+  ],
+  "failure_conditions": [
+    "An initialization-dependent trajectory effect is mistaken for a fixed property of the selected sample set.",
+    "High-bandwidth pretraining changes factors other than spectrum, invalidating a single-mechanism interpretation.",
+    "Cross-seed comparisons use different base initializations instead of paired run blocks.",
+    "A sample rule is evaluated only at one model state and generalized to all states."
+  ],
+  "limitations": [
+    "The work studies initialization and spectral bias, not finite-budget replay or sample utility.",
+    "Pretraining compute and data exposures are not matched to ordinary random initialization.",
+    "The authors cannot guarantee that random-label pretraining changes only Fourier bandwidth.",
+    "Its full-accuracy endpoint does not address high-recall tail behavior or paired random replay controls."
+  ],
+  "transfer_class": "MECHANISM_ONLY",
+  "stage1_mechanism_zh": "该论文支持把样本效用写成条件量 V(S | theta_t, initialization, order)：即使训练数据和终点训练误差相同，初始化仍可把优化导向不同泛化解。因此 Stage1 必须在每个 seed block 内让 T、R1、R2、current-loss 和 no-replay 共享完全相同的初始权重，并单独估计跨未见 seed 的方向稳定性。",
+  "stage1_non_inference_zh": "它没有选择、重放或估值任何训练样本，不能证明某个 Q、R、A 或 D 信号有效，也不能解释旧 240-run 的具体反转。高带宽初始化是人为构造的强干预，和正常 seed 差异并不等价；论文只能否定把样本价值当作脱离模型状态的永久标量。",
+  "exclusion_reason": "NOT_APPLICABLE_WITH_REASON:eligible for SCREENED evidence tier"
+}

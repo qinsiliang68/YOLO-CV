@@ -1,0 +1,321 @@
+﻿paper_id,selection_role,title,page_count,heading_count,evidence_candidate_count,method_heading_count,experiment_heading_count,ablation_heading_count,limitation_heading_count,conclusion_heading_count,packet_path,packet_sha256,reading_credit_granted
+P0001,RESERVE,Competence-based Multimodal Curriculum Learning for Medical Report Generation,12,9,4,8,1,0,0,0,packets/P0001.md,B27272A75DF4581046824D5EE752CFA848EDE7CF3F8C30BEE025C002A913D371,False
+P0003,PRIMARY,Efficient and Robust Quantization-aware Training via Adaptive Coreset Selection,23,24,33,20,2,1,0,1,packets/P0003.md,69B086FC26728E027CB4826D906D5D0DF57A83793024BE918F564C4A7AED019D,False
+P0004,PRIMARY,Training Region-Based Object Detectors with Online Hard Example Mining,9,8,1,5,2,1,0,0,packets/P0004.md,F95B36A217AAF7A575B6C873FB0E5F8DC0A7E5E125413D4AF905A05DB41C3836,False
+P0005,PRIMARY,Active Self-Paced Learning for Cost-Effective and Progressive Face Identification,15,10,3,8,2,0,0,0,packets/P0005.md,D0D9741F06410080A21A266AFE6B731F70E2C5156847740B9EE5264BADD8F988,False
+P0006,PRIMARY,SEEP: Training Dynamics Grounds Latent Representation Search for Mitigating Backdoor Poisoning Attacks,15,18,24,16,0,1,0,1,packets/P0006.md,35BD5A0F6C5A12D9762F17E45A4F5DAD52A879876A627E105A6EC07B44EECB9D,False
+P0008,PRIMARY,How much does Initialization Affect Generalization?,19,8,2,0,7,0,0,1,packets/P0008.md,5E4B28336A811339246E6D3465C91300FF92DB83B3BEDFCBB83AF15B236E04C8,False
+P0009,PRIMARY,Open-set Label Noise Can Improve Robustness Against Inherent Label Noise,20,20,3,15,4,0,0,1,packets/P0009.md,5CBC1E1EE5DF732916EFA5D671337F47AEB991E75EBDB652F38BCC5A79BA729C,False
+P0011,PRIMARY,Improved Hard Example Mining Approach for Single Shot Object Detectors,5,4,0,1,2,0,0,1,packets/P0011.md,B117D65FC441E0A1A90A82EBF3E42A9E146F72B5BDEC99F06AB143313DD2133F,False
+P0013,PRIMARY,Rethinking Experience Replay: a Bag of Tricks for Continual Learning,8,8,6,7,1,0,0,0,packets/P0013.md,1B5132015461B97102977E0F1289E6BE7DBBB483060B73FEE29BDBACB3848CCA,False
+P0015,PRIMARY,Learning with Noisy Labels Revisited: A Study Using Real-World Human Annotations,23,5,7,4,0,0,0,1,packets/P0015.md,155F6EFFEFF04308318FFD175DADCAF365ABB02933FBF05C852CE5DB8253461F,False
+P0018,PRIMARY,Convergence Results For Q-Learning With Experience Replay,47,8,1,6,1,0,1,0,packets/P0018.md,7B6B5124E2BC7A5198B470D1E447879EF402894F21BB8ED7E75E9997716B7174,False
+P0019,PRIMARY,Exploring Training Data Attribution under Limited Access Constraints,20,16,15,5,8,0,2,1,packets/P0019.md,FFAB2383EB3D84F18F1680D345672875CA97201445F5A4293B41697200D1213A,False
+P0020,PRIMARY,GLISTER: Generalization based Data Subset Selection for Efficient and Robust Learning,9,4,13,3,1,0,0,0,packets/P0020.md,5E2256C074135564FEC8A7A3DE90D20CA220E54586DF15AFB138D623D80B9E6C,False
+P0021,PRIMARY,Accelerating Deep Learning with Dynamic Data Pruning,11,11,30,10,0,0,1,0,packets/P0021.md,DB7807C6382E7C08267616E8976CFA5B66669BCDE54534E51120826B251726F0,False
+P0022,PRIMARY,Class-Independent Regularization for Learning with Noisy Labels,9,6,3,4,1,0,0,1,packets/P0022.md,67DE650353D4183CD0F9B9AEDEC953ED0BD4B5850F8A8A0EA899ECF1F3DDEBF3,False
+P0023,PRIMARY,Selectivity Drives Productivity: Efficient Dataset Pruning for Enhanced Transfer Learning,25,17,12,9,6,0,1,1,packets/P0023.md,EFCB242D3416DEB1E760F381DA2EE43B848418029A08E3D2862A216EEFC383D3,False
+P0026,PRIMARY,Airport Detection Using End-to-End Convolutional Neural Network with Hard Example Mining,20,11,6,9,1,0,0,1,packets/P0026.md,572071DCC4E6459286CE66517A4E59D3F70A96596393265A69D54E9DFAA27950,False
+P0031,PRIMARY,Generalizing Off-Policy Learning under Sample Selection Bias,20,6,2,5,1,0,0,0,packets/P0031.md,E802774D6F3DFAF3D76B91569F005C194C64D17D3823CDC7EE2024D97EA51DE3,False
+P0032,PRIMARY,Identifying Noise in Human-Created Datasets using Training Dynamics from Generative Models,17,8,2,6,1,0,1,0,packets/P0032.md,43DA3940EEE1C2ADDD631DA20B339C9FBBCB6D893F4A7CC9B4656CEDE99AFE08,False
+P0034,PRIMARY,Concept-skill Transferability-based Data Selection for Large Vision-Language Models,21,18,29,10,5,1,1,1,packets/P0034.md,D87353AF16D2C7C5F13FFDC2254C4D3AEE41DC767B705B5AABFD107CC7B0D6D9,False
+P0036,PRIMARY,Phases of learning dynamics in artificial neural networks in the absence or presence of mislabeled data,12,5,2,4,0,0,0,1,packets/P0036.md,AF3A12F18D1FF34964BCC76C36271CFB0346E5B1E75E8CFD231FCEEF79B7DC89,False
+P0039,PRIMARY,Early-Learning Regularization Prevents Memorization of Noisy Labels,12,9,3,6,1,1,1,0,packets/P0039.md,CD933ADDEE4EA1DD7A394B0B946E95092D55107ACC573AA8038DAC369DECCFF5,False
+P0046,PRIMARY,On Curriculum Learning for Commonsense Reasoning,10,6,3,5,1,0,0,0,packets/P0046.md,B95A758D00CB49A434B306CBC3A44B19EDC3467F4B652A90CBB5335AB845F181,False
+P0047,PRIMARY,Meta-Guided Sample Reweighting for Robust Cross-Modal Hashing Retrieval with Noisy Labels,9,11,3,7,2,2,0,0,packets/P0047.md,6C9A27C78418F0A0320D74581BD2A2EEE0736C1909B224E9582D90E0052C31AD,False
+P0048,PRIMARY,Online hard example mining vs. fixed oversampling strategy for segmentation of new multiple sclerosis lesions from longitudinal FLAIR MRI,10,6,1,4,1,0,0,1,packets/P0048.md,3358C01572CD470208B4B99AFBB6224AEA6A65B91B121C3BF79A8E9E84FC89CC,False
+P0049,PRIMARY,Evolution-aware VAriance (EVA) Coreset Selection for Medical Image Classification,13,11,29,5,4,1,1,0,packets/P0049.md,D9F8CBF8E7B8230EC34814747D205C3F10FB4CCC08438FA7F137D7D5CDE106FD,False
+P0050,PRIMARY,Leveraging Peer-Informed Label Consistency for Robust Graph Neural Networks with Noisy Labels,9,1,6,1,0,0,0,0,packets/P0050.md,C4D59A62451928A9A1D72D1BFEC8FC76A19D80C388129C351620B394C66B2819,False
+P0051,PRIMARY,Investigating Multi-source Active Learning for Natural Language Inference,23,8,30,4,3,0,1,0,packets/P0051.md,F5D7E64282FFE121EB8CEEC92E6DE3657B31695AB80977752324CBBC47BD3F05,False
+P0052,PRIMARY,Data Pruning for Efficient Model Pruning in Neural Machine Translation,11,6,20,3,1,0,1,1,packets/P0052.md,D51C60A555EBE9D242C676A9979D94FF8431EA3ECA1E649920201FD034A10B16,False
+P0053,PRIMARY,Calibrated Semi-Supervised Models for Disaster Response based on Training Dynamics,10,12,1,7,3,0,1,1,packets/P0053.md,FA965462818D8E6E2609BB96B964C89F483FB32763209319B895892154FF20B9,False
+P0054,PRIMARY,A CLIP-Powered Framework for Robust and Generalizable Data Selection,19,15,31,14,0,0,1,0,packets/P0054.md,340583FF164161FF20D61C404EBFB47CEB420920D44CB5C6F9545952068305B2,False
+P0055,PRIMARY,FINE Samples for Learning with Noisy Labels,25,13,1,9,3,0,0,1,packets/P0055.md,DC15F741CA8459126EB2C5E16D5A6E277F0A88B1E93B2517E6183C4B0EB3E2F5,False
+P0056,PRIMARY,PADP: progressive and adaptive data pruning for efficient incremental learning,17,14,16,6,6,1,0,1,packets/P0056.md,471041692D06E47742D33FEDBD3A974BBBD55C3EEBE62CAC301754B5B6BF22EC,False
+P0057,PRIMARY,Dataset Cartography: Mapping and Diagnosing Datasets with Training Dynamics,19,5,17,4,1,0,0,0,packets/P0057.md,1163DD00F2DE9C3519E2464AB4B12E57CD6D2729BEF7ACEC6BB6137490AC0B49,False
+P0059,PRIMARY,Efficient Adversarial Contrastive Learning via Robustness-Aware Coreset Selection,28,14,27,10,2,1,0,1,packets/P0059.md,A6267711A217886E1E8F7D6615920DC5619CEB36791AE3A0CAAEF7CFB07D257F,False
+P0060,PRIMARY,Unsupervised Domain Adaptation Via Data Pruning,5,3,4,2,1,0,0,0,packets/P0060.md,51088E6E77AA9233CDC46B5E45FEF2D17588A9ADD7A00F0004E41A5F8CBB2771,False
+P0062,PRIMARY,From Quantity to Quality: Boosting LLM Performance with Self-Guided Data Selection for Instruction Tuning,34,12,9,7,2,1,1,1,packets/P0062.md,5F15D6746F6F081E7C3637978C864E514BC4556CE51B2B031E5FFA720C0FFD47,False
+P0063,PRIMARY,Refined Coreset Selection: Towards Minimal Coreset Size under Model Performance Constraints,22,13,25,10,2,0,0,1,packets/P0063.md,380C0D388BBC52BBB1D3F37723F97FE5EADD74C783C6EFE4927E85672FE2B29E,False
+P0064,RESERVE,Navigating Towards Fairness with Data Selection,9,8,12,6,1,1,0,0,packets/P0064.md,7951BB757F5B9660A9B504DD92A260E6CDD5889934947723E9A7AD0B8E651FCA,False
+P0065,PRIMARY,Smart Cuts: Enhance Active Learning for Vulnerability Detection by Pruning Hard-to-Learn Data,21,18,35,12,2,0,3,1,packets/P0065.md,60C8C4B0349695D16E84A8CAC730BF54A0BFBAE9ECECE5F8E53777C473BABFF7,False
+P0066,PRIMARY,Neyman-Pearson and equal opportunity: when efficiency meets fairness in classification,110,24,6,22,0,0,1,1,packets/P0066.md,1E994A91F0177597A95189D5E8869697F85B9954A27BBBE02893A4777DA2B21F,False
+P0067,PRIMARY,Adaptive Ranking-based Sample Selection for Weakly Supervised Class-imbalanced Text Classification,15,16,11,11,3,0,1,1,packets/P0067.md,2A25CE68DE4597B2EC60CD684D0EC5D9925E71127D3B22B2850A4496DC89A9FB,False
+P0068,PRIMARY,Mechanistic Data Attribution: Tracing the Training Origins of Interpretable LLM Units,33,8,24,5,1,0,0,2,packets/P0068.md,370BA1B8A2A1D3F164F20FFE29FDB89B40DADC9B44A58BCA2EC0C7B40D1CC30B,False
+P0071,RESERVE,IDER: IDempotent Experience Replay for Reliable Continual Learning,20,15,15,13,2,0,0,0,packets/P0071.md,56B43555935EC0E4DBF86E60A5637759BBA7EAFEAD3AECA0DEE065BDF25CFEB1,False
+P0072,RESERVE,radarODE-MTL: A Multi-Task Learning Framework with Eccentric Gradient Alignment for Robust Radar-Based ECG Reconstruction,15,8,7,8,0,0,0,0,packets/P0072.md,0E39CFDF5D3AE16E052A3D414BCAAA42344D41C26B9CCC95EF3DEEBE63E9C91A,False
+P0073,PRIMARY,"Deep Batch Active Learning by Diverse, Uncertain Gradient Lower Bounds",26,10,25,10,0,0,0,0,packets/P0073.md,94E3DF146CAF4DCC36457F8A2F6051293F79298DB29BCE38A8C0386909F6BC57,False
+P0074,PRIMARY,Tightening Control in Neyman--Pearson Linear Classification,24,3,6,2,0,0,1,0,packets/P0074.md,963637FE3D01BCE65B99D96CB47FDD24798B99990866939B0C420B9F26BD3B0B,False
+P0075,PRIMARY,A Neyman-Pearson Approach to Statistical Learning,30,3,3,2,0,0,0,1,packets/P0075.md,9266F3AE7D0760CB427782D947B1F6D2A8FEA8172B775CFDEF1DC7BDE65E6657,False
+P0078,PRIMARY,Concept Influence: Leveraging Interpretability to Improve Performance and Efficiency in Training Data Attribution,23,8,6,4,1,0,1,2,packets/P0078.md,C6B8E5A382FF67C1B67B09EECF6BC22A599B7BB2C30B234ECA5322B192548494,False
+P0079,PRIMARY,Sample Selection with Uncertainty of Losses for Learning with Noisy Labels,26,35,4,21,12,1,0,1,packets/P0079.md,50F4705C0258AC6FBEC8AA93F7B380B3BFEE7D70FA5F15BE33B4EB87B39A11CC,False
+P0081,PRIMARY,Data Attribution in Large Language Models via Bidirectional Gradient Optimization,7,12,8,7,4,0,1,0,packets/P0081.md,BAE20A83019CFC5B963784460103FD8AC6400B65C29AB1EC1D4B91D6CA680333,False
+P0082,PRIMARY,Learning from Long-Tailed Noisy Data with Sample Selection and Balanced Loss,17,14,2,7,5,1,0,1,packets/P0082.md,192B9582C740DEDF00BD08A7F84B9274975555032F9EB478F898A19B3A4EA7C5,False
+P0083,RESERVE,Training Data Attribution for Image Generation using Ontology-Aligned Knowledge Graphs,9,12,2,5,7,0,0,0,packets/P0083.md,37C964CE108E123AF64B2E268C863DB6ED25762C28AC29BDCAB56945002E0324,False
+P0085,PRIMARY,Multi-Objective Interpolation Training for Robustness to Label Noise,10,5,3,3,0,1,0,1,packets/P0085.md,C2532A9C5E3BE06AAF3E9ED831FB28B6FF98CF75BF6336C977200C488889D320,False
+P0087,PRIMARY,A Simple and Efficient Baseline for Data Attribution on Images,18,15,8,10,2,0,2,1,packets/P0087.md,43827211B5F2D9CAB3A408D19170C751147C2AA8F3BBAAB856776065BD7611A7,False
+P0092,PRIMARY,CurGraph: Curriculum Learning for Graph Classification,11,10,2,7,0,0,2,1,packets/P0092.md,CA944DE58544EBDCE58E80977A7957D76622DE76A38EC6458CAA378D35982EBE,False
+P0095,PRIMARY,Multi-Label Noise Robust Collaborative Learning for Remote Sensing Image Classification,14,11,4,9,1,1,0,0,packets/P0095.md,4F0055D0B46D9433DA562D44BBA62BC9A7EEDBF63FABADCBC53E8715C9E94DA8,False
+P0096,PRIMARY,Hierarchical Neyman-Pearson Classification for Prioritizing Severe Disease Categories in COVID-19 Patient Data,79,26,0,25,0,0,1,0,packets/P0096.md,B4C8A3DB8F0FDECE29F91BC6C8DDF48E374430BB29CBCEA93CF0DAFEA8F49014,False
+P0097,PRIMARY,Learn like a Pathologist: Curriculum Learning by Annotator Agreement for Histopathology Image Classification,13,5,2,1,3,0,1,0,packets/P0097.md,0C29BAE1F90380475B2A1E12A5B88A6FA9BFBC2C9E921B2B87A768F3F46DB94F,False
+P0098,PRIMARY,Influence Dynamics and Stagewise Data Attribution,32,7,6,4,1,1,1,0,packets/P0098.md,FE5F3DDC89E13D2831293567AC5D0D4930DEE34D94B8F391797FFF137EB4EEE4,False
+P0099,PRIMARY,DynClean: Training Dynamics-based Label Cleaning for Distantly-Supervised Named Entity Recognition,17,15,4,9,3,1,1,1,packets/P0099.md,401296039D11725BD705E2CF05FDAD7F55BDEB572DD4BA42B1EED5EF9354DC25,False
+P0102,PRIMARY,Data Pruning by Information Maximization,22,11,25,8,3,0,0,0,packets/P0102.md,48D0FC631DA69BF956E64BE8C7DE8AA0A4FE570F20D835BDBA3D71C0995229CD,False
+P0103,PRIMARY,Data pruning and neural scaling laws: fundamental limitations of score-based algorithms,41,19,28,17,1,0,1,0,packets/P0103.md,565F723CB71EBA3970731E87CD6DA5C068225A2F0AE5FAEF6C9F6A42F7A71840,False
+P0104,PRIMARY,Active Bias: Training More Accurate Neural Networks by Emphasizing High Variance Samples,11,7,2,5,1,0,0,1,packets/P0104.md,0963E37204F70EAD4A3521B489EB402DEA257AF3816CAA0E158ED0F10EF45E45,False
+P0106,PRIMARY,Investigating Active-Learning-Based Training Data Selection for Speech Spoofing Countermeasure,8,10,29,7,3,0,0,0,packets/P0106.md,F9ECAD91D2C7A317C12B76A279697B1228525BA8684DFD0F46E7854AFE64E6FB,False
+P0107,PRIMARY,Reinforced Training Data Selection for Domain Adaptation,12,8,1,4,1,1,1,1,packets/P0107.md,317CE1FCC24B42EB0D8BBBA9403ABF48150439D691BEDC31F869215290A4F357,False
+P0111,PRIMARY,SEED: Targeted Data Selection by Weighted Independent Set,20,13,40,7,3,2,0,1,packets/P0111.md,6807A261EC49339ED43D3026E9ABF50E325A4C64D2920E16529BD06E5E205609,False
+P0112,PRIMARY,UNICON: Combating Label Noise Through Uniform Selection and Contrastive Learning,17,13,14,11,0,1,1,0,packets/P0112.md,6C4F438BCC1608ACBA0EF21EA3D912477028C2B68D687839223CB5AE085679EC,False
+P0113,PRIMARY,ANNE: Adaptive Nearest Neighbors and Eigenvector-based Sample Selection for Robust Learning with Noisy Labels,31,22,3,17,2,2,0,1,packets/P0113.md,021BBFE0C474EAC181045BFF7292EFE8060ECA374678C04D4AD3D5F66BADB46B,False
+P0115,PRIMARY,Improving Data Quality with Training Dynamics of Gradient Boosting Decision Trees,17,10,1,6,3,0,0,1,packets/P0115.md,E2CD023E0F647339E3EF94062BC9903DA4B88AF51ADC08A26A01F87B4F5FA92D,False
+P0116,PRIMARY,InfoBatch: Lossless Training Speed Up by Unbiased Dynamic Data Pruning,19,15,9,10,3,0,2,0,packets/P0116.md,B31FE974CB140FA878624ACD49FA477B331620B17E8623A19C7C0635F906397B,False
+P0117,PRIMARY,PDAC: Efficient Coreset Selection for Continual Learning via Probability Density Awareness,17,13,33,9,3,0,0,1,packets/P0117.md,0C056F2500FF6124F67E326D218EA046DCCEEB0669489707E88C76DA47038E6D,False
+P0118,PRIMARY,Generic and Trend-aware Curriculum Learning for Relation Extraction,12,8,2,5,2,0,0,1,packets/P0118.md,C3F73609D37A2F835C07190DD4DDAE7BD5264D92913B3196E100F54957F24518,False
+P0120,PRIMARY,Few-Medoids: An Embarrassingly Simple Coreset Selection Method for Few-Shot Knowledge Distillation,10,10,45,6,3,0,0,1,packets/P0120.md,3DCE2A7A5A87E62257A140D22A9328FF9EAB7A7700D4CCD5C287E6F73CE77FE0,False
+P0122,PRIMARY,Semi-Supervised Learning for Maximizing the Partial AUC,8,7,3,7,0,0,0,0,packets/P0122.md,4FAE259924A5960B912F17AC0FA52628728B4AF42653287DBCBFCE48A71D5B49,False
+P0123,PRIMARY,Automatic Lecture Transcription Based on Discriminative Data Selection for Lightly Supervised Acoustic Model Training,8,6,1,2,2,0,0,2,packets/P0123.md,8F87EB4EDC77186D68EC62A71E4DF0A379FF48D59CF497D289C494D91BC6F998,False
+P0125,PRIMARY,DsDm: Model-Aware Dataset Selection with Datamodels,36,8,40,5,3,0,0,0,packets/P0125.md,09CAF52EEF311211D36A2C0DBACA9E943725EE65817B7D909B513927734A36F3,False
+P0128,PRIMARY,Changing the Training Data Distribution to Reduce Simplicity Bias Improves In-distribution Generalization,43,20,10,7,5,0,7,1,packets/P0128.md,150E0E5BD8700BCDED80CA53D98FE3AF57DF44C2D88B6B2345D9CF1B2354D70A,False
+P0129,RESERVE,Addressing Multi-Label Learning with Partial Labels: From Sample Selection to Label Selection,9,11,0,6,4,1,0,0,packets/P0129.md,DB0BC1BD000B80ABAE9C3D925DE7E76E6798F54A4BDC0B8AFFC290A935AF599B,False
+P0130,PRIMARY,Reducing annotation effort in agricultural data: simple and fast unsupervised coreset selection with DINOv2 and K-means,15,18,27,11,7,0,0,0,packets/P0130.md,605B5A01C28697670A27643A11819B82250C0601A9C371375FFE6FBAA71FB2A6,False
+P0136,PRIMARY,Zero-Shot Coreset Selection via Iterative Subspace Sampling,19,11,25,5,4,1,0,1,packets/P0136.md,2404F8D55A806F0C05D7E11373185F875225E8E12FC518AE5247706B657E17AB,False
+P0137,PRIMARY,Rethinking Data Selection at Scale: Random Selection is Almost All You Need,14,17,16,11,3,0,2,1,packets/P0137.md,91A6E7545A7D1FD6780844AFB917C40ED57D19D06A1688318EFD4E49CCD2BE90,False
+P0138,PRIMARY,Scheduled Dialog Policy Learning: An Automatic Curriculum Learning Framework for Task-oriented Dialog System,12,3,0,1,1,0,0,1,packets/P0138.md,9C3C73A878B9AED86C70088901E92ACD0233B6EB743A900C4193AD9F1D837D5F,False
+P0139,PRIMARY,Error Sensitivity Modulation based Experience Replay: Mitigating Abrupt Representation Drift in Continual Learning,18,8,10,5,2,1,0,0,packets/P0139.md,0407E6D60C37F8EE11365878BFA9F73DF21C3BDFA43B16D3797BD74CE395FD84,False
+P0142,PRIMARY,Learn the Time to Learn: Replay Scheduling in Continual Learning,56,81,36,69,9,0,2,1,packets/P0142.md,B21FD4A12C92BC1CEA877B70206BA086AC03C15AFF1B912D1370D1DB605D3C6B,False
+P0143,PRIMARY,Learning from Training Dynamics: Identifying Mislabeled Data beyond Manually Designed Features,9,7,0,7,0,0,0,0,packets/P0143.md,01F3E61EFA5B252C3F1C8AA1772762DC6150BE938965384F0E229CD95AC1F203,False
+P0145,PRIMARY,Identifying Mislabeled Data using the Area Under the Margin Ranking,17,7,6,4,1,0,2,0,packets/P0145.md,9B942B389822F2E35DF3B5D4E2DDF55C9E0E842CA431E2A4A0A7E4B2BD31ADE7,False
+P0149,PRIMARY,Data Selection for Language Models via Importance Resampling,32,14,52,11,1,0,1,1,packets/P0149.md,C9EDF873A2F235D89556DE9750EB0A5466FFFE2B1C3DEADB718B8A4EA804DBB7,False
+P0151,PRIMARY,Interpreting single-cell and spatial omics data using deep neural network training dynamics,19,3,1,3,0,0,0,0,packets/P0151.md,6FA7E144591E6FA694BB28705FB9EABED10F90A639DE925070A54B9FE0A9BB2D,False
+P0154,PRIMARY,”Diversity and Uncertainty in Moderation” are the Key to Data Selection for Multilingual Few-shot Transfer,14,20,10,13,5,0,2,0,packets/P0154.md,376EF4EE764F46D1E91908B7CCEEB9CD5487E2078A2EB334CEEF211E6A8AB3FA,False
+P0155,PRIMARY,\emph{FoQuS}: A Forgetting-Quality Coreset Selection Framework for Automatic Modulation Recognition,5,6,20,6,0,0,0,0,packets/P0155.md,5EEBF0D57436DB534A35F274A6E48D09BBC8E0BE74834DCB3FB9BCE411564A8B,False
+P0156,PRIMARY,Utility-Diversity Aware Online Batch Selection for LLM Supervised Fine-tuning,23,15,16,10,1,1,2,1,packets/P0156.md,8AD44DBB1F46A3FA3A7C202A0C69331C6AE2EB42ACF98245ED595E543102CA64,False
+P0157,RESERVE,Unsupervised feature selection via self-paced learning and low-redundant regularization,23,10,1,6,3,0,0,1,packets/P0157.md,DE21C455E956CA249B28392BC0FC9814C9A7B9E835B3D24F4040103912E27A1C,False
+P0158,PRIMARY,Luck Matters: Understanding Training Dynamics of Deep ReLU Networks,23,5,6,1,3,0,0,1,packets/P0158.md,1DC09A123F3A5D7B408FD9A80695B55E4C50BC3CDA08A30467731E9DE41F747E,False
+P0159,PRIMARY,Language Model-Driven Data Pruning Enables Efficient Active Learning,20,10,16,8,1,0,1,0,packets/P0159.md,04F7E0140ECE7969100D82181CC9E5D72D8DE4DB00B345526303EBBFEE2D4FBF,False
+P0160,PRIMARY,Adversarial Shapley Value Experience Replay for Task-Free Continual Learning.,14,19,6,14,5,0,0,0,packets/P0160.md,0EFBC2D6BCB72D7E5D2AD89B0A31C412F51DC494AC8E02C6C7B9D5B4076BA13B,False
+P0162,PRIMARY,Data Pruning via Moving-one-Sample-out,12,13,20,9,1,0,2,1,packets/P0162.md,7AA1F5DCA48A3AC9D8CEF1386C9B611E305ACF92CAEFD12EE11D49A163D07C90,False
+P0164,PRIMARY,Not All Data Matters: An End-to-End Adaptive Dataset Pruning Framework for Enhancing Model Performance and Efficiency,17,5,7,2,2,1,0,0,packets/P0164.md,022D0B8AAFBF27DFBA43072236689914AD981B51FBDBB763348E78798CB3E606,False
+P0165,PRIMARY,MODE: Multi-Objective Adaptive Coreset Selection,37,16,24,11,2,1,1,1,packets/P0165.md,AB71A05FDA2E62CA3E1A559DAB7AECF80691DD0A7B2F680DC6E619A23E472CB8,False
+P0167,PRIMARY,MATES: Model-Aware Data Selection for Efficient Pretraining with Data Influence Models,19,10,39,5,2,1,1,1,packets/P0167.md,444E253352CD434A5443597850DA73E8064734A07DA614D851BC7ED101472155,False
+P0170,PRIMARY,Non-splitting Neyman-Pearson Classifiers,61,15,6,13,0,0,2,0,packets/P0170.md,26583C0398BC6655BFF33129172DF4D687D294BDF301D772D74949CFA1026CB1,False
+P0171,PRIMARY,CLIPCleaner: Cleaning Noisy Labels with CLIP,57,8,1,7,1,0,0,0,packets/P0171.md,78DD89AE0283900745F6A5782DD99AEB970B9DB7F82FD4F55D443D3B4256DBDE,False
+P0172,PRIMARY,ToReMi: Topic-Aware Data Reweighting for Dynamic Pre-Training Data Selection,12,11,1,8,2,0,1,0,packets/P0172.md,F5494B7B4AA762A651A46C8E01B09B89A3569551E383C5DA66AA7A4B2F038DF7,False
+P0173,PRIMARY,GRAD-MATCH: Gradient Matching based Data Subset Selection for Efficient Deep Model Training,33,11,32,8,2,1,0,0,packets/P0173.md,0FC7461A49F0545D313389699CC710AB91D4F8A248FDA7DF9068ECEF6A0DABE2,False
+P0175,PRIMARY,Towards High Supervised Learning Utility Training Data Generation: Data Pruning and Column Reordering,11,13,1,9,4,0,0,0,packets/P0175.md,FF169A96870095FA7FB8CCAEA748757FB95DA88AEE979729D4AC2763BE33694B,False
+P0176,PRIMARY,Competence-based Curriculum Learning for Neural Machine Translation,11,12,0,8,3,0,0,1,packets/P0176.md,935430B36A0F8D6EE5FD344D3607BF20EBE4D2DB753FB0A89CD629BE7EF034A0,False
+P0178,PRIMARY,Anti-Backdoor Coreset Selection via Cumulative Entropy,22,7,29,1,2,1,2,1,packets/P0178.md,8C405F482611A2511E0B0336EB79A3857B1E59A28057C288310CFF356D85D54C,False
+P0179,PRIMARY,Measuring Fine-Grained Relatedness in Multitask Learning via Data Attribution,20,10,15,5,3,0,1,1,packets/P0179.md,6189A54C1D06FDA2B445E5DFF671DC7F2D1E65EFB6A96136432803562BF40B26,False
+P0180,PRIMARY,Sample Selection Approach with Number of False Predictions for Learning with Noisy Labels,10,5,1,2,0,1,1,1,packets/P0180.md,913DF47035AF322D590A06C66CE1575BC26C5EC0D9A378F4A01AD833AD26EF72,False
+P0181,RESERVE,OER: Offline Experience Replay for Continual Offline Reinforcement Learning,10,7,4,5,1,0,0,1,packets/P0181.md,15CDC8EDDF8CD2AC8274435E718C7D9B206768EA308F3D36A13E5AE4B803A93B,False
+P0182,PRIMARY,Dynamically Composing Domain-Data Selection with Clean-Data Selection by “Co-Curricular Learning” for Neural Machine Translation,11,5,6,2,2,0,1,0,packets/P0182.md,26CF7A32BBEFB7FA5F825AF37BAEB741A3B49E762CB9E7C7486FA77663F26009,False
+P0184,PRIMARY,On The Power of Curriculum Learning in Training Deep Networks,13,5,3,2,1,0,1,1,packets/P0184.md,71F2B23D2C25A5F16D357FF7AFFCD1265F00C8E0A15C11F04DE6C83527C49EC2,False
+P0185,PRIMARY,Adaptive Integration of Partial Label Learning and Negative Learning for Enhanced Noisy Label Learning,9,9,6,6,1,1,1,0,packets/P0185.md,6D081DE7E955A8A7E17BA5B9E0D01924E1DCE0FBE1F460089089AD57E032F767,False
+P0186,PRIMARY,Neyman-Pearson Multi-class Classification via Cost-sensitive Learning,114,29,6,28,0,0,0,1,packets/P0186.md,0125F47177E9AE3A56D78CD5FE5FF510E566D613808809F2AA399D0614835DC3,False
+P0187,RESERVE,Using Hindsight to Anchor Past Knowledge in Continual Learning,9,5,5,4,1,0,0,0,packets/P0187.md,B8C931B148540ABC6AC011308523F39A2481C4756AC194AAEEDC8CE707565981,False
+P0188,PRIMARY,Label-Efficient Dataset Pruning via Semi-Supervised Pseudo-Labeling,22,19,30,14,2,1,1,1,packets/P0188.md,626EA01D7C190D5FA8D2BB5FE331726E0E9E6B1860280300E6E7E34D0317C5F9,False
+P0189,PRIMARY,Logistic push: a regression framework for partial AUC optimization,8,3,2,1,1,0,1,0,packets/P0189.md,42516E51AB8F0F3C8DF251AC2B78C3A51113619A295B6E5229B3ADD535034C63,False
+P0191,RESERVE,Personalized Federated Learning for Gradient Alignment,14,6,6,4,1,0,0,1,packets/P0191.md,69663E6646DA2B4B8FCD4368CEC828FB563C50E1B9041CD78155DA9B2C9B47CA,False
+P0192,RESERVE,A Novel Text Sample Selection Model for Scene Text Detection via Bootstrap Learning,19,12,6,8,3,0,0,1,packets/P0192.md,36D1857E5D0F7586A72464FC321F3650B87EFA0A1DD5775A66AA84FC36784943,False
+P0193,PRIMARY,BRIEF: Bi-Level Coreset Selection for Efficient Instruction Tuning in LLMs,14,10,25,4,5,0,0,1,packets/P0193.md,F560E8A4590B6E205ECCF821B5A1418B14DFCDF949336D0C1A6568BF4CD7AC8D,False
+P0194,PRIMARY,AudioDER: A Deduplication-Enhanced Reasoning Dataset for Post-Training Large Audio-Language Models,14,6,10,0,6,0,0,0,packets/P0194.md,7A1D89BBA645CFE24635C1C1E9C42DA946ECFCC05ADE40886733F4833D7E33A5,False
+P0195,PRIMARY,Generative Entity Typing with Curriculum Learning,13,7,3,3,2,0,1,1,packets/P0195.md,EBF5C7B4C595DBD7073522514044972FF34D0F294B32E0EF86248AE730D0F28C,False
+P0196,PRIMARY,Uncertainty-Aware Learning against Label Noise on Imbalanced Datasets,10,10,3,6,3,1,0,0,packets/P0196.md,E753177FFC056248B90D83918FC1A7AD61FE895B12613998FBF5D29D8C2CA8AE,False
+P0197,PRIMARY,Deep Learning on a Data Diet: Finding Important Examples Early in\n Training,21,3,28,1,0,0,1,1,packets/P0197.md,4BD75D3FF2C2A5FC264901E48D7D2BFB9B305E69BB17949EE2A21720589B6D16,False
+P0198,PRIMARY,Witches' Brew: Industrial Scale Data Poisoning via Gradient Matching,24,6,30,4,1,1,0,0,packets/P0198.md,272D6A50BF8F534341E718FF61BD00EC7F4084BC41AD08FF1A05EABEF75C9239,False
+P0200,PRIMARY,DeepCore: A Comprehensive Library for Coreset Selection in Deep Learning,15,10,31,6,3,0,0,1,packets/P0200.md,BBC59A57464B237B92DA845B5DFB383CF1E598ADBCBBFE5CA04307AA800063F4,False
+P0203,PRIMARY,Classification with Asymmetric Label Noise: Consistency and Maximal\n Denoising,47,7,0,4,1,0,1,1,packets/P0203.md,EDCE97FF889E8308F34BB9AFCC2CA9B5631B10655E666055867C1A704D318467,False
+P0204,PRIMARY,Self-Paced Learning for Latent Variable Models,9,12,5,9,2,0,1,0,packets/P0204.md,4BBE7AA28DE60569D6D94901F001BE8AB71F685D8EC4DE27ECCBBC43CB9F8C0C,False
+P0205,PRIMARY,Learning What Matters: Prioritized Concept Learning via Relative Error-driven Sample Selection,22,26,40,18,3,2,2,1,packets/P0205.md,1D924701ACEA4487FAF8AB5CB7EE3BF4EF2E1763DA2A6F481CB52263742CF203,False
+P0206,PRIMARY,HYperbolic Self-Paced Learning for Self-Supervised Skeleton-based Action Representations,19,8,2,6,2,0,0,0,packets/P0206.md,3A96459DA3FB99CD670F7B9AD8DEC982B9BC48B62AB0CFC0DDB3A46073797F94,False
+P0208,PRIMARY,PASS: Peer-Agreement based Sample Selection for training with Noisy Labels,27,16,1,13,1,1,0,1,packets/P0208.md,A3B27EA2108036CFB7339766B178B2DE2009DE24EAB0952C693472BD1ED83D31,False
+P0209,PRIMARY,Army of Thieves: Enhancing Black-Box Model Extraction via Ensemble based sample selection,10,6,12,5,1,0,0,0,packets/P0209.md,B85DB0935CB240876A1651D7A507AB9F6D6476BCBFD7101A0B74F9DD7880E005,False
+P0211,RESERVE,Sequential Reptile: Inter-Task Gradient Alignment for Multilingual Learning,18,15,10,13,1,0,0,1,packets/P0211.md,08410AFE18994405D225D33AA42E531F596339A93094D6E84A449AAC8C1AB316,False
+P0212,PRIMARY,Constraint-Data-Value-Maximization: Utilizing Data Attribution for Effective Data Pruning in Low-Data Environments,25,7,32,6,1,0,0,0,packets/P0212.md,29D03889CFC7DC21F4DCC4B1B1C0705B1E67247FD5D0D29F3DE3B9C208FCC630,False
+P0214,PRIMARY,GRACE: A Dynamic Coreset Selection Framework for Large Language Model Optimization,19,9,23,6,2,0,0,1,packets/P0214.md,332383B660B17DE0AE82D1817B44D922D1DCE19EBD05EF49514F1F0BD4FEF728,False
+P0216,PRIMARY,Swift Cross-Dataset Pruning: Enhancing Fine-Tuning Efficiency in Natural Language Understanding,14,7,22,4,1,0,1,1,packets/P0216.md,6C51592F103A5599DEF0848568A61D0E988D7512AD630887FAD312B8D6801469,False
+P0218,PRIMARY,A Snapshot of Influence: A Local Data Attribution Framework for Online Reinforcement Learning,34,25,19,11,10,0,3,1,packets/P0218.md,A2094929790555D2BA9EC75DEBFAAA6B89AC09FC652A010F281E55A15EFF25FB,False
+P0221,PRIMARY,A Neural Network Approach for Online Nonlinear Neyman-Pearson Classification,22,5,1,2,3,0,0,0,packets/P0221.md,DB1EE1F079384F08D2E8EC3F0188B94B3DDBC7814B4F52F39CC27BD1C156CC5B,False
+P0223,PRIMARY,Continual Safety Alignment via Gradient-Based Sample Selection,18,13,40,10,2,0,0,1,packets/P0223.md,EBB2B8AC2DE46C2EE32AD2DC41FCF3AE84EE3E8D364935B88784B39B8C80709B,False
+P0224,PRIMARY,NLU on Data Diets: Dynamic Data Subset Selection for NLP Classification Tasks,18,9,4,8,0,0,1,0,packets/P0224.md,FE0C670C4A59D29130D1C60F2624731F5D374A189042DAB4009ACA85D18C5E2D,False
+P0226,PRIMARY,An analytical theory of curriculum learning in teacher–student networks*,33,8,4,4,2,0,0,2,packets/P0226.md,9680604B551D2C77292FF869F5EE23A22407FE3472C6F6858AC3B9E256CDED8B,False
+P0228,RESERVE,Confidence-Aware Paced-Curriculum Learning by Label Smoothing for Surgical Scene Understanding,12,4,2,3,1,0,0,0,packets/P0228.md,6827E97103DB44F0638D5C53069BFF141CDD28DEE11C147FB7E0FE5D349C9B69,False
+P0229,RESERVE,Automatic Curriculum Learning With Over-repetition Penalty for Dialogue Policy Learning,9,9,6,5,4,0,0,0,packets/P0229.md,D38F82184337C77787437662B3B567F4FA8200CE2FBF916B92680F5ECEF02A05,False
+P0230,PRIMARY,TRAK: Attributing Model Behavior at Scale,40,21,12,15,5,0,1,0,packets/P0230.md,C0F8913C02EC510C55F3A2CDCDD3DD6BE63B1D219F71C06840BF08F6219C2A39,False
+P0231,PRIMARY,Combating noisy labels by agreement: A joint training method with co-regularization,11,6,1,4,1,1,0,0,packets/P0231.md,0CB8C94FA702F8DDCC591EBBB37A89D3904BB0E1BB267A7B903D65687A6F9AD0,False
+P0234,PRIMARY,Hybrid Knowledge Transfer for Improved Cross-Lingual Event Detection via Hierarchical Sample Selection,14,4,9,2,0,1,1,0,packets/P0234.md,C0D3BFF70403A90F23F39519D1306D1BA09469ADB1B5A1A1B34B1CEE1EB17442,False
+P0238,RESERVE,Towards Federated Learning against Noisy Labels via Local Self-Regularization,12,11,6,7,2,0,1,1,packets/P0238.md,0BCAA446F8B5A041EF1F7B842A96D65DBC5A3A85FF81A21B021FEBBBA3DD4D35,False
+P0239,PRIMARY,Human Not in the Loop: Objective Sample Difficulty Measures for Curriculum Learning,5,6,2,4,2,0,0,0,packets/P0239.md,69254372E13F02CD194C433F42FA0AF3E1D3AFF7A46DCFBBBDC1973A778942C2,False
+P0240,PRIMARY,Less is More: Sample Selection and Label Conditioning Improve Skin Lesion Segmentation,9,2,3,1,1,0,0,0,packets/P0240.md,D323B3119A850A49612D4734BECAC4128453E29DA4986BB0B83895B60A63A3FD,False
+P0242,RESERVE,Weakly-supervised Temporal Path Representation Learning with Contrastive Curriculum Learning,15,15,8,14,1,0,0,0,packets/P0242.md,F4AB173409C7614C3A6799373EDF86AACCAE90EB5C69452F7AAB2EBC8C7A44DF,False
+P0244,PRIMARY,Prune to Protect: Faster Training and Enhanced Privacy by Dynamic Data Pruning,13,5,6,3,1,0,0,1,packets/P0244.md,854DD100C5FCB25FEF2086218768DA545010D9D4D2536D4E5E011F26C5539967,False
+P0245,PRIMARY,Combating Noisy Labels with Sample Selection by Mining High-Discrepancy Examples,11,15,0,11,3,1,0,0,packets/P0245.md,EB81C23BBA74B7AE20B84A3140337267D4442CD150687952370221D103F37B2E,False
+P0246,PRIMARY,Example Forgetting: A Novel Approach to Explain and Interpret Deep Neural Networks in Seismic Interpretation,14,5,3,5,0,0,0,0,packets/P0246.md,E4E6BF525C6A46C61D96D4C5011F541C2D9685874FCF487A4432C5F22641972F,False
+P0249,PRIMARY,In-the-Wild Model Organisms: Mitigating Undesirable Emergent Behaviors in Production LLM Post-Training via Data Attribution,23,20,25,11,5,0,3,1,packets/P0249.md,04CCB2901092A6BAB7FCB22E48077DEF7624F5AF4E3761D5BAAD931903B0D765,False
+P0250,PRIMARY,Unlabeled data selection for active learning in image classification,13,22,22,16,4,0,0,2,packets/P0250.md,15393A19A82A453E575BA18A9DD46EC1220B36101A5FEBA4D15F32DCCF81E492,False
+P0251,PRIMARY,Self-Paced Learning with Adaptive Deep Visual Embeddings,13,11,9,8,1,0,1,1,packets/P0251.md,7F54AF3CF63130912E9C9AA09777302992D460507C7E0C67231BE1FDCB42DF19,False
+P0252,PRIMARY,Active Learning Through a Covering Lens,14,14,30,9,0,1,2,2,packets/P0252.md,3A29530C30D84EBA6E6EC1CECDD08ACF1656A97F84C5756D774AADAE010CEC19,False
+P0253,PRIMARY,Play it Straight: An Intelligent Data Pruning Technique for Green-AI,17,19,21,15,2,0,2,0,packets/P0253.md,B926383E9FB2F6235162BE10D7FD34D3D5E79B1CD3D4A5017EAB55267DC2064F,False
+P0255,PRIMARY,Adversarial Coreset Selection for Efficient Robust Training,25,11,21,10,1,0,0,0,packets/P0255.md,CE7FB9BFB29B5CD71C531F964A4BD6CB60E6F4148E9ED6099DD3261C40E2019B,False
+P0258,PRIMARY,DNN-Based PolSAR Image Classification on Noisy Labels,17,17,8,16,1,0,0,0,packets/P0258.md,3B38CAED11BDDA5B5A15C3693EEAA09217E28C9BEF46CEDB4F7EF10874B7653C,False
+P0259,PRIMARY,Deep Bayesian Active Learning with Image Data,10,1,3,0,1,0,0,0,packets/P0259.md,83413AEB29F3C976DB94FDB8256106001062F7CFA6ABE3BE4F81AC1911960CB6,False
+P0260,PRIMARY,Data Valuation Without Training of a Model,27,4,24,1,3,0,0,0,packets/P0260.md,2A0399037D986269B072D3717EA4D6048CDEB8E162784FC5174AA9017ED86C67,False
+P0264,PRIMARY,PRISM: Self-Pruning Intrinsic Selection Method for Training-Free Multimodal Data Selection,23,24,28,16,5,1,1,1,packets/P0264.md,607107400FFE5E360164F123395EE670F0BF8C502212B384D6A8232A739A18BC,False
+P0265,PRIMARY,Coreset Selection for Object Detection,14,10,45,7,2,0,1,0,packets/P0265.md,194EC335F9936C8415957DB84AEEE497D9CD101ECA3A1FED18B83ACD3FC686CD,False
+P0268,PRIMARY,Automatic Combination of Sample Selection Strategies for Few-Shot Learning,32,20,42,14,4,0,1,1,packets/P0268.md,E26EB7D9406024542C0AEC25C0A52C2CAB13F33D7EFB9ED466CAA6498E482CB3,False
+P0269,RESERVE,MSPL: Multimodal Self-Paced Learning for Multi-Omics Feature Selection and Data Integration,12,14,5,13,1,0,0,0,packets/P0269.md,F211D97104626BF73147C3C4F0883074E3D5F7475799399850BF5EB2C02EEF5E,False
+P0270,PRIMARY,How does Early Stopping Help Generalization against Label Noise?,12,11,27,9,1,0,0,1,packets/P0270.md,A9522F7B65A5991ADB7D03D1454EA790D1BA509D895E7FBFF3FE54E10D32E2D7,False
+P0271,PRIMARY,Training Data Selection for Record Linkage Classification,16,9,7,8,0,0,0,1,packets/P0271.md,E06E3FC502C78C646B5F607AD550C4A2B6C2D6B0944CE2AE7191030E539CB645,False
+P0272,PRIMARY,Cold-Start Data Selection for Better Few-shot Language Model Fine-tuning: A Prompt-based Uncertainty Propagation Approach,23,12,35,8,1,1,2,0,packets/P0272.md,FD20DC72B2E6F45FFD92BF9F81F9F98BCE83640388B07B2ECFEDB19700D4FC81,False
+P0273,PRIMARY,Weakly Supervised AUC Optimization: A Unified Partial AUC Approach,16,5,0,4,0,0,0,1,packets/P0273.md,D5B02278B40F710ED14614A71A667E13993EE12CF56C4C4A7945C21D23989E1F,False
+P0275,PRIMARY,Accelerating Reinforcement Learning for Reaching Using Continuous Curriculum Learning,8,11,4,9,2,0,0,0,packets/P0275.md,8D99EBE0388FE545699DCF1C5FB7C765C5775D5F120E1A30F59706C9AB039156,False
+P0276,PRIMARY,Understanding and Mitigating the Bias in Sample Selection for Learning with Noisy Labels,15,13,5,13,0,0,0,0,packets/P0276.md,D6781A13794EDD9A1DE96BFCB4F8661286960FDDF3133BB987A827556905A538,False
+P0278,PRIMARY,Balanced Self-Paced Learning for Generative Adversarial Clustering Network,10,7,1,3,1,2,0,1,packets/P0278.md,A72F8D836C61F90BCDED1954DA2D4ADAE1F43B96F2A057D74A13E862610FD745,False
+P0280,PRIMARY,Step-resolved data attribution for looped transformers,30,8,16,5,1,0,2,0,packets/P0280.md,BF89828C4EE3A170B98D8C94EB2CC0D832E8B91F19A1CCA2A30FA66BB5401312,False
+P0281,PRIMARY,Intentional control of type I error over unconscious data distortion: a Neyman-Pearson classification approach,50,12,2,10,1,0,0,1,packets/P0281.md,483F13000295DD3C19BFB9CA78AE37263A786E979ED192835F15CD080E891CE0,False
+P0282,PRIMARY,CurricularFace: Adaptive Curriculum Learning Loss for Deep Face Recognition,10,11,2,9,1,1,0,0,packets/P0282.md,301D3C6AA4CEC6B1D9CFFCD2D89C72E28A64DE700AA47A78D6FBFDCBD7F4B184,False
+P0284,PRIMARY,Estimating Training Data Influence by Tracking Gradient Descent,17,7,10,4,1,0,1,1,packets/P0284.md,C2C99BEEB7A3152626B9BCA9E5C6426C0D16E7017721B37D1E315DB04214324C,False
+P0287,PRIMARY,GORACS: Group-level Optimal Transport-guided Coreset Selection for LLM-based Recommender Systems,18,12,25,9,2,0,1,0,packets/P0287.md,B1D8868CA98224EB9E150427905A3747134C9D9E3DDF11D938CDD0D03FAC72B2,False
+P0288,PRIMARY,Curriculum Learning for Speech Emotion Recognition From Crowdsourced Labels,11,7,4,5,2,0,0,0,packets/P0288.md,2A9E97E96EDC665E67DE2D3CBB24717377398ED217847B3C473D117D09399B41,False
+P0289,PRIMARY,"Prioritized Training on Points that are Learnable, Worth Learning, and Not Yet Learnt",19,4,40,2,2,0,0,0,packets/P0289.md,7EF55492E59E7E40962CB12938FD624B3DB8F5952A0CF4AAD6CFF965499E407C,False
+P0290,PRIMARY,SSR: An Efficient and Robust Framework for Learning with Unknown Label Noise,16,20,0,13,6,0,0,1,packets/P0290.md,CE06F4BB82DD78E9EF2E60A7AFFE90B033CA248BF93C0D2B63ACDD0FEBF0F8EF,False
+P0291,PRIMARY,Training data selection for accuracy and transferability of interatomic potentials,9,7,3,7,0,0,0,0,packets/P0291.md,170F62BBA8798AA3068FB3A92E7DD838F4A92A44478A56AE98BB1C5F1DA39C80,False
+P0293,PRIMARY,Selectivity Drives Efficiency: Dataset Pruning for Visual Place Recognition,19,15,27,14,1,0,0,0,packets/P0293.md,06A30A162FA7979D21668AE22A1975F10B8A0773F7D1A8F48FEE5E290BF335F0,False
+P0295,PRIMARY,Enhancing Sample Selection Against Label Noise by Cutting Mislabeled Easy Examples,22,17,16,10,3,2,1,1,packets/P0295.md,E783E94A3A03376E14E305CC6EC05541A070FE5AF6AEB00701DB7D8340922FE2,False
+P0296,PRIMARY,FUSION: Dataset Pruning via Fusing Uncertainty with Structural Information for Optimal Neural Training in Crystal Property Prediction,9,5,10,1,3,1,0,0,packets/P0296.md,4208C0172591D1939DD98DC7316EC6F2D00C50015B29FA0046AE2E064102A2E9,False
+P0297,PRIMARY,Open set label noise learning with robust sample selection and margin-guided module,16,19,1,11,3,4,0,1,packets/P0297.md,BF44AACC084098326B9EFE91495262010F08D44859F1FF4F319F9E3BDDF89A35,False
+P0298,PRIMARY,Cram Less to Fit More: Training Data Pruning Improves Memorization of Facts,37,17,29,8,4,1,1,3,packets/P0298.md,E87B961083CBFA185F1136A2A7E45B57B405A011CCBF58A4AE6B7CAF3DBC9DA1,False
+P0299,PRIMARY,FedDiv: Collaborative Noise Filtering for Federated Learning with Noisy Labels,9,8,4,6,1,1,0,0,packets/P0299.md,70CEA5D6F7A2AA00AD7D458D7C6DF11D655C208AD94550C2C4D2C4A98CCB931A,False
+P0300,PRIMARY,Exploring Learning Complexity for Efficient Downstream Dataset Pruning,28,20,31,17,2,0,1,0,packets/P0300.md,5C86C9E62E65B1243D7477DA1AC9F48A2EA6EE3013A1086C2D488B08037B732D,False
+P0301,PRIMARY,On Training Data Influence of GPT Models,25,13,17,8,3,1,1,0,packets/P0301.md,1CB5CA64307E2CF904DB3680E91795754EB40CCD19FFE02FD8EC0384008ABD99,False
+P0306,PRIMARY,Iterative Learning with Open-set Noisy Labels,9,8,1,3,5,0,0,0,packets/P0306.md,BEF06A28A9E36B03E127560584DB9BD0FF6DBD2D71FAFFA128E260E2987CC08E,False
+P0307,PRIMARY,Task-moment mismatch: diagnosing failures of coverage-based methods on heavy-tailed distributions in coreset selection,23,27,50,19,2,3,2,1,packets/P0307.md,E9CF0706A5671D7058CB3806065B195BF011F5A8C5D6AF304161EDF35FE8EB2A,False
+P0308,PRIMARY,A Traffic Signal Recognition Algorithm Based on Self-paced Learning and Deep Learning,6,9,1,6,1,1,0,1,packets/P0308.md,3BDF67173CE18F5EEC6634CD7A75DA430D81F5046B9A1D419214214B1B7CD8D9,False
+P0311,PRIMARY,BWS: Best Window Selection Based on Sample Scores for Data Pruning across Broad Ranges,30,12,31,9,1,2,0,0,packets/P0311.md,D14E88726FAD243472E60AAF380A0D913BD6E15DE69C389831D3548EB7F0BD8C,False
+P0312,PRIMARY,CS-Shapley: Class-wise Shapley Values for Data Valuation in Classification,12,12,2,4,6,0,0,2,packets/P0312.md,C2939CBF1919BA3E3CFB8D4A37121A1E5433B9FE338686528E23356F8CE0DF5D,False
+P0314,RESERVE,Reinforcement Learning-Based Path Generation Using Sequential Pattern Reduction and Self-Directed Curriculum Learning,18,10,2,5,3,2,0,0,packets/P0314.md,C587AA63793F20C97FCEE05E539FD1BF313EF3E69E72705B4B529FD6B10B4B36,False
+P0315,RESERVE,On the Calibration of Pre-trained Language Models using Mixup Guided by Area Under the Margin and Saliency,11,5,9,4,1,0,0,0,packets/P0315.md,02423CCB6D2D245C730FF4612AF7B0CA04BA8A4072681830BF18E06EFC3FCB4F,False
+P0318,PRIMARY,Sample Selection for Fair and Robust Training,17,22,5,15,5,1,0,1,packets/P0318.md,E9365A894E9DAEFD1CC6D783687525B7060D203584AD6CB0211B1E5391639D39,False
+P0320,PRIMARY,Self-Paced Learning for Neural Machine Translation,7,4,0,1,3,0,0,0,packets/P0320.md,CA07ED9E69F831CB0D80714D8D71D54F6D1CCC8A2A3C6F2A256A7A6DA9751639,False
+P0321,PRIMARY,Data Pruning in Generative Diffusion Models,16,7,15,4,3,0,0,0,packets/P0321.md,A8F05F681838084E9D490224E239FFD12B02325DC1E159E674039ABAC144BA21,False
+P0322,PRIMARY,Improved Multi-Person 2D Human Pose Estimation Using Attention Mechanisms and Hard Example Mining,17,9,1,8,0,0,0,1,packets/P0322.md,8A349BE5439540E85715A7E75629919D90BC4F52ED3FBC17699102CB37F70F13,False
+P0323,RESERVE,Understanding Edge-of-Stability Training Dynamics with a Minimalist Example,66,2,0,0,1,0,1,0,packets/P0323.md,D08EB5B69A26287ED23E38CAEAE901FDA4AFCE52BAEB6A941BEF88841FEFBD6D,False
+P0324,PRIMARY,Mitigating Memorization in Sample Selection for Learning with Noisy Labels,14,17,2,15,2,0,0,0,packets/P0324.md,E8BF94D9C2CA5778EC1F2E5C84E1F20FD6A8BE7D6D9AB128C7A189D17E10BC03,False
+P0325,PRIMARY,Repeated Random Sampling for Minimizing the Time-to-Accuracy of Learning,41,23,41,21,1,0,1,0,packets/P0325.md,19E6D22E97712D9F9775F596F7F6044A904AA92C3162199B8B00E0A3ADA12DA2,False
+P0326,PRIMARY,Curriculum Learning Strategies for IR: An Empirical Study on\n Conversation Response Ranking,15,6,2,2,3,0,0,1,packets/P0326.md,5F2A17BF7FFA0821C94005788A53CAA71EBE63FD4ED29F3D0742856D973F1A32,False
+P0327,PRIMARY,Data-efficient flood depth prediction through domain-aware coreset selection and tabular foundation models,14,9,25,5,4,0,0,0,packets/P0327.md,DF867638672FADDF983475DD0F9D955AD64EB8504B2960902E2A3D0FD7C8FAA1,False
+P0328,PRIMARY,DRIFT: Refining Instruction Data via On-Policy Data Attribution,18,13,9,6,6,0,0,1,packets/P0328.md,C0D9DAF41500170597A6768274CA0B1621567F5047AA28264D6D36B0B151C19B,False
+P0329,PRIMARY,Attention-based Experience Replay Framework for Continual Learning of Agnostic Time Series Forecasting Models,12,8,9,3,3,0,1,1,packets/P0329.md,89D14940A289EB7BB9665D3B19B47AD920410ABBF2FF7784BAE12425AD04E0E4,False
+P0330,PRIMARY,Coverage-centric Coreset Selection for High Pruning Rates,19,9,50,9,0,0,0,0,packets/P0330.md,0817C9139C319EF690BC2CFFE75554D18F47B397AD30179AE5AEC57F51D3C249,False
+P0331,PRIMARY,Influcoder: Distilling Decoders' Gradient Influence Rankings into an Encoder for Data Attribution,8,13,9,8,2,0,2,1,packets/P0331.md,8F4F8C3A49CA985931CE714EE9EED4C17317FCCCC15315FB4595D58BAE51D022,False
+P0333,PRIMARY,ExpReS-VLA: Specializing Vision-Language-Action Models Through Experience Replay and Retrieval,8,6,13,3,3,0,0,0,packets/P0333.md,0BB59455FAA7947CBD7957ECF080C45DB41C474C20BCA8AA3DF3CD0C87325D77,False
+P0335,PRIMARY,Training with Growing Sets: A Simple Alternative to Curriculum Learning and Self Paced Learning,11,10,1,10,0,0,0,0,packets/P0335.md,302393A38C18C2568A4A389A000C7628169861BE8FCC7D583DA535AB31AFBA41,False
+P0336,PRIMARY,On the Effectiveness of Curriculum Learning in Educational Text Scoring,9,1,3,0,0,0,1,0,packets/P0336.md,393DBDB0A320DF8F66EE38FB5F6AED5EDCC9DCC1227F545A25EE30401E40F8CB,False
+P0339,PRIMARY,An Empirical Study of Example Forgetting during Deep Neural Network Learning,19,0,17,0,0,0,0,0,packets/P0339.md,0E49A1670268750AFE2F6CD136878DFAC5F955DDEE27540097258D732EBB1B97,False
+P0340,PRIMARY,A Structural SVM Based Approach for Optimizing Partial AUC,9,1,1,0,1,0,0,0,packets/P0340.md,4A08001AE9918A6F7E415AD6D496631E3E81859393087017E14C2ED3DF49D1F8,False
+P0341,PRIMARY,Partial AUC Maximization via Nonlinear Scoring Functions,9,7,2,4,2,0,0,1,packets/P0341.md,DC0AFBBEEA228C38CED7596006B15A7DE085C991AE6E75D42F81E1236447629E,False
+P0343,PRIMARY,Generating High Fidelity Synthetic Data via Coreset selection and Entropic Regularization,10,5,13,3,1,0,0,1,packets/P0343.md,86FFB87A9088F82DBD106B2556F314363A656754ACC51368DA1F39B7405FCC6E,False
+P0344,PRIMARY,A Novel Multiview Sampling-Based Meta Self-Paced Learning Approach for Class-Imbalanced Intelligent Fault Diagnosis,12,31,2,29,2,0,0,0,packets/P0344.md,406C4BD584D1239FBF5F0397C756CA5EBC6198E2B65500CB7E013CD538111642,False
+P0346,PRIMARY,Optimizing Two-Way Partial AUC With an End-to-End Framework,40,12,3,10,2,0,0,0,packets/P0346.md,F1DA4F14E1034C9A7DBCE81CE61B2BBC9001BDE24E4A762981286FB3E6289D0E,False
+P0348,PRIMARY,Daunce: Data Attribution through Uncertainty Estimation,16,13,8,9,3,0,0,1,packets/P0348.md,33A48739A9A5D9C88BA5080C41351080B90A0145E2E96BCCAF193FA63627D4DE,False
+P0349,PRIMARY,Distill on a Diet: Efficient Knowledge Distillation via Learnable Data Pruning,36,19,27,12,3,1,2,1,packets/P0349.md,AADCE0B1C1CEA5433C64B27D2EEB7978372395E569A8255DAB3963FFCB576A6F,False
+P0350,PRIMARY,Training Data Selection to Improve Multi-class Instance Segmentation in Digital Pathology,7,5,1,3,1,0,0,1,packets/P0350.md,08543F0459FA16D17D6EAB7B8F95C8E324B0DDEE58438F05D4DA1AFB4899AFD0,False
+P0355,PRIMARY,Intentional Control of Type I Error Over Unconscious Data Distortion: A Neyman–Pearson Approach to Text Classification,50,12,2,10,1,0,0,1,packets/P0355.md,46BD66741964A77E7C8B40566396B675CC4206213F4A9D36AE0424DD2130C9FC,False
+P0356,PRIMARY,Data curation via joint example selection further accelerates multimodal learning,21,19,7,13,3,0,3,0,packets/P0356.md,70904F69215E7B43630243FC041C0448268BA975029E594E040391DA355C2D50,False
+P0358,PRIMARY,QADYNAMICS: Training Dynamics-Driven Synthetic QA Diagnostic for Zero-Shot Commonsense Question Answering,13,7,5,2,3,0,1,1,packets/P0358.md,5D937407F1D6D69A23E717171AAABD7B6BDE3090ED6655B3AE73BCE0E7A3055D,False
+P0359,PRIMARY,TDSelector: A Training Data Selection Method for Cross-Project Defect Prediction,23,19,9,11,4,0,3,1,packets/P0359.md,A27F675071D4823158E685EED51C7BBB20813D511496F15A589345A8425CCBCE,False
+P0360,PRIMARY,Self-Paced Curriculum Learning for Visual Question Answering on Remote Sensing Data,4,3,0,1,1,0,0,1,packets/P0360.md,04239B3249F79479CE7D89195513E214CC327C7662599EC318AB20A823C68D0A,False
+P0362,PRIMARY,SIGUA: Forgetting May Make Learning with Noisy Labels More Robust,13,11,5,10,1,0,0,0,packets/P0362.md,FAB475CC74FFDB63F881A4BCA7233A851C8DFE37F32F472B737B6A92A4D3EE20,False
+P0363,PRIMARY,Deep Learning on a Healthy Data Diet: Finding Important Examples for Fairness,9,6,1,4,1,0,0,1,packets/P0363.md,9ACA6E57A1A538584B112D2254D24E3A5EF6766C70AA34CA986B699CCA0188B2,False
+P0364,PRIMARY,Co-teaching: Robust Training of Deep Neural Networks with Extremely Noisy Labels,13,8,3,4,3,0,0,1,packets/P0364.md,73F9497C811C9EC9DEFD83A04A2C71B92833F69BBF038DB220596E10F00C2525,False
+P0365,PRIMARY,IdentifyMix: An efficient two-stage learning approach to combating label noise,17,8,2,7,0,1,0,0,packets/P0365.md,58830C0981EB1325C02EE3ED65D1482C7C3F3E8116C64976FC56D96D05E92560,False
+P0367,PRIMARY,S-OHEM: Stratified Online Hard Example Mining for Object Detection,9,9,1,4,4,0,0,1,packets/P0367.md,939FF4D53079070A6649F37EB519EA084A8A64003A4872F516EEF1460F163EDF,False
+P0371,PRIMARY,TEAL: New Selection Strategy for Small Buffers in Experience Replay Class Incremental Learning,13,10,5,4,4,1,1,0,packets/P0371.md,98298D75E1596CE5170C4AE20F90389ADB159E21CECFF96355CA424C071E2BBD,False
+P0372,PRIMARY,Less is More: Data Pruning for Faster Adversarial Training,8,7,6,4,2,0,0,1,packets/P0372.md,EBE1F69ECFC94C5BA816693B44BB74C86A689E19F6AA2A09D47FC053ACD1A5C4,False
+P0374,PRIMARY,PICore: Physics-Informed Unsupervised Coreset Selection for Data Efficient Neural Operator Training,25,8,29,6,0,0,1,1,packets/P0374.md,1F2117901DB6C3BA82072952EF6316CF1F97A79BF49E0823C56DC3110F81B28D,False
+P0375,PRIMARY,An Empirical Exploration of Curriculum Learning for Neural Machine Translation,16,3,10,2,1,0,0,0,packets/P0375.md,98149FF7CBB620553D5694588446B1C97A3C36A57358D2C2713C1ECB06147E1F,False
+P0377,PRIMARY,Remember More by Recalling Less: Investigating the Role of Batch Size in Continual Learning with Experience Replay (Student Abstract),2,0,0,0,0,0,0,0,packets/P0377.md,2245A731CCC34A66EDC9E9D49B5E816999497D4A44EA04C0BC5DA82997E2F56E,False
+P0379,PRIMARY,Learning to Weight Parameters for Training Data Attribution,31,23,34,19,2,0,1,1,packets/P0379.md,0F4230D99F0008C7A11061C0AB625F5C6950A37C28C6D21A5515CAC1EDE42FE3,False
+P0381,PRIMARY,Infusion: Shaping Model Behavior by Editing Training Data via Influence Functions,19,3,15,1,1,0,1,0,packets/P0381.md,CC6D0A12791910719A7672A1C4BE8362E0E2A9BF01B7F4D687583FE897A9FA95,False
+P0382,PRIMARY,A Bayesian Approach To Analysing Training Data Attribution In Deep Learning,26,9,4,3,4,0,1,1,packets/P0382.md,7D2B4A9CA730CFD40963A9FACE164667D6AFC49F1603C66F77B9C324A74979F7,False
+P0384,PRIMARY,PARS: Pseudo-Label Aware Robust Sample Selection for Learning with Noisy Labels,16,6,3,4,1,1,0,0,packets/P0384.md,FDEEC6EC50821CD8EEE284B7205E491937EBC6012E1997AEC58A333F973FE7A2,False
+P0386,PRIMARY,Training Dynamics for Curriculum Learning: A Study on Monolingual and Cross-lingual NLU,17,9,26,6,2,0,0,1,packets/P0386.md,26353821C973DAB3ACD4E6FFE75084052A749CA25EFCE151F7FE1FF7979AAECF,False
+P0388,PRIMARY,Self-Guided Curriculum Learning for Neural Machine Translation,9,8,0,5,2,0,0,1,packets/P0388.md,0F771543CC313A27B79B3FD5F10DDEF2ACC5001FCDF1BEEC7B0491CFBAFE4C58,False
+P0389,PRIMARY,DivideMix: Learning with Noisy Labels as Semi-Supervised Learning,14,14,0,13,0,1,0,0,packets/P0389.md,F15B28DA16C8FF4AAE77370192C95B77D9465C185174F65C07D06E96053BC95D,False
+P0390,PRIMARY,Latent State Models of Training Dynamics,28,8,28,4,1,0,2,1,packets/P0390.md,BA5EB3707C97EB0693DF686A7CE427920EDAB7D3D329C70ADC3EC248CEFED098,False
+P0391,PRIMARY,Unsupervised Fine-Tuning Data Selection for ASR Using Self-Supervised Speech Models,5,2,15,0,2,0,0,0,packets/P0391.md,AEDBCE1012706D58C9224037422EAEACBFEBD7DFFCD9EE1823844A2C5B3A3AE0,False
+P0394,PRIMARY,A Bayesian Information-Theoretic Approach to Data Attribution,24,5,33,2,2,0,0,1,packets/P0394.md,9525CF1781BCA86D23B6A10D877F85A0A118E70F7FCFDE12F710263F02B18ACC,False
+P0395,PRIMARY,Distill Gold from Massive Ores: Bi-level Data Pruning towards Efficient Dataset Distillation,31,15,22,5,8,1,0,1,packets/P0395.md,8283865BCD281F6D664E7BFCDA3AA0D072A409A98A3AAABDFD5387088BFD624C,False
+P0396,PRIMARY,LearnAlign: Data Selection for LLM Reinforcement Learning with Improved Gradient Alignment,18,13,10,6,5,0,1,1,packets/P0396.md,61203FD880915805EAA88FCA32A0808C59E872F3F4530BFAF420A95FB430F949,False
+P0398,PRIMARY,Separating hard clean samples from noisy samples with samples’ learning risk for DNN when learning with noisy labels,22,21,2,13,4,1,2,1,packets/P0398.md,C48A8D09C6224CCA7DB9176FD9F4A6F74BD8BD8D88C5E91B6CD55F1C98322A8E,False
+P0399,PRIMARY,A Negative Result on Gradient Matching for Selective Backprop,12,9,19,6,2,0,0,1,packets/P0399.md,D68EAE94D06067A94DAF69AE02219CC6E8D2012E50D53FA12174F865F015DED4,False
+P0400,PRIMARY,A Study on Training Data Selection Method for EEG Emotion Analysis using Machine Learning Algorithm,10,7,0,2,4,0,0,1,packets/P0400.md,515D33B2DB9C00CD39F09104E0311A9FADAB83CFEEA1261972391E2BD7BB8591,False
+P0401,PRIMARY,MAGIC: Near-Optimal Data Attribution for Deep Learning,18,18,3,11,3,0,3,1,packets/P0401.md,C68B960BA1274F436EE3AB4D1EBE79FD30E61451CEA7414E494D4E2258F95446,False
+P0402,PRIMARY,D2 Pruning: Message Passing for Balancing Diversity and Difficulty in Data Pruning,17,12,31,12,0,0,0,0,packets/P0402.md,70031BE4568C9985D74753EFC991CB0D23BABEA87CAE4CFD15F06160209725A6,False
+P0403,PRIMARY,Selecting Samples on Graphs: A Unified Dataset Pruning Framework for Lossless Training Acceleration,19,15,12,10,2,2,1,0,packets/P0403.md,CDB380E5DF464F4D191A2C364EDC39F37409690D6E0292AAAC725E116E8EAAFB,False
+P0404,PRIMARY,Density-Based Dynamic Curriculum Learning for Intent Detection,4,8,1,4,4,0,0,0,packets/P0404.md,550082B18F3789D2CC9AE89ED037BEA90A8C1282D156CADA612FC86928F296C2,False
+P0405,PRIMARY,An assessment of data-centric methods for label noise identification in remote sensing data sets,10,8,2,5,2,0,0,1,packets/P0405.md,80B8C5A252B8F9B64A6264D80866BD8023591571F6C47AA0778AF0F762004868,False
+P0411,PRIMARY,Neyman-Pearson Classification under Both Null and Alternative Distributions Shift,22,5,0,4,1,0,0,0,packets/P0411.md,712B7C0E2F1BB74D55171925F1C2ADCBFBD30DDDF9BAD54E9311CEF0FA09D5FC,False
+P0412,PRIMARY,The impact of training data selection on the software defect prediction performance and data complexity,19,28,6,26,0,0,0,2,packets/P0412.md,EBC086923A672B489A11F697F9F8B724F422BD985B466558E6AD6F7FCC7214AD,False
+P0413,PRIMARY,Active Learning on a Budget: Opposite Strategies Suit High and Low Budgets,21,8,32,5,1,1,0,1,packets/P0413.md,893633A099B5011513B50F4630EFDBFB4A9CC97862F13FCF4229A2969D355A4C,False
+P0416,PRIMARY,Intriguing Properties of Data Attribution on Diffusion Models,36,17,29,16,1,0,0,0,packets/P0416.md,D38889AE40E02BAC2B319C82FC7482F30C3DAC1E535A6EED4D28B21F6735BE01,False
+P0417,PRIMARY,Dynamic Data Selection for Curriculum Learning via Ability Estimation,11,6,6,4,1,0,0,1,packets/P0417.md,26BCA536EE4DAD2A50E16E49AE32B5903218BD5B307F51FA7BD34417CFFE77A2,False
+P0418,PRIMARY,Selective Experience Replay for Lifelong Learning,8,3,1,2,0,0,0,1,packets/P0418.md,953D37C6FC14FCB78A5F9C66445DD301481C94CFF79D93AD32743BC2722F98DE,False
+P0419,PRIMARY,"How Faithful Is Trajectory-Based Data Attribution? Error Sources, Remedies, and Practical Guidelines",21,16,7,11,2,0,1,2,packets/P0419.md,184C89C736CB2C05619A416B2BB8B8E2A5FAAB4BF659C7B7D6B47DE73605182A,False
+P0420,PRIMARY,Calibrating Deep Neural Networks using Explicit Regularisation and Dynamic Data Pruning,11,8,4,4,2,1,0,1,packets/P0420.md,07EA9DDE749FC59958BC87906C9332012C458557EA03D8C197A3E3AEBA791805,False
+P0421,PRIMARY,Self-Paced Learning with Diversity,9,7,6,5,1,0,0,1,packets/P0421.md,DA908F7DAA9CCB300A9B5ADEFF095DC1074C7C3A65871DAFDBA4EE7DEC16CC6E,False
+P0422,PRIMARY,Understanding Black-box Predictions via Influence Functions,10,4,1,4,0,0,0,0,packets/P0422.md,6062C0E26A06C7DABF2C69020A9559C53190B78B10DBB1DC87F8E2A7B4676C11,False
+P0424,PRIMARY,Data Selection Strategies for Multi-Domain Sentiment Analysis,10,4,3,2,1,0,1,0,packets/P0424.md,FFBFC5CFDB9BAB354B6BCD364CBD86FF23390C2DF49CC3BF52F7099F02DFE900,False
+P0425,PRIMARY,Efficient Diversity-based Experience Replay for Deep Reinforcement Learning,9,9,4,8,0,1,0,0,packets/P0425.md,982A67BD732731F553F2213B44ECE3352C1A0CF647F72F4C01EE2AFD59E209E1,False
+P0428,PRIMARY,BERT on a Data Diet: Finding Important Examples by Gradient-Based Pruning,7,2,19,0,1,0,0,1,packets/P0428.md,39F972CA31E2F2134AEC1E39FC5144C2F76981AF51452941180ED6D1DA7E20CF,False
+P0429,PRIMARY,Class-Incremental Experience Replay for Continual Learning under Concept Drift,10,4,2,2,2,0,0,0,packets/P0429.md,B3AC40E36D8E90977E9E47FBFEC4C9E95C1C3F6018D7A4CD78A08C2FA760D9AF,False
+P0430,PRIMARY,Estimating Training Data Influence by Tracing Gradient Descent,11,6,10,3,1,0,1,1,packets/P0430.md,9A10D81C935EB0CA9B30D434D2B22881FC9DD9130193A7A3C85BDE271EC988C3,False
+P0431,PRIMARY,Data-Efficient Training by Evolved Sampling,26,18,5,12,4,1,0,1,packets/P0431.md,9A15FF50128F4987F30644F1F25CA8F2B56F6C6A8DD4A91107D21C41109AFDD3,False
+P0434,PRIMARY,RS-Prune: Training-Free Data Pruning at High Ratios for Efficient Remote Sensing Diffusion Foundation Models,11,6,7,5,0,0,0,1,packets/P0434.md,AC3FD93A3A0AABD01C46622A5940FB78422F84A3359406A7655524D8FF1D5410,False
+P0435,PRIMARY,When Dynamic Data Selection Meets Data Augmentation,11,16,12,13,2,0,0,1,packets/P0435.md,5D6139A7B898DE0390B43836AF9BF5E2093FFE09836BD59F43C3D1415A4B4716,False
+P0436,PRIMARY,Focal Loss for Dense Object Detection,9,4,1,2,2,0,0,0,packets/P0436.md,0AC9104951F3FC9FDE75D08FBB1F2412A816EF38DF7D26662FC42D0E8995EA52,False
+P0438,PRIMARY,Training data selection for event classification in a highly variable environment,9,7,10,6,0,0,0,1,packets/P0438.md,3FA1D98D525F926245520A53FABA791EE6134ACA9D25E99025D1247DFF35354B,False
+P0441,PRIMARY,Neyman-Pearson multiclass classification under label noise via empirical likelihood,66,13,1,10,1,0,2,0,packets/P0441.md,CB0AF94C4E14B6C0E9637FF75130D8BD141FD3694D3BF99C399FE49215EB9D59,False
+P0442,PRIMARY,Spaced Scheduling for Large Language Model Training,33,33,57,24,6,0,2,1,packets/P0442.md,2CC952EF83F71897BD3587D0249B699FD74BD8629ADE887855B5A497233C478B,False
+P0443,PRIMARY,A Robust Pneumonia Classification Approach based on Self-Paced Learning,7,9,5,8,1,0,0,0,packets/P0443.md,59C3DC4F2BF3B3D24D2C563A1B4CD357BEAE26CB50B90325FD71A7FAEADC5E9D,False
+P0444,PRIMARY,Transfer Learning With Intelligent Training Data Selection for Prediction of Alzheimer’s Disease,10,5,8,4,1,0,0,0,packets/P0444.md,E6D682FEFD677F72F4ABA897807DA0E33F8BE307A219DDB2B83D0E1766ED31D4,False
+P0445,PRIMARY,An Empirical Study of Automated Mislabel Detection in Real World Vision Datasets,14,12,5,6,4,0,1,1,packets/P0445.md,FC73E3BB06240A3F71E4521AF56B3373CB1163BBFDAFD3D59A2E4BDF40383392,False
+P0447,PRIMARY,"RCAP: Robust, Class-Aware, Probabilistic Dynamic Dataset Pruning",14,6,24,3,2,0,1,0,packets/P0447.md,89779A53732C683B729C3A5D27CAA27E9594FC5595A168F4D9A5AD6902ECFD4D,False
+P0448,PRIMARY,The Impact of Coreset Selection on Spurious Correlations and Group Robustness,24,11,36,7,3,0,0,1,packets/P0448.md,A6805968EA9EE5F2C7E3C00D3CE969A7384C5D07D9EB926BCDE5058433A32010,False
+P0449,PRIMARY,PropMix: Hard Sample Filtering and Proportional MixUp for Learning with Noisy Labels,15,14,0,9,3,1,0,1,packets/P0449.md,A4F7738A88C594C3D25CAC9C50DB00B41E11A51F73B49F36FFBCDB9CD2E85B17,False
+P0450,PRIMARY,ELFS: Label-Free Coreset Selection with Proxy Training Dynamics,20,10,40,9,0,0,1,0,packets/P0450.md,34F26CA25EBDC6C645031E7E0C838C46AA8723B8739DFB6CFF81EA4B31334FF9,False
+P0452,PRIMARY,Bridging Saliency Detection to Weakly Supervised Object Detection Based on Self-paced Curriculum Learning,7,8,0,6,2,0,0,0,packets/P0452.md,4ECA2B0AFD6E655C5929A33FF082F18DA10AD01D9ADA080934011C20DD3CB57F,False
+P0454,PRIMARY,Batch Sampling for Experience Replay,5,4,9,3,0,0,1,0,packets/P0454.md,ECBDB7D67D8AA6C304EB80070A7E83793D259285AEB45D25B45A6387CEE507A3,False
+P0455,PRIMARY,Self-Paced Learning Based Graph Convolutional Neural Network for Mixed Integer Programming (Student Abstract),2,2,0,1,1,0,0,0,packets/P0455.md,08D35A47D3B91B07A87CA1C6DCC22ABE76DBCEA1BDC4726F4E76B7AEC0BB41D6,False
+P0457,PRIMARY,Directional Influence Function: Estimating Training Data Influence in Constrained Learning,23,1,1,0,1,0,0,0,packets/P0457.md,7E92827EE4B03C355C7325C255A3336D9E22A1A9A51D2CB9864CE49C428A2B6D,False
+P0458,PRIMARY,Coordinated Replay Sample Selection for Continual Federated Learning,12,6,13,5,1,0,0,0,packets/P0458.md,14B95FF2D58A56770702071146CE82BCE3D9C68EA432784030CE63424C8BE95A,False
+P0460,PRIMARY,RANSAC-based training data selection for speaker state recognition,4,4,17,2,1,0,0,1,packets/P0460.md,4E6ACCD863CA6C43CB7B1ED285CB29F81F9D1D78D73A73412E0C5A058841CF77,False
+P0463,PRIMARY,It was the training data pruning too!,3,0,1,0,0,0,0,0,packets/P0463.md,1597F353F22065195DEC6CED2F48671082E329EB419A77EB9767C625F199777F,False
+P0464,PRIMARY,Partitioned Gradient Matching-based Data Subset Selection for Compute-Efficient Robust ASR Training,12,7,9,4,1,1,0,1,packets/P0464.md,F859E8AD1D06756A8E98BCB4C23B9C3DDAA8EE705B0ED94797B156552B4DC31E,False
+P0466,PRIMARY,SmallToLarge (S2L): Scalable Data Selection for Fine-tuning Large Language Models by Summarizing Training Trajectories of Small Models,25,16,13,5,9,1,0,1,packets/P0466.md,88AA9D0789081D4DF265D83129D6FBAE369EACC552D82F914C70569C9F2A9F94,False
+P0467,PRIMARY,Denoising Neural Machine Translation Training with Trusted Data and Online Data Selection,11,10,11,5,3,0,1,1,packets/P0467.md,E68A48129BDBDCBBE8F6F7C1E854D5F9B81223A28402235C7A9D507F2FA8CD3F,False
+P0468,PRIMARY,Self-Paced Learning for Images of Antinuclear Antibodies,13,16,7,11,4,1,0,0,packets/P0468.md,3C0FC4B9F27B543D024B02C266568EB489EC054DC3ADBC5C38088E3E0DAD6E1D,False
+P0469,PRIMARY,AdaER: An Adaptive Experience Replay Approach for Continual Lifelong Learning,18,9,3,8,1,0,0,0,packets/P0469.md,1628EBBA9D946F26CDFBC5D64A437B658CA0C50F04693FF8E9F40E2329876934,False
+P0470,PRIMARY,Feature Distribution Matching by Optimal Transport for Effective and Robust Coreset Selection,9,9,26,9,0,0,0,0,packets/P0470.md,87DF46BB4761E0159F09C25176DE2763753A3ED2AEFCC9227DD6AB37B57E1190,False
+P0471,PRIMARY,Learning to Reweight Examples for Robust Deep Learning,13,7,6,5,1,0,0,1,packets/P0471.md,F3A4426687AF7014E8627D2EAA6E728B73483ECD1CFDAC2CC8DA94718CE96795,False
+P0472,PRIMARY,Training Dynamics for Text Summarization Models,13,10,5,2,3,0,0,5,packets/P0472.md,D240F55E4A016D18505C266F098AE8C3100230BD6FEE7F7CF97AC9ECBCF6D3D0,False
+P0474,PRIMARY,Learning to Detect Noisy Labels Using Model-Based Features,13,13,1,9,1,2,1,0,packets/P0474.md,0D38FE86D9B20B00B3F6D51F5491883AD0D96FB48B8352C779686EBC42A28C13,False
+P0476,PRIMARY,Dataset Pruning: Reducing Training Data by Examining Generalization Influence,13,9,5,9,0,0,0,0,packets/P0476.md,B201F56B7D96068281804ACFA30F8E176E8143709AFA9BE4D637ABA1CFEB0144,False
+P0477,PRIMARY,Robust Learning for Text Classification with Multi-source Noise Simulation and Hard Example Mining,16,11,0,9,1,0,0,1,packets/P0477.md,51CC48CFE2001D0F6AA07A46932C98EC31FD440E54FE7A2200662B89760B4481,False
+P0479,PRIMARY,Cross-Platform Chinese Offensive Comment Detection via Dual-Threshold Hard Example Mining,10,4,14,2,2,0,0,0,packets/P0479.md,31508D6285675DE71AAEADA86086BCA742F2F0102FEB406F1BC4E8060834BB5A,False
+P0482,PRIMARY,Investigating the locality of neural network training dynamics.,40,4,1,2,0,0,1,1,packets/P0482.md,BC4B05ABD3F1BAB1F91B0D7D6445AC2011D7AA2EE9EC2AB88BE7E6DA750658F8,False
+P0483,PRIMARY,Probabilistic Bilevel Coreset Selection,16,20,24,13,5,1,0,1,packets/P0483.md,09359A68E7E678874548915E78D753AD76102DE74632477143430A1911DDEA50,False
+P0484,PRIMARY,Lightweight Dataset Pruning without Full Training via Example Difficulty and Prediction Uncertainty,42,17,32,11,4,1,0,1,packets/P0484.md,F8D32DBF63FE36C2D507A00FE63FEF8D846688912943527E9729025AFD1B7FAB,False
+P0485,PRIMARY,Symbolic Mechanistic Data Attribution: Tracing Training Influence to Learned Behavioral Policies,25,10,16,1,7,0,2,0,packets/P0485.md,D3E0BE41B486896D7820CE38FF55EAD26D624CB2A6E09E8ED55E949A836E01DB,False
+P0486,PRIMARY,Efficient Active Learning for Image Classification and Segmentation\n using a Sample Selection and Conditional Generative Adversarial Network,14,6,0,4,1,0,0,1,packets/P0486.md,60BEC8ED2A32B81041C440151186015DF9706FE9FABD2BFE12E4A14B2009B716,False
+P0487,PRIMARY,Towards Efficient Data Valuation Based on the Shapley Value,18,7,2,6,1,0,0,0,packets/P0487.md,65F01A8D619E8BFD69D7DC2C2D79E49242FB675657185D5A2F9A1ACFC773ECCC,False
+P0489,PRIMARY,Selective Prediction via Training Dynamics,32,17,17,14,1,0,1,1,packets/P0489.md,A3FEEE18F8589EC4391D5BDEE007411B9415CA66C6B2094007A1E56AC0FEA3BF,False
+P0490,PRIMARY,Coreset Selection via LLM-based Concept Bottlenecks,21,18,30,13,2,1,1,1,packets/P0490.md,0BA413CB42E0CBE661C843307EBF6E4C6E259F23708CBC9F5BB20E523F91F38E,False
+P0491,PRIMARY,Exploring 3D Dataset Pruning,16,5,25,2,2,0,0,1,packets/P0491.md,D7A36F15E5CF5152A984C6A6C0C8D0E5952A6A5D371568DDE9D035BE10DC6EBC,False
+P0494,PRIMARY,Predicting cognitive scores with graph neural networks through sample selection learning,16,9,7,6,2,0,0,1,packets/P0494.md,A6B5E69A648CDBAA5D21E7BB66B21C22B92494CF7502E2CDB6F18576F18F5A8F,False
+P0495,PRIMARY,Enhancing Training Data Attribution for Large Language Models with Fitting Error Consideration,13,11,4,4,1,0,2,4,packets/P0495.md,0D4C7E06FBEE7751339D5111B40D047FDCB08715DEA4A8C554E29F211C1A80DC,False
+P0496,PRIMARY,Dynamic Curriculum Learning for Great Ape Detection in the Wild,19,21,3,14,5,1,0,1,packets/P0496.md,EF3649DDF7B8F20FC18A9CEB95E49317AD65D2C7F535ACECDCA82E5C6FB63292,False
+P0497,PRIMARY,Coresets for Accelerating Incremental Gradient Methods,18,7,17,4,2,0,0,1,packets/P0497.md,C9C28F35D7128A641870B63BCB5C1090B1D9DB695228E1885CE0D1B5745C82E7,False
+P0498,PRIMARY,Extracting In-domain Training Corpora for Neural Machine Translation Using Data Selection Methods,8,7,20,4,3,0,0,0,packets/P0498.md,BD3413CEFCBB43F5151D77833A9AC2E308DA8DFC6F481D7509949DBA0D94CC2B,False
+P0500,PRIMARY,GREATS: Online Selection of High-Quality Data for LLM Training in Every Iteration,27,26,16,10,9,0,6,1,packets/P0500.md,2A66D27E6F1FB811C99F53067E925AFB918BE46E8440423EA9057CD5FE2373C8,False

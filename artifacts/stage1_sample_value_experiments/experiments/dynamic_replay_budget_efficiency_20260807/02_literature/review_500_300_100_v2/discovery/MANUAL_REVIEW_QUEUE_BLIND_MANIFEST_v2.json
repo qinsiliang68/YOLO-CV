@@ -1,0 +1,216 @@
+{
+  "schema_version": "1.0",
+  "status": "PASS",
+  "frozen_seed": "stage1-manual-screen-v2-20260809",
+  "input_queue": "artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/02_literature/review_500_300_100_v2/discovery/MANUAL_REVIEW_GROUPS_v2.csv",
+  "input_queue_sha256": "85C2BA2924A35D3CD7253D0A54966D9AD3BB83BE7BD1A6B9298A0C196FDD5AB7",
+  "output_queue": "artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/02_literature/review_500_300_100_v2/discovery/MANUAL_REVIEW_QUEUE_BLIND_v2.csv",
+  "output_queue_sha256": "C7DDE45B8257B952CDEB4CA944A1C41F3EC885304AC549F11CE5BCC405BC3809",
+  "review_count": 980,
+  "batch_size": 25,
+  "batch_count": 40,
+  "batches": [
+    {
+      "path": "artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/02_literature/review_500_300_100_v2/discovery/manual_screen_batches_v2/review_input_001.csv",
+      "rows": 25,
+      "sha256": "93EDE807088964B5BFCEE22C3B4399E8FA640E35EAFC3E39C9AC6F18ED7B31DF"
+    },
+    {
+      "path": "artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/02_literature/review_500_300_100_v2/discovery/manual_screen_batches_v2/review_input_002.csv",
+      "rows": 25,
+      "sha256": "CED7F95B09BD09A1C32EBC7A668E8764BAE3104EF099283EE07D959702D43A43"
+    },
+    {
+      "path": "artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/02_literature/review_500_300_100_v2/discovery/manual_screen_batches_v2/review_input_003.csv",
+      "rows": 25,
+      "sha256": "EE21328DF79E7DE55DCBE70428E9ECF6A797E2A8B17FDF786D60EFCA329D420F"
+    },
+    {
+      "path": "artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/02_literature/review_500_300_100_v2/discovery/manual_screen_batches_v2/review_input_004.csv",
+      "rows": 25,
+      "sha256": "E7AFFC22D64168B478DE159EEEC1E67E8A44216BAFDC7A575F298D2913139D75"
+    },
+    {
+      "path": "artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/02_literature/review_500_300_100_v2/discovery/manual_screen_batches_v2/review_input_005.csv",
+      "rows": 25,
+      "sha256": "76A3E7D1C991A3F927C4788447999466C1FBD761861C337D028E0ED04F82EDF9"
+    },
+    {
+      "path": "artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/02_literature/review_500_300_100_v2/discovery/manual_screen_batches_v2/review_input_006.csv",
+      "rows": 25,
+      "sha256": "4886A0C3451A29620A32ABF4B869834C9DD0ABB6E6A333C0E400D4AA1CE049CD"
+    },
+    {
+      "path": "artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/02_literature/review_500_300_100_v2/discovery/manual_screen_batches_v2/review_input_007.csv",
+      "rows": 25,
+      "sha256": "43CD120101586C2739CA554609B48B53219A7F9B6C16A97AFC58AB2B5F5E3536"
+    },
+    {
+      "path": "artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/02_literature/review_500_300_100_v2/discovery/manual_screen_batches_v2/review_input_008.csv",
+      "rows": 25,
+      "sha256": "CE336C10E5014BD1FB28BC1BA59F4F256EEEECBCACA8184EE30E9B8303EC7149"
+    },
+    {
+      "path": "artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/02_literature/review_500_300_100_v2/discovery/manual_screen_batches_v2/review_input_009.csv",
+      "rows": 25,
+      "sha256": "3A64DB491C159E26FA0C62DE4F3E987A05C6697574BD9AA40B73B6CB8D346182"
+    },
+    {
+      "path": "artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/02_literature/review_500_300_100_v2/discovery/manual_screen_batches_v2/review_input_010.csv",
+      "rows": 25,
+      "sha256": "D06EED10FD7EA5068DEF580E1ACB444BABE3C14C93005DAF49E78FE4F8618F09"
+    },
+    {
+      "path": "artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/02_literature/review_500_300_100_v2/discovery/manual_screen_batches_v2/review_input_011.csv",
+      "rows": 25,
+      "sha256": "8F510221D5936146AB17F9C1017B7FABC3DFEE6C14CE2B5D72851BC99EDD82D0"
+    },
+    {
+      "path": "artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/02_literature/review_500_300_100_v2/discovery/manual_screen_batches_v2/review_input_012.csv",
+      "rows": 25,
+      "sha256": "5AA9CCEE51322BA624E494A33908675F2824269C6A4430F89D0EC837F8639BD9"
+    },
+    {
+      "path": "artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/02_literature/review_500_300_100_v2/discovery/manual_screen_batches_v2/review_input_013.csv",
+      "rows": 25,
+      "sha256": "62764960FA94BF8D77751C87F8C7AEF569CD100D69EBE342A1132A4B8F0B0420"
+    },
+    {
+      "path": "artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/02_literature/review_500_300_100_v2/discovery/manual_screen_batches_v2/review_input_014.csv",
+      "rows": 25,
+      "sha256": "0022BD87920E79BEA9083D9DFC4AC07EDA246E197DB73AB26B7E4FBF0476C09B"
+    },
+    {
+      "path": "artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/02_literature/review_500_300_100_v2/discovery/manual_screen_batches_v2/review_input_015.csv",
+      "rows": 25,
+      "sha256": "7BC63BC116052C22E417A59A1F461E5A004175A899024CCE3A667DA591DF2F76"
+    },
+    {
+      "path": "artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/02_literature/review_500_300_100_v2/discovery/manual_screen_batches_v2/review_input_016.csv",
+      "rows": 25,
+      "sha256": "1248556EA655F06A1A93C38DB76E39EBDE15AAE46D9FA2FC3542C8517963A845"
+    },
+    {
+      "path": "artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/02_literature/review_500_300_100_v2/discovery/manual_screen_batches_v2/review_input_017.csv",
+      "rows": 25,
+      "sha256": "AC9F74D44040F9DF10DC76E5ED90308BA1667720DF20AB400325B12DD5736A8A"
+    },
+    {
+      "path": "artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/02_literature/review_500_300_100_v2/discovery/manual_screen_batches_v2/review_input_018.csv",
+      "rows": 25,
+      "sha256": "0F89051C69D174A639723BD192D29F34F5F5CA6ADC82A6F8815DDB75014F621E"
+    },
+    {
+      "path": "artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/02_literature/review_500_300_100_v2/discovery/manual_screen_batches_v2/review_input_019.csv",
+      "rows": 25,
+      "sha256": "13095D13107C31E7DFB802EB2B2C94BAE80126034DE5C304CE86D3056A00A156"
+    },
+    {
+      "path": "artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/02_literature/review_500_300_100_v2/discovery/manual_screen_batches_v2/review_input_020.csv",
+      "rows": 25,
+      "sha256": "2AD36E3F226868159B34F414A642502374C07B949E124FCF70EA0D623C3CF4BF"
+    },
+    {
+      "path": "artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/02_literature/review_500_300_100_v2/discovery/manual_screen_batches_v2/review_input_021.csv",
+      "rows": 25,
+      "sha256": "8B6A9173EC0708F2C8488155EF8E9A3BAAA785EF119BCBB2FE9E50D77A0CA6D8"
+    },
+    {
+      "path": "artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/02_literature/review_500_300_100_v2/discovery/manual_screen_batches_v2/review_input_022.csv",
+      "rows": 25,
+      "sha256": "159E74DCDF17357CA0C106958D814388D089F68CAF38EEADBA5E349CEC489046"
+    },
+    {
+      "path": "artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/02_literature/review_500_300_100_v2/discovery/manual_screen_batches_v2/review_input_023.csv",
+      "rows": 25,
+      "sha256": "D805F327CAB69726C690F5FBDBE37B5D8B8959368D22B27EABB8DEDE578ED25F"
+    },
+    {
+      "path": "artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/02_literature/review_500_300_100_v2/discovery/manual_screen_batches_v2/review_input_024.csv",
+      "rows": 25,
+      "sha256": "C4E54B269EC908F06076B545EBA2FB1AA86570C66FB10B005A2F0637CB01344D"
+    },
+    {
+      "path": "artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/02_literature/review_500_300_100_v2/discovery/manual_screen_batches_v2/review_input_025.csv",
+      "rows": 25,
+      "sha256": "C20113D09F4C87B8D157C1940DE4F9B55DFB72FFE4D6A7EDDEC34B5B75834380"
+    },
+    {
+      "path": "artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/02_literature/review_500_300_100_v2/discovery/manual_screen_batches_v2/review_input_026.csv",
+      "rows": 25,
+      "sha256": "684A69666FDC0A8ADD420B1A6ABD0E3E366F70D7BB36BA32BCD78ADA4960D091"
+    },
+    {
+      "path": "artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/02_literature/review_500_300_100_v2/discovery/manual_screen_batches_v2/review_input_027.csv",
+      "rows": 25,
+      "sha256": "6BAD82F3613DBA6CA1EE6E9532EEE39B7EB99EA875EAB69971195A33CA50B96E"
+    },
+    {
+      "path": "artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/02_literature/review_500_300_100_v2/discovery/manual_screen_batches_v2/review_input_028.csv",
+      "rows": 25,
+      "sha256": "6F6F276217BC24E449272E39CCC23A8DCA8564B450387408EB7059AF12C466CE"
+    },
+    {
+      "path": "artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/02_literature/review_500_300_100_v2/discovery/manual_screen_batches_v2/review_input_029.csv",
+      "rows": 25,
+      "sha256": "62C4E996D2410A03747BFA74030810D77554E12C6733CA646F790606207FE733"
+    },
+    {
+      "path": "artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/02_literature/review_500_300_100_v2/discovery/manual_screen_batches_v2/review_input_030.csv",
+      "rows": 25,
+      "sha256": "8A1CC92F7C9A4EB9ABF3AC4B3A5032D0DBE2269A149251320D39003485EA9583"
+    },
+    {
+      "path": "artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/02_literature/review_500_300_100_v2/discovery/manual_screen_batches_v2/review_input_031.csv",
+      "rows": 25,
+      "sha256": "63A7DEA01D1F34C712867C6C57213A7CC55E8B7E5671DA139DAAC9467DBF3337"
+    },
+    {
+      "path": "artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/02_literature/review_500_300_100_v2/discovery/manual_screen_batches_v2/review_input_032.csv",
+      "rows": 25,
+      "sha256": "03EFA509CA6B49BA945744FFDDAEDE24A8E7D4547CEE252913224274CBECDA7B"
+    },
+    {
+      "path": "artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/02_literature/review_500_300_100_v2/discovery/manual_screen_batches_v2/review_input_033.csv",
+      "rows": 25,
+      "sha256": "44986B1C83DD14766E79E9924C42F3E776CD8DE09003898E64FE892D7B7C7712"
+    },
+    {
+      "path": "artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/02_literature/review_500_300_100_v2/discovery/manual_screen_batches_v2/review_input_034.csv",
+      "rows": 25,
+      "sha256": "8497C4C46CE1250A34EFAFEED0D0FD0FD30A3679716A2881EA6CF8609BFF5CC0"
+    },
+    {
+      "path": "artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/02_literature/review_500_300_100_v2/discovery/manual_screen_batches_v2/review_input_035.csv",
+      "rows": 25,
+      "sha256": "257F10F984C3D5A3D7403422BA2F92623ED6D0DBBBDE30C65C2ED7AD500ABEFB"
+    },
+    {
+      "path": "artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/02_literature/review_500_300_100_v2/discovery/manual_screen_batches_v2/review_input_036.csv",
+      "rows": 25,
+      "sha256": "4DF0EFE14B04B9EB5AB663E54F302AAD37DB63734F62461B88374E3B82CD1061"
+    },
+    {
+      "path": "artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/02_literature/review_500_300_100_v2/discovery/manual_screen_batches_v2/review_input_037.csv",
+      "rows": 25,
+      "sha256": "F14D888D3F4EC0E9B8B3C500D9E24FCB74E20614802F6953CCDCA8700F0FD8DA"
+    },
+    {
+      "path": "artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/02_literature/review_500_300_100_v2/discovery/manual_screen_batches_v2/review_input_038.csv",
+      "rows": 25,
+      "sha256": "E29F42BF6A0FA4E7AFD7AD1FD67D612452E8E1C41D186FB76D0BCA448639008C"
+    },
+    {
+      "path": "artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/02_literature/review_500_300_100_v2/discovery/manual_screen_batches_v2/review_input_039.csv",
+      "rows": 25,
+      "sha256": "6BE6B1A398AA69D4C07B7F6D7F759A3B768B4B4FDE4D221DC996B12E3359D9E0"
+    },
+    {
+      "path": "artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/02_literature/review_500_300_100_v2/discovery/manual_screen_batches_v2/review_input_040.csv",
+      "rows": 5,
+      "sha256": "712BE90D4186CD49118C26DD138DED3CFC2233D24CED7F35CB38F4E3D159C122"
+    }
+  ],
+  "selection_credit_granted": false,
+  "note": "Blind review order and batch generation do not constitute paper screening."
+}

@@ -1,0 +1,3 @@
+﻿paper_id,artifact_role,url,destination,attempts,error
+LEGACY-P025,DEEP_FULL_TEXT,https://pmc.ncbi.nlm.nih.gov/articles/PMC5804623/,sources/legacy_core/P025_Neyman_Pearson_Umbrella_NP_ROC_2018.pdf,3,"HTTPSConnectionPool(host='pmc.ncbi.nlm.nih.gov', port=443): Max retries exceeded with url: /articles/PMC5804623/ (Caused by SSLError(SSLEOFError(8, '[SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1016)')))"
+LEGACY-P036,DEEP_FULL_TEXT,https://proceedings.mlr.press/v267/chhabra25a/chhabra25a.pdf,sources/legacy_core/P036_Outlier_Gradient_Analysis_ICML_2025.pdf,3,LEGACY-P036: HTTP 404 from https://proceedings.mlr.press/v267/chhabra25a/chhabra25a.pdf

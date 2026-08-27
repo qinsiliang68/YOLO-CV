@@ -1,0 +1,223 @@
+{
+  "schema_version": "3.0",
+  "paper_id": "P0073",
+  "canonical_work_id": "CWAD8481EF113E1665A9A3",
+  "title": "Deep Batch Active Learning by Diverse, Uncertain Gradient Lower Bounds",
+  "decision": "SCREENED_ELIGIBLE",
+  "reviewed_at": "2026-08-10T18:25:00+08:00",
+  "reviewer": "user_accepted_inherited_fulltext_rebind",
+  "method_source": {
+    "path": "staging/broad_freeze_canonical_repaired_v4/sources/P0073.pdf",
+    "bytes": 4265486,
+    "sha256": "D3901AA393ACB598BEED4A5432F52F080237E50AD443659A18E65B1B1F4CE176"
+  },
+  "text_source": {
+    "path": "staging/screened_text_canonical_repaired_v4/text/P0073.txt",
+    "bytes": 163258,
+    "sha256": "2B3371479E8C8A326EDBA6B656B70A03018B51233AA93E56E5DEE6BC05FA5ACC"
+  },
+  "rq_ids": [
+    "RQ2",
+    "RQ3",
+    "RQ5",
+    "RQ7"
+  ],
+  "section_evidence": {
+    "METHODS": {
+      "status": "READ",
+      "pages": "3-5, Algorithm 1, Equation 1 and Proposition 1",
+      "anchors": [
+        {
+          "page": 3,
+          "line": 6,
+          "quote": "Algorithm 1 BADGE: Batch Active learning by Diverse Gradient Embeddings",
+          "paraphrase_zh": "BADGE 在当前分类器下用预测标签构造最后一层梯度嵌入，再以 k-means++ 式分散选择同时表达不确定性与批内覆盖。"
+        }
+      ]
+    },
+    "EXPERIMENTS": {
+      "status": "READ",
+      "pages": "5-8 and Appendices C-G",
+      "anchors": [
+        {
+          "page": 7,
+          "line": 57,
+          "quote": "Figure 3: Active learning test accuracy versus the number of total labeled samples for a range of conditions.",
+          "paraphrase_zh": "实验跨 11 个 dataset-architecture 组合、三种 batch size 和七种 acquisition 方法，每轮从头训练并重复五次。"
+        }
+      ]
+    },
+    "ABLATIONS": {
+      "status": "READ",
+      "pages": "4, 7-8 and 22-26, Figures 1-5 and 22-31",
+      "anchors": [
+        {
+          "page": 7,
+          "line": 66,
+          "quote": "Often, we see that in early rounds of training, it is better to do diversity sampling, and later in training, it is",
+          "paraphrase_zh": "学习曲线直接显示 diversity 与 uncertainty 的相对价值随训练阶段反转，且表示质量会决定覆盖方法能否胜过随机。"
+        }
+      ]
+    },
+    "LIMITATIONS": {
+      "status": "READ",
+      "pages": "7, 10 and 24, discussion and reported failure boundaries",
+      "anchors": [
+        {
+          "page": 10,
+          "line": 16,
+          "quote": "6   D ISCUSSION",
+          "paraphrase_zh": "作者承认 BADGE 有效的根本原因仍未解决；梯度下界只保证幅度信息，复杂表示、随机 seeding 和大批量计算均构成边界。"
+        }
+      ]
+    }
+  },
+  "formulas": [
+    "For softmax probability p_i, penultimate representation z(x;V), and hallucinated label y-hat=argmax_i p_i, class block i of the final-layer gradient embedding is (p_i-I[y-hat=i]) z(x;V).",
+    "Proposition 1 shows that the hallucinated-label gradient norm is the minimum over all possible labels and therefore lower-bounds the final-layer gradient magnitude after the true label is observed.",
+    "k-means++-style sampling chooses subsequent centers with probability proportional to squared distance from the nearest selected gradient embedding.",
+    "The lower bound concerns magnitude and representation geometry; it does not establish the signed effect of training on an independent target loss or FN95 frontier."
+  ],
+  "algorithm_steps": [
+    "Draw an initial M labeled examples uniformly from the unlabeled pool and train the current classifier.",
+    "For every remaining example, hallucinate the current predicted class and compute its final-layer loss-gradient embedding.",
+    "Select B disparate high-magnitude embeddings using k-means++-style seeding, query their labels, and remove them from the unlabeled pool.",
+    "Retrain the classifier from scratch on the enlarged labeled set until training accuracy exceeds 99%.",
+    "Repeat acquisition and retraining for the requested number of active-learning rounds."
+  ],
+  "variables": [
+    "unlabeled pool U, labeled set S, initial count M, acquisition batch B, and rounds T",
+    "network parameters theta, output-layer parameters theta_out, and penultimate representation z(x;V)",
+    "predicted probability p_i, hallucinated label y-hat, true label y, and gradient embeddings g_x and g_x^y",
+    "nearest selected-center distance and k-means++ sampling probability",
+    "label budget, test error, normalized error, pairwise penalty, training time, and acquisition time"
+  ],
+  "selection_timing": "Selection is checkpoint conditioned: one batch is chosen after each full retraining round using the current model's predicted labels and representation.",
+  "refresh_rule": "All pool embeddings and selected centers are recomputed after the newly labeled batch is added and the classifier is retrained from scratch.",
+  "budget": {
+    "unit": "new unique labels acquired per active-learning round",
+    "denominator": "the remaining unlabeled pool and the total dataset label budget",
+    "unique_sample_definition": "An acquired identity leaves the pool and is not selected again, so acquisition IDs are unique; all acquired examples remain in every later retraining set.",
+    "repeat_definition": "Previously acquired examples are repeatedly optimizer-visible during every later retraining, but per-ID epoch exposure is not reported.",
+    "cumulative_exposure_definition": "Label counts are matched across selectors, while optimizer exposure is path dependent because each round retrains until exceeding 99% training accuracy.",
+    "compute_cost": "Every round requires full-pool gradient embeddings plus from-scratch training; k-DPP sampling can run out of memory at batch size 10,000 and is much slower than k-means++ at batch size 1,000."
+  },
+  "random_baselines": [
+    "uniform random initial labeled set",
+    "uniform random acquisition at the same label budgets",
+    "Coreset and k-center diversity selection",
+    "confidence, margin, and entropy uncertainty sampling",
+    "Active Learning by Learning hybrid selection"
+  ],
+  "datasets": [
+    "MNIST",
+    "SVHN",
+    "CIFAR-10",
+    "OpenML #6",
+    "OpenML #155",
+    "OpenML #156",
+    "OpenML #184 and other reported OpenML dataset-architecture pairs"
+  ],
+  "models": [
+    "multilayer perceptron",
+    "convolutional neural network",
+    "VGG",
+    "ResNet"
+  ],
+  "seed_count": {
+    "counts": [
+      "5 repetitions for every reported experiment"
+    ],
+    "scope": "all dataset, architecture, acquisition-method, batch-size, and label-budget conditions",
+    "aggregation": "learning-curve standard errors and paired five-repeat error differences; seed identities and worst-repeat tables are not provided."
+  },
+  "checkpoint_selection": "Models are retrained from scratch after every acquisition and stopped when training accuracy exceeds 99%; no independent validation checkpoint rule is reported, so optimizer-visible work varies with stochastic path.",
+  "results": [
+    {
+      "claim": "聚合 33 个 dataset/batch/architecture 组合后，BADGE 的 pairwise penalty 列均值最低。",
+      "locator": "page 7, Figure 4",
+      "value": "Column-wise average penalty is 0.66 for BADGE, compared with 6.90 for Coreset and 6.01 for Random; lower is better.",
+      "anchor": {
+        "page": 7,
+        "line": 91,
+        "quote": "0.66 4.08                  6.9      5.93 1.56 8.01 6.01",
+        "paraphrase_zh": "聚合矩阵支持 BADGE 在论文条件中的总体竞争力，但它把许多预算与任务压成平均 penalty，不能说明 Stage1 最差 seed。"
+      }
+    },
+    {
+      "claim": "纯 diversity 的收益依赖表示和训练阶段，在复杂数据配 MLP 时 Coreset 可输给随机。",
+      "locator": "page 7, Figure 3 discussion",
+      "value": "The paper explicitly reports Coreset often worse than Random on sufficiently complex data without a convolutional network.",
+      "anchor": {
+        "page": 7,
+        "line": 84,
+        "quote": "this reason, C ORESET often performs worse than",
+        "paraphrase_zh": "这是覆盖机制的直接反向证据：表示不可靠时，结构化 diversity 甚至不如无条件随机的覆盖。"
+      }
+    },
+    {
+      "claim": "diversity 与 uncertainty 的相对优势会随 acquisition 阶段反转。",
+      "locator": "page 7, Figure 3a discussion",
+      "value": "Coreset leads confidence-based methods early, then falls behind them later in training.",
+      "anchor": {
+        "page": 7,
+        "line": 67,
+        "quote": "better to do uncertainty sampling. This kind of event is demonstrated in Figure 3a",
+        "paraphrase_zh": "阶段反转说明 D 或不确定性都不是样本永久属性，必须绑定当前 checkpoint 并接受跨阶段反证。"
+      }
+    },
+    {
+      "claim": "k-DPP 与 k-means++ 的准确率近似，但大 batch 下 k-DPP 计算失效。",
+      "locator": "page 24, Appendix G",
+      "value": "The k-DPP implementation runs out of memory at batch size 10,000 and is generally much slower at batch size 1,000.",
+      "anchor": {
+        "page": 24,
+        "line": 82,
+        "quote": "our experiment. The comparisons for batch size 10000 are not shown here as the implementation of k-DPP",
+        "paraphrase_zh": "附录记录 k-DPP 在最大 batch 直接 OOM，支持 Stage1 对 D 算法预注册内存上限和可回滚近似。"
+      }
+    }
+  ],
+  "ablations": [
+    "diversity-only, uncertainty-only, hybrid, and uniform-random acquisition",
+    "batch sizes 100, 1,000, and 10,000",
+    "11 dataset-architecture pairs",
+    "early versus late acquisition budgets",
+    "k-means++ versus k-DPP gradient-space sampling",
+    "MLP, convolutional, VGG, and ResNet representation quality"
+  ],
+  "negative_results": [
+    "Coreset diversity can be worse than uniform random when penultimate representations are poor.",
+    "The relative value of diversity and uncertainty reverses between early and later acquisition rounds.",
+    "At large label budgets all methods converge, reducing the informative comparison region.",
+    "k-DPP sampling runs out of memory at batch size 10,000 and is much slower at 1,000.",
+    "The discussion explicitly leaves the fundamental explanation for BADGE's empirical success open."
+  ],
+  "failure_conditions": [
+    "The current representation clusters nuisance, source, or video identity rather than target-relevant variation.",
+    "Hallucinated-label gradient magnitude is mistaken for the signed true-label update on an independent target loss.",
+    "One checkpoint's geometry is treated as stable across training phases.",
+    "The first-center rule, RNG, ties, checkpoint hash, or gradient dimensionality is not persisted.",
+    "Compute or memory grows beyond the feasible full-pool embedding and pairwise-distance budget."
+  ],
+  "limitations": [
+    "BADGE studies label acquisition, not additional replay over a fixed labeled base-training stream.",
+    "The hallucinated gradient is a magnitude lower bound and contains no independent FN95 target direction.",
+    "Label budget is matched but cumulative optimizer exposure and stopping work are not.",
+    "Five repetitions do not provide held training-seed confirmation or worst-seed evidence.",
+    "The aggregate penalty matrix spans many comparisons without visible multiplicity correction.",
+    "The public paper algorithm and executable first-center convention differ, showing a reproducibility-sensitive stochastic detail."
+  ],
+  "transfer_class": "MECHANISM_ONLY",
+  "stage1_mechanism_zh": "该文支持把 D 写成当前 checkpoint 下、候选门控之后的集合覆盖：保存真实标签与 hallucinated 梯度嵌入、最近中心距离、有效秩、来源/视频集中度以及完整 seeding 顺序。它也直接反驳“diversity 永远有益”，因为表示差和阶段变化会使 Coreset 输给随机。",
+  "stage1_non_inference_zh": "BADGE 不能证明高梯度幅度样本具有 replay utility；其梯度只给不确定性幅度下界，不含独立 FN95 的符号方向。论文改变已标注集合并每轮从头训练，没有固定基础流、累计 replay 曝光、optimizer steps、R1/R2/current-loss/no-replay 或未见 seed 配对。",
+  "exclusion_reason": "NOT_APPLICABLE_WITH_REASON:eligible as checkpoint-conditioned gradient-coverage and redundancy evidence",
+  "migration_provenance": {
+    "source_review": "../FULL_TEXT_EVIDENCE_NOTES/P035_BADGE_ICLR_2020.md",
+    "source_paper_id": "P035",
+    "migration_basis": "CANONICAL_WORK_ID_AND_BYTE_IDENTICAL_PDF_WITH_CURRENT_TEXT_REANCHOR",
+    "content_review_reused": true,
+    "evidence_provenance_class": "USER_ACCEPTED_INHERITED_EVIDENCE",
+    "independent_content_rereview_performed": false
+  }
+}

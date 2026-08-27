@@ -1,0 +1,174 @@
+{
+  "schema_version": "3.0",
+  "paper_id": "P0290",
+  "canonical_work_id": "CW50D21FC725813C0F96F7",
+  "title": "SSR: An Efficient and Robust Framework for Learning with Unknown Label Noise",
+  "decision": "SCREENED_ELIGIBLE",
+  "reviewed_at": "2026-08-10T16:05:00+08:00",
+  "reviewer": "codex_primary_fulltext_review",
+  "method_source": {
+    "path": "staging/broad_freeze_anchor_complete_v3/sources/P0290.pdf",
+    "bytes": 8833197,
+    "sha256": "367B71881B372D42B8F4BF8C5CFC84EF1B1EF2DF14E239627C562F2875F3F551"
+  },
+  "text_source": {
+    "path": "staging/screened_text_anchor_complete_v3/text/P0290.txt",
+    "bytes": 54444,
+    "sha256": "DDB637C34EA88AB8E4E16FD3E30CB0E6203C042DDC8E2707CD040C716DA8B9B1"
+  },
+  "rq_ids": ["RQ1", "RQ2", "RQ4", "RQ6", "RQ8"],
+  "section_evidence": {
+    "METHODS": {
+      "status": "READ",
+      "pages": "4-7, Algorithm 1 and equations 1-5",
+      "anchors": [
+        {
+          "page": 5,
+          "line": 3,
+          "quote": "Clean sample selection by balanced neighbouring voting",
+          "paraphrase_zh": "SSR 先用特征空间 KNN 的类别平衡邻域投票衡量当前标签一致性，再以阈值选择可靠子集；另由参数分类器对高置信样本重标，两个职责被刻意分离。"
+        }
+      ]
+    },
+    "EXPERIMENTS": {
+      "status": "READ",
+      "pages": "7-10 and Supplementary A-E on pages 14-16",
+      "anchors": [
+        {
+          "page": 7,
+          "line": 19,
+          "quote": "we conduct extensive experiments on two standard benchmarks with synthetic label noise, CIFAR-10 and CIFAR-100",
+          "paraphrase_zh": "实验覆盖 CIFAR 合成闭集与混合开集噪声，以及 Clothing1M、WebVision、ANIMAL-10N 三类真实噪声数据，并提供选择机制和计算成本附录。"
+        }
+      ]
+    },
+    "ABLATIONS": {
+      "status": "READ",
+      "pages": "7-9 and Supplementary C-E on pages 15-16",
+      "anchors": [
+        {
+          "page": 8,
+          "line": 18,
+          "quote": "Robustness to hyper-parameters In this section, we conduct extensive ablation studies",
+          "paraphrase_zh": "消融扫描选择阈值、重标阈值和邻居数，移除样本选择，比较类别平衡、NPK 与参数模型选择、特征一致性距离，并报告各阶段耗时。"
+        }
+      ]
+    },
+    "LIMITATIONS": {
+      "status": "NOT_REPORTED_BY_PAPER",
+      "pages": "1-16 including conclusion and all supplementary sections",
+      "anchors": [],
+      "absence_reason_zh": "全文没有独立局限章节，也未讨论测试集 Best 指标的选择偏差、各表训练种子数、KNN 邻域对来源聚类的敏感性以及动态选中样本的累计曝光。"
+    }
+  },
+  "formulas": [
+    "The class-balanced neighborhood distribution is q_i = pi^{-1} q'_i, where q'_i is the normalized label histogram of K nearest feature neighbors.",
+    "Label consistency is c_i = q_i(l_i^r) / max_j q_i(j); c_i above theta_s admits the sample to the clean subset.",
+    "The parametric classifier relabels an example only when max_l p_i(l) exceeds theta_r.",
+    "Training minimizes cross-entropy on the selected subset plus optional cosine feature-consistency loss L = L_ce + lambda L_fc."
+  ],
+  "algorithm_steps": [
+    "Extract current features for all samples and obtain a class-balanced KNN label distribution in feature space.",
+    "Use the current parametric classifier to relabel only high-confidence examples.",
+    "Select examples whose relabeled class agrees maximally with the balanced KNN vote; oversample minority classes within the selected set.",
+    "Train the encoder and classifier on selected examples with cross-entropy and optionally use every example for augmentation-based feature consistency; repeat from the first epoch without a warm-up."
+  ],
+  "variables": [
+    "encoder f, parametric classifier g_p, and non-parametric KNN classifier g_q",
+    "K-neighbor set N_i and cosine similarity",
+    "class-balanced neighbor distribution q_i and consistency c_i",
+    "selection threshold theta_s and relabel threshold theta_r",
+    "selected clean subset X_c and progressively relabeled labels Y^r",
+    "feature-consistency weight lambda"
+  ],
+  "selection_timing": "Relabeling and selection are executed before model training in every outer iteration, including the first epoch; the authors intentionally avoid a fixed warm-up period.",
+  "refresh_rule": "Features, KNN neighborhoods, relabeling decisions, and the clean subset are recomputed at every epoch as the encoder changes.",
+  "budget": {
+    "unit": "optimizer-visible selected examples used by cross-entropy in one epoch",
+    "denominator": "the full noisy training set; selection fraction is threshold-driven rather than fixed in advance",
+    "unique_sample_definition": "Membership is defined by sample identity and current c_i, but the paper does not publish the number or union of unique selected IDs across epochs.",
+    "repeat_definition": "A selected identity can remain selected and be oversampled in successive epochs; optional feature consistency also exposes all samples repeatedly.",
+    "cumulative_exposure_definition": "The paper does not tabulate cumulative supervised, oversampled, or feature-consistency exposures per identity, so method and baselines are not exposure-matched.",
+    "compute_cost": "Every epoch requires full feature extraction, KNN construction, relabeling, and selection; Table 9 reports these costs separately from gradient propagation."
+  },
+  "random_baselines": [
+    "cross-entropy on the whole noisy dataset",
+    "oracle clean subset as an upper baseline in Supplementary Table 7",
+    "PMC loss/confidence selection versus NPK feature-neighborhood selection in automatic and known-noise-ratio modes",
+    "No equal-count global-random or neighborhood-matched-random selector is reported."
+  ],
+  "datasets": ["CIFAR-10", "CIFAR-100", "Clothing1M", "WebVision", "ANIMAL-10N"],
+  "models": ["PreAct-ResNet-18", "Inception-ResNet v2", "ResNet-50", "VGG-19 with batch normalization"],
+  "seed_count": "NOT_REPORTED_BY_PAPER",
+  "checkpoint_selection": "Several tables report both Best and Last test accuracy without an independent validation-only checkpoint rule; Last is the safer fixed-endpoint evidence, while Best has potential test-oracle bias.",
+  "results": [
+    {
+      "claim": "在不知道噪声比例的自动模式下，NPK 邻域选择在 40% 非对称 CIFAR-10 上大幅优于参数分类器选择。",
+      "locator": "page 16, Supplementary Table 7, Last rows",
+      "value": "NPK automatic Last 88.20% versus PMC automatic Last 48.88% test accuracy.",
+      "anchor": {
+        "page": 16,
+        "line": 7,
+        "quote": "Last     88.82       68.67         88.20",
+        "paraphrase_zh": "在其余训练组件被排除的选择机制对比中，NPK 自动选择的固定末轮在 40% 非对称噪声列为 88.20%，而 PMC 为 48.88%。"
+      }
+    },
+    {
+      "claim": "在 CIFAR-100 的 90% 对称噪声设置中，SSR+ 的表内准确率高于被比较方法。",
+      "locator": "page 9, Table 2",
+      "value": "SSR+ 66.6%; SSR 61.8%; C2D 58.7%; AugDesc 41.2% test accuracy.",
+      "anchor": {
+        "page": 9,
+        "line": 34,
+        "quote": "SSR+(ours)          96.7   96.1   95.6   95.2      95.5          79.7   77.2   71.9   66.6",
+        "paraphrase_zh": "最重噪声列中 SSR+ 报告 66.6%，但论文没有给出训练种子方差，因此这只是特定设置的表内结果。"
+      }
+    },
+    {
+      "claim": "类别平衡对两类数据的增益为小幅正向，而非主要性能来源。",
+      "locator": "page 9, Table 1",
+      "value": "SSR versus without balancing: 74.83% vs 74.12% on Clothing1M and 95.5% vs 94.9% on CIFAR-10 asymmetric noise.",
+      "anchor": {
+        "page": 9,
+        "line": 8,
+        "quote": "SSR                 74.83                 95.5",
+        "paraphrase_zh": "移除两个平衡机制后分别下降 0.71 和 0.6 个百分点，说明选择与重标机制之外的平衡贡献存在但较小。"
+      }
+    }
+  ],
+  "ablations": [
+    "selection threshold theta_s including no-selection theta_s=0",
+    "relabel threshold theta_r and K-neighbor count",
+    "balanced neighborhood vote and minority oversampling",
+    "NPK feature selection versus PMC loss/confidence selection under automatic and predefined selection sizes",
+    "cosine versus L2 feature-consistency distance",
+    "per-stage computation time",
+    "SSR without and with optional feature consistency"
+  ],
+  "negative_results": [
+    "Removing selection degrades severely at 90% symmetric noise.",
+    "Extremely small K is unstable in the neighbor-count ablation.",
+    "Relabeling becomes conservative when open-set noise is present, so selected-set growth is not uniform across noise types.",
+    "Best and Last values diverge sharply for some PMC and whole-dataset baselines, exposing memorization and checkpoint sensitivity.",
+    "No random-control or cross-seed stability evidence is supplied."
+  ],
+  "failure_conditions": [
+    "Feature neighborhoods cluster by source, video, or nuisance rather than label reliability.",
+    "Early representation quality is insufficient for KNN voting despite the no-warm-up claim.",
+    "Repeated relabeling creates confirmation bias that the same encoder later reinforces.",
+    "Threshold-driven selected counts change optimizer-visible exposure and make method comparisons budget-unfair.",
+    "Best test checkpoints are used as evidence of deployable improvement."
+  ],
+  "limitations": [
+    "The method jointly changes reliability selection, relabeling, class balancing, oversampling, and optional feature consistency.",
+    "Selection budget, unique IDs, repeat histograms, cumulative exposure, and optimizer steps are not matched or reported.",
+    "No equal-count global or method-matched random selector is tested.",
+    "Training seed counts, variability, and worst-seed results are absent.",
+    "Feature-neighborhood reliability is not source/video-disjointly validated.",
+    "The endpoint is overall multiclass test accuracy, not FN95 or a local safety-frontier metric."
+  ],
+  "transfer_class": "INSPIRED_ADAPTATION",
+  "stage1_mechanism_zh": "该论文为 Q 门控提供可迁移机制：当前 loss 或模型置信度在重噪声下会受记忆化影响，而来源分层后的特征邻域一致性可作为另一种可靠性候选；同时每轮刷新说明 Q 取决于模型状态。Stage1 只能将其作为 Q 的独立析因条件，并在来源或视频分组内计算，之后仍需 R、独立 FN95 方向 A 与集合覆盖 D 的顺序门控。",
+  "stage1_non_inference_zh": "SSR 的表内提升不能证明 replay utility：它重写标签、改变监督池大小、过采样类别并可对全部数据施加特征一致性，累计曝光和 optimizer steps 与对照不匹配。没有 R1、R2、current-loss、no-replay 或未见 training seed 配对，因此不能把 NPK 一致性直接解释为应增加 replay 曝光的样本价值。",
+  "exclusion_reason": "NOT_APPLICABLE_WITH_REASON:eligible for SCREENED evidence tier"
+}

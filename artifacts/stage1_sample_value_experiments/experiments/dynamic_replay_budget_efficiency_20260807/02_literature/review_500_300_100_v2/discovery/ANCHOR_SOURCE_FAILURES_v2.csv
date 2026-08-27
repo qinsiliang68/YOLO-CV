@@ -1,0 +1,5 @@
+﻿paper_id,artifact_role,url,destination,attempts,error
+RG23777DF75AF056AE,BROAD_SOURCE,https://openreview.net/pdf?id=thbtoAkCe9,sources/anchor_supplement_v2/RG23777DF75AF056AE.pdf,2,RG23777DF75AF056AE: HTTP 403 from https://openreview.net/pdf?id=thbtoAkCe9
+AX9313629F9AEE4C10,BROAD_SOURCE,https://proceedings.mlr.press/v235/choi24c/choi24c.pdf,sources/anchor_supplement_v2/AX9313629F9AEE4C10.pdf,2,AX9313629F9AEE4C10: HTTP 404 from https://proceedings.mlr.press/v235/choi24c/choi24c.pdf
+AX6B828EA30AEEF829,BROAD_SOURCE,https://openreview.net/pdf?id=HJgExaVtwr,sources/anchor_supplement_v2/AX6B828EA30AEEF829.pdf,2,AX6B828EA30AEEF829: HTTP 403 from https://openreview.net/pdf?id=HJgExaVtwr
+AX79D4A4F6C4BBCA52,BROAD_SOURCE,https://openreview.net/pdf?id=SygRikHtvS,sources/anchor_supplement_v2/AX79D4A4F6C4BBCA52.pdf,2,AX79D4A4F6C4BBCA52: HTTP 403 from https://openreview.net/pdf?id=SygRikHtvS

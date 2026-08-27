@@ -1,0 +1,237 @@
+{
+  "schema_version": "3.0",
+  "paper_id": "P0229",
+  "canonical_work_id": "CW15F14534F94F6674F9AB",
+  "title": "TRAK: Attributing Model Behavior at Scale",
+  "decision": "SCREENED_ELIGIBLE",
+  "reviewed_at": "2026-08-10T18:38:00+08:00",
+  "reviewer": "user_accepted_inherited_fulltext_rebind",
+  "method_source": {
+    "path": "sources/legacy_core/P016_TRAK_2023.pdf",
+    "bytes": 8636031,
+    "sha256": "9A3AA5C2B83511DDAC253B2368DAF808590E9C8714089A51BE5CF4BFE069B96E"
+  },
+  "text_source": {
+    "path": "staging/screened_text_canonical_repaired_v4/text/P0229.txt",
+    "bytes": 199706,
+    "sha256": "BDEEAC7FF636D67F3A14BE3126D3CD38D7F78149B645C463C0C5BB6F7B1991D4"
+  },
+  "rq_ids": [
+    "RQ2",
+    "RQ3",
+    "RQ7",
+    "RQ8"
+  ],
+  "section_evidence": {
+    "METHODS": {
+      "status": "READ",
+      "pages": "3-7, Sections 2-3 and Equations 2-16",
+      "anchors": [
+        {
+          "page": 5,
+          "line": 14,
+          "quote": "3.2. TRAK for binary (non-linear) classifiers",
+          "paraphrase_zh": "TRAK 在线性化 checkpoint 上投影输出梯度，以全训练集梯度矩阵的逆重加权和错误概率项形成逐样本 attribution，再跨随机子集模型聚合。"
+        }
+      ]
+    },
+    "EXPERIMENTS": {
+      "status": "READ",
+      "pages": "7-9 and Appendices C-F",
+      "anchors": [
+        {
+          "page": 9,
+          "line": 57,
+          "quote": "Figure 5. Identifying counterfactually important examples for",
+          "paraphrase_zh": "实验覆盖图像、文本、CLIP 和事实追踪；LDS 用随机子集重训作 counterfactual ground truth，并辅以删除数据后的行为变化。"
+        }
+      ]
+    },
+    "ABLATIONS": {
+      "status": "READ",
+      "pages": "34-37, Appendix G and Tables 3-6",
+      "anchors": [
+        {
+          "page": 34,
+          "line": 3,
+          "quote": "G. Ablation Studies",
+          "paraphrase_zh": "消融覆盖 projection dimension、独立模型数、同轨迹 checkpoint 代理、早期 checkpoint、逆重加权、Q 项、leverage 和最后一层特征替代。"
+        }
+      ]
+    },
+    "LIMITATIONS": {
+      "status": "READ",
+      "pages": "9 and Appendix I",
+      "anchors": [
+        {
+          "page": 9,
+          "line": 34,
+          "quote": "Still, TRAK is not without limitations: in particular, it re-",
+          "paraphrase_zh": "作者明确限制方法于可微模型和局部线性近似适用的情形；早期 feature learning、优化器路径和集合交互没有被 estimator 完整建模。"
+        }
+      ]
+    }
+  },
+  "formulas": [
+    "For target z and training subset S-prime, an additive attribution predicts model output as g_tau(z,S-prime;S)=sum_{i in S-prime} tau(z,S)_i.",
+    "LDS is the Spearman correlation across random subsets between actual retrained-model outputs f(z;theta-star(S_j)) and additive attribution predictions g_tau(z,S_j;S).",
+    "TRAK linearizes an output function at a trained checkpoint, projects its parameter gradient phi(z)=P-transpose grad_theta f(z;theta-star), and stacks training gradients in Phi.",
+    "The practical estimator uses phi(z)-transpose (Phi-transpose Phi)^-1 Phi-transpose Q and averages across models; Q contains 1-p_correct and raw gradient similarity omits essential contextual reweighting."
+  ],
+  "algorithm_steps": [
+    "Train multiple models on independently sampled data subsets or collect explicitly identified checkpoints.",
+    "At each checkpoint, compute output gradients for exact training and target IDs and project them with a recorded random map.",
+    "Form the projected training matrix, solve its contextual inverse reweighting, multiply the error-probability Q term, and score target-to-training influence.",
+    "Average model-specific estimators and optionally apply a separately tuned soft threshold.",
+    "Evaluate counterfactual fidelity by retraining on held random subsets and computing LDS or by a separately specified removal intervention."
+  ],
+  "variables": [
+    "training set S, random subset S_j, target z, model output f, and attribution vector tau",
+    "projected output-gradient phi, stacked matrix Phi, projection P, dimension k, and ensemble size M",
+    "correct-class probability, diagonal Q term, inverse reweighting, leverage term, and threshold lambda",
+    "checkpoint epoch, independent training seed, subset identity, and output-function definition",
+    "linear datamodeling score LDS, removal effect, runtime, memory, condition number, and solve residual"
+  ],
+  "selection_timing": "TRAK is checkpoint local: features are computed after training a model state, and stronger estimators aggregate multiple independently trained states or checkpoint states.",
+  "refresh_rule": "A changed checkpoint, subset ensemble, target set, projection seed, output function, or gradient scope requires a new attribution artifact; the paper does not define online replay refresh.",
+  "budget": {
+    "unit": "projected gradients and trained models or checkpoints used to estimate one target-to-training attribution vector",
+    "denominator": "all exact training identities scored for a fixed target set and output function",
+    "unique_sample_definition": "Attribution rows correspond to exact training IDs, but the paper's estimator predicts additive subset effects rather than a replay selection ledger.",
+    "repeat_definition": "Training examples recur across random training subsets and model ensembles; repeat count is part of estimator construction, not replay dose.",
+    "cumulative_exposure_definition": "LDS ground-truth models are retrained on 50% subsets, while removal experiments change datasets; neither intervention matches additive replay exposure or optimizer steps.",
+    "compute_cost": "Main LDS uses 100 random 50% subsets with five models per subset; strongest baselines use up to 300,000 models, while TRAK trades model count for projected-gradient storage and linear solves."
+  },
+  "random_baselines": [
+    "100 random half-data subsets with five independently trained models per subset for LDS ground truth",
+    "datamodel and influence-function attribution baselines",
+    "TracIn and raw-gradient similarity variants",
+    "penultimate-layer or last-layer features instead of full projected gradients",
+    "randomly selected removal subsets in intervention comparisons"
+  ],
+  "datasets": [
+    "CIFAR-2",
+    "CIFAR-10",
+    "ImageNet",
+    "QNLI",
+    "CLIP-related image-text data",
+    "FTRACE-TREX",
+    "LIVING-17"
+  ],
+  "models": [
+    "ResNet-9",
+    "modified ResNet-18",
+    "BERT-base",
+    "CLIP",
+    "mT5"
+  ],
+  "seed_count": {
+    "counts": [
+      "5 independently trained models for each of 100 LDS evaluation subsets",
+      "ensembles ranging from 1 to 100 models in TRAK ablations",
+      "8 independent models in the FTRACE-TREX removal experiment"
+    ],
+    "scope": "counterfactual subset ground truth, estimator ensemble size, and fact-removal intervention",
+    "aggregation": "model outputs or attribution estimators are averaged; this reduces seed noise but does not report sign stability or worst future training seed."
+  },
+  "checkpoint_selection": "TRAK may use final or early checkpoints and tunes projection dimension or sparsity against LDS. These are attribution-study choices rather than an independent Stage1 checkpoint rule; blind holdout and test must not select them.",
+  "results": [
+    {
+      "claim": "完整 eNTK 梯度显著优于 penultimate/last-layer 特征，说明廉价梯度范围不能未经校准直接视作充分。",
+      "locator": "page 37, Table 6",
+      "value": "eNTK LDS is 0.516/0.413/0.589 on CIFAR-2/CIFAR-10/QNLI versus 0.198/0.120/0.195 for penultimate-layer representations.",
+      "anchor": {
+        "page": 37,
+        "line": 4,
+        "quote": "CIFAR-2                        eNTK                                        0.516",
+        "paraphrase_zh": "Table 6 的三任务逐行差异支持先在小规模候选池校准最后一层与 fuller-gradient，再决定工程近似。"
+      }
+    },
+    {
+      "claim": "逆重加权和 Q 概率项是 estimator 的实质组成，raw gradient similarity 的 LDS 很低。",
+      "locator": "page 36, Table 5",
+      "value": "Full practical variant correlation is 0.499; removing Q gives 0.391 and removing reweighting gives 0.056.",
+      "anchor": {
+        "page": 36,
+        "line": 38,
+        "quote": "Experiment      Reweighting       Loss     Diagonal R",
+        "paraphrase_zh": "组件消融反驳仅用 loss、梯度模长或简单 cosine 就等同 reducible/causal influence。"
+      }
+    },
+    {
+      "claim": "更多独立模型提高 LDS，而同轨迹 checkpoint 只能作为近似替代，不能当成独立 seed。",
+      "locator": "pages 34-35, Figure 12 and Tables 3-4",
+      "value": "With 100 total checkpoints on CIFAR-10, LDS rises from 0.329 using 5 independent models to 0.355 using 100; early-model LDS rises from 0.100 at epoch 1 to 0.308 at epoch 25.",
+      "anchor": {
+        "page": 35,
+        "line": 52,
+        "quote": "# training epochs       LDS (M = 100)",
+        "paraphrase_zh": "早期 checkpoint 含有信息但随 epoch 改变；checkpoint aggregation 与独立 initialization 的证据角色必须分开。"
+      }
+    },
+    {
+      "claim": "语义检索到的显式 proponents 不等于真正改变模型行为的数据。",
+      "locator": "page 9, Figure 5",
+      "value": "Removing TRAK-ranked abstracts decreases target accuracy by 34%, versus 10% for BM25 and 12% for annotated proponents, over 50 queries and eight models.",
+      "anchor": {
+        "page": 9,
+        "line": 29,
+        "quote": "We find (see Figure 5), however, that it is only the TRAK-",
+        "paraphrase_zh": "删除干预表明 semantic similarity 与 model-behavior influence 不同，但删除数据仍不能外推为重复 replay 的正向效用。"
+      }
+    },
+    {
+      "claim": "projection dimension 对 LDS 非单调，维度增加到一定程度后反而下降。",
+      "locator": "page 34, Appendix G.1 and Figure 12",
+      "value": "LDS initially rises with k and then declines; the peak shifts with ensemble size M.",
+      "anchor": {
+        "page": 34,
+        "line": 30,
+        "quote": "However, beyond a certain point, increasing projection dimension decreases the LDS.",
+        "paraphrase_zh": "投影维度是需在 discovery 层校准的 estimator 超参，不是越大越忠实的普适常数。"
+      }
+    }
+  ],
+  "ablations": [
+    "random projection dimension and ensemble size",
+    "independent models versus multiple checkpoints from fewer trajectories",
+    "early versus later training checkpoints",
+    "inverse reweighting, Q loss term, diagonal curvature R, leverage, and averaging convention",
+    "full projected eNTK gradient versus penultimate or last-layer representations",
+    "soft-threshold sparsity and subset ensemble construction"
+  ],
+  "negative_results": [
+    "Projection dimension is non-monotonic and can reduce LDS beyond a task- and ensemble-dependent optimum.",
+    "Penultimate/last-layer features substantially underperform full projected gradients.",
+    "Raw gradient similarity without contextual inverse reweighting has LDS 0.056 in the reported ablation.",
+    "The theoretically motivated diagonal curvature and leverage terms do not improve the practical LDS variant.",
+    "Model/subset averaging can hide attribution signs that disagree across initializations."
+  ],
+  "failure_conditions": [
+    "The local linearization or empirical NTK does not represent the relevant finite replay update.",
+    "Projection, gradient scope, target IDs, sample order, output function, or checkpoint identity is not hash bound.",
+    "An ill-conditioned unregularized inverse changes scores without recorded condition and residual diagnostics.",
+    "Checkpoint aggregation is mistaken for independent unseen-seed confirmation.",
+    "Additive individual scores miss set interactions, redundancy, or opposing FN95 target directions."
+  ],
+  "limitations": [
+    "TRAK predicts counterfactual subset-removal behavior, not additive replay utility under matched exposure.",
+    "Its effectiveness depends on differentiability and a suitable local linear approximation.",
+    "LDS assumes additive subset predictions and is not a safety metric or seed-success probability.",
+    "Projection, threshold, output function, training recipe, and model ensemble are empirically tuned.",
+    "Main benchmark recipes are short or modified and do not match the Stage1 fixed trajectory.",
+    "No experiment targets FN95, a dual-end constraint, R1/R2/current-loss/no-replay arms, or worst unseen seed."
+  ],
+  "transfer_class": "MECHANISM_ONLY",
+  "stage1_mechanism_zh": "该文支持把 A 作为当前 checkpoint、目标样本和训练 seed 条件下的方向候选，并要求保存投影、梯度范围、逆重加权、Q 项、数值条件和逐 seed 未聚合分数。它还反驳 raw gradient/cosine 足够以及同轨迹 checkpoints 等同独立 seeds。",
+  "stage1_non_inference_zh": "TRAK/LDS 不能证明 replay utility：LDS 衡量随机删减子集的可加 counterfactual 相关，删除事实数据也不是固定基础流上的重复曝光。论文没有固定累计 replay、unique/repeat/steps、独立 FN95 目标或 R1/R2/current-loss/no-replay 配对；任何 TRAK 分数都必须由真实 replay intervention 校准。",
+  "exclusion_reason": "NOT_APPLICABLE_WITH_REASON:eligible as checkpoint-conditioned target-alignment and attribution-calibration evidence",
+  "migration_provenance": {
+    "source_review": "../FULL_TEXT_EVIDENCE_NOTES/P016_TRAK_2023.md",
+    "source_paper_id": "P016",
+    "migration_basis": "CANONICAL_WORK_ID_AND_BYTE_IDENTICAL_PDF_WITH_CURRENT_TEXT_REANCHOR",
+    "content_review_reused": true,
+    "evidence_provenance_class": "USER_ACCEPTED_INHERITED_EVIDENCE",
+    "independent_content_rereview_performed": false
+  }
+}

@@ -1,0 +1,225 @@
+{
+  "schema_version": "3.0",
+  "paper_id": "P0142",
+  "canonical_work_id": "CW538E0F4861D2EB4BB06D",
+  "title": "Learn the Time to Learn: Replay Scheduling in Continual Learning",
+  "decision": "SCREENED_ELIGIBLE",
+  "reviewed_at": "2026-08-10T18:12:00+08:00",
+  "reviewer": "user_accepted_inherited_fulltext_rebind",
+  "method_source": {
+    "path": "staging/broad_freeze_canonical_repaired_v4/sources/P0142.pdf",
+    "bytes": 857691,
+    "sha256": "C10C3AC54DD62ED5D38ED16E0AD446194A6F2779011B2489FA0EBF1007829D4E"
+  },
+  "text_source": {
+    "path": "staging/screened_text_canonical_repaired_v4/text/P0142.txt",
+    "bytes": 298206,
+    "sha256": "E57742404E41981AACED191A393614C98DD679E780C60107FC11771CF66C81ED"
+  },
+  "rq_ids": [
+    "RQ1",
+    "RQ6",
+    "RQ7",
+    "RQ8"
+  ],
+  "section_evidence": {
+    "METHODS": {
+      "status": "READ",
+      "pages": "4-6, Sections 3.1-3.3 and Equation 1",
+      "anchors": [
+        {
+          "page": 5,
+          "line": 41,
+          "quote": "Monte Carlo Tree Search for Replay Schedules.",
+          "paraphrase_zh": "论文把各任务边界的历史任务比例离散成树路径，以 MCTS 完整重训评估 schedule，并另用验证准确率状态训练 DQN/A2C 调度策略。"
+        }
+      ]
+    },
+    "EXPERIMENTS": {
+      "status": "READ",
+      "pages": "7-12 and Appendices C-D",
+      "anchors": [
+        {
+          "page": 7,
+          "line": 19,
+          "quote": "Experimental Setup.          We conduct experiments on several CL benchmark datasets:",
+          "paraphrase_zh": "实验覆盖六个 continual-learning 数据集、三类 CL 设置、多种 memory size、选择器、replay 方法以及新任务顺序和新数据集迁移。"
+        }
+      ]
+    },
+    "ABLATIONS": {
+      "status": "READ",
+      "pages": "8-11 and Appendices C-D, Figures 3-5 and Tables 1-2",
+      "anchors": [
+        {
+          "page": 9,
+          "line": 6,
+          "quote": "Table 1: Performance comparison between MCTS (Ours) and the baselines with various memory selection",
+          "paraphrase_zh": "论文把 schedule 与 uniform、k-means、MoF memory selection 交叉，并进一步替换 HAL、MER、DER，显示时机和集合身份是不同因素。"
+        }
+      ]
+    },
+    "LIMITATIONS": {
+      "status": "READ",
+      "pages": "12, explicit Limitations and Future Work",
+      "anchors": [
+        {
+          "page": 12,
+          "line": 26,
+          "quote": "Limitations and Future Work. Generalization in RL is a challenging research topic by itself.",
+          "paraphrase_zh": "作者明确承认环境生成成本高、离散 action space 难扩展，并依赖已知任务边界、任务数和测试时验证集。"
+        }
+      ]
+    }
+  },
+  "formulas": [
+    "A replay schedule S=(p_1,...,p_{T-1}) assigns a proportion vector over previously seen tasks at every task boundary while the memory capacity M stays fixed.",
+    "Discrete actions place t-1 interchangeable bins among t-1 historical tasks, convert occurrence counts to proportions, and round per-task counts while preserving total memory M.",
+    "Equation 1 uses UCT(v_t,v_{t+1}) = max(q(v_{t+1})) + C sqrt(2 log n(v_t)/n(v_{t+1})); exploitation uses the maximum observed rollout reward rather than the mean.",
+    "A completed MCTS rollout receives final mean validation accuracy r=(1/T) sum_i A_validation[T,i]; the RL policy uses current mean validation accuracy as a dense reward."
+  ],
+  "algorithm_steps": [
+    "Split each continual-learning task into train, validation, and test roles and define a fixed historical memory size.",
+    "At every task boundary, choose a discrete vector of proportions over prior tasks and sample that composition into replay memory.",
+    "For MCTS, traverse schedule nodes, train a complete CL model with the resulting schedule, score final validation accuracy, and backpropagate the rollout reward for 100 searches.",
+    "For policy learning, precompute CL transition environments with varied initialization and task order, then train DQN or A2C on validation-accuracy states.",
+    "Freeze the selected schedule or learned policy and evaluate it on held task orders or datasets without policy fine-tuning."
+  ],
+  "variables": [
+    "task index t, number of tasks T, and historical task datasets",
+    "memory capacity M, replay composition M_t, and task-proportion vector p_t",
+    "schedule S, validation reward r, UCT exploration constant C, reward history q, and visit count n",
+    "task accuracies A_t,i, average accuracy ACC, backward transfer BWT, and forward transfer FWT",
+    "training environment, task order, network initialization, policy state, action, and reward"
+  ],
+  "selection_timing": "Replay composition changes at known task boundaries; the selected pool is then sampled throughout all epochs of the current task.",
+  "refresh_rule": "A task-proportion action refreshes memory once per new task. MCTS selects a complete fixed schedule after search; DQN/A2C select actions from validation-accuracy state in a held environment.",
+  "budget": {
+    "unit": "historical replay-memory examples concatenated with each current-task mini-batch",
+    "denominator": "fixed memory capacity M allocated among tasks seen before the current task",
+    "unique_sample_definition": "Memory identities are drawn from the task proportions, but the paper primarily reports capacity and task composition rather than cross-task unique-ID unions.",
+    "repeat_definition": "The same task-conditioned memory pool is sampled through every batch of a task, so retained identities may repeat; per-ID repeat histograms are not reported.",
+    "cumulative_exposure_definition": "Memory capacity is held within a comparison, but schedules can change which identities recur and whether replay is skipped; cumulative optimizer-visible replay occurrences are not published as a matched ledger.",
+    "compute_cost": "MCTS requires complete CL retraining for each of 100 rollouts; RL environment tables require many task-training transitions, reported at roughly 9.5 hours for Split MNIST and 16.1 hours for Split CIFAR-10 on a 2080Ti."
+  },
+  "random_baselines": [
+    "Random schedule sampled from the same discrete task-proportion action space",
+    "Equal Task Schedule allocating memory approximately equally across seen tasks",
+    "Heuristic Global Drop using validation-accuracy thresholds",
+    "offline joint training as a non-budget-matched upper reference",
+    "uniform, k-means, Mean-of-Features, and k-center memory selection crossed with schedules"
+  ],
+  "datasets": [
+    "Split MNIST",
+    "Split FashionMNIST",
+    "Split notMNIST",
+    "Permuted MNIST",
+    "Split CIFAR-100",
+    "Split miniImageNet",
+    "Split CIFAR-10 for policy transfer"
+  ],
+  "models": [
+    "two-layer MLP",
+    "small ConvNet",
+    "reduced ResNet-18",
+    "DQN scheduling policy",
+    "A2C scheduling policy"
+  ],
+  "seed_count": {
+    "counts": [
+      "5 seeds for the reported central schedule comparisons and motivating timing experiment"
+    ],
+    "scope": "dataset, memory-size, schedule, memory-selection, replay-method, and transfer conditions",
+    "aggregation": "means and standard deviations plus many pairwise Welch tests; no visible family-wise or false-discovery correction is reported."
+  },
+  "checkpoint_selection": "MCTS chooses schedules by the largest validation reward encountered over 100 complete retrain rollouts, creating adaptive search optimism. Test accuracy is not the programmatic reward, but the public workflow computes it during search; Stage1 must keep test inaccessible and use independent confirmation seeds.",
+  "results": [
+    {
+      "claim": "保持同一 10 样本 memory 和最终任务不变，仅改变单次 replay 时点就显著改变最终平均准确率。",
+      "locator": "page 2, Figure 1",
+      "value": "Final ACC ranges from 89.66% to 94.49% across four replay times, averaged over five seeds.",
+      "anchor": {
+        "page": 2,
+        "line": 20,
+        "quote": "Figure 1: Task accuracies on Split MNIST",
+        "paraphrase_zh": "图 1 固定 Task-1 的十个 replay 样本，只移动 replay 时点，提供 timing 是独立因果因素的直接干预证据。"
+      }
+    },
+    {
+      "claim": "MCTS schedule 在多个 memory-selection 条件下优于 Random/ETS，但提升依赖数据集和选择器。",
+      "locator": "page 9, Table 1",
+      "value": "With uniform memory on Split MNIST, MCTS ACC is 97.93 +/- 0.56 versus Random 94.91 +/- 2.52; on Permuted MNIST, MCTS 76.34 is slightly below Heur-GD 76.68.",
+      "anchor": {
+        "page": 9,
+        "line": 17,
+        "quote": "MCTS (Ours)   97.93 ± 0.56",
+        "paraphrase_zh": "同一表内既有明显优势，也有 MCTS 不是最优的条件，因此证据支持 context dependence 而非统一 schedule。"
+      }
+    },
+    {
+      "claim": "把 schedule 与 HAL、MER、DER 交叉后，MCTS 也不是每个数据集和 replay 方法都胜过所有基线。",
+      "locator": "page 9, Table 2",
+      "value": "For MER on Split miniImageNet, MCTS ACC 32.74 is below Random 32.86 and ETS 33.58; for DER it is 43.46 versus Heur-GD 43.62.",
+      "anchor": {
+        "page": 9,
+        "line": 63,
+        "quote": "MCTS (Ours)   96.44 ± 0.72",
+        "paraphrase_zh": "Table 2 的完整 MCTS 行包含若干未胜随机或启发式的单元格，构成 schedule 价值反转的直接负结果。"
+      }
+    },
+    {
+      "claim": "学习到的 RL 调度策略在域转移上失败，尤其是新的 FashionMNIST 环境。",
+      "locator": "page 12, transfer discussion",
+      "value": "The authors report difficulty generalizing to Split FashionMNIST and attribute it to high variation in transition dynamics.",
+      "anchor": {
+        "page": 12,
+        "line": 6,
+        "quote": "notMNIST compared to the baselines. However, the learned RL policies have difficulties generalizing to Split",
+        "paraphrase_zh": "论文明确记录策略迁移失败，说明发现 seed 或环境上的 schedule 不能自动外推到未见状态分布。"
+      }
+    }
+  ],
+  "ablations": [
+    "memory capacity across task-, domain-, and class-incremental settings",
+    "Random, Equal Task Schedule, and validation-threshold heuristic schedules",
+    "uniform, k-means, Mean-of-Features, and k-center memory selection",
+    "HAL, MER, and DER replay algorithms crossed with scheduling",
+    "tiny-memory conditions",
+    "schedule transfer across initialization seeds, task orders, and datasets",
+    "DQN and A2C learned policies"
+  ],
+  "negative_results": [
+    "MCTS is not universally best; several dataset, memory, and replay-method cells are statistically indistinguishable or worse than Random/ETS/Heur-GD.",
+    "Transferred schedules differ materially by discovery seed, and no one schedule dominates all datasets.",
+    "DQN/A2C policies generalize poorly to some held environments, particularly Split FashionMNIST.",
+    "Forward-transfer estimates have high seed variance.",
+    "Many pairwise tests are reported without visible multiplicity correction, while deterministic baselines can appear with zero variance in appendix rank tests."
+  ],
+  "failure_conditions": [
+    "The schedule is optimized and confirmed on the same validation seeds.",
+    "Task-boundary proportions are transferred to stationary replay where their denominator and timing semantics differ.",
+    "Nominal memory capacity is treated as matched cumulative optimizer exposure despite skipped replay and repeated identities.",
+    "A maximum-reward MCTS search overfits validation noise or operationally exposes test metrics.",
+    "The training environment, initialization, order, or target domain shifts beyond the learned policy state distribution."
+  ],
+  "limitations": [
+    "The study concerns sequential known-task continual learning rather than a stationary Stage1 base-training process.",
+    "MCTS and RL discovery are computationally expensive and adaptively reuse validation outcomes.",
+    "Five seeds are too few to characterize worst-seed direction reversals for Stage1 confirmation.",
+    "Capacity is fixed but unique IDs, repeats, cumulative replay occurrences, and optimizer-visible steps are not jointly matched.",
+    "The method assumes known task boundaries, known task count, and validation access at test time.",
+    "Endpoints are average task accuracy and forgetting, not an FN=0..95 safety frontier or dual operating constraints."
+  ],
+  "transfer_class": "INSPIRED_ADAPTATION",
+  "stage1_mechanism_zh": "该论文直接支持把 replay timing、集合身份和累计 dose 分开：同一十个样本只移动 replay 时点即可改变结局，而且 schedule 的收益随 seed、数据集、memory selection 和 replay algorithm 反转。Stage1 因此必须固定基础流，以整数 slot 匹配连续与迁移 dose，并在独立 seed 上确认固定 schedule；自适应调度只能留给后续探索。",
+  "stage1_non_inference_zh": "论文不能证明某个 Stage1 Q/R/A/D 选择器或 epoch 边界有效。它按已知任务边界分配历史任务、没有匹配 stationary replay 的 unique/repeat/累计曝光/steps，也没有 FN95 局部目标、R1/R2/current-loss/no-replay 五臂配对。MCTS 的验证搜索和五 seed 均值不能替代未见 seed 的 confirmatory intervention。",
+  "exclusion_reason": "NOT_APPLICABLE_WITH_REASON:eligible as replay-timing, strict-random-control, and seed-context evidence",
+  "migration_provenance": {
+    "source_review": "../FULL_TEXT_EVIDENCE_NOTES/P019_Replay_Scheduling_TMLR_2023.md",
+    "source_paper_id": "P019",
+    "migration_basis": "CANONICAL_WORK_ID_AND_BYTE_IDENTICAL_PDF_WITH_CURRENT_TEXT_REANCHOR",
+    "content_review_reused": true,
+    "evidence_provenance_class": "USER_ACCEPTED_INHERITED_EVIDENCE",
+    "independent_content_rereview_performed": false
+  }
+}

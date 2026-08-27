@@ -1,0 +1,166 @@
+{
+  "schema_version": "3.0",
+  "paper_id": "P0082",
+  "canonical_work_id": "CW73982D015AB40FEE5E6B",
+  "title": "Learning from Long-Tailed Noisy Data with Sample Selection and Balanced Loss",
+  "decision": "SCREENED_ELIGIBLE",
+  "reviewed_at": "2026-08-10T15:31:20+08:00",
+  "reviewer": "codex_primary_fulltext_review",
+  "method_source": {
+    "path": "staging/broad_freeze_anchor_complete_v3/sources/P0082.pdf",
+    "bytes": 625319,
+    "sha256": "1A2E018AD69D41F13551F2AE1AFE2D478C85DA159B66A08355E51C8D959D1327"
+  },
+  "text_source": {
+    "path": "staging/screened_text_anchor_complete_v3/text/P0082.txt",
+    "bytes": 83145,
+    "sha256": "DB9556F8E738A31EDDB680E89F1CF78F130A6465725537D5B1E52745958F4354"
+  },
+  "rq_ids": ["RQ1", "RQ2", "RQ4", "RQ5", "RQ6"],
+  "section_evidence": {
+    "METHODS": {
+      "status": "READ",
+      "pages": "3-5, Procedure 1, equations 1-6, and Algorithm 1",
+      "anchors": [
+        {
+          "page": 3,
+          "line": 61,
+          "quote": "we adopt a two-component (g1 and g0 ) Gaussian Mixture Model (GMM) for each class",
+          "paraphrase_zh": "方法在每个观测类别内部对交叉熵损失拟合两分量 GMM，以干净分量后验概率是否超过二分之一来划分有标签干净集 L 与无标签集 U。"
+        }
+      ]
+    },
+    "EXPERIMENTS": {
+      "status": "READ",
+      "pages": "5-9 and Appendix A-E on pages 13-17",
+      "anchors": [
+        {
+          "page": 7,
+          "line": 50,
+          "quote": "On CIFAR-10, CIFAR-100, mini-ImageNet-Red and Animal-10N, we use an 18-layer PreAct ResNet and train for 200 epochs.",
+          "paraphrase_zh": "主实验覆盖合成与真实长尾噪声数据；CIFAR 等使用 PreAct-ResNet-18 训练 200 轮，Clothing1M/Food-101N 用 ResNet-50，WebVision 用 Inception-ResNet v2。"
+        }
+      ]
+    },
+    "ABLATIONS": {
+      "status": "READ",
+      "pages": "8-9, Table 6, Figure 1, Table 7, and Appendix D",
+      "anchors": [
+        {
+          "page": 8,
+          "line": 51,
+          "quote": "4.3   Ablation Study",
+          "paraphrase_zh": "消融分别移除基于模型偏差的重平衡、改用标签频率、移除 Lreg、将分类别 GMM 换成全局单 GMM，并扫描抑制与放松超参数。"
+        }
+      ]
+    },
+    "LIMITATIONS": {
+      "status": "NOT_REPORTED_BY_PAPER",
+      "pages": "1-17 including conclusion and all appendices",
+      "anchors": [],
+      "absence_reason_zh": "全文没有独立局限章节，也未系统讨论基于测试集报告 Best 值、随机初始化次数、未知真实噪声率与跨数据分布迁移造成的不确定性。"
+    }
+  },
+  "formulas": [
+    "For each observed class i, cross-entropy losses L(D_i) are modeled by a two-component GMM; P(g1 | loss) > 1/2 defines the clean subset.",
+    "M_ij^t averages the current model probability of predicting class j over selected labeled samples observed as class i, and EMA gives Mbar^t = sigma Mbar^(t-1) + (1-sigma) M^t.",
+    "R_ij = Mbar_ij / Mbar_ji and alpha_ij = R_ij^g(R_ij), with separate suppression and relaxation exponents in the balanced supervised loss.",
+    "The final objective is L = L'_L + lambda_u L_U + lambda_reg L_reg."
+  ],
+  "algorithm_steps": [
+    "Warm up the network on all noisy long-tailed data with cross-entropy plus a class-balanced output regularizer.",
+    "At every post-warm-up epoch, fit a separate two-component GMM to losses within each observed class and partition examples into labeled-clean L and unlabeled U.",
+    "Use MixMatch on mini-batches from L and U while estimating a class-to-class model-bias matrix, then stabilize it with an EMA.",
+    "After the bias-estimation phase, keep refreshing CASS and optimize the bias-balanced supervised loss plus unsupervised and regularization terms until the fixed endpoint."
+  ],
+  "variables": [
+    "observed class-specific sample counts n_c and imbalance ratio rho",
+    "per-example cross-entropy loss and GMM clean posterior",
+    "clean labeled set L and unlabeled set U",
+    "model-bias matrix M, EMA matrix Mbar, pairwise ratio R_ij, and weight alpha_ij",
+    "warm-up, bias-estimation, and total epoch endpoints",
+    "lambda_u, lambda_reg, sigma, gamma_sup, and gamma_rel"
+  ],
+  "selection_timing": "After a dataset-specific warm-up, CASS is executed at the start of every subsequent epoch before optimizer mini-batches are drawn; the partition therefore depends on the current model state.",
+  "refresh_rule": "The clean/noisy partition is refreshed every epoch by refitting per-class two-component GMMs to current losses; the model-bias matrix is refreshed during its estimation phase and temporally averaged by EMA.",
+  "budget": {
+    "unit": "optimizer-visible labeled and unlabeled mini-batch examples per training iteration",
+    "denominator": "the entire noisy long-tailed training set, repartitioned each epoch into L and U",
+    "unique_sample_definition": "The paper identifies examples by their membership in L or U for the current epoch but does not report cumulative unique selected IDs across epochs.",
+    "repeat_definition": "An example can be selected as clean in many successive epochs or reused as an unlabeled example; the paper does not publish a per-example repeat histogram.",
+    "cumulative_exposure_definition": "Cumulative optimizer-visible exposure for L and U is not tabulated, and the method is not matched to a random selector at equal exposure.",
+    "compute_cost": "Each post-warm-up epoch adds class-wise loss collection and GMM fitting; MixMatch augmentation and pseudo-labeling also add compute beyond ordinary supervised training."
+  },
+  "random_baselines": [
+    "ERM on all noisy long-tailed data",
+    "Co-teaching, ELR+, DivideMix, H2E, MW-Net, HAR-DRW, and long-tail-adjusted DivideMix variants",
+    "No global-random or class-matched-random selector with the same selected count, epoch timing, cumulative exposure, and optimizer steps is reported."
+  ],
+  "datasets": [
+    "long-tailed CIFAR-10 and CIFAR-100 with symmetric or asymmetric synthetic noise",
+    "mini-ImageNet-Red",
+    "Clothing1M",
+    "Food-101N",
+    "Animal-10N",
+    "mini WebVision"
+  ],
+  "models": ["PreAct-ResNet-18", "ResNet-50", "Inception-ResNet v2"],
+  "seed_count": "NOT_REPORTED_BY_PAPER",
+  "checkpoint_selection": "Tables report both Best and Last test accuracy. The paper does not define an independent validation-only checkpoint rule, so Best is potentially test-oracle selected; only fixed Last values are safe for transfer claims.",
+  "results": [
+    {
+      "claim": "在 CIFAR-100 对称噪声率 0.5、长尾比 100 的最难列中，固定末轮 SSBL 高于固定末轮 DivideMix 和 ERM。",
+      "locator": "page 6, Table 1, Last rows",
+      "value": "SSBL Last 36.49%; DivideMix Last 34.51%; ERM Last 14.47% test accuracy.",
+      "anchor": {
+        "page": 6,
+        "line": 19,
+        "quote": "Last 91.49 85.83 78.39 88.17 75.76 68.44 62.45 50.70 43.89 55.65 40.82 36.49",
+        "paraphrase_zh": "SSBL 的固定末轮在最极端 CIFAR-100 设置取得 36.49%，相对 DivideMix 的 34.51% 有提升，但论文未报告跨 seed 方差。"
+      }
+    },
+    {
+      "claim": "将分类别选择改为所有类别共享一个 GMM 会显著降低平均测试准确率。",
+      "locator": "page 8, Table 6",
+      "value": "SSBL mean 48.33%; without class-aware sample selection mean 38.74%.",
+      "anchor": {
+        "page": 8,
+        "line": 30,
+        "quote": "w/o class-aware sample selection        38.74",
+        "paraphrase_zh": "在 Table 6 的六个 CIFAR-100 组合上，全局单 GMM 版本平均值比完整分类别方法低 9.59 个百分点。"
+      }
+    }
+  ],
+  "ablations": [
+    "replace model-bias rebalancing with ordinary cross-entropy",
+    "estimate rebalancing from label frequency rather than model bias",
+    "remove Lreg only during warm-up or throughout training",
+    "replace class-aware GMMs with one global GMM",
+    "sweep gamma_sup and gamma_rel",
+    "reuse CASS partitions with DARP and ABC"
+  ],
+  "negative_results": [
+    "A global GMM over all observed classes performs much worse than class-aware selection in the ablation.",
+    "Too little or too much head-class suppression and excessive tail-class relaxation degrade accuracy.",
+    "Removing Lreg for the full process collapses some extreme long-tail settings.",
+    "The paper does not establish exposure-matched utility against random selection or cross-seed directional stability."
+  ],
+  "failure_conditions": [
+    "Per-class loss distributions do not separate clean from noisy examples or are too small to fit a stable two-component GMM.",
+    "Observed class is too corrupted for a class-conditional GMM to represent a coherent population.",
+    "Best test accuracy is treated as a deployable checkpoint despite the lack of an independent checkpoint-selection split.",
+    "Stage1 reuses the clean-posterior rule as replay utility without matching random exposure, optimizer steps, and model-state lag."
+  ],
+  "limitations": [
+    "No strict global-random or method-matched-random sample-selection control is provided.",
+    "No cumulative unique-ID, repeat, optimizer-visible exposure, or optimizer-step ledger is reported.",
+    "Independent training-seed counts and worst-seed outcomes are not reported.",
+    "The target is overall multiclass accuracy under label noise and imbalance, not FN95 or a local safety frontier.",
+    "Selection and the new balanced loss change together, so their causal contributions are not fully isolated by the main comparisons.",
+    "The paper reports Best test accuracy alongside Last, creating a potential test-oracle interpretation."
+  ],
+  "transfer_class": "INSPIRED_ADAPTATION",
+  "stage1_mechanism_zh": "该论文直接支持 Q 与集合条件 D 的顺序门控思路：先在来源或类别分层内估计标签可靠性，避免跨分层比较不可比的 loss，再让未判为可靠的样本保留为无标签候选而非简单丢弃。对 Stage1 可迁移的是分层可靠性门控和每轮刷新机制；它不提供 R 或 FN95 方向 A 的证据，也没有证明被选样本应获得额外 replay 曝光。",
+  "stage1_non_inference_zh": "不能从 SSBL 的准确率提升推出有限预算动态回流有效，因为 CASS、半监督 MixMatch、平衡损失和正则项同时改变，且没有累计曝光匹配的 global random、method-matched random、current-loss 与 no-replay。Stage1 若借鉴，只能把 class/source-aware Q 当析因门控，并必须在固定基础训练、固定 replay slots、固定 steps 和未见 training seeds 下单独检验 utility。",
+  "exclusion_reason": "NOT_APPLICABLE_WITH_REASON:eligible for SCREENED evidence tier"
+}

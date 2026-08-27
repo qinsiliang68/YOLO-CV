@@ -1,0 +1,14 @@
+{
+  "schema_version": "2.0",
+  "status": "PASS",
+  "created_at": "2026-08-10T06:38:28.020022+08:00",
+  "planned_count": 320,
+  "reused_verified_pdf_count": 211,
+  "direct_pdf_request_count": 25,
+  "discovery_required_count": 84,
+  "formal_screened_increment": 0,
+  "formal_training_started": false,
+  "engineering_gate_generated": false,
+  "blind_holdout_opened": false,
+  "input_manifest_sha256": "0491B639CD3B5DB0F7937A34BC852FA6AB6C1956B4EBA5F0E77A7ECB8130A0CC"
+}

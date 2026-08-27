@@ -1,0 +1,3 @@
+paper_id,artifact_role,url,destination,source_authority
+LEGACY-P025,DEEP_FULL_TEXT,https://qcb.ucla.edu/wp-content/uploads/sites/14/2020/04/PMID-29423442.pdf,sources/legacy_core/P025_Neyman_Pearson_Umbrella_NP_ROC_2018.pdf,OFFICIAL_REPOSITORY
+LEGACY-P036,DEEP_FULL_TEXT,https://raw.githubusercontent.com/mlresearch/v267/main/assets/chhabra25a/chhabra25a.pdf,sources/legacy_core/P036_Outlier_Gradient_Analysis_ICML_2025.pdf,PRIMARY_PUBLISHER

@@ -1,0 +1,25 @@
+{
+  "schema_version": "2.0",
+  "status": "PASS",
+  "created_at": "2026-08-10T05:16:11.349608+08:00",
+  "selected_count": 500,
+  "reserve_count": 18,
+  "quota_counts": {
+    "RQ1": 63,
+    "RQ2": 63,
+    "RQ3": 62,
+    "RQ4": 63,
+    "RQ5": 64,
+    "RQ6": 64,
+    "RQ7": 63,
+    "RQ8": 58
+  },
+  "formal_broad_increment": 0,
+  "formal_registry_published": false,
+  "formal_training_started": false,
+  "engineering_gate_generated": false,
+  "blind_holdout_opened": false,
+  "build_input_count": 1111,
+  "build_input_manifest_sha256": "74AA25C92C305A7B998A6BD4F266BA14842BBADC8C6F7BD011E5046F9B3AD023",
+  "root_digest_before_receipt": "C18A80F6495872B03577DB490E5DE2AD1B8C3E6B98F3E5DDFD9E14F983C280CD"
+}
