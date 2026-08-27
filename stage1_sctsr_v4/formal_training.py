@@ -712,7 +712,6 @@ def _assert_expected_checkpoint_payload(payload: Mapping[str, Any], identity: Fo
         "canonical_training_lock_sha256": identity.canonical_training_lock_sha256,
         "initial_checkpoint_sha256": identity.initial_checkpoint_sha256,
         "base_manifest_sha256": identity.base_manifest_sha256,
-        "source_tree_digest": identity.source_tree_digest,
         "runtime_config_digest": identity.runtime_config_digest,
         "asset_registry_digest": identity.asset_registry_digest,
     }
@@ -721,7 +720,7 @@ def _assert_expected_checkpoint_payload(payload: Mapping[str, Any], identity: Fo
         if observed != value:
             raise SctsrError(
                 ErrorCode.BRANCH_LINEAGE_MISMATCH,
-                "Parent checkpoint content differs from the prepared branch identity",
+                "Parent checkpoint scientific content differs from the prepared branch identity",
                 failing_field=field,
                 observed=observed,
                 expected=value,

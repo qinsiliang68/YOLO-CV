@@ -15,7 +15,7 @@ from stage1_sctsr_v4.branch_lineage import BranchLineage
 from stage1_sctsr_v4.epoch_transaction import EpochTransaction, GenerationIdentity
 from stage1_sctsr_v4.errors import ErrorCode, SctsrError
 from stage1_sctsr_v4.fixed_step_runtime import ExponentialMovingAverage
-from stage1_sctsr_v4.formal_training import FormalIdentity, run_prepared_branch
+from stage1_sctsr_v4.formal_training import FormalIdentity, _assert_expected_checkpoint_payload, run_prepared_branch
 from stage1_sctsr_v4.identity_pool import IdentityRecord, identity_digest
 from stage1_sctsr_v4.occurrence_ledger import write_occurrence_partition
 from stage1_sctsr_v4.recovery import inspect_formal_resume_context, prepare_formal_resume_context
@@ -368,6 +368,35 @@ def test_formal_resume_rejects_checkpoint_rng_not_bound_by_epoch_summary(tmp_pat
     with pytest.raises(SctsrError) as captured:
         _prepare(root, start_generation=start_generation)
     assert captured.value.code is ErrorCode.RESUME_GENERATION_MISMATCH
+
+
+def test_branch_parent_source_digest_is_independent_from_child_source_identity():
+    identity = FormalIdentity(
+        training_seed=SEED,
+        canonical_training_lock_sha256=LOCK_SHA,
+        initial_checkpoint_sha256=INITIAL_SHA,
+        base_manifest_sha256=BASE_SHA,
+        source_tree_digest=SOURCE_SHA,
+        runtime_config_digest=RUNTIME_SHA,
+        asset_registry_digest=ASSET_SHA,
+        contract_digest=CONTRACT_SHA,
+        seed_registry_digest="9" * 64,
+    )
+    payload = {
+        "training_seed": SEED,
+        "canonical_training_lock_sha256": LOCK_SHA,
+        "initial_checkpoint_sha256": INITIAL_SHA,
+        "base_manifest_sha256": BASE_SHA,
+        "source_tree_digest": "0" * 64,
+        "runtime_config_digest": RUNTIME_SHA,
+        "asset_registry_digest": ASSET_SHA,
+    }
+
+    _assert_expected_checkpoint_payload(payload, identity)
+    payload["base_manifest_sha256"] = "8" * 64
+    with pytest.raises(SctsrError) as caught:
+        _assert_expected_checkpoint_payload(payload, identity)
+    assert caught.value.code is ErrorCode.BRANCH_LINEAGE_MISMATCH
 
 
 def test_formal_resume_rejects_static_asset_or_generation_chain_mismatch(tmp_path):
