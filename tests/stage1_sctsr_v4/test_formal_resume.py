@@ -254,7 +254,7 @@ def test_formal_resume_restores_last_complete_checkpoint_history_and_quarantines
     assert sha256_file(checkpoint) == checkpoint_sha_before
 
 
-def test_resume_inspection_is_read_only_until_execution_claim_succeeds(tmp_path):
+def test_resume_inspection_is_read_only_until_execution_claim_succeeds(monkeypatch, tmp_path):
     root = tmp_path / "run"
     _checkpoint, start_generation = _build_completed_epoch(root)
     partial = root / "03_epoch_transactions" / "epoch_0122.generation_1.inprogress"
@@ -282,6 +282,29 @@ def test_resume_inspection_is_read_only_until_execution_claim_succeeds(tmp_path)
     assert partial.is_dir()
     assert half.read_text(encoding="utf-8") == "{"
 
+    monkeypatch.setattr(
+        "stage1_sctsr_v4.recovery.load_checkpoint",
+        lambda *_args, **_kwargs: pytest.fail("fenced preparation repeated the completed-prefix checkpoint audit"),
+    )
+    resumed = prepare_formal_resume_context(
+        run_root=root,
+        expected_run_id=RUN_ID,
+        expected_arm_id=ARM_ID,
+        expected_training_seed=SEED,
+        expected_source_tree_digest=SOURCE_SHA,
+        expected_contract_digest=CONTRACT_SHA,
+        expected_asset_registry_digest=ASSET_SHA,
+        expected_previous_checkpoint_sha256=PARENT_SHA,
+        expected_previous_generation_digest=start_generation,
+        epoch_start=121,
+        epoch_end=200,
+        minimum_free_bytes=1,
+        validated_preview=preview,
+    )
+    assert resumed.resume_epoch == preview.resume_epoch
+    assert len(resumed.quarantined_partial_paths) == 1
+    assert not partial.exists()
+
 
 @pytest.mark.parametrize("script_name", ["run_common_parent.py", "run_branch.py"])
 def test_formal_runner_claims_logical_job_before_mutating_resume_state(script_name, repository_root):
@@ -291,6 +314,7 @@ def test_formal_runner_claims_logical_job_before_mutating_resume_state(script_na
     mutate_call = source.index("resume_context = prepare_formal_resume_context(")
 
     assert preview_call < claim_call < mutate_call
+    assert "validated_preview=resume_preview" in source
 
 
 @pytest.mark.parametrize(

@@ -5,7 +5,7 @@ import math
 import os
 import shutil
 import uuid
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, replace
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Iterable
@@ -359,6 +359,7 @@ def prepare_formal_resume_context(
     epoch_end: int,
     minimum_free_bytes: int,
     allow_terminal_epoch_for_finalization: bool = False,
+    validated_preview: FormalResumeContext | None = None,
     _mutate: bool = True,
 ) -> FormalResumeContext:
     """Re-audit an interrupted formal run and return its exact continuation.
@@ -382,6 +383,59 @@ def prepare_formal_resume_context(
         )
     if not (1 <= int(epoch_start) <= int(epoch_end) <= 200):
         raise SctsrError(ErrorCode.RESUME_GENERATION_MISMATCH, "Formal resume epoch range is invalid")
+
+    if validated_preview is not None:
+        if not _mutate:
+            raise SctsrError(ErrorCode.RESUME_GENERATION_MISMATCH, "A validated resume preview may only be consumed by the fenced mutating phase")
+        preview_identity = {
+            "run_root": (_canonical_windows_path(validated_preview.run_root), _canonical_windows_path(canonical_root)),
+            "run_id": (validated_preview.run_id, expected_run_id),
+            "arm_id": (validated_preview.arm_id, expected_arm_id),
+            "training_seed": (validated_preview.training_seed, expected_training_seed),
+            "epoch_start": (validated_preview.epoch_start, epoch_start),
+            "epoch_end": (validated_preview.epoch_end, epoch_end),
+        }
+        mismatch = {
+            field: {"preview": values[0], "requested": values[1]}
+            for field, values in preview_identity.items()
+            if values[0] != values[1]
+        }
+        if mismatch:
+            raise SctsrError(ErrorCode.RESUME_GENERATION_MISMATCH, "Fenced resume request differs from its validated preview", observed=mismatch)
+        reconcile_epoch_publications(
+            transaction_root,
+            quarantine_root,
+            expected_run_id=expected_run_id,
+            expected_identity={
+                "arm_id": expected_arm_id,
+                "training_seed": expected_training_seed,
+                "source_tree_digest": expected_source_tree_digest,
+                "contract_digest": expected_contract_digest,
+                "asset_registry_digest": expected_asset_registry_digest,
+            },
+        )
+        quarantined = tuple(quarantine_inprogress(transaction_root, quarantine_root, reason="FORMAL_RESUME_PRECHECK_PARTIAL"))
+        pointer = validate_recovery_pointer(root / "ROLLING_RECOVERY_POINTER.json")
+        expected_complete = _canonical_windows_path(Path(validated_preview.checkpoint_path).parents[1])
+        if any(
+            (
+                pointer.get("run_id") != validated_preview.run_id,
+                int(pointer.get("epoch", -1)) != validated_preview.last_complete_epoch,
+                int(pointer.get("generation", -1)) != 1,
+                pointer.get("generation_digest") != validated_preview.previous_generation_digest,
+                pointer.get("receipt_chain_digest") != validated_preview.receipt_chain_digest,
+                _canonical_windows_path(pointer.get("complete_path", "")) != expected_complete,
+            )
+        ):
+            raise SctsrError(ErrorCode.RESUME_GENERATION_MISMATCH, "Canonical resume state changed after its read-only preview")
+        if shutil.disk_usage(root).free < validated_preview.required_free_bytes:
+            raise SctsrError(
+                ErrorCode.DISK_SPACE_PRECHECK_FAILED,
+                "Insufficient disk space for safe formal resume",
+                observed=shutil.disk_usage(root).free,
+                expected=validated_preview.required_free_bytes,
+            )
+        return replace(validated_preview, quarantined_partial_paths=quarantined)
 
     if _mutate:
         reconcile_epoch_publications(

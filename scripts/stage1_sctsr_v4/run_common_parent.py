@@ -193,7 +193,10 @@ def main() -> int:
         def operation_after_claim():
             claimed_resume_context = resume_context
             if resume_kwargs is not None:
-                claimed_resume_context = prepare_formal_resume_context(**resume_kwargs)
+                claimed_resume_context = prepare_formal_resume_context(
+                    **resume_kwargs,
+                    validated_preview=resume_preview,
+                )
                 if (
                     claimed_resume_context.checkpoint_sha256 != resume_preview.checkpoint_sha256
                     or claimed_resume_context.receipt_chain_digest != resume_preview.receipt_chain_digest
