@@ -214,6 +214,7 @@ def main() -> int:
                 output_root=trainer_setup_root,
                 asset_registry_path=arguments.asset_registry,
                 resume_run_root=arguments.output_root if arguments.resume else None,
+                validated_pool_inputs=authorization.pop("_validated_pool_inputs"),
             )
             result = run_prepared_common_parent(
                 trainer=trainer,

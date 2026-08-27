@@ -427,6 +427,35 @@ def test_materialized_hardlink_reuses_same_invocation_canonical_verification(tmp
     assert binding["byte_verification_mode"] == "REGISTERED_CANONICAL_PHYSICAL_VERIFICATION_REUSED"
 
 
+def test_materialized_hardlink_uses_registered_ledger_without_rehashing_images(tmp_path: Path, monkeypatch):
+    import stage1_sctsr_v4.dataset_adapter as adapter
+
+    fixture = _role_root_binding_fixture(tmp_path)
+    verification = {
+        "schema_version": "stage1.sctsr.dataset_content_validation.v1",
+        "status": "PASS",
+        "dataset_root": fixture["canonical_root"].resolve().as_posix(),
+        "physical_verification_enabled": False,
+        "physical_files_verified": 0,
+    }
+    monkeypatch.setattr(adapter, "sha256_file", lambda _path: pytest.fail("image bytes were redundantly hashed"))
+
+    binding = validate_materialized_dataset_bytes(
+        fixture["dataset"],
+        fixture["content"],
+        role="train",
+        dataset_root=fixture["canonical_root"],
+        materialized_data_root=fixture["materialized_root"],
+        materialized_role_root=fixture["role_root"],
+        allowed_materialized_role_roots=(fixture["role_root"],),
+        canonical_physical_verification=verification,
+        evidence_path=tmp_path / "binding" / "train.parquet",
+    )
+
+    assert binding["byte_verification_mode"] == "REGISTERED_LEDGER_SIZE_AND_HARDLINK"
+    assert revalidate_materialized_dataset_binding(binding)["status"] == "PASS"
+
+
 def test_materialized_hardlink_rejects_unrelated_canonical_verification(tmp_path: Path):
     fixture = _role_root_binding_fixture(tmp_path)
     verification = {

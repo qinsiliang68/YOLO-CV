@@ -57,9 +57,15 @@ def _frame_records(frame: pl.DataFrame) -> tuple[IdentityRecord, ...]:
     return tuple(IdentityRecord.from_mapping(row) for row in frame.iter_rows(named=True))
 
 
-def load_formal_pool_inputs(registry: AssetRegistry, repository_root: str | Path) -> FormalPoolInputs:
+def load_formal_pool_inputs(
+    registry: AssetRegistry,
+    repository_root: str | Path,
+    *,
+    validate_registry: bool = True,
+) -> FormalPoolInputs:
     root = Path(repository_root).resolve()
-    validate_asset_registry(registry, root)
+    if validate_registry:
+        validate_asset_registry(registry, root)
     guard = TerminalFieldGuard()
     guard.reject_if_config_mentions_forbidden(PRETERMINAL_FIELDS)
 

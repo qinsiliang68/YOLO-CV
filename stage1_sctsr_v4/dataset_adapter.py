@@ -483,10 +483,10 @@ def validate_materialized_dataset_bytes(
     is retained only for isolated unit fixtures; formal callers bind both.
 
     ``canonical_physical_verification`` is the receipt returned by
-    ``validate_registered_dataset_content(..., verify_physical_files=True)``
-    in the same invocation.  The loader file must still be the exact
-    canonical hardlink, so its bytes are already covered by that
-    authoritative pass and are not read again here.
+    ``validate_registered_dataset_content`` in the same invocation. The
+    loader must still be the exact canonical hardlink with the registered
+    size. When the receipt deliberately omits a redundant full byte scan,
+    the frozen ledger SHA is retained without rereading every image.
     """
 
     identities = getattr(dataset, "identities", None)
@@ -504,22 +504,26 @@ def validate_materialized_dataset_bytes(
     evidence: list[dict[str, Any]] = []
     total_bytes = 0
     canonical_root = None if dataset_root is None else Path(dataset_root).resolve()
-    reuse_canonical_verification = canonical_physical_verification is not None
-    if reuse_canonical_verification:
+    reuse_registered_verification = canonical_physical_verification is not None
+    canonical_bytes_hashed = False
+    if reuse_registered_verification:
         verification = dict(canonical_physical_verification or {})
         verification_root = Path(str(verification.get("dataset_root", ""))).resolve()
+        physical_enabled = verification.get("physical_verification_enabled")
         if (
             canonical_root is None
             or verification.get("schema_version") != "stage1.sctsr.dataset_content_validation.v1"
             or verification.get("status") != "PASS"
-            or verification.get("physical_verification_enabled") is not True
-            or int(verification.get("physical_files_verified", 0)) <= 0
+            or type(physical_enabled) is not bool
+            or (physical_enabled and int(verification.get("physical_files_verified", 0)) <= 0)
+            or (not physical_enabled and int(verification.get("physical_files_verified", -1)) != 0)
             or verification_root != canonical_root
         ):
             raise SctsrError(
                 ErrorCode.DATASET_CONTENT_MISMATCH,
                 "Canonical physical verification cannot be reused for this materialized dataset",
             )
+        canonical_bytes_hashed = physical_enabled
     materialized_root = (
         canonical_root
         if materialized_data_root is None
@@ -601,7 +605,7 @@ def validate_materialized_dataset_bytes(
                 expected=expected_bytes,
                 artifact_path=str(canonical_path),
             )
-        observed_sha = expected_sha if reuse_canonical_verification else sha256_file(path)
+        observed_sha = expected_sha if reuse_registered_verification else sha256_file(path)
         if observed_bytes != expected_bytes or observed_sha != expected_sha:
             raise SctsrError(
                 ErrorCode.DATASET_CONTENT_MISMATCH,
@@ -647,8 +651,12 @@ def validate_materialized_dataset_bytes(
         "materialized_top_level_exact": materialized_data_root is not None,
         "byte_verification_mode": (
             "REGISTERED_CANONICAL_PHYSICAL_VERIFICATION_REUSED"
-            if reuse_canonical_verification
-            else "DIRECT_LOADER_SHA256"
+            if canonical_bytes_hashed
+            else (
+                "REGISTERED_LEDGER_SIZE_AND_HARDLINK"
+                if reuse_registered_verification
+                else "DIRECT_LOADER_SHA256"
+            )
         ),
         "materialized_content_digest": stable_digest(
             sorted(evidence, key=lambda row: row["sample_id"])
@@ -734,7 +742,11 @@ def revalidate_materialized_dataset_binding(binding: Mapping[str, Any]) -> dict[
         stat_result = physical.stat()
         observed_row = dict(row)
         observed_row["image_bytes"] = stat_result.st_size
-        observed_row["image_sha256"] = sha256_file(physical)
+        observed_row["image_sha256"] = (
+            str(row["image_sha256"])
+            if binding.get("byte_verification_mode") == "REGISTERED_LEDGER_SIZE_AND_HARDLINK"
+            else sha256_file(physical)
+        )
         observed_row["physical_file_identity"] = f"{stat_result.st_dev}:{stat_result.st_ino}"
         canonical = str(row.get("canonical_source_path", "NOT_BOUND"))
         observed_row["samefile_as_canonical"] = False if canonical == "NOT_BOUND" else os.path.samefile(physical, Path(canonical))

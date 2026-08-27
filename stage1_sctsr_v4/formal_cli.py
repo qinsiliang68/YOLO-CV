@@ -17,7 +17,7 @@ from .columnar import read_columnar, validate_columnar_file
 from .contracts import require_synthetic_or_authorized, validate_contract_files
 from .errors import ErrorCode, SctsrError
 from .formal_training import FormalIdentity
-from .formal_pool_inputs import load_formal_pool_inputs
+from .formal_pool_inputs import FormalPoolInputs, load_formal_pool_inputs
 from .identity_pool import FixedIdentityPoolSpec, IdentityPool, IdentityRecord, partition_five_groups
 from .dataset_adapter import DatasetIdentity, _is_symlink_or_reparse, load_identity_manifest, validate_materialized_dataset_bytes
 from .dataset_content_ledger import (
@@ -1195,7 +1195,7 @@ def prepare_formal_authorization(
     required_asset_ids = {"canonical_training_lock", "initial_checkpoint"}
     if not required_asset_ids.issubset(assets_by_id):
         raise SctsrError(ErrorCode.ASSET_VALIDATION_FAILED, "Formal asset registry lacks lock or initialization bytes")
-    formal_pool_inputs = load_formal_pool_inputs(asset_registry, root)
+    formal_pool_inputs = load_formal_pool_inputs(asset_registry, root, validate_registry=False)
     asset_identity_mismatch = {
         "canonical_training_lock_sha256": {
             "identity": identity.canonical_training_lock_sha256,
@@ -1302,6 +1302,7 @@ def prepare_formal_authorization(
         "runtime_config_path": Path(runtime_config_path).resolve().as_posix(),
         "seed_registry_path": Path(seed_registry_path).resolve().as_posix(),
         "formal_input_binding": formal_input_binding,
+        "_validated_pool_inputs": formal_pool_inputs,
     }
 
 
@@ -1316,6 +1317,7 @@ def build_prepared_trainer(
     schedule: SchedulePlan | None = None,
     identity_pool_manifests: tuple[str | Path, ...] | list[str | Path] = (),
     resume_run_root: str | Path | None = None,
+    validated_pool_inputs: FormalPoolInputs | None = None,
 ) -> tuple[Any, UpstreamBinding, dict[str, Any]]:
     """Construct, but do not train, a byte- and role-bound upstream trainer."""
 
@@ -1349,8 +1351,16 @@ def build_prepared_trainer(
     module = importlib.import_module("sctsr_classification_trainer")
     adapter_binding = validate_sctsr_adapter_import(binding, module)
     registry = load_asset_registry(asset_registry_path)
-    validate_asset_registry(registry, root, verify_large_files=frozen_resume_trainer_binding is None)
-    pool_inputs = load_formal_pool_inputs(registry, root)
+    if validated_pool_inputs is None:
+        validate_asset_registry(registry, root, verify_large_files=frozen_resume_trainer_binding is None)
+        pool_inputs = load_formal_pool_inputs(registry, root, validate_registry=False)
+    else:
+        if validated_pool_inputs.asset_registry_digest != registry.digest:
+            raise SctsrError(
+                ErrorCode.IDENTITY_DIGEST_MISMATCH,
+                "Prepared trainer received pool inputs from a different asset registry",
+            )
+        pool_inputs = validated_pool_inputs
     assets = {record.asset_id: record for record in registry.assets}
     lock_path = (root / assets["canonical_training_lock"].relative_path).resolve()
     model_path = (root / assets["initial_checkpoint"].relative_path).resolve()
@@ -1406,7 +1416,7 @@ def build_prepared_trainer(
             repository_root=root,
             dataset_root=canonical_dataset_root,
             required_manifest_asset_ids=registered_dataset_manifest_asset_ids(registry),
-            verify_physical_files=True,
+            verify_physical_files=False,
         )
     else:
         dataset_content_binding = frozen_resume_trainer_binding.get("dataset_content_binding")

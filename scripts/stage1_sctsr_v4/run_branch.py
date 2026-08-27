@@ -298,6 +298,7 @@ def main() -> int:
                 schedule=schedule,
                 identity_pool_manifests=arguments.identity_pool,
                 resume_run_root=arguments.output_root if arguments.resume else None,
+                validated_pool_inputs=authorization.pop("_validated_pool_inputs"),
             )
             result = run_prepared_branch(
                 trainer=trainer,
