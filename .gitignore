@@ -117,6 +117,18 @@ artifacts/stage1_sample_value_experiments/contracts/gapvalue240_v1_1/generated/r
 /artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/02_literature/review_500_300_100_v2/discovery/raw/*
 !/artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/02_literature/review_500_300_100_v2/discovery/raw/README.md
 
+# Versioned literature staging keeps ledgers, hashes, notes, and decisions in Git.
+# Primary-source bytes, extracted full text, and generated review packets stay local.
+/artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/02_literature/review_500_300_100_v2/staging/*/sources/
+/artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/02_literature/review_500_300_100_v2/staging/screened_text_*/text/
+/artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/02_literature/review_500_300_100_v2/staging/screening_packets_*/packets/
+/artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/02_literature/review_500_300_100_v2/discovery/anchor_text_v2/
+/artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/02_literature/review_500_300_100_v2/discovery/anchor_screening_packets_v2/
+/artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/02_literature/review_500_300_100_v2/discovery/manual_screen_batches_v2/
+
+# Dynamic OOF replay smoke outputs are local engineering canaries, not scientific evidence.
+/artifacts/stage1_sample_value_experiments/experiments/dynamic_oof_replay_v3_20260809/04_canary/local_smoke_*/
+
 # Keep the fail-closed global research completion authority in version control.
 !/artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/08_reports/
 /artifacts/stage1_sample_value_experiments/experiments/dynamic_replay_budget_efficiency_20260807/08_reports/*
