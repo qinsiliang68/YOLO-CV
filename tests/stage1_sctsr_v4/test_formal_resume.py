@@ -534,11 +534,13 @@ def test_branch_runner_continues_at_resume_epoch_without_overwriting_completed_g
         "publish_execution_claim_snapshot",
         lambda *_args, **_kwargs: {"snapshot_digest": "1" * 64},
     )
-    monkeypatch.setattr(
-        formal,
-        "validate_formal_input_snapshot",
-        lambda *_args, **_kwargs: {"snapshot_digest": "E" * 64},
-    )
+    snapshot_calls = []
+
+    def validate_original_snapshot(*_args, **kwargs):
+        snapshot_calls.append(kwargs)
+        return {"snapshot_digest": "E" * 64}
+
+    monkeypatch.setattr(formal, "validate_formal_input_snapshot", validate_original_snapshot)
 
     receipt = run_prepared_branch(
         trainer=FakeTrainer(),
@@ -569,6 +571,7 @@ def test_branch_runner_continues_at_resume_epoch_without_overwriting_completed_g
     assert receipt["resumed_from_epoch"] == 121
     assert receipt["resume_binding_receipt_digest"]
     assert sha256_file(completed_checkpoint) == completed_sha
+    assert snapshot_calls == [{}]
 
 
 @pytest.mark.parametrize("script_name", ["run_common_parent.py", "run_branch.py"])
@@ -584,3 +587,4 @@ def test_formal_runner_cli_exposes_explicit_resume_and_isolated_setup_flags(scri
     assert completed.returncode == 0
     assert "--resume" in completed.stdout
     assert "--resume-setup-root" in completed.stdout
+    assert "validate_live_source=not arguments.resume" in script.read_text(encoding="utf-8")

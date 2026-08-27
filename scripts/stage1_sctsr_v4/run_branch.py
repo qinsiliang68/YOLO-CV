@@ -151,6 +151,7 @@ def main() -> int:
             asset_registry_path=arguments.asset_registry,
             runtime_config_path=arguments.runtime_config,
             seed_registry_path=arguments.seed_registry,
+            validate_live_source=not arguments.resume,
         )
         runtime_policy = load_json(arguments.runtime_config)
         pool_binding = validate_identity_pool_artifacts(

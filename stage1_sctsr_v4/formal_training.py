@@ -1182,10 +1182,10 @@ def run_prepared_common_parent(
         atomic_write_json(root / "FORMAL_AUTHORIZATION_BINDING.json", dict(release_expected_bindings or {}))
         atomic_write_json(root / "PREPARED_TRAINER_BINDING.json", dict(prepared_trainer_binding or {}))
     elif execution_mode == "formal":
-        formal_input_snapshot = validate_formal_input_snapshot(
-            root,
-            expected_external_binding=formal_input_binding,
-        )
+        # The immutable start snapshot proves the scientific inputs. A resume
+        # release/token is verified independently and must not rewrite or need
+        # to equal those historical authorization bytes.
+        formal_input_snapshot = validate_formal_input_snapshot(root)
     else:
         formal_input_snapshot = None
     global_step = 0 if resume_context is None else resume_context.global_step
@@ -1488,10 +1488,10 @@ def run_prepared_branch(
         atomic_write_json(root / "PARENT_ARTIFACT_INDEX_BINDING.json", dict(parent_artifact_index_binding))
         atomic_write_json(root / "PREPARED_TRAINER_BINDING.json", dict(prepared_trainer_binding))
     elif execution_mode == "formal":
-        formal_input_snapshot = validate_formal_input_snapshot(
-            root,
-            expected_external_binding=formal_input_binding,
-        )
+        # The immutable start snapshot proves the scientific inputs. A resume
+        # release/token is verified independently and must not rewrite or need
+        # to equal those historical authorization bytes.
+        formal_input_snapshot = validate_formal_input_snapshot(root)
     else:
         formal_input_snapshot = None
     global_step = int(payload["global_step"]) if resume_context is None else resume_context.global_step

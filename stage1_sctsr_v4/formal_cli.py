@@ -1046,12 +1046,28 @@ def prepare_formal_authorization(
     asset_registry_path: str | Path,
     runtime_config_path: str | Path,
     seed_registry_path: str | Path,
+    validate_live_source: bool = True,
 ) -> dict[str, Any]:
     """Validate every prepared-run byte before upstream trainer construction."""
 
     identity.validate(formal=True)
     root = Path(repository_root).resolve()
-    source = validate_source_tree_manifest(source_tree_manifest, root, require_clean=True)
+    if validate_live_source:
+        source = validate_source_tree_manifest(source_tree_manifest, root, require_clean=True)
+    else:
+        source = load_json(source_tree_manifest)
+        runtime_environment = source.get("runtime_environment") if isinstance(source, Mapping) else None
+        if (
+            not isinstance(source, Mapping)
+            or source.get("schema_version") != "stage1.sctsr.source_tree_manifest.v1"
+            or not isinstance(source.get("source_tree_digest"), str)
+            or not isinstance(runtime_environment, Mapping)
+            or source.get("runtime_environment_digest") != stable_digest(runtime_environment)
+        ):
+            raise SctsrError(
+                ErrorCode.SOURCE_TREE_MISMATCH,
+                "Frozen source binding is invalid for operational resume",
+            )
     contract = validate_contract_files(contract_path, arms_path)
     asset_registry = load_asset_registry(asset_registry_path)
     asset = validate_asset_registry(asset_registry, root, verify_large_files=True)
