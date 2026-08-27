@@ -44,3 +44,26 @@
 
 - 正在训练：2/12（P26、P62）。
 - P62 已从“中途退出”转为“E125 恢复训练中”；下一台部署须等待 P62 完整提交 E125。
+
+## 2026-08-28 00:19–01:10 状态续记
+
+| 时间 | 机器 | 操作/事件 | 结果 | 后续动作 |
+|---|---|---|---|---|
+| 00:19:35 | P13 | 在 `c3473a4` 上从最后完整 E177 恢复 S008 R2_U | PASS；任务 Running，`epoch_0178.generation_1.inprogress`，GPU 8572 MiB / 185.7 W；旧 fence9/fence10 失败现场均保留 | 低频运维至 E200，异常只读稳定回执 |
+| 00:20–00:40 | P56→P12 | 直接传递 `PARENT_322761319` portable parent；不经本机、不复制数据集 | PASS；10/10 文件、206,277,351 bytes，index/checkpoint SHA 精确匹配；临时 SSH key 已移除 | P12 部署官方 wave2 S003 T_TO_NR_AT_160 |
+| 00:49:22 | P12 | 第一次预启动 provision | FAIL、未启动训练/GPU；稀疏源缺 8 个 canonical manifest 路径，canonical 数据根中的同名文件 bytes/SHA 全部正确 | 建同卷硬链接；失败控制目录和 claim 现场保留 |
+| 00:52:33 | P12 | 第二次预启动 provision | FAIL、未启动训练/GPU；START token 生命周期超过 schema 的 24 小时上限 | token 限为 23.5 小时；第二个失败现场保留；仍复用唯一 current 方案 |
+| 00:54:36 | P12 | 启动官方 `SCTSR_DISCOVERY_S003_T_TO_NR_AT_160`，seed 322761319，E121 | 任务 Running；启动前 C/D/内存充足，GPU 302 MiB / 30°C，功率上限 370 W | 等真实 GPU/事务，不提前计部署成功 |
+| 01:09:30 | P12 | 真实训练确认 | PASS；10 个 Python，GPU 17% / 8572 MiB / 52°C / 255.6 W，`epoch_0121.generation_1.inprogress` | P12 计为部署成功；立即转正式队列下一台 |
+| 01:08–01:10 | 源代码 | 删除 START 路径重复资产验证和每实验逐图片 SHA 重读，保留 ledger/数量/大小/硬链接/精确 role-tree 校验 | 4 个定向数据绑定测试 + 15 个恢复测试通过；提交 `7640147` 已推送 | 下一台使用新 HEAD，禁止再次为同一 canonical 数据做完整物理扫描 |
+
+## 本轮短复盘（训练优先，记录不阻塞）
+
+| 现象 | 直接根因 | 为何未提前发现/是否重复 | 永久修正 |
+|---|---|---|---|
+| 曾再次触发远端命令行过长 | 把大段 PowerShell 编成单个 EncodedCommand | 已有同类教训，属于重复犯错 | 超过短命令规模一律先传 `.ps1`，SSH 只做短调用 |
+| 本地脚本生成曾遇到 here-string 解析失败 | 同类 here-string 嵌套导致外层提前终止 | 未先分离内外层文本 | 内层先编码或用占位符；不再嵌套同类定界符 |
+| P12 建目录首条远端命令被 `cmd.exe` 截断 | 未编码命令中的 `| Out-Null` 被远端 shell 抢先解释 | PowerShell/SSH 引用规则检查不足，属已知类别 | 短远端 PowerShell 用 UTF-16LE EncodedCommand；长逻辑传 `.ps1` |
+| 本机 `python` 返回 9009 | 命中 Windows Store 空别名 | 未先使用仓库既有解释器 | 固定用根 `.venv` 或 `uv ... python`，不得安装环境 |
+| P12 两次 provision 才通过 | 首次缺 manifest 硬链接；其次 token 超过 24h | 部署脚本未覆盖稀疏源材料化和 token 独立上限；不是同一根因 | canonical manifest 仅建同卷硬链接；token 显式取 23.5h 上限；失败均在 GPU 前截断 |
+| P12 启动后约 15 分钟才进 GPU | START 路径重复验证同一批大资产并逐图 SHA | 代码已有重复调用但部署前未按耗时路径审查；属于过度审计 | `7640147` 删除重复调用和逐图 SHA，保留最小数据正确性门槛，下一台直接使用 |
