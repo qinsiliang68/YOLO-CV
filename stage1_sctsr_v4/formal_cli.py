@@ -469,6 +469,32 @@ def _load_identity_pool_artifact(
     }
 
 
+def _identity_pool_roles_for_arm(arm_id: ArmId) -> set[str]:
+    return {
+        ArmId.NR: set(),
+        ArmId.R1_U: {"R1_GLOBAL_RANDOM"},
+        ArmId.R2_U: {"R2_MATCHED_RANDOM"},
+        ArmId.T_U: {"T_STRESS"},
+        ArmId.R2_F: {"R2_MATCHED_RANDOM"},
+        ArmId.T_F: {"T_STRESS"},
+        ArmId.T_TO_R2_AT_160: {"T_STRESS", "R2_MATCHED_RANDOM"},
+        ArmId.T_TO_NR_AT_160: {"T_STRESS"},
+    }[arm_id]
+
+
+def _identity_pool_digest_for_arm(pool_digests: Mapping[str, str], arm_id: ArmId) -> str:
+    if arm_id is ArmId.NR:
+        return "NONE"
+    if arm_id is ArmId.T_TO_R2_AT_160:
+        return stable_digest(
+            {
+                "primary": pool_digests["T_STRESS"],
+                "fallback": pool_digests["R2_MATCHED_RANDOM"],
+            }
+        )
+    return next(iter(pool_digests.values()))
+
+
 def validate_identity_pool_artifacts(
     manifest_paths: list[str | Path] | tuple[str | Path, ...],
     *,
@@ -480,16 +506,7 @@ def validate_identity_pool_artifacts(
 
     if schedule.base_denominator != expected_base_denominator:
         raise SctsrError(ErrorCode.DENOMINATOR_IDENTITY_MISMATCH, "Schedule and formal base denominator differ")
-    expected_roles = {
-        ArmId.NR: set(),
-        ArmId.R1_U: {"R1_GLOBAL_RANDOM"},
-        ArmId.R2_U: {"R2_MATCHED_RANDOM"},
-        ArmId.T_U: {"T_STRESS"},
-        ArmId.R2_F: {"R2_MATCHED_RANDOM"},
-        ArmId.T_F: {"T_STRESS"},
-        ArmId.T_TO_R2_AT_160: {"T_STRESS", "R2_MATCHED_RANDOM"},
-        ArmId.T_TO_NR_AT_160: {"T_STRESS"},
-    }[schedule.arm_id]
+    expected_roles = _identity_pool_roles_for_arm(schedule.arm_id)
     if len(manifest_paths) != len(expected_roles):
         raise SctsrError(ErrorCode.CONFIGURATION_MISMATCH, "Branch identity-pool count differs from its arm", observed=len(manifest_paths), expected=len(expected_roles))
     loaded: dict[str, tuple[IdentityPool, dict[str, tuple[IdentityRecord, ...]], Mapping[str, Any]]] = {}
@@ -505,17 +522,11 @@ def validate_identity_pool_artifacts(
         loaded[role] = item
     if set(loaded) != expected_roles:
         raise SctsrError(ErrorCode.CONFIGURATION_MISMATCH, "Branch identity-pool roles differ from its arm", observed=sorted(loaded), expected=sorted(expected_roles))
-    if expected_roles:
-        if schedule.arm_id is ArmId.T_TO_R2_AT_160:
-            expected_digest = stable_digest({
-                "primary": loaded["T_STRESS"][0].spec.identity_digest,
-                "fallback": loaded["R2_MATCHED_RANDOM"][0].spec.identity_digest,
-            })
-        else:
-            expected_digest = next(iter(loaded.values()))[0].spec.identity_digest
-        if schedule.identity_pool_digest != expected_digest:
-            raise SctsrError(ErrorCode.IDENTITY_DIGEST_MISMATCH, "Schedule identity digest differs from supplied pool artifacts", observed=schedule.identity_pool_digest, expected=expected_digest)
-    elif schedule.identity_pool_digest != "NONE" or schedule.total_occurrences != 0:
+    pool_digests = {role: item[0].spec.identity_digest for role, item in loaded.items()}
+    expected_digest = _identity_pool_digest_for_arm(pool_digests, schedule.arm_id)
+    if expected_roles and schedule.identity_pool_digest != expected_digest:
+        raise SctsrError(ErrorCode.IDENTITY_DIGEST_MISMATCH, "Schedule identity digest differs from supplied pool artifacts", observed=schedule.identity_pool_digest, expected=expected_digest)
+    if not expected_roles and (schedule.identity_pool_digest != "NONE" or schedule.total_occurrences != 0):
         raise SctsrError(ErrorCode.IDENTITY_DIGEST_MISMATCH, "NR schedule is not identity-free")
     ids_by_role = {role: {record.sample_id for record in item[0].records} for role, item in loaded.items()}
     if "T_STRESS" in ids_by_role and "R2_MATCHED_RANDOM" in ids_by_role and ids_by_role["T_STRESS"] & ids_by_role["R2_MATCHED_RANDOM"]:
@@ -536,10 +547,75 @@ def validate_identity_pool_artifacts(
         "status": "PASS",
         "arm_id": schedule.arm_id.value,
         "pool_roles": sorted(loaded),
-        "pool_digests": {role: loaded[role][0].spec.identity_digest for role in sorted(loaded)},
+        "pool_digests": {role: pool_digests[role] for role in sorted(loaded)},
         "artifact_bindings": bindings,
         "binding_digest": stable_digest(bindings),
     }
+
+
+def validate_resume_identity_pool_binding(
+    *,
+    run_root: str | Path,
+    manifest_paths: list[str | Path] | tuple[str | Path, ...],
+    schedule: SchedulePlan,
+) -> dict[str, Any]:
+    """Reuse the frozen pool proof on resume without rereading 120k selection rows."""
+
+    binding_path = Path(run_root).resolve() / "IDENTITY_POOL_BINDING.json"
+    if not binding_path.is_file():
+        raise SctsrError(ErrorCode.ARTIFACT_VALIDATION_FAILED, "Resume identity-pool binding is missing", artifact_path=str(binding_path))
+    binding = load_json(binding_path)
+    expected_fields = {"status", "arm_id", "pool_roles", "pool_digests", "artifact_bindings", "binding_digest"}
+    if not isinstance(binding, Mapping) or set(binding) != expected_fields:
+        raise SctsrError(ErrorCode.ARTIFACT_VALIDATION_FAILED, "Resume identity-pool binding schema is invalid")
+    artifact_bindings = binding.get("artifact_bindings")
+    pool_digests = binding.get("pool_digests")
+    if not isinstance(artifact_bindings, Mapping) or not isinstance(pool_digests, Mapping):
+        raise SctsrError(ErrorCode.ARTIFACT_VALIDATION_FAILED, "Resume identity-pool binding payload is invalid")
+    expected_roles = _identity_pool_roles_for_arm(schedule.arm_id)
+    if (
+        binding.get("status") != "PASS"
+        or binding.get("arm_id") != schedule.arm_id.value
+        or set(binding.get("pool_roles", [])) != expected_roles
+        or set(pool_digests) != expected_roles
+        or set(artifact_bindings) != expected_roles
+        or binding.get("binding_digest") != stable_digest(artifact_bindings)
+    ):
+        raise SctsrError(ErrorCode.IDENTITY_DIGEST_MISMATCH, "Frozen resume identity-pool binding is inconsistent")
+    expected_digest = _identity_pool_digest_for_arm({str(key): str(value) for key, value in pool_digests.items()}, schedule.arm_id)
+    if schedule.identity_pool_digest != expected_digest:
+        raise SctsrError(
+            ErrorCode.IDENTITY_DIGEST_MISMATCH,
+            "Frozen resume identity-pool digest differs from the schedule",
+            observed=schedule.identity_pool_digest,
+            expected=expected_digest,
+        )
+    if len(manifest_paths) != len(expected_roles):
+        raise SctsrError(ErrorCode.CONFIGURATION_MISMATCH, "Resume identity-pool manifest count differs from its arm")
+    observed_roles: set[str] = set()
+    for manifest_value in manifest_paths:
+        manifest_path = Path(manifest_value).resolve()
+        if manifest_path.name != "POOL_MANIFEST.json" or not manifest_path.is_file():
+            raise SctsrError(ErrorCode.ARTIFACT_VALIDATION_FAILED, "Resume identity-pool manifest is missing", artifact_path=str(manifest_path))
+        manifest = load_json(manifest_path)
+        pool_spec = manifest.get("pool_spec")
+        role = None if not isinstance(pool_spec, Mapping) else str(pool_spec.get("pool_role"))
+        digest = None if not isinstance(pool_spec, Mapping) else str(pool_spec.get("identity_digest"))
+        if role not in expected_roles or role in observed_roles:
+            raise SctsrError(ErrorCode.CONFIGURATION_MISMATCH, "Resume identity-pool role is missing, extra, or duplicated", observed=role)
+        recorded = artifact_bindings[role]
+        if (
+            not isinstance(recorded, Mapping)
+            or Path(str(recorded.get("manifest_path", ""))).resolve() != manifest_path
+            or recorded.get("manifest_sha256") != sha256_file(manifest_path)
+            or pool_digests[role] != digest
+            or manifest.get("pool_digest") != digest
+        ):
+            raise SctsrError(ErrorCode.IDENTITY_DIGEST_MISMATCH, "Resume identity-pool manifest differs from the frozen binding", observed=role)
+        observed_roles.add(role)
+    if observed_roles != expected_roles:
+        raise SctsrError(ErrorCode.CONFIGURATION_MISMATCH, "Resume identity-pool roles differ from the frozen binding")
+    return dict(binding)
 
 
 def validate_parent_artifact_index(

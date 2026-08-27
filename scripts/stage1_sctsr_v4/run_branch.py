@@ -23,6 +23,7 @@ from stage1_sctsr_v4.formal_cli import (
     prepare_formal_authorization,
     validate_identity_pool_artifacts,
     validate_parent_artifact_index,
+    validate_resume_identity_pool_binding,
 )
 from stage1_sctsr_v4.formal_training import (
     publish_formal_run_manifest_and_indexes,
@@ -154,12 +155,19 @@ def main() -> int:
             validate_live_source=not arguments.resume,
         )
         runtime_policy = load_json(arguments.runtime_config)
-        pool_binding = validate_identity_pool_artifacts(
-            arguments.identity_pool,
-            schedule=schedule,
-            expected_base_denominator=120_000,
-            expected_base_manifest_sha256=identity.base_manifest_sha256,
-        )
+        if arguments.resume:
+            pool_binding = validate_resume_identity_pool_binding(
+                run_root=arguments.output_root,
+                manifest_paths=arguments.identity_pool,
+                schedule=schedule,
+            )
+        else:
+            pool_binding = validate_identity_pool_artifacts(
+                arguments.identity_pool,
+                schedule=schedule,
+                expected_base_denominator=120_000,
+                expected_base_manifest_sha256=identity.base_manifest_sha256,
+            )
         parent_binding = validate_parent_artifact_index(
             parent_checkpoint=arguments.parent_checkpoint,
             parent_artifact_index=arguments.parent_artifact_index,
