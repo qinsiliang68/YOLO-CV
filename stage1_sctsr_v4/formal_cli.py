@@ -547,7 +547,13 @@ def validate_parent_artifact_index(
     parent_checkpoint: str | Path,
     parent_artifact_index: str | Path,
 ) -> dict[str, Any]:
-    """Re-audit the complete formal parent and bind the selected E120 bytes."""
+    """Validate the immutable parent completion and bind the selected E120 bytes.
+
+    A portable parent may intentionally omit historical ledgers and quarantined
+    attempts.  Those files remain described by the immutable artifact index, but
+    their absence must not block a branch when the completion receipt, run
+    identity, artifact index, and selected endpoint checkpoint still agree.
+    """
 
     checkpoint = Path(parent_checkpoint).resolve()
     index = Path(parent_artifact_index).resolve()
@@ -560,18 +566,32 @@ def validate_parent_artifact_index(
         checkpoint.relative_to(parent_root)
     except ValueError as exc:
         raise SctsrError(ErrorCode.BRANCH_LINEAGE_MISMATCH, "Parent checkpoint is outside the supplied parent artifact root") from exc
-    from .run_validation import validate_run_tree
+    from .formal_completion import _validate_formal_completion_with_prevalidated_artifact_index
 
-    report = validate_run_tree(parent_root, allow_synthetic_portable_fallback=False)
+    completion = _validate_formal_completion_with_prevalidated_artifact_index(
+        parent_root,
+        expected_run_role="COMMON_PARENT",
+    )
+    receipt = completion["receipt"]
     checkpoint_sha = sha256_file(checkpoint)
-    if report.get("semantic") != "formal" or report.get("run_role") != "COMMON_PARENT":
-        raise SctsrError(ErrorCode.BRANCH_LINEAGE_MISMATCH, "Supplied artifact index is not a formally completed common parent", observed=report)
-    if report.get("fixed_endpoint_checkpoint_sha256") != checkpoint_sha:
+    if receipt.get("fixed_checkpoint_sha256") != checkpoint_sha:
         raise SctsrError(
             ErrorCode.PARENT_SHA_MISMATCH,
-            "Selected parent checkpoint differs from the re-audited E120 endpoint",
+            "Selected parent checkpoint differs from the completed E120 endpoint",
             observed=checkpoint_sha,
-            expected=report.get("fixed_endpoint_checkpoint_sha256"),
+            expected=receipt.get("fixed_checkpoint_sha256"),
+        )
+    relative_checkpoint = checkpoint.relative_to(parent_root).as_posix()
+    checkpoint_rows = [
+        row
+        for row in load_json(index).get("files", [])
+        if row.get("path") == relative_checkpoint
+    ]
+    if len(checkpoint_rows) != 1 or checkpoint_rows[0].get("sha256") != checkpoint_sha or int(checkpoint_rows[0].get("bytes", -1)) != checkpoint.stat().st_size:
+        raise SctsrError(
+            ErrorCode.PARENT_SHA_MISMATCH,
+            "Selected parent checkpoint is not exactly bound by the immutable artifact index",
+            artifact_path=str(checkpoint),
         )
     binding = {
         "schema_version": "stage1.sctsr.parent_artifact_binding.v1",
@@ -580,10 +600,10 @@ def validate_parent_artifact_index(
         "artifact_index_sha256": sha256_file(index),
         "parent_checkpoint_path": checkpoint.as_posix(),
         "parent_checkpoint_sha256": checkpoint_sha,
-        "parent_manifest_sha256": report["manifest_sha256"],
-        "parent_artifact_digest": report["artifact_digest"],
-        "parent_receipt_chain_digest": report["receipt_chain_digest"],
-        "validated_epoch_transactions": report["epoch_transaction_count"],
+        "parent_manifest_sha256": receipt["run_manifest_sha256"],
+        "parent_artifact_digest": receipt["artifact_index_digest"],
+        "parent_receipt_chain_digest": receipt["epoch_receipt_digest"],
+        "validated_epoch_transactions": receipt["terminal_epoch"],
         "validation_status": "PASS",
     }
     result = {**binding, "binding_digest": stable_digest(binding)}

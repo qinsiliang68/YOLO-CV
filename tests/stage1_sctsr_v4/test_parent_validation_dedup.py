@@ -64,18 +64,18 @@ def test_same_process_parent_artifact_proof_is_one_shot(monkeypatch, tmp_path):
     checkpoint = root / "epoch_0120.pt"
     checkpoint.write_bytes(b"checkpoint")
     index = root / "ARTIFACT_INDEX.json"
-    atomic_write_json(index, {"schema_version": "stage1.sctsr.artifact_index.v1", "files": [], "artifact_index_digest": "D" * 64})
+    atomic_write_json(index, build_artifact_index(root))
     checkpoint_sha = sha256_file(checkpoint)
     monkeypatch.setattr(
-        "stage1_sctsr_v4.run_validation.validate_run_tree",
+        "stage1_sctsr_v4.formal_completion._validate_formal_completion_with_prevalidated_artifact_index",
         lambda *_args, **_kwargs: {
-            "semantic": "formal",
-            "run_role": "COMMON_PARENT",
-            "fixed_endpoint_checkpoint_sha256": checkpoint_sha,
-            "manifest_sha256": "A" * 64,
-            "artifact_digest": "B" * 64,
-            "receipt_chain_digest": "C" * 64,
-            "epoch_transaction_count": 120,
+            "receipt": {
+                "fixed_checkpoint_sha256": checkpoint_sha,
+                "run_manifest_sha256": "A" * 64,
+                "artifact_index_digest": load_json(index)["artifact_index_digest"],
+                "epoch_receipt_digest": "C" * 64,
+                "terminal_epoch": 120,
+            }
         },
     )
 
@@ -88,6 +88,65 @@ def test_same_process_parent_artifact_proof_is_one_shot(monkeypatch, tmp_path):
     }
     assert _consume_fresh_parent_artifact_validation(binding, **kwargs) is True
     assert _consume_fresh_parent_artifact_validation(binding, **kwargs) is False
+
+
+def test_portable_parent_keeps_endpoint_binding_without_historical_tree(tmp_path):
+    root = tmp_path / "portable_parent"
+    checkpoint = root / "03_epoch_transactions" / "epoch_0120.generation_1.complete" / "05_checkpoints" / "rolling_epoch_0120.generation_1.pt"
+    checkpoint.parent.mkdir(parents=True)
+    checkpoint.write_bytes(b"exact-e120-checkpoint")
+    checkpoint_sha = sha256_file(checkpoint)
+    atomic_write_json(
+        root / "PARENT_RECEIPT.json",
+        {
+            "schema_version": "stage1.sctsr.formal_parent_receipt.v3",
+            "status": "FORMAL_PARENT_EPOCHS_COMPLETE_PENDING_FINALIZATION",
+            "epoch_start": 1,
+            "epoch_end": 120,
+            "epoch_receipt_digest": "A" * 64,
+            "checkpoint_sha256": checkpoint_sha,
+            "parent_id": "PARENT_17",
+            "arm_id": "COMMON_PARENT_NR",
+            "training_seed": 17,
+            "best_pt_used": False,
+        },
+    )
+    atomic_write_json(
+        root / "RUN_MANIFEST.json",
+        {
+            "execution_mode": "formal",
+            "run_role": "COMMON_PARENT",
+            "run_id": "PARENT_17",
+            "arm_id": "COMMON_PARENT_NR",
+            "training_seed": 17,
+        },
+    )
+    atomic_write_json(
+        root / "ARTIFACT_INDEX_GENERATIONS.json",
+        {"schema_version": "stage1.sctsr.epoch_artifact_index.v1", "epoch_generations": []},
+    )
+    historical = root / "08_receipts" / "historical_attempt.json"
+    atomic_write_json(historical, {"status": "SUPERSEDED"})
+    atomic_write_json(root / "ARTIFACT_INDEX.json", build_artifact_index(root))
+    publish_formal_completion(
+        root,
+        run_role="COMMON_PARENT",
+        run_id="PARENT_17",
+        arm_id="COMMON_PARENT_NR",
+        training_seed=17,
+        terminal_epoch=120,
+        fixed_checkpoint_sha256=checkpoint_sha,
+    )
+
+    historical.unlink()
+    binding = validate_parent_artifact_index(
+        parent_checkpoint=checkpoint,
+        parent_artifact_index=root / "ARTIFACT_INDEX.json",
+    )
+
+    assert binding["validation_status"] == "PASS"
+    assert binding["parent_checkpoint_sha256"] == checkpoint_sha
+    assert binding["validated_epoch_transactions"] == 120
 
 
 def test_prevalidated_completion_skips_only_tree_rebuild(monkeypatch, tmp_path):
