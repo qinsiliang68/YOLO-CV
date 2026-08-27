@@ -15,10 +15,10 @@ def test_fake_zero_critical_telemetry_rejected(tmp_path):
     with pytest.raises(SctsrError) as e:validate_telemetry_for_closeout([bad])
     assert e.value.code is ErrorCode.TELEMETRY_UNAVAILABLE
 
-def test_bad_cadence_rejected(tmp_path):
+def test_cadence_jitter_does_not_abort_training_closeout(tmp_path):
     r=sample_telemetry(run_id='r',arm_id='NR',training_seed=1,epoch=1,run_path=tmp_path,artifact_path=tmp_path)
     rows=[r,replace(r,monotonic_seconds=r.monotonic_seconds+1),replace(r,monotonic_seconds=r.monotonic_seconds+3)]
-    with pytest.raises(SctsrError):validate_telemetry_for_closeout(rows)
+    validate_telemetry_for_closeout(rows)
 
 
 def test_nvidia_smi_timeout_cannot_overrun_formal_cadence(monkeypatch):

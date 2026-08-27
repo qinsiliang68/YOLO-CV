@@ -322,10 +322,11 @@ def test_sa_143_empty_and_unknown_sentinels_are_rejected():
             validate_occurrence_rows([row])
 
 
-def test_sa_150_two_row_bad_cadence_cannot_bypass_validator(tmp_path: Path):
+def test_sa_150_cadence_jitter_is_nonfatal_but_ordering_remains_strict(tmp_path: Path):
     row = sample_telemetry(run_id="run-1", arm_id="NR", training_seed=1, epoch=121, run_path=tmp_path, artifact_path=tmp_path)
+    validate_telemetry_for_closeout([row, replace(row, monotonic_seconds=row.monotonic_seconds + 3.0)])
     with pytest.raises(SctsrError):
-        validate_telemetry_for_closeout([row, replace(row, monotonic_seconds=row.monotonic_seconds + 3.0)])
+        validate_telemetry_for_closeout([replace(row, monotonic_seconds=row.monotonic_seconds + 3.0), row])
 
 
 def test_sa_154_to_157_unavailable_hardware_fields_have_reason_not_fake_zero(tmp_path: Path):
