@@ -733,6 +733,7 @@ def validate_prepared_trainer_datasets(
     canonical_dataset_root: Path,
     canonical_physical_verification: Mapping[str, Any],
     evidence_root: Path,
+    frozen_resume_binding: Mapping[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Prove upstream train/validation loaders expose only registered roles."""
 
@@ -758,6 +759,29 @@ def validate_prepared_trainer_datasets(
             observed={"rows": len(observed), "unexpected": sorted(set(observed) - expected)[:20], "missing": sorted(expected - set(observed))[:20]},
             expected={"rows": len(expected), "role": "val_model/study"},
         )
+    if frozen_resume_binding is not None:
+        expected_resume = {
+            "train_rows": len(train_dataset),
+            "train_steps": len(trainer.train_loader),
+            "val_model_rows": len(observed),
+            "canonical_dataset_root": canonical_dataset_root.resolve().as_posix(),
+            "materialized_data_root": dataset_root.resolve().as_posix(),
+            "test_accessed": False,
+            "blind_holdout_opened": False,
+        }
+        mismatch = {
+            field: {"frozen": frozen_resume_binding.get(field), "observed": value}
+            for field, value in expected_resume.items()
+            if frozen_resume_binding.get(field) != value
+        }
+        if mismatch:
+            raise SctsrError(
+                ErrorCode.UPSTREAM_BINDING_FAILED,
+                "Resume loader counts or role roots differ from the frozen dataset binding",
+                observed=mismatch,
+            )
+        return dict(frozen_resume_binding)
+
     content = load_registered_dataset_content_map(registry=registry, repository_root=repository_root)
     allowed_materialized_role_roots = (dataset_root / "train", dataset_root / "val")
     train_content_binding = validate_materialized_dataset_bytes(
@@ -1070,7 +1094,7 @@ def prepare_formal_authorization(
             )
     contract = validate_contract_files(contract_path, arms_path)
     asset_registry = load_asset_registry(asset_registry_path)
-    asset = validate_asset_registry(asset_registry, root, verify_large_files=True)
+    asset = validate_asset_registry(asset_registry, root, verify_large_files=validate_live_source)
     assets_by_id = {record.asset_id: record for record in asset_registry.assets}
     required_asset_ids = {"canonical_training_lock", "initial_checkpoint"}
     if not required_asset_ids.issubset(assets_by_id):
@@ -1195,12 +1219,22 @@ def build_prepared_trainer(
     asset_registry_path: str | Path,
     schedule: SchedulePlan | None = None,
     identity_pool_manifests: tuple[str | Path, ...] | list[str | Path] = (),
+    resume_run_root: str | Path | None = None,
 ) -> tuple[Any, UpstreamBinding, dict[str, Any]]:
     """Construct, but do not train, a byte- and role-bound upstream trainer."""
 
     identity.validate(formal=True)
     root = Path(repository_root).resolve()
     output = Path(output_root).resolve()
+    frozen_resume_trainer_binding = None
+    frozen_resume_dataset_binding = None
+    if resume_run_root is not None:
+        frozen_resume_trainer_binding = load_json(Path(resume_run_root).resolve() / "PREPARED_TRAINER_BINDING.json")
+        if not isinstance(frozen_resume_trainer_binding, Mapping):
+            raise SctsrError(ErrorCode.UPSTREAM_BINDING_FAILED, "Resume run lacks its frozen trainer binding")
+        frozen_resume_dataset_binding = frozen_resume_trainer_binding.get("dataset_binding")
+        if not isinstance(frozen_resume_dataset_binding, Mapping):
+            raise SctsrError(ErrorCode.UPSTREAM_BINDING_FAILED, "Resume run lacks its frozen dataset binding")
     if output.exists():
         raise SctsrError(ErrorCode.ATOMIC_TRANSACTION_INCOMPLETE, "Formal run output root must not exist before upstream setup", artifact_path=str(output))
     # Formal execution is fully frozen.  Prevent Ultralytics setup probes from
@@ -1219,7 +1253,7 @@ def build_prepared_trainer(
     module = importlib.import_module("sctsr_classification_trainer")
     adapter_binding = validate_sctsr_adapter_import(binding, module)
     registry = load_asset_registry(asset_registry_path)
-    validate_asset_registry(registry, root, verify_large_files=True)
+    validate_asset_registry(registry, root, verify_large_files=frozen_resume_trainer_binding is None)
     pool_inputs = load_formal_pool_inputs(registry, root)
     assets = {record.asset_id: record for record in registry.assets}
     lock_path = (root / assets["canonical_training_lock"].relative_path).resolve()
@@ -1270,13 +1304,19 @@ def build_prepared_trainer(
     normal_canonical_manifest = (root / assets["canonical_base_normal_manifest"].relative_path).resolve()
     if normal_canonical_manifest.parent.parent != canonical_dataset_root:
         raise SctsrError(ErrorCode.ASSET_VALIDATION_FAILED, "Canonical base manifests resolve to different dataset roots")
-    dataset_content_binding = validate_registered_dataset_content(
-        registry=registry,
-        repository_root=root,
-        dataset_root=canonical_dataset_root,
-        required_manifest_asset_ids=registered_dataset_manifest_asset_ids(registry),
-        verify_physical_files=True,
-    )
+    if frozen_resume_trainer_binding is None:
+        dataset_content_binding = validate_registered_dataset_content(
+            registry=registry,
+            repository_root=root,
+            dataset_root=canonical_dataset_root,
+            required_manifest_asset_ids=registered_dataset_manifest_asset_ids(registry),
+            verify_physical_files=True,
+        )
+    else:
+        dataset_content_binding = frozen_resume_trainer_binding.get("dataset_content_binding")
+        if not isinstance(dataset_content_binding, Mapping):
+            raise SctsrError(ErrorCode.UPSTREAM_BINDING_FAILED, "Resume run lacks its frozen dataset-content binding")
+        dataset_content_binding = dict(dataset_content_binding)
     project = Path(str(clean["project"]))
     project = (root / project).resolve() if not project.is_absolute() else project.resolve()
     if project != output or clean.get("name") != "trainer" or clean.get("exist_ok") is not False or clean.get("resume") is not False:
@@ -1316,6 +1356,7 @@ def build_prepared_trainer(
             canonical_dataset_root=canonical_dataset_root,
             canonical_physical_verification=dataset_content_binding,
             evidence_root=output / "trainer" / "sctsr_materialized_bindings",
+            frozen_resume_binding=frozen_resume_dataset_binding,
         )
         trainer._sctsr_fresh_materialized_dataset_binding_digest = stable_digest(dataset_binding)
     except BaseException as exc:

@@ -286,6 +286,7 @@ def main() -> int:
                 asset_registry_path=arguments.asset_registry,
                 schedule=schedule,
                 identity_pool_manifests=arguments.identity_pool,
+                resume_run_root=arguments.output_root if arguments.resume else None,
             )
             result = run_prepared_branch(
                 trainer=trainer,

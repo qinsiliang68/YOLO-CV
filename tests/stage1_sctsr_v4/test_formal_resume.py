@@ -588,3 +588,4 @@ def test_formal_runner_cli_exposes_explicit_resume_and_isolated_setup_flags(scri
     assert "--resume" in completed.stdout
     assert "--resume-setup-root" in completed.stdout
     assert "validate_live_source=not arguments.resume" in script.read_text(encoding="utf-8")
+    assert "resume_run_root=arguments.output_root if arguments.resume else None" in script.read_text(encoding="utf-8")
