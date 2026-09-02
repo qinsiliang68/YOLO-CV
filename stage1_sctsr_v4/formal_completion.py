@@ -133,7 +133,7 @@ def publish_formal_completion(
     marker = root / FORMAL_COMPLETION_FILENAME
     if marker.exists():
         raise _failure("Formal completion receipt is immutable and already exists", artifact_path=marker.as_posix())
-    validated = _validated_inputs(root, run_role)
+    validated = _validated_inputs(root, run_role, artifact_index_already_validated=True)
     state_name, _state_schema, _pending, complete_status, expected_terminal = _RUN_STATE[run_role]
     if int(terminal_epoch) != expected_terminal:
         raise _failure("Formal completion terminal epoch is invalid", observed=terminal_epoch)
@@ -198,7 +198,12 @@ def publish_formal_completion(
     }
     receipt = {**core, "completion_digest": stable_digest(core)}
     atomic_write_json(marker, receipt)
-    return dict(validate_formal_completion(root, expected_run_role=run_role)["receipt"])
+    return dict(
+        _validate_formal_completion_with_prevalidated_artifact_index(
+            root,
+            expected_run_role=run_role,
+        )["receipt"]
+    )
 
 
 def _validate_formal_completion(
