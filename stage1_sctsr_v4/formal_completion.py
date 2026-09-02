@@ -71,18 +71,17 @@ def _validated_inputs(root: Path, run_role: str) -> dict[str, Any]:
         endpoint = load_json(required["endpoint_receipt"])
         if endpoint.get("status") != "FORMAL_ENDPOINT_COMPLETE_NOT_METHOD_SELECTION":
             raise _failure("Formal endpoint receipt is not complete", observed=endpoint.get("status"))
-    from .run_validation import build_artifact_index
-
     observed_index = load_json(required["artifact_index"])
-    expected_index = build_artifact_index(root)
-    if observed_index != expected_index:
+    indexed_files = observed_index.get("files")
+    if (
+        observed_index.get("schema_version") != "stage1.sctsr.artifact_index.v1"
+        or not isinstance(indexed_files, list)
+        or observed_index.get("artifact_index_digest") != stable_digest(indexed_files)
+    ):
         raise _failure(
-            "Formal exhaustive artifact index is stale or incomplete",
+            "Formal artifact index is malformed or internally inconsistent",
             artifact_path=required["artifact_index"].as_posix(),
-            observed={
-                "registered_digest": observed_index.get("artifact_index_digest"),
-                "current_digest": expected_index.get("artifact_index_digest"),
-            },
+            observed=observed_index.get("artifact_index_digest"),
         )
     return {"paths": required, "state": dict(state), "manifest": dict(manifest), "artifact_index": observed_index}
 

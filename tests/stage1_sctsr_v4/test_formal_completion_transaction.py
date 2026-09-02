@@ -81,6 +81,52 @@ def test_completion_marker_is_last_atomic_fact_and_detects_later_tamper(tmp_path
     assert caught.value.code is ErrorCode.ATOMIC_TRANSACTION_INCOMPLETE
 
 
+def test_completion_uses_the_fresh_index_without_rehashing_all_artifacts(tmp_path, monkeypatch):
+    root = tmp_path / "parent"
+    _prepare_control_files(root, role="COMMON_PARENT")
+
+    import stage1_sctsr_v4.run_validation as run_validation
+
+    monkeypatch.setattr(
+        run_validation,
+        "build_artifact_index",
+        lambda *_args, **_kwargs: pytest.fail("completion must not rebuild the fresh artifact index"),
+    )
+
+    receipt = publish_formal_completion(
+        root,
+        run_role="COMMON_PARENT",
+        run_id="PARENT_17",
+        arm_id="COMMON_PARENT_NR",
+        training_seed=17,
+        terminal_epoch=120,
+        fixed_checkpoint_sha256="B" * 64,
+    )
+
+    assert receipt["status"] == "FORMAL_PARENT_COMPLETE"
+
+
+def test_completion_rejects_an_internally_inconsistent_index(tmp_path):
+    root = tmp_path / "parent"
+    _prepare_control_files(root, role="COMMON_PARENT")
+    index_path = root / "ARTIFACT_INDEX.json"
+    index = load_json(index_path)
+    atomic_write_json(index_path, {**index, "artifact_index_digest": "C" * 64})
+
+    with pytest.raises(SctsrError) as caught:
+        publish_formal_completion(
+            root,
+            run_role="COMMON_PARENT",
+            run_id="PARENT_17",
+            arm_id="COMMON_PARENT_NR",
+            training_seed=17,
+            terminal_epoch=120,
+            fixed_checkpoint_sha256="B" * 64,
+        )
+
+    assert caught.value.code is ErrorCode.ATOMIC_TRANSACTION_INCOMPLETE
+
+
 def test_branch_cannot_complete_before_endpoint_receipt_and_final_index(tmp_path):
     root = tmp_path / "branch"
     _prepare_control_files(root, role="BRANCH")
