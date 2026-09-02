@@ -454,6 +454,26 @@ def _validate_exact_role_tree(role_root: Path, *, selected_paths: set[Path]) -> 
                     )
 
 
+def _deterministic_content_hash_sample_ids(
+    sample_ids: Sequence[str],
+    limit: int | None,
+) -> frozenset[str]:
+    unique = set(str(sample_id) for sample_id in sample_ids)
+    if limit is None:
+        return frozenset(unique)
+    if not isinstance(limit, int) or isinstance(limit, bool) or limit < 0:
+        raise SctsrError(
+            ErrorCode.CONFIGURATION_MISMATCH,
+            "Materialized dataset hash sample size must be a nonnegative integer or null",
+            observed=limit,
+        )
+    ordered = sorted(
+        unique,
+        key=lambda sample_id: (hashlib.sha256(sample_id.encode("utf-8")).digest(), sample_id),
+    )
+    return frozenset(ordered[:limit])
+
+
 def validate_materialized_dataset_bytes(
     dataset: Any,
     expected_content: Mapping[str, Mapping[str, Any]],
@@ -464,16 +484,19 @@ def validate_materialized_dataset_bytes(
     materialized_role_root: str | Path | None = None,
     allowed_materialized_role_roots: Sequence[str | Path] | None = None,
     evidence_path: str | Path | None = None,
+    content_hash_sample_size: int | None = None,
 ) -> dict[str, Any]:
-    """Hash the exact physical files exposed by an upstream dataset.
+    """Bind the exact physical files exposed by an upstream dataset.
 
     ``dataset_root`` is the immutable canonical image root referenced by the
     registered content ledger. ``materialized_data_root`` is the separate
     Ultralytics classification view containing ``train/`` and ``val/``
     hardlinks. ``materialized_role_root`` is the exact train/val subtree that
     this loader may consume.  The allowed role-root set binds the complete
-    classification-view top level.  When omitted, the legacy same-root layout
-    is retained only for isolated unit fixtures; formal callers bind both.
+    classification-view top level.  ``content_hash_sample_size`` may reduce
+    byte hashing to a deterministic subset while every row still undergoes
+    size, exact-tree, non-reparse, and canonical-hardlink validation.  When
+    omitted, all rows are hashed for backward compatibility.
     """
 
     identities = getattr(dataset, "identities", None)
@@ -488,6 +511,10 @@ def validate_materialized_dataset_bytes(
             "Prepared dataset lacks auditable physical identity paths",
             observed=role,
         )
+    hash_sample_ids = _deterministic_content_hash_sample_ids(
+        [str(identity.sample_id) for identity in identities],
+        content_hash_sample_size,
+    )
     evidence: list[dict[str, Any]] = []
     total_bytes = 0
     canonical_root = None if dataset_root is None else Path(dataset_root).resolve()
@@ -544,29 +571,26 @@ def validate_materialized_dataset_bytes(
                 observed=sample_id,
                 artifact_path=str(path),
             )
-        observed_bytes = path.stat().st_size
-        observed_sha = sha256_file(path)
+        stat_result = path.stat()
+        observed_bytes = stat_result.st_size
         expected_bytes = int(expected["image_bytes"])
         expected_sha = str(expected["image_sha256"]).upper()
-        if observed_bytes != expected_bytes or observed_sha != expected_sha:
+        if observed_bytes != expected_bytes:
             raise SctsrError(
                 ErrorCode.DATASET_CONTENT_MISMATCH,
-                "Materialized dataset bytes differ from the frozen content ledger",
-                observed={"bytes": observed_bytes, "sha256": observed_sha},
+                "Materialized dataset size differs from the frozen content ledger",
+                observed={"bytes": observed_bytes},
                 expected={"bytes": expected_bytes, "sha256": expected_sha},
                 artifact_path=str(path),
             )
-        total_bytes += observed_bytes
-        selected_paths.add(path)
         canonical_path = None if canonical_root is None else (canonical_root / Path(sample_id)).resolve()
         if canonical_path is not None:
             try:
                 canonical_path.relative_to(canonical_root)
             except ValueError as exc:
                 raise SctsrError(ErrorCode.DATASET_CONTENT_MISMATCH, "Canonical materialized identity escapes the registered dataset root", observed=sample_id) from exc
-            if not canonical_path.is_file() or canonical_path.stat().st_size != expected_bytes or sha256_file(canonical_path) != expected_sha:
-                raise SctsrError(ErrorCode.DATASET_CONTENT_MISMATCH, "Canonical source bytes differ from the frozen content ledger", observed=sample_id, artifact_path=str(canonical_path))
-        stat_result = path.stat()
+            if not canonical_path.is_file() or canonical_path.stat().st_size != expected_bytes:
+                raise SctsrError(ErrorCode.DATASET_CONTENT_MISMATCH, "Canonical source size differs from the frozen content ledger", observed=sample_id, artifact_path=str(canonical_path))
         samefile_as_canonical = False if canonical_path is None else os.path.samefile(path, canonical_path)
         if canonical_path is not None and not samefile_as_canonical:
             raise SctsrError(
@@ -575,6 +599,18 @@ def validate_materialized_dataset_bytes(
                 artifact_path=str(path),
                 expected=canonical_path.as_posix(),
             )
+        sha256_verified = sample_id in hash_sample_ids
+        observed_sha = sha256_file(path) if sha256_verified else expected_sha
+        if sha256_verified and observed_sha != expected_sha:
+            raise SctsrError(
+                ErrorCode.DATASET_CONTENT_MISMATCH,
+                "Sampled materialized dataset bytes differ from the frozen content ledger",
+                observed={"bytes": observed_bytes, "sha256": observed_sha},
+                expected={"bytes": expected_bytes, "sha256": expected_sha},
+                artifact_path=str(path),
+            )
+        total_bytes += observed_bytes
+        selected_paths.add(path)
         evidence.append(
             {
                 "role": role,
@@ -585,6 +621,7 @@ def validate_materialized_dataset_bytes(
                 "canonical_source_path": "NOT_BOUND" if canonical_path is None else canonical_path.as_posix(),
                 "image_bytes": observed_bytes,
                 "image_sha256": observed_sha,
+                "content_sha256_verified": sha256_verified,
                 "physical_file_identity": f"{stat_result.st_dev}:{stat_result.st_ino}",
                 "samefile_as_canonical": samefile_as_canonical,
             }
@@ -596,12 +633,21 @@ def validate_materialized_dataset_bytes(
             enforce_exact_top_level=materialized_data_root is not None,
         )
         _validate_exact_role_tree(bound_role_root, selected_paths=selected_paths)
+    verification_mode = (
+        "FULL_SHA256"
+        if len(hash_sample_ids) == len(evidence)
+        else "SIZE_HARDLINK_AND_DETERMINISTIC_SHA256_SAMPLE"
+    )
     payload = {
         "schema_version": "stage1.sctsr.materialized_dataset_binding.v4",
         "status": "PASS",
         "role": role,
         "row_count": len(evidence),
         "physical_bytes_verified": total_bytes,
+        "physical_sha256_rows_verified": len(hash_sample_ids),
+        "content_verification_mode": verification_mode,
+        "content_hash_sample_size": len(hash_sample_ids),
+        "content_hash_sample_digest": stable_digest(sorted(hash_sample_ids)),
         "dataset_root": "NOT_BOUND" if canonical_root is None else canonical_root.as_posix(),
         "canonical_dataset_root": "NOT_BOUND" if canonical_root is None else canonical_root.as_posix(),
         "materialized_data_root": "NOT_BOUND" if materialized_root is None else materialized_root.as_posix(),
@@ -631,7 +677,7 @@ def validate_materialized_dataset_bytes(
 
 
 def revalidate_materialized_dataset_binding(binding: Mapping[str, Any]) -> dict[str, Any]:
-    """Re-hash every prepared loader file from its immutable row ledger."""
+    """Revalidate every bound path and repeat its recorded SHA policy."""
 
     if binding.get("schema_version") != "stage1.sctsr.materialized_dataset_binding.v4":
         raise SctsrError(ErrorCode.SCHEMA_VALIDATION_FAILED, "Materialized dataset binding schema is not registered")
@@ -650,6 +696,26 @@ def revalidate_materialized_dataset_binding(binding: Mapping[str, Any]) -> dict[
         expected_sha256=str(evidence.get("sha256", "")),
     )
     rows = read_columnar(path)
+    verification_mode = str(binding.get("content_verification_mode", "FULL_SHA256"))
+    if verification_mode == "FULL_SHA256":
+        hash_sample_ids = _deterministic_content_hash_sample_ids(
+            [str(row["sample_id"]) for row in rows],
+            None,
+        )
+    elif verification_mode == "SIZE_HARDLINK_AND_DETERMINISTIC_SHA256_SAMPLE":
+        hash_sample_ids = _deterministic_content_hash_sample_ids(
+            [str(row["sample_id"]) for row in rows],
+            int(binding.get("content_hash_sample_size", -1)),
+        )
+    else:
+        raise SctsrError(
+            ErrorCode.SCHEMA_VALIDATION_FAILED,
+            "Materialized dataset binding uses an unsupported content verification mode",
+            observed=verification_mode,
+        )
+    recorded_sample_digest = binding.get("content_hash_sample_digest")
+    if recorded_sample_digest is not None and recorded_sample_digest != stable_digest(sorted(hash_sample_ids)):
+        raise SctsrError(ErrorCode.IDENTITY_DIGEST_MISMATCH, "Materialized dataset hash sample digest is invalid")
     observed: list[dict[str, Any]] = []
     selected_paths = {_absolute_without_resolving(str(row["loader_path_resolved"])) for row in rows}
     materialized_data_root_value = str(binding.get("materialized_data_root", "NOT_BOUND"))
@@ -692,7 +758,10 @@ def revalidate_materialized_dataset_binding(binding: Mapping[str, Any]) -> dict[
         stat_result = physical.stat()
         observed_row = dict(row)
         observed_row["image_bytes"] = stat_result.st_size
-        observed_row["image_sha256"] = sha256_file(physical)
+        sha256_verified = str(row["sample_id"]) in hash_sample_ids
+        if "content_sha256_verified" in observed_row:
+            observed_row["content_sha256_verified"] = sha256_verified
+        observed_row["image_sha256"] = sha256_file(physical) if sha256_verified else str(row["image_sha256"])
         observed_row["physical_file_identity"] = f"{stat_result.st_dev}:{stat_result.st_ino}"
         canonical = str(row.get("canonical_source_path", "NOT_BOUND"))
         observed_row["samefile_as_canonical"] = False if canonical == "NOT_BOUND" else os.path.samefile(physical, Path(canonical))
@@ -707,7 +776,14 @@ def revalidate_materialized_dataset_binding(binding: Mapping[str, Any]) -> dict[
         observed.append(observed_row)
     if stable_digest(sorted(observed, key=lambda row: row["sample_id"])) != binding.get("materialized_content_digest"):
         raise SctsrError(ErrorCode.DATASET_CONTENT_MISMATCH, "Materialized dataset aggregate digest changed after setup")
-    return {"status": "PASS", "role": binding["role"], "row_count": len(observed), "binding_digest": binding["binding_digest"]}
+    return {
+        "status": "PASS",
+        "role": binding["role"],
+        "row_count": len(observed),
+        "content_verification_mode": verification_mode,
+        "physical_sha256_rows_verified": len(hash_sample_ids),
+        "binding_digest": binding["binding_digest"],
+    }
 
 
 def load_identity_manifest(path: str | Path) -> tuple[DatasetIdentity, ...]:

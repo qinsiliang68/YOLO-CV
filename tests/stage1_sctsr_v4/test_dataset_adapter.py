@@ -503,3 +503,65 @@ def test_materialized_role_root_checks_every_ancestor_for_reparse_points(tmp_pat
             evidence_path=tmp_path / "binding" / "train.parquet",
         )
     assert caught.value.code is ErrorCode.DATASET_CONTENT_MISMATCH
+
+
+def test_materialized_binding_supports_deterministic_sampled_sha_without_double_hash(tmp_path: Path, monkeypatch):
+    import stage1_sctsr_v4.dataset_adapter as adapter
+
+    canonical_root = tmp_path / "dataset"
+    materialized_root = tmp_path / "classification_view"
+    role_root = materialized_root / "train"
+    samples = []
+    identities = []
+    content = {}
+    for index in range(3):
+        sample_id = f"Det/images/normal_train/{index}.png"
+        canonical = canonical_root / sample_id
+        staged = role_root / "no_target" / f"{index}.png"
+        canonical.parent.mkdir(parents=True, exist_ok=True)
+        staged.parent.mkdir(parents=True, exist_ok=True)
+        canonical.write_bytes(f"frozen-{index}".encode("ascii"))
+        os.link(canonical, staged)
+        samples.append((str(staged), 0))
+        identities.append(DatasetIdentity(sample_id, 0, sample_id))
+        content[sample_id] = {
+            "image_bytes": canonical.stat().st_size,
+            "image_sha256": __import__("hashlib").sha256(canonical.read_bytes()).hexdigest().upper(),
+        }
+
+    class PhysicalBase(torch.utils.data.Dataset):
+        def __len__(self):
+            return len(samples)
+
+        def __getitem__(self, index):
+            return {"img": torch.zeros((1, 2, 2)), "cls": torch.tensor(0)}
+
+    PhysicalBase.samples = tuple(samples)
+    dataset = IdentityAugmentingDataset(PhysicalBase(), tuple(identities))
+    original_sha256_file = adapter.sha256_file
+    hashed_paths = []
+
+    def counted_sha256_file(path):
+        hashed_paths.append(Path(path))
+        return original_sha256_file(path)
+
+    monkeypatch.setattr(adapter, "sha256_file", counted_sha256_file)
+    binding = validate_materialized_dataset_bytes(
+        dataset,
+        content,
+        role="train",
+        dataset_root=canonical_root,
+        materialized_data_root=materialized_root,
+        materialized_role_root=role_root,
+        allowed_materialized_role_roots=(role_root,),
+        evidence_path=tmp_path / "binding" / "train.parquet",
+        content_hash_sample_size=1,
+    )
+    assert binding["content_verification_mode"] == "SIZE_HARDLINK_AND_DETERMINISTIC_SHA256_SAMPLE"
+    assert binding["content_hash_sample_size"] == 1
+    assert binding["physical_sha256_rows_verified"] == 1
+    assert len(hashed_paths) == 1
+
+    hashed_paths.clear()
+    assert revalidate_materialized_dataset_binding(binding)["status"] == "PASS"
+    assert len(hashed_paths) == 1

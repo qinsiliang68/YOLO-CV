@@ -731,6 +731,7 @@ def validate_prepared_trainer_datasets(
         materialized_role_root=dataset_root / "train",
         allowed_materialized_role_roots=allowed_materialized_role_roots,
         evidence_path=evidence_root / "train_materialized_files.parquet",
+        content_hash_sample_size=64,
     )
     val_content_binding = validate_materialized_dataset_bytes(
         val_dataset,
@@ -741,6 +742,7 @@ def validate_prepared_trainer_datasets(
         materialized_role_root=dataset_root / "val",
         allowed_materialized_role_roots=allowed_materialized_role_roots,
         evidence_path=evidence_root / "val_model_materialized_files.parquet",
+        content_hash_sample_size=64,
     )
     return {
         "status": "PASS",
