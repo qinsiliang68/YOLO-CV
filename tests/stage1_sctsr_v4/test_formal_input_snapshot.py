@@ -11,7 +11,7 @@ from stage1_sctsr_v4.formal_cli import (
     validate_external_file_binding,
     validate_prepared_trainer_external_files,
 )
-from stage1_sctsr_v4.formal_training import publish_formal_input_snapshot
+from stage1_sctsr_v4.formal_training import publish_formal_input_snapshot, validate_formal_input_snapshot
 from stage1_sctsr_v4.serialization import sha256_file, stable_digest
 
 
@@ -55,6 +55,10 @@ def test_formal_input_snapshot_copies_and_binds_every_authorization_file(tmp_pat
         copied = run_root / row["snapshot_relative_path"]
         assert copied.is_file()
         assert sha256_file(copied) == row["sha256"] == binding["files"][role]["sha256"]
+
+    validated = validate_formal_input_snapshot(run_root, expected_external_binding=binding)
+    assert set(validated["files"]) == set(FORMAL_AUTHORIZATION_INPUT_ROLES)
+    assert validated["files"]["source_tree_manifest"] == snapshot["files"]["source_tree_manifest"]
 
 
 def test_prepared_trainer_external_file_revalidation_rejects_identity_manifest_drift(tmp_path):
