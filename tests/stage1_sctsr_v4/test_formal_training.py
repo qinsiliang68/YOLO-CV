@@ -41,6 +41,60 @@ def _groups():
     return {f"G{i}": (records[i],) for i in range(5)}, identity_digest(records)
 
 
+def test_portable_parent_e120_timeline_preserves_child_traceability(monkeypatch, tmp_path):
+    import stage1_sctsr_v4.formal_training as formal
+    from stage1_sctsr_v4.logical_artifact_index import LogicalArtifactEntry
+    from stage1_sctsr_v4.serialization import atomic_write_json, load_json
+
+    parent_root = tmp_path / "portable_parent"
+    parent_manifest = (
+        parent_root
+        / "03_epoch_transactions"
+        / "epoch_0120.generation_1.complete"
+        / "GENERATION_MANIFEST.json"
+    )
+    parent_manifest.parent.mkdir(parents=True)
+    parent_manifest.write_text("{}", encoding="utf-8")
+    child_root = tmp_path / "child"
+    child_root.mkdir()
+    atomic_write_json(
+        child_root / "ARTIFACT_INDEX_GENERATIONS.json",
+        {
+            "epoch_generations": [],
+            "epoch_generation_index_digest": "B" * 64,
+        },
+    )
+
+    def fake_manifest_entry(**kwargs):
+        owner = kwargs["owner"]
+        return LogicalArtifactEntry(
+            logical_run_id=kwargs["logical_run_id"],
+            logical_epoch=kwargs["logical_epoch"],
+            physical_owner_type=owner,
+            physical_run_id=kwargs["physical_run_id"],
+            artifact_relative_path=f"epoch_{kwargs['logical_epoch']:04d}/GENERATION_MANIFEST.json",
+            artifact_sha256="A" * 64,
+            checkpoint_sha256="B" * 64,
+            source_tree_digest=kwargs["source_tree_digest"],
+            lineage_digest=kwargs["lineage_digest"],
+        )
+
+    monkeypatch.setattr(formal, "_manifest_entry", fake_manifest_entry)
+    lineage = SimpleNamespace(logical_run_id="RUN", parent_id="PARENT", lineage_digest="D" * 64)
+    result = formal._publish_complete_logical_timeline(
+        child_root=child_root,
+        parent_root=parent_root,
+        lineage=lineage,
+        identity=_identity(),
+    )
+
+    assert result["logical_epoch_count"] == 81
+    assert result["parent_timeline_materialization"] == "PORTABLE_E120_ENDPOINT"
+    logical = load_json(child_root / "ARTIFACT_INDEX_LOGICAL.json")
+    assert logical["parent_materialized_epochs"] == [120]
+    assert [row["logical_epoch"] for row in logical["logical_timeline"]] == [120, *range(121, 201)]
+
+
 def test_parent_and_branch_orchestration_preserve_parent_and_never_mislabel_synthetic(monkeypatch, tmp_path):
     import stage1_sctsr_v4.formal_training as formal
 

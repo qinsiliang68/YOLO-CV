@@ -733,6 +733,25 @@ def _publish_complete_logical_timeline(
 ) -> dict[str, Any]:
     from .serialization import load_json
 
+    expected_parent_epochs = tuple(range(1, 121))
+    materialized_parent_epochs = tuple(
+        epoch
+        for epoch in expected_parent_epochs
+        if (
+            parent_root
+            / "03_epoch_transactions"
+            / f"epoch_{epoch:04d}.generation_1.complete"
+            / "GENERATION_MANIFEST.json"
+        ).is_file()
+    )
+    if materialized_parent_epochs not in {expected_parent_epochs, (120,)}:
+        raise SctsrError(
+            ErrorCode.LOGICAL_ARTIFACT_IDENTITY_MISMATCH,
+            "Parent timeline is neither complete nor a portable E120 endpoint",
+            observed=list(materialized_parent_epochs),
+            expected="E1-E120 or E120 only",
+        )
+    portable_parent = materialized_parent_epochs == (120,)
     entries = [
         _manifest_entry(
             physical_root=parent_root,
@@ -743,7 +762,7 @@ def _publish_complete_logical_timeline(
             source_tree_digest=identity.source_tree_digest,
             lineage_digest="NOT_APPLICABLE_PARENT",
         )
-        for epoch in range(1, 121)
+        for epoch in materialized_parent_epochs
     ]
     entries.extend(
         _manifest_entry(
@@ -758,7 +777,7 @@ def _publish_complete_logical_timeline(
         for epoch in range(121, 201)
     )
     logical = LogicalArtifactIndex(entries)
-    logical.validate(require_complete_timeline=True, logical_run_id=lineage.logical_run_id)
+    logical.validate(require_complete_timeline=not portable_parent, logical_run_id=lineage.logical_run_id)
     generation_index_path = (
         child_root / "ARTIFACT_INDEX_GENERATIONS.json"
         if (child_root / "ARTIFACT_INDEX_GENERATIONS.json").is_file()
@@ -772,6 +791,10 @@ def _publish_complete_logical_timeline(
         "logical_run_id": lineage.logical_run_id,
         "logical_timeline": [asdict(entry) for entry in sorted(entries, key=lambda item: item.logical_epoch)],
         "logical_timeline_digest": logical.digest,
+        "parent_timeline_materialization": (
+            "PORTABLE_E120_ENDPOINT" if portable_parent else "COMPLETE_E1_E120"
+        ),
+        "parent_materialized_epochs": list(materialized_parent_epochs),
         "physical_parent_root": parent_root.as_posix(),
         "physical_child_root": child_root.as_posix(),
     }
@@ -782,6 +805,7 @@ def _publish_complete_logical_timeline(
         "sha256": sha256_file(index_path),
         "logical_timeline_digest": logical.digest,
         "logical_epoch_count": len(entries),
+        "parent_timeline_materialization": combined["parent_timeline_materialization"],
     }
 
 
