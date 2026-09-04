@@ -421,12 +421,15 @@ def build_split_identity_bundle(
     output = Path(output_path)
     if output.exists():
         raise SctsrError(ErrorCode.ATOMIC_TRANSACTION_INCOMPLETE, "Split identity bundle is immutable; choose a new output path", artifact_path=str(output))
-    try:
-        registry_relative = registry_source.relative_to(root).as_posix()
-    except ValueError as exc:
-        raise SctsrError(ErrorCode.ASSET_VALIDATION_FAILED, "Asset registry path escapes repository root", artifact_path=str(registry_source)) from exc
     if not registry_source.is_file():
         raise SctsrError(ErrorCode.ASSET_VALIDATION_FAILED, "Asset registry file is missing", artifact_path=str(registry_source))
+    try:
+        registry_reference = registry_source.relative_to(root).as_posix()
+    except ValueError:
+        # Fleet deployments keep the byte-bound registry in a per-run control
+        # directory outside the source checkout.  Its location is not part of
+        # the scientific identity; its SHA-256 and semantic digest below are.
+        registry_reference = registry_source.as_posix()
     registered = load_asset_registry(registry_source)
     if registered.digest != registry.digest:
         raise SctsrError(ErrorCode.ASSET_VALIDATION_FAILED, "In-memory and on-disk asset registries differ")
@@ -438,7 +441,7 @@ def build_split_identity_bundle(
     payload: dict[str, Any] = {
         "schema_version": "stage1.sctsr.split_identity_bundle.v1",
         "split_role": split_role,
-        "asset_registry_path": registry_relative,
+        "asset_registry_path": registry_reference,
         "asset_registry_sha256": sha256_file(registry_source),
         "asset_registry_digest": registry.digest,
         "components": split_report["components"],
@@ -470,11 +473,13 @@ def load_split_identity_bundle(
     if raw.get("bundle_digest") != expected_digest:
         raise SctsrError(ErrorCode.PREDICTION_IDENTITY_MISMATCH, "Prediction split identity bundle digest mismatch")
     root = Path(repository_root).resolve()
-    registry_path = (root / str(raw.get("asset_registry_path", ""))).resolve()
-    try:
-        registry_path.relative_to(root)
-    except ValueError as exc:
-        raise SctsrError(ErrorCode.ASSET_VALIDATION_FAILED, "Split bundle registry path escapes repository root") from exc
+    registry_reference = Path(str(raw.get("asset_registry_path", "")))
+    registry_path = registry_reference.resolve() if registry_reference.is_absolute() else (root / registry_reference).resolve()
+    if not registry_reference.is_absolute():
+        try:
+            registry_path.relative_to(root)
+        except ValueError as exc:
+            raise SctsrError(ErrorCode.ASSET_VALIDATION_FAILED, "Split bundle registry path escapes repository root") from exc
     if not registry_path.is_file() or sha256_file(registry_path) != raw.get("asset_registry_sha256"):
         raise SctsrError(ErrorCode.ASSET_VALIDATION_FAILED, "Split bundle asset registry identity changed")
     registry = load_asset_registry(registry_path)
